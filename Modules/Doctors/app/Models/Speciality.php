@@ -1,0 +1,23 @@
+<?php
+
+namespace Modules\Doctors\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Speciality extends Model
+{
+    use HasFactory;
+
+    protected $guarded = [];
+
+    public function doctors()
+    {
+        return $this->hasMany(Doctor::class);
+    }
+
+    public function advertisements()
+    {
+        return $this->hasMany(Advertisement::class);
+    }
+}

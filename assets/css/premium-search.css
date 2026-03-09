@@ -1,0 +1,425 @@
+/* =====================================
+   PREMIUM SEARCH FILTER STYLES
+===================================== */
+
+/* =====================================
+   V2 MINIMALIST LUXURY FILTER STYLES
+===================================== */
+
+.search-filter-premium {
+    background: #ffffff;
+    border-radius: 16px; /* Soft rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Reduced shadow spread */
+    overflow: hidden;
+    border: none; /* No border for clean look */
+    margin-bottom: 30px;
+}
+
+/* Fix Rating Stars empty issue: ensure font-family is correct for filled */
+.rating-option .stars i, .rating .fa-star {
+    font-weight: 900; /* Font Awesome 'Solid' requires 900 weight */
+}
+.rating-option .stars i.empty, .rating .fa-star.empty {
+    color: #e5e7eb;
+}
+
+.search-filter-premium .filter-header {
+    background: #ffffff;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.search-filter-premium .filter-header h4 {
+    margin: 0;
+    font-size: 16px; /* Slightly larger */
+    font-weight: 700; /* Bold */
+    color: #111827;
+    letter-spacing: -0.01em;
+    text-transform: uppercase; /* Modern touch */
+}
+
+/* Reset Button - Clean Link style */
+.search-filter-premium .filter-header .reset-btn {
+    background: transparent;
+    color: #2563eb;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-filter-premium .filter-header .reset-btn:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.filter-body {
+    padding: 24px; /* More breathing room */
+}
+
+/* Filter Section */
+.filter-section {
+    margin-bottom: 24px;
+}
+
+.filter-section:last-child {
+    margin-bottom: 0;
+}
+
+.filter-section-header {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.filter-section-header h5 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #9ca3af; /* Muted label */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Filled Inputs */
+.custom-filter-select,
+.fee-range-inputs input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid transparent; /* No border initially */
+    border-radius: 12px; /* Smooth corners */
+    font-size: 14px;
+    color: #1f2937;
+    background: #f3f4f6; /* Filled style */
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.custom-filter-select:focus,
+.fee-range-inputs input:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+/* Checkboxes as Interactive Rows */
+.custom-filter-check {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 4px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: #4b5563;
+}
+
+.custom-filter-check input {
+    display: none; /* FIX: Hide default checkbox */
+}
+
+.custom-filter-check:hover {
+    background: #f9fafb;
+    color: #111827;
+}
+
+.custom-filter-check input:checked + .check-box {
+    background: #2563eb;
+    border-color: #2563eb;
+    transform: scale(1.1);
+}
+
+.custom-filter-check .check-box {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #d1d5db; /* Thicker border */
+    border-radius: 6px; /* Soft square */
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+}
+
+.custom-filter-check input:checked + .check-box::after {
+    font-size: 10px;
+}
+
+.custom-filter-check .check-label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Gender Pills V2 - Segmented Control Look */
+.gender-pill {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: #f3f4f6; /* Filled default */
+    border: 1px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.gender-pill input {
+    display: none; /* FIX: Hide default checkbox in pills */
+}
+
+.gender-pill:hover {
+    background: #e5e7eb;
+}
+
+.gender-pill.active {
+    background: #2563eb; /* Brand Blue */
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); /* Glow */
+}
+
+/* Search Button V2 */
+.filter-search-btn button {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    transition: all 0.3s ease;
+}
+
+.filter-search-btn button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+}
+
+
+/* Toggle Switch (IOS Style) */
+.toggle-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: #ffffff;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    border: 1px solid #f3f4f6;
+    transition: all 0.2s ease;
+}
+
+.toggle-filter:hover {
+    border-color: #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.toggle-filter .toggle-label {
+    font-size: 14px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    display: none;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e5e7eb;
+    transition: .3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #2563eb;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* Rating Stars V2 (Vertical List) */
+.rating-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rating-option {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    background: #f9fafb;
+}
+
+.rating-option:hover {
+    background: #f3f4f6;
+    border-color: #e5e7eb;
+}
+
+.rating-option.selected {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    box-shadow: 0 2px 5px rgba(37, 99, 235, 0.05);
+}
+
+.rating-option input {
+    display: none;
+}
+
+.rating-option .stars {
+    display: flex;
+    gap: 3px;
+    margin-right: 12px;
+}
+
+.rating-option .stars i {
+    font-size: 13px;
+    color: #fbbf24;
+}
+
+.rating-option .stars i.empty {
+    color: #d1d5db;
+}
+
+.rating-option span {
+    font-size: 14px;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.rating-option.selected span {
+    color: #1e40af;
+    font-weight: 600;
+}
+
+/* Fee Range Fixes */
+.fee-range-inputs .input-group {
+    position: relative;
+    display: block; /* Ensure correct block formatting context */
+}
+.fee-range-inputs .currency-symbol {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    color: #9ca3af;
+    line-height: 1; /* Fix vertical alignment */
+}
+.fee-range-inputs input {
+    padding-left: 28px;
+    height: 44px; /* Explicit height for better vertical align */
+}
+/* Sort Bar */
+.sort-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Premium soft shadow */
+    margin-bottom: 24px;
+    border: 1px solid #f3f4f6;
+}
+
+.sort-bar .results-count {
+    font-size: 14px;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.sort-bar .results-count strong {
+    color: #111827;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.sort-bar .sort-options {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sort-bar .sort-options label {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+    font-weight: 500;
+}
+
+.sort-bar .sort-select {
+    padding: 10px 36px 10px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 50px; /* Pill shape */
+    font-size: 14px;
+    font-weight: 500;
+    background: #f9fafb;
+    cursor: pointer;
+    color: #374151;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.sort-bar .sort-select:hover {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.sort-bar .sort-select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background-color: white;
+}

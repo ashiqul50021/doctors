@@ -1,0 +1,445 @@
+/* =====================================
+   DOCTOR PROFILE MODERN STYLES
+   ===================================== */
+
+:root {
+    --primary-color: #0E82FD;
+    --primary-dark: #0b65c2;
+    --secondary-color: #2E3842;
+    --text-color: #6B7280;
+    --text-light: #9CA3AF;
+    --bg-light: #F9FAFB;
+    --white: #ffffff;
+    --success-color: #10B981;
+    --warning-color: #FBBF24;
+    --danger-color: #EF4444;
+    --border-color: #E5E7EB;
+    --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+    --card-shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.08);
+    --border-radius: 16px;
+    --transition: all 0.3s ease;
+}
+
+/* Base Adjustments */
+body {
+    background-color: #f8fafc;
+    color: var(--secondary-color);
+}
+
+/* =====================================
+   PROFILE HEADER CARD
+   ===================================== */
+.doctor-profile-header {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+    border: 1px solid rgba(229, 231, 235, 0.5);
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.doctor-profile-header:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+/* Profile Image */
+.doctor-profile-header .doc-img {
+    width: 140px;
+    height: 140px;
+    border-radius: 20px;
+    object-fit: cover;
+    border: 4px solid var(--white);
+    box-shadow: 0 8px 25px rgba(14, 130, 253, 0.15);
+}
+
+/* Name and Details */
+.doctor-profile-header .doc-name {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--secondary-color);
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.doctor-profile-header .doc-speciality {
+    font-size: 15px;
+    color: var(--text-color);
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.doctor-profile-header .doc-department {
+    font-size: 14px;
+    color: var(--primary-color);
+    background: rgba(14, 130, 253, 0.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 50px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.doctor-profile-header .doc-department img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+/* Rating */
+.rating i {
+    font-size: 14px;
+}
+
+.rating .average-rating {
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+/* Stats Row */
+.doctor-stats {
+    display: flex;
+    gap: 25px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.doctor-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.doctor-stat-item i {
+    color: var(--primary-color);
+    background: rgba(14, 130, 253, 0.1);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 14px;
+}
+
+/* Action Buttons Area */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.action-btn {
+    flex: 1;
+    height: 44px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--white);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.action-btn:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+    box-shadow: 0 5px 15px rgba(14, 130, 253, 0.2);
+    transform: translateY(-2px);
+}
+
+.action-btn i {
+    font-size: 16px;
+}
+
+/* Booking Button */
+.booking-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: var(--transition);
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.booking-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+    color: var(--white);
+}
+
+/* =====================================
+   SECTIONS STYLING
+   ===================================== */
+.profile-section {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+    border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.profile-section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--secondary-color);
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.profile-section-title i {
+    color: var(--primary-color);
+    background: rgba(14, 130, 253, 0.1);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    margin-right: 15px;
+    font-size: 16px;
+}
+
+.profile-section-title span {
+    display: flex;
+    align-items: center;
+}
+
+/* About Me */
+.about-content p {
+    color: var(--text-color);
+    line-height: 1.7;
+    font-size: 15px;
+}
+
+/* Education & Experience Visuals */
+.experience-box {
+    position: relative;
+    padding-left: 35px;
+}
+
+.experience-box::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 5px;
+    bottom: 0;
+    width: 2px;
+    background: #e5e7eb;
+}
+
+.experience-list li {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.experience-list li:last-child {
+    margin-bottom: 0;
+}
+
+.experience-list li::after {
+    content: '';
+    position: absolute;
+    left: -35px;
+    top: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 4px solid var(--white);
+    background: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+    transition: var(--transition);
+}
+
+.experience-list li:hover::after {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 4px rgba(14, 130, 253, 0.2);
+}
+
+.exp-year {
+    color: var(--primary-color);
+    font-size: 13px;
+    margin-bottom: 6px;
+    display: inline-block;
+    font-weight: 600;
+    background: rgba(14, 130, 253, 0.08);
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.exp-title {
+    font-weight: 700;
+    color: var(--secondary-color);
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.exp-place {
+    color: var(--text-color);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.exp-place::before {
+    content: '\f3c5';
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 12px;
+}
+
+/* Locations */
+.clinic-content .clinic-name {
+    font-size: 18px;
+    color: var(--secondary-color) !important;
+}
+
+.clinic-content .doc-speciality {
+    color: var(--text-color) !important;
+}
+
+.clinic-details p {
+    color: var(--text-color);
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.clinic-details i {
+    width: 20px;
+    text-align: center;
+}
+
+/* =====================================
+   SIDEBAR WIDGETS
+   ===================================== */
+.sidebar-widget {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+    border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.sidebar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+    position: relative;
+    padding-left: 0;
+    border-left: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-title::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: var(--primary-color);
+    border-radius: 4px;
+    display: block;
+}
+
+/* Services Tags */
+.service-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.service-tag {
+    background: var(--white);
+    color: var(--secondary-color);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #E5E7EB;
+    transition: var(--transition);
+}
+
+.service-tag:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(14, 130, 253, 0.2);
+}
+
+/* Business Hours */
+.hours-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px dashed #e5e7eb;
+    font-size: 14px;
+}
+
+.hours-list li:last-child {
+    border-bottom: none;
+}
+
+.hours-list .day {
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.hours-list .time {
+    color: var(--text-color);
+    font-family: inherit;
+    background: #f3f4f6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* Reviews */
+.review-item {
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.review-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.review-item .avatar {
+    border: 2px solid var(--white);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

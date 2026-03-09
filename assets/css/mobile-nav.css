@@ -1,0 +1,101 @@
+/* Mobile Bottom Navigation - Premium App Design */
+:root {
+    --primary-color: #1E40AF;
+    --primary-light: #EFF6FF;
+    --secondary-color: #374151;
+    --text-muted: #9CA3AF;
+    --bg-glass: rgba(255, 255, 255, 0.95);
+}
+
+.bottom-nav-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-glass);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    z-index: 1050;
+    height: 70px; /* Slightly taller for modern feel */
+    display: flex;
+    justify-content: center;
+    border-top: none;
+    border-radius: 20px 20px 0 0; /* Rounded top corners */
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav-menu {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    height: 100%;
+    padding: 0 15px;
+}
+
+.bottom-nav-menu .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 500;
+    flex: 1;
+    height: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border-radius: 12px;
+}
+
+/* Icon Styling */
+.bottom-nav-menu .nav-item .nav-icon-container {
+    font-size: 20px;
+    margin-bottom: 4px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
+    border-radius: 12px; /* For active background */
+}
+
+/* Active State - App Like */
+.bottom-nav-menu .nav-item.active {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.bottom-nav-menu .nav-item.active .nav-icon-container {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(30, 64, 175, 0.15);
+}
+
+.bottom-nav-menu .nav-item.active i {
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.8); }
+    100% { transform: scale(1); }
+}
+
+/* Ripple effect on click */
+.bottom-nav-menu .nav-item:active .nav-icon-container {
+    transform: scale(0.95);
+    background-color: #DBEAFE;
+}
+
+/* Body Adjustment to prevent overlap */
+@media (max-width: 767.98px) {
+    body {
+        padding-bottom: 80px !important;
+        background-color: #f8fafc; /* Simulating app background */
+    }
+}

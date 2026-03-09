@@ -1,0 +1,322 @@
+/* =====================================
+   BOOKING PAGE MODERN STYLES
+   ===================================== */
+
+:root {
+    --primary-color: #0E82FD;
+    --primary-dark: #0b65c2;
+    --secondary-color: #2E3842;
+    --text-color: #6B7280;
+    --bg-light: #F9FAFB;
+    --white: #ffffff;
+    --border-color: #E5E7EB;
+    --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    --card-shadow-hover: 0 15px 50px rgba(0, 0, 0, 0.1);
+    --border-radius: 16px;
+    --transition: all 0.3s ease;
+}
+
+/* Base Card Styling */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 25px;
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+    position: relative;
+    padding-left: 15px;
+}
+
+.card-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+/* =====================================
+   DOCTOR WIDGET
+   ===================================== */
+.booking-doc-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.booking-doc-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 3px solid #f3f4f6;
+}
+
+.booking-doc-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.booking-info h4 a {
+    color: var(--secondary-color);
+    font-weight: 800;
+    font-size: 20px;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.booking-info h4 a:hover {
+    color: var(--primary-color);
+}
+
+.booking-info .rating {
+    margin: 8px 0;
+    font-size: 13px;
+}
+
+.booking-info .rating i {
+    color: #FBBF24;
+}
+
+.booking-info .text-muted {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.booking-info .text-muted i {
+    color: var(--primary-color);
+}
+
+/* =====================================
+   APPOINTMENT TYPE SELECTOR
+   ===================================== */
+.appointment-type-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.appointment-type-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 20px;
+    background: var(--bg-light);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+
+.appointment-type-label:hover {
+    background: #eff6ff;
+}
+
+/* Hide default radio */
+.appointment-type-radio {
+    display: none;
+}
+
+/* Checked State */
+.appointment-type-radio:checked+.appointment-type-label {
+    background: #eff6ff;
+    border-color: var(--primary-color);
+}
+
+.appointment-type-radio:checked+.appointment-type-label i {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.appointment-type-radio:checked+.appointment-type-label span {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.type-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--text-color);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: var(--transition);
+}
+
+.type-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+/* =====================================
+   SCHEDULE WIDGET
+   ===================================== */
+.booking-schedule {
+    padding: 0;
+}
+
+.schedule-header {
+    border-bottom: 1px solid var(--border-color);
+    background: #fcfcfc;
+    padding: 15px 0;
+}
+
+.day-slot ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* Hide scrollbar Firefox */
+}
+
+.day-slot ul::-webkit-scrollbar {
+    display: none;
+    /* Hide scrollbar Chrome */
+}
+
+.day-slot li {
+    flex: 0 0 14.28%;
+    /* 7 days */
+    text-align: center;
+    padding: 10px;
+    position: relative;
+}
+
+.day-slot li span {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+}
+
+.day-slot li .slot-date {
+    font-size: 12px;
+    color: var(--text-color);
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.day-slot li::after {
+    content: '';
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 3px;
+    background: var(--primary-color);
+    transition: var(--transition);
+}
+
+/* Active Day (visual only since logic is not in CSS) */
+/* Ideally we would add an 'active' class to the current day */
+
+/* Time Slots */
+.time-slot ul {
+    list-style: none;
+    padding: 20px;
+    margin: 0;
+    display: flex;
+    overflow-x: auto;
+    /* Just in case */
+}
+
+.time-slot li {
+    flex: 0 0 14.28%;
+    padding: 0 10px;
+}
+
+.timing {
+    display: block;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 8px 5px;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.timing:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #eff6ff;
+}
+
+.timing.selected {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(14, 130, 253, 0.3);
+}
+
+.timing.disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    border-color: transparent;
+}
+
+.timing span {
+    display: block;
+}
+
+/* =====================================
+   SUBMIT BUTTON
+   ===================================== */
+.submit-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 100%);
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+    transition: var(--transition);
+    width: 100%;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4);
+}
+
+@media (min-width: 768px) {
+    .submit-btn {
+        width: auto;
+    }
+}
