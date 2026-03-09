@@ -13,12 +13,12 @@ class ProductCategoryController extends Controller
     public function index()
     {
         $categories = ProductCategory::latest()->get();
-        return view('ecommerce::backend.product-categories.index', compact('categories'));
+        return view('ecommerce::backend.product_categories.index', compact('categories'));
     }
 
     public function create()
     {
-        return view('ecommerce::backend.product-categories.create');
+        return view('ecommerce::backend.product_categories.create');
     }
 
     public function store(Request $request)
@@ -45,14 +45,9 @@ class ProductCategoryController extends Controller
         return redirect()->route('ecommerce.admin.product-categories.index')->with('success', 'Category created successfully.');
     }
 
-    public function show(ProductCategory $productCategory)
-    {
-        return view('ecommerce::backend.product-categories.show', compact('productCategory'));
-    }
-
     public function edit(ProductCategory $productCategory)
     {
-        return view('ecommerce::backend.product-categories.edit', compact('productCategory'));
+        return view('ecommerce::backend.product_categories.edit', compact('productCategory'));
     }
 
     public function update(Request $request, ProductCategory $productCategory)

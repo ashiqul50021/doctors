@@ -54,11 +54,6 @@ class ProductController extends Controller
         return redirect()->route('ecommerce.admin.products.index')->with('success', 'Product created successfully.');
     }
 
-    public function show(Product $product)
-    {
-        return view('ecommerce::backend.products.show', compact('product'));
-    }
-
     public function edit(Product $product)
     {
         $categories = ProductCategory::where('is_active', true)->get();

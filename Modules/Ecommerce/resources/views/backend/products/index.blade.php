@@ -13,7 +13,7 @@
             </ul>
         </div>
         <div class="col-sm-5 col">
-            <a href="{{ route('admin.products.create') }}" class="btn btn-primary float-right mt-2">Add Product</a>
+            <a href="{{ route('ecommerce.admin.products.create') }}" class="btn btn-primary float-right mt-2">Add Product</a>
         </div>
     </div>
 </div>
@@ -62,10 +62,10 @@
                                 </td>
                                 <td class="text-right">
                                     <div class="actions">
-                                        <a class="btn btn-sm bg-success-light" href="{{ route('admin.products.edit', $product->id) }}">
+                                        <a class="btn btn-sm bg-success-light" href="{{ route('ecommerce.admin.products.edit', $product->id) }}">
                                             <i class="fe fe-pencil"></i> Edit
                                         </a>
-                                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
+                                        <form action="{{ route('ecommerce.admin.products.destroy', $product->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm bg-danger-light">

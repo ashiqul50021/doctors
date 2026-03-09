@@ -9,7 +9,7 @@
             <h3 class="page-title">Edit Product</h3>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('ecommerce.admin.products.index') }}">Products</a></li>
                 <li class="breadcrumb-item active">Edit Product</li>
             </ul>
         </div>
@@ -20,7 +20,7 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('ecommerce.admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="row form-row">

@@ -9,7 +9,7 @@
             <h3 class="page-title">Add Product</h3>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('ecommerce.admin.products.index') }}">Products</a></li>
                 <li class="breadcrumb-item active">Add Product</li>
             </ul>
         </div>
@@ -20,7 +20,7 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('ecommerce.admin.products.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="row form-row">
                         <div class="col-12 col-md-6">
