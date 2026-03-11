@@ -54,16 +54,18 @@
 
                         <div class="mb-3">
                             <label>Banner Image</label>
-                            <input type="file" class="form-control @error('image') is-invalid @enderror" name="image">
+                            <input type="file" class="form-control @error('image') is-invalid @enderror" name="image"
+                                id="bannerImageInput" accept="image/*">
                             @error('image')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="form-text text-muted">Leave empty to keep current image</small>
-                            @if($banner->image)
-                                <div class="mt-2">
-                                    <img src="{{ asset($banner->image) }}" alt="Current Banner" style="max-height: 100px;">
-                                </div>
-                            @endif
+                            <small id="bannerImageHelper" class="form-text text-muted">Leave empty to keep current image</small>
+                            <div class="mt-2">
+                                <img id="bannerImagePreview"
+                                    src="{{ $banner->image ? asset($banner->image) : '#' }}"
+                                    alt="Current Banner"
+                                    style="max-height: 120px; {{ $banner->image ? '' : 'display:none;' }}">
+                            </div>
                         </div>
 
                         <!-- Image Only Link Field -->
@@ -150,6 +152,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
     <script>
         $(document).ready(function () {
+            const imageInput = document.getElementById('bannerImageInput');
+            const imagePreview = document.getElementById('bannerImagePreview');
+            const helper = document.getElementById('bannerImageHelper');
+
             function toggleFields() {
                 if ($('#type_image').is(':checked')) {
                     $('#content_fields').hide();
@@ -170,44 +176,54 @@
                 toggleFields();
             });
 
-            // Image Compression Logic
+            function showPreview(file) {
+                if (!file || !file.type.startsWith('image/')) {
+                    return;
+                }
+
+                imagePreview.src = URL.createObjectURL(file);
+                imagePreview.style.display = 'block';
+            }
+
+            imagePreview.addEventListener('error', function () {
+                imagePreview.style.display = 'none';
+            });
+
             $('input[name="image"]').change(function (e) {
                 const file = e.target.files[0];
                 if (!file) return;
 
-                // Only compress if larger than 2MB
-                if (file.size > 2 * 1024 * 1024) {
-                    const $input = $(this);
-                    // Find the helper text (adjust selector as needed based on DOM)
-                    // In edit view, small tag is likely next to input
-                    const $helper = $input.next('small').length ? $input.next('small') : $input.parent().find('small');
+                showPreview(file);
 
-                    $helper.html('<span class="text-warning"><i class="fas fa-spinner fa-spin"></i> Compressing image... (' + (file.size / 1024 / 1024).toFixed(2) + 'MB)</span>');
-
-                    new Compressor(file, {
-                        quality: 0.6,
-                        maxWidth: 1920,
-                        maxHeight: 1920,
-                        success(result) {
-                            // Create a new File from the Blob result
-                            const newFile = new File([result], file.name, {
-                                type: result.type,
-                                lastModified: Date.now(),
-                            });
-
-                            // Replace the file input value
-                            const dataTransfer = new DataTransfer();
-                            dataTransfer.items.add(newFile);
-                            e.target.files = dataTransfer.files;
-
-                            $helper.html('<span class="text-success"><i class="fas fa-check"></i> Compressed to ' + (result.size / 1024 / 1024).toFixed(2) + 'MB</span>');
-                        },
-                        error(err) {
-                            console.error(err.message);
-                            $helper.text('Compression failed: ' + err.message);
-                        },
-                    });
+                if (!window.Compressor || file.size <= 2 * 1024 * 1024) {
+                    helper.textContent = 'Selected image ready to upload.';
+                    return;
                 }
+
+                helper.innerHTML = '<span class="text-warning"><i class="fas fa-spinner fa-spin"></i> Compressing image... (' + (file.size / 1024 / 1024).toFixed(2) + 'MB)</span>';
+
+                new Compressor(file, {
+                    quality: 0.6,
+                    maxWidth: 1920,
+                    maxHeight: 1920,
+                    success(result) {
+                        const newFile = new File([result], file.name, {
+                            type: result.type,
+                            lastModified: Date.now(),
+                        });
+
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(newFile);
+                        e.target.files = dataTransfer.files;
+
+                        showPreview(newFile);
+                        helper.innerHTML = '<span class="text-success"><i class="fas fa-check"></i> Compressed to ' + (result.size / 1024 / 1024).toFixed(2) + 'MB</span>';
+                    },
+                    error(err) {
+                        console.error(err.message);
+                        helper.textContent = 'Compression failed: ' + err.message;
+                    },
+                });
             });
         });
     </script>

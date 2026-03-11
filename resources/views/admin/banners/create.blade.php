@@ -53,12 +53,15 @@
                         <div class="mb-3">
                             <label>Banner Image <span class="text-danger">*</span></label>
                             <input type="file" class="form-control @error('image') is-invalid @enderror" name="image"
-                                required>
+                                id="bannerImageInput" accept="image/*" required>
                             @error('image')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="form-text text-muted">Recommended Size: 1920x600px (Image Only) or Transparent PNG
+                            <small id="bannerImageHelper" class="form-text text-muted">Recommended Size: 1920x600px (Image Only) or Transparent PNG
                                 (Content with Image)</small>
+                            <div class="mt-2">
+                                <img id="bannerImagePreview" src="#" alt="Banner Preview" style="max-height: 120px; display:none;">
+                            </div>
                         </div>
 
                         <!-- Image Only Link Field -->
@@ -145,6 +148,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
     <script>
         $(document).ready(function () {
+            const imageInput = document.getElementById('bannerImageInput');
+            const imagePreview = document.getElementById('bannerImagePreview');
+            const helper = document.getElementById('bannerImageHelper');
+
             function toggleFields() {
                 if ($('#type_image').is(':checked')) {
                     $('#content_fields').hide();
@@ -165,41 +172,50 @@
                 toggleFields();
             });
 
-            // Image Compression Logic
+            function showPreview(file) {
+                if (!file || !file.type.startsWith('image/')) {
+                    return;
+                }
+
+                imagePreview.src = URL.createObjectURL(file);
+                imagePreview.style.display = 'block';
+            }
+
             $('input[name="image"]').change(function (e) {
                 const file = e.target.files[0];
                 if (!file) return;
 
-                // Only compress if larger than 2MB
-                if (file.size > 2 * 1024 * 1024) {
-                    const $input = $(this);
-                    const originalLabel = $input.next('small').text();
-                    $input.next('small').html('<span class="text-warning"><i class="fas fa-spinner fa-spin"></i> Compressing image... (' + (file.size / 1024 / 1024).toFixed(2) + 'MB)</span>');
+                showPreview(file);
 
-                    new Compressor(file, {
-                        quality: 0.6,
-                        maxWidth: 1920,
-                        maxHeight: 1920,
-                        success(result) {
-                            // Create a new File from the Blob result
-                            const newFile = new File([result], file.name, {
-                                type: result.type,
-                                lastModified: Date.now(),
-                            });
-
-                            // Replace the file input value
-                            const dataTransfer = new DataTransfer();
-                            dataTransfer.items.add(newFile);
-                            e.target.files = dataTransfer.files;
-
-                            $input.next('small').html('<span class="text-success"><i class="fas fa-check"></i> Compressed to ' + (result.size / 1024 / 1024).toFixed(2) + 'MB</span>');
-                        },
-                        error(err) {
-                            console.error(err.message);
-                            $input.next('small').text('Compression failed: ' + err.message);
-                        },
-                    });
+                if (!window.Compressor || file.size <= 2 * 1024 * 1024) {
+                    helper.textContent = 'Selected image ready to upload.';
+                    return;
                 }
+
+                helper.innerHTML = '<span class="text-warning"><i class="fas fa-spinner fa-spin"></i> Compressing image... (' + (file.size / 1024 / 1024).toFixed(2) + 'MB)</span>';
+
+                new Compressor(file, {
+                    quality: 0.6,
+                    maxWidth: 1920,
+                    maxHeight: 1920,
+                    success(result) {
+                        const newFile = new File([result], file.name, {
+                            type: result.type,
+                            lastModified: Date.now(),
+                        });
+
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(newFile);
+                        e.target.files = dataTransfer.files;
+
+                        showPreview(newFile);
+                        helper.innerHTML = '<span class="text-success"><i class="fas fa-check"></i> Compressed to ' + (result.size / 1024 / 1024).toFixed(2) + 'MB</span>';
+                    },
+                    error(err) {
+                        console.error(err.message);
+                        helper.textContent = 'Compression failed: ' + err.message;
+                    },
+                });
             });
         });
     </script>
