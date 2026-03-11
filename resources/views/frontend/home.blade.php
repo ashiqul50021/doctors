@@ -306,7 +306,7 @@
 
                                     <!-- Product Image -->
                                     <div class="product-image-container">
-                                        <a href="{{ route('ecommerce.products.show', $product->id) }}">
+                                        <a href="{{ route('ecommerce.products.show', $product->id) }}" class="product-image-link">
                                             @php
                                                 $image = $product->image;
                                                 if (!$image && !empty($product->gallery) && is_array($product->gallery)) {
@@ -1787,15 +1787,25 @@
             padding: 0;
         }
 
+        .product-image-link {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
         .product-main-img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            object-position: center;
             transition: transform 0.3s ease;
         }
 
         .product-card-modern:hover .product-main-img {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
         /* Product Details */

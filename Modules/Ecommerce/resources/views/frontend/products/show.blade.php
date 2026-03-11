@@ -18,14 +18,14 @@
                     <!-- Product Image -->
                     <div class="col-md-5">
                         <div class="product-image-main">
-                            <img src="{{ $product->image ? asset('storage/'.$product->image) : asset('assets/img/products/product-1.jpg') }}" class="img-fluid rounded" alt="{{ $product->name }}" style="width: 100%; max-height: 400px; object-fit: cover;">
+                            <img src="{{ $product->image ? asset($product->image) : asset('assets/img/products/product-1.jpg') }}" class="img-fluid rounded" alt="{{ $product->name }}" style="width: 100%; max-height: 400px; object-fit: contain; background: #f8fafc; padding: 16px;">
                         </div>
                         @if($product->gallery && count($product->gallery) > 0)
                         <div class="product-gallery mt-3">
                             <div class="row">
                                 @foreach($product->gallery as $image)
                                 <div class="col-3">
-                                    <img src="{{ asset('storage/'.$image) }}" class="img-fluid rounded" alt="Gallery" style="height: 80px; object-fit: cover; cursor: pointer;">
+                                    <img src="{{ asset($image) }}" class="img-fluid rounded" alt="Gallery" style="height: 80px; object-fit: contain; cursor: pointer; background: #f8fafc; padding: 6px;">
                                 </div>
                                 @endforeach
                             </div>
@@ -98,7 +98,7 @@
                     <div class="col-md-6 col-lg-3">
                         <div class="card product-card h-100">
                             <a href="{{ route('products.show', $relProduct->id) }}">
-                                <img src="{{ $relProduct->image ? asset('storage/'.$relProduct->image) : asset('assets/img/products/product-1.jpg') }}" class="card-img-top" alt="{{ $relProduct->name }}" style="height: 150px; object-fit: cover;">
+                                <img src="{{ $relProduct->image ? asset($relProduct->image) : asset('assets/img/products/product-1.jpg') }}" class="card-img-top" alt="{{ $relProduct->name }}" style="height: 150px; object-fit: contain; background: #f8fafc; padding: 12px;">
                             </a>
                             <div class="card-body">
                                 <h6 class="card-title">

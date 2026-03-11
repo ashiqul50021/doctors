@@ -79,7 +79,7 @@
                         <div class="col-md-6 col-lg-6 col-xl-4 mb-4">
                             <div class="card product-card h-100 border-0">
                                 <a href="{{ route('ecommerce.products.show', $product->id) }}" class="product-image-wrap">
-                                    <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('assets/img/products/default-product.png') }}"
+                                    <img src="{{ $product->image ? asset($product->image) : asset('assets/img/products/default-product.png') }}"
                                         class="card-img-top" alt="{{ $product->name }}">
                                 </a>
                                 <div class="card-body d-flex flex-column">
@@ -272,13 +272,17 @@
 
     .product-image-wrap {
         background: #f8fafc;
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
     }
 
     .product-card .card-img-top {
         height: 220px;
         object-fit: contain;
-        padding: 14px;
+        object-position: center;
+        width: 100%;
     }
 
     .product-badge {
