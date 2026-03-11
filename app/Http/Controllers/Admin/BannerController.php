@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
+use Throwable;
 
 class BannerController extends Controller
 {
@@ -42,18 +43,26 @@ class BannerController extends Controller
             'order' => 'integer|min:0',
         ]);
 
-        $data = $request->all();
-        $data['is_active'] = $request->has('is_active');
-        $data['image'] = ImageService::upload($request->file('image'), 'banners');
+        try {
+            $data = $request->all();
+            $data['is_active'] = $request->has('is_active');
+            $data['image'] = ImageService::upload($request->file('image'), 'banners');
 
-        // For image_only type, use image_link as button_link
-        if ($request->type === 'image_only' && $request->image_link) {
-            $data['button_link'] = $request->image_link;
+            // For image_only type, use image_link as button_link
+            if ($request->type === 'image_only' && $request->image_link) {
+                $data['button_link'] = $request->image_link;
+            }
+
+            Banner::create($data);
+
+            return redirect()->route('admin.banners.index')->with('success', 'Banner created successfully.');
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()
+                ->withInput()
+                ->withErrors(['image' => 'Banner image upload failed. Please try a smaller JPG/PNG/WEBP file.']);
         }
-
-        Banner::create($data);
-
-        return redirect()->route('admin.banners.index')->with('success', 'Banner created successfully.');
     }
 
     /**
@@ -80,22 +89,35 @@ class BannerController extends Controller
             'order' => 'integer|min:0',
         ]);
 
-        $data = $request->all();
-        $data['is_active'] = $request->has('is_active');
+        try {
+            $data = $request->all();
+            $data['is_active'] = $request->has('is_active');
 
-        if ($request->hasFile('image')) {
-            ImageService::delete($banner->image);
-            $data['image'] = ImageService::upload($request->file('image'), 'banners');
+            if ($request->hasFile('image')) {
+                $newImagePath = ImageService::upload($request->file('image'), 'banners');
+                $data['image'] = $newImagePath;
+            }
+
+            // For image_only type, use image_link as button_link
+            if ($request->type === 'image_only' && $request->image_link) {
+                $data['button_link'] = $request->image_link;
+            }
+
+            $oldImagePath = $banner->image;
+            $banner->update($data);
+
+            if (!empty($newImagePath ?? null) && $oldImagePath && $oldImagePath !== $newImagePath) {
+                ImageService::delete($oldImagePath);
+            }
+
+            return redirect()->route('admin.banners.index')->with('success', 'Banner updated successfully.');
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()
+                ->withInput()
+                ->withErrors(['image' => 'Banner image upload failed. Please try a smaller JPG/PNG/WEBP file.']);
         }
-
-        // For image_only type, use image_link as button_link
-        if ($request->type === 'image_only' && $request->image_link) {
-            $data['button_link'] = $request->image_link;
-        }
-
-        $banner->update($data);
-
-        return redirect()->route('admin.banners.index')->with('success', 'Banner updated successfully.');
     }
 
     /**

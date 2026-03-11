@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class ImageService
 {
@@ -23,8 +24,12 @@ class ImageService
 
         // Create directory if not exists
         $uploadPath = public_path("uploads/{$folder}");
-        if (!file_exists($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
+        if (!is_dir($uploadPath) && !mkdir($uploadPath, 0755, true) && !is_dir($uploadPath)) {
+            throw new RuntimeException("Unable to create upload directory: {$uploadPath}");
+        }
+
+        if (!is_writable($uploadPath)) {
+            throw new RuntimeException("Upload directory is not writable: {$uploadPath}");
         }
 
         // Generate unique filename
@@ -34,6 +39,10 @@ class ImageService
         // Get image info
         $imageInfo = getimagesize($file->getPathname());
         $mimeType = $imageInfo['mime'] ?? '';
+
+        if (!$imageInfo || !$mimeType) {
+            return self::moveOriginal($file, $uploadPath, $folder);
+        }
 
         // Create image resource based on type
         $sourceImage = match ($mimeType) {
@@ -45,10 +54,7 @@ class ImageService
         };
 
         if (!$sourceImage) {
-            // Fallback: just move the file without compression
-            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $file->move($uploadPath, $filename);
-            return "uploads/{$folder}/{$filename}";
+            return self::moveOriginal($file, $uploadPath, $folder);
         }
 
         // Get original dimensions
@@ -74,8 +80,16 @@ class ImageService
         }
 
         // Save as WebP with compression
-        imagewebp($sourceImage, $fullPath, $quality);
+        $saved = function_exists('imagewebp') && imagewebp($sourceImage, $fullPath, $quality);
         imagedestroy($sourceImage);
+
+        if (!$saved || !file_exists($fullPath) || filesize($fullPath) === 0) {
+            if (file_exists($fullPath)) {
+                @unlink($fullPath);
+            }
+
+            return self::moveOriginal($file, $uploadPath, $folder);
+        }
 
         return "uploads/{$folder}/{$filename}";
     }
@@ -98,5 +112,14 @@ class ImageService
         }
 
         return false;
+    }
+
+    protected static function moveOriginal(UploadedFile $file, string $uploadPath, string $folder): string
+    {
+        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'jpg');
+        $filename = Str::uuid() . '.' . $extension;
+        $file->move($uploadPath, $filename);
+
+        return "uploads/{$folder}/{$filename}";
     }
 }
