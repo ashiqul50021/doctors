@@ -2759,9 +2759,13 @@
         }
 
         .section-hero-doctime {
-            padding: 0 0 70px 0;
+            padding: 0 0 120px 0;
             margin-top: -1px !important;
             min-height: auto;
+        }
+
+        .section-hero-doctime .container {
+            position: relative;
         }
 
         .hero-slider {
@@ -2776,9 +2780,11 @@
         }
 
         .hero-search-section {
-            margin-top: -38px;
-            margin-bottom: 0;
-            position: relative;
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: -44px;
+            margin: 0;
             z-index: 5;
         }
 
@@ -2808,6 +2814,10 @@
             }
 
             .hero-search-section {
+                position: relative;
+                left: auto;
+                right: auto;
+                bottom: auto;
                 margin-top: -22px;
             }
 
