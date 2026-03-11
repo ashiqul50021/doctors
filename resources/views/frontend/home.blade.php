@@ -47,7 +47,7 @@
                             <!-- Image Only Slide -->
                             <div class="hero-slide-item">
                                 <div class="hero-full-image"
-                                    style="background-image: url('{{ asset($banner->image) }}'); height: 380px; background-size: cover; background-position: center; border-radius: 20px; position: relative;">
+                                    style="background-image: url('{{ asset($banner->image) }}'); height: 460px; background-size: cover; background-position: center; border-radius: 20px; position: relative;">
                                     @if($banner->button_link)
                                         <a href="{{ $banner->button_link }}"
                                             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></a>
@@ -2759,25 +2759,58 @@
         }
 
         .section-hero-doctime {
-            padding: 0 0 20px 0;
-            margin-top: 0 !important;
+            padding: 0 0 70px 0;
+            margin-top: -1px !important;
             min-height: auto;
         }
 
+        .hero-slider {
+            margin-bottom: 0;
+        }
+
         .hero-main-wrapper {
-            min-height: 380px;
-            max-height: 380px;
+            min-height: 460px;
+            max-height: none;
             overflow: hidden;
+            border-radius: 20px;
+        }
+
+        .hero-search-section {
+            margin-top: -38px;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 5;
+        }
+
+        .hero-search-bar {
+            border-radius: 18px;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
         }
 
         .hero-doctors-img {
-            max-height: 380px;
+            max-height: 460px;
             width: auto;
             object-fit: contain;
         }
 
         /* Mobile Dropdown Popup Style */
         @media (max-width: 991px) {
+            .section-hero-doctime {
+                padding-bottom: 30px;
+            }
+
+            .hero-main-wrapper {
+                min-height: 400px;
+            }
+
+            .hero-doctors-img {
+                max-height: 360px;
+            }
+
+            .hero-search-section {
+                margin-top: -22px;
+            }
+
             .custom-dropdown .dropdown-menu {
                 position: fixed !important;
                 top: 50% !important;
