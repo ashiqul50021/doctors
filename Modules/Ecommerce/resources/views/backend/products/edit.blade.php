@@ -20,6 +20,16 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-body">
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form action="{{ route('ecommerce.admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
@@ -27,7 +37,7 @@
                         <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label>Product Name</label>
-                                <input type="text" name="name" class="form-control" value="{{ $product->name }}" required>
+                                <input type="text" name="name" class="form-control" value="{{ old('name', $product->name) }}" required>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -35,7 +45,7 @@
                                 <label>Category</label>
                                 <select name="product_category_id" class="form-control" required>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ $product->product_category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                        <option value="{{ $category->id }}" {{ old('product_category_id', $product->product_category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -43,46 +53,52 @@
                         <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label>Price</label>
-                                <input type="number" step="0.01" name="price" class="form-control" value="{{ $product->price }}" required>
+                                <input type="number" step="0.01" name="price" class="form-control" value="{{ old('price', $product->price) }}" required>
                             </div>
                         </div>
                          <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label>Sale Price (Optional)</label>
-                                <input type="number" step="0.01" name="sale_price" class="form-control" value="{{ $product->sale_price }}">
+                                <input type="number" step="0.01" name="sale_price" class="form-control" value="{{ old('sale_price', $product->sale_price) }}">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label>Stock</label>
-                                <input type="number" name="stock" class="form-control" value="{{ $product->stock }}" required>
+                                <input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" required>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label>Image</label>
-                                <input type="file" name="image" class="form-control">
-                                @if($product->image)
-                                    <img src="{{ asset('storage/'.$product->image) }}" alt="" width="50" class="mt-2">
-                                @endif
+                                <label for="productImageInput">Image</label>
+                                <input type="file" name="image" class="form-control" id="productImageInput" accept="image/*">
+                                <small id="productImageHelper" class="form-text text-muted">
+                                    {{ $product->image ? 'Choose a new image to replace the current one. Selected image will preview instantly and be compressed before upload.' : 'Select an image to preview. Large files will be compressed automatically before upload.' }}
+                                </small>
+                                <div class="mt-2" id="productImagePreviewContainer" style="{{ $product->image ? '' : 'display: none;' }}">
+                                    <img id="productImagePreview"
+                                        src="{{ $product->image ? asset($product->image) : '#' }}"
+                                        alt="Product Preview" class="img-thumbnail"
+                                        style="max-width: 150px; max-height: 150px;">
+                                </div>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
                                 <label>Description</label>
-                                <textarea name="description" class="form-control" rows="4">{{ $product->description }}</textarea>
+                                <textarea name="description" class="form-control" rows="4">{{ old('description', $product->description) }}</textarea>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {{ $product->is_active ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="is_active">
                                         Is Active
                                     </label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" {{ $product->is_featured ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="is_featured">
                                         Featured Product
                                     </label>
@@ -97,3 +113,120 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeProductImageUpload({
+                inputId: 'productImageInput',
+                previewId: 'productImagePreview',
+                previewContainerId: 'productImagePreviewContainer',
+                helperId: 'productImageHelper',
+                emptyMessage: 'Choose a new image to replace the current one. Selected image will preview instantly and be compressed before upload.'
+            });
+        });
+
+        function initializeProductImageUpload({ inputId, previewId, previewContainerId, helperId, emptyMessage }) {
+            const fileInput = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const previewContainer = document.getElementById(previewContainerId);
+            const helper = document.getElementById(helperId);
+
+            if (!fileInput || !preview || !previewContainer || !helper) {
+                return;
+            }
+
+            fileInput.addEventListener('change', async function (event) {
+                const file = event.target.files[0];
+
+                if (!file) {
+                    helper.textContent = emptyMessage;
+                    return;
+                }
+
+                if (!file.type.startsWith('image/')) {
+                    helper.textContent = 'Please select a valid image file.';
+                    return;
+                }
+
+                helper.innerHTML = '<span class="text-warning">Processing image...</span>';
+
+                try {
+                    const processedFile = await compressImage(file, {
+                        quality: 0.7,
+                        maxWidth: 800,
+                        maxHeight: 800,
+                        type: 'image/jpeg'
+                    });
+
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(processedFile);
+                    event.target.files = dataTransfer.files;
+
+                    updatePreview(preview, previewContainer, processedFile);
+
+                    const originalSize = (file.size / 1024).toFixed(2);
+                    const compressedSize = (processedFile.size / 1024).toFixed(2);
+                    helper.innerHTML = `<span class="text-success">Preview updated. Compressed ${originalSize} KB to ${compressedSize} KB.</span>`;
+                } catch (error) {
+                    console.error(error);
+                    helper.innerHTML = '<span class="text-danger">Image processing failed. Original file will be uploaded.</span>';
+                    updatePreview(preview, previewContainer, file);
+                }
+            });
+        }
+
+        function updatePreview(preview, previewContainer, file) {
+            preview.src = URL.createObjectURL(file);
+            previewContainer.style.display = 'block';
+        }
+
+        function compressImage(file, options) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height && width > options.maxWidth) {
+                            height *= options.maxWidth / width;
+                            width = options.maxWidth;
+                        } else if (height >= width && height > options.maxHeight) {
+                            width *= options.maxHeight / height;
+                            height = options.maxHeight;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        canvas.toBlob((blob) => {
+                            if (!blob) {
+                                reject(new Error('Canvas is empty'));
+                                return;
+                            }
+
+                            resolve(new File([blob], file.name, {
+                                type: options.type || file.type,
+                                lastModified: Date.now()
+                            }));
+                        }, options.type || 'image/jpeg', options.quality || 0.7);
+                    };
+
+                    img.onerror = (error) => reject(error);
+                };
+
+                reader.onerror = (error) => reject(error);
+            });
+        }
+    </script>
+@endpush

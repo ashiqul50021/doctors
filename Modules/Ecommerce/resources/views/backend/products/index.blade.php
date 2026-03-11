@@ -45,10 +45,17 @@
                                 <td>#PRO{{ $product->id }}</td>
                                 <td>
                                     <h2 class="table-avatar">
-                                        <a href="#" class="avatar avatar-sm mr-2">
-                                            <img class="avatar-img" src="{{ $product->image ? asset('storage/'.$product->image) : asset('assets/img/specialities/specialities-01.png') }}" alt="Product">
-                                        </a>
-                                        <a href="#">{{ $product->name }}</a>
+                                        @if($product->image)
+                                            <a href="#" class="avatar avatar-sm mr-2">
+                                                <img class="avatar-img" src="{{ asset($product->image) }}" alt="Product">
+                                            </a>
+                                        @else
+                                            <span class="avatar avatar-sm mr-2 d-inline-flex align-items-center justify-content-center bg-light text-muted border"
+                                                style="font-size: 9px; font-weight: 600;">
+                                                No Image
+                                            </span>
+                                        @endif
+                                        <a href="#" style="text-decoration: none; color: #333;">{{ $product->name }}</a>
                                     </h2>
                                 </td>
                                 <td>{{ $product->category->name ?? 'N/A' }}</td>
