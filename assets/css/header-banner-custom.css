@@ -3388,12 +3388,15 @@ body {
 /* Hero Section Main */
 .section-hero-doctime {
     background: linear-gradient(180deg, #f0f7ff 0%, #e8f4fd 50%, #ffffff 100%);
-    padding: 100px 0 30px 0;
-    /* Reduced top padding */
+    padding: 0 0 120px 0;
     position: relative;
     overflow: visible;
     min-height: auto;
-    /* Allow auto height */
+    margin-top: -1px;
+}
+
+.section-hero-doctime .container {
+    position: relative;
 }
 
 /* Wave Pattern Background */
@@ -3415,9 +3418,13 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 50px;
-    margin-bottom: 50px;
+    margin-bottom: 0;
     position: relative;
     z-index: 2;
+    min-height: 460px;
+    max-height: none;
+    overflow: hidden;
+    border-radius: 20px;
 }
 
 /* Left Content */
@@ -3493,15 +3500,19 @@ body {
 .hero-content-right .hero-doctors-img {
     max-width: 100%;
     height: auto;
-    max-height: 450px;
+    max-height: 460px;
     object-fit: contain;
 }
 
 /* Search Section */
 .hero-search-section {
-    position: relative;
-    z-index: 3;
-    margin-bottom: 50px;
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 0;
+    transform: translateY(50%);
+    z-index: 100;
+    margin: 0;
 }
 
 /* Search Bar */
@@ -3677,6 +3688,7 @@ body {
     .hero-main-wrapper {
         flex-direction: column;
         text-align: center;
+        min-height: 400px;
     }
 
     .hero-content-left {
@@ -3685,6 +3697,19 @@ body {
 
     .hero-content-right {
         text-align: center;
+    }
+
+    .hero-content-right .hero-doctors-img {
+        max-height: 360px;
+    }
+
+    .hero-search-section {
+        position: relative;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        transform: none;
+        margin-top: -22px;
     }
 
     .hero-search-form {
@@ -3709,7 +3734,7 @@ body {
 
 @media (max-width: 767px) {
     .section-hero-doctime {
-        padding: 120px 0 40px 0;
+        padding: 0 0 30px 0;
         min-height: auto;
     }
 
@@ -3737,7 +3762,7 @@ body {
 
 /* Hero Slider Styles */
 .hero-slider {
-    margin-bottom: 30px;
+    margin-bottom: 0;
     width: 100%;
     position: relative;
     /* Prevent layout shift/stacking before JS loads */
@@ -3829,7 +3854,6 @@ body {
 
 /* Fix: Ensure search section stays above other sections */
 .hero-search-section {
-    position: relative;
     z-index: 100;
 }
 
