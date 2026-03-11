@@ -8,6 +8,17 @@ use RuntimeException;
 
 class ImageService
 {
+    protected static function uploadBasePath(): string
+    {
+        $rootUploadsPath = base_path('uploads');
+
+        if (is_dir($rootUploadsPath) || file_exists(base_path('index.php'))) {
+            return $rootUploadsPath;
+        }
+
+        return public_path('uploads');
+    }
+
     /**
      * Upload and compress image to public folder
      *
@@ -23,7 +34,7 @@ class ImageService
         ini_set('memory_limit', '512M');
 
         // Create directory if not exists
-        $uploadPath = public_path("uploads/{$folder}");
+        $uploadPath = self::uploadBasePath() . DIRECTORY_SEPARATOR . $folder;
         if (!is_dir($uploadPath) && !mkdir($uploadPath, 0755, true) && !is_dir($uploadPath)) {
             throw new RuntimeException("Unable to create upload directory: {$uploadPath}");
         }
@@ -106,9 +117,16 @@ class ImageService
             return false;
         }
 
-        $fullPath = public_path($path);
-        if (file_exists($fullPath)) {
-            return unlink($fullPath);
+        $normalizedPath = ltrim(str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
+        $candidatePaths = [
+            base_path($normalizedPath),
+            public_path($path),
+        ];
+
+        foreach ($candidatePaths as $fullPath) {
+            if (file_exists($fullPath)) {
+                return unlink($fullPath);
+            }
         }
 
         return false;
