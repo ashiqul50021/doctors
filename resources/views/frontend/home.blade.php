@@ -2759,8 +2759,7 @@
         }
 
         .section-hero-doctime {
-            padding: 0 0 120px 0;
-            margin-top: -1px !important;
+            padding: 24px 0 120px 0;
             min-height: auto;
         }
 
@@ -2802,7 +2801,7 @@
         /* Mobile Dropdown Popup Style */
         @media (max-width: 991px) {
             .section-hero-doctime {
-                padding-bottom: 30px;
+                padding: 16px 0 30px 0;
             }
 
             .hero-main-wrapper {
