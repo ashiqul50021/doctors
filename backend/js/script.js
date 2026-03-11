@@ -11,7 +11,7 @@ Version      : 1.0
 	
 	var $wrapper = $('.main-wrapper');
 	var $pageWrapper = $('.page-wrapper');
-	var $slimScrolls = $('.slimscroll');
+	var $slimScrolls = $('.slimscroll').not('.sidebar-inner');
 	
 	// Sidebar
 	
@@ -37,9 +37,38 @@ Version      : 1.0
 		});
 		$('#sidebar-menu ul li.submenu a.active').parents('li:last').children('a:first').addClass('active').trigger('click');
 	}
+
+	function keepActiveMenuInView() {
+		var $sidebar = $('#sidebar');
+		var $activeItem = $('#sidebar-menu > ul > li.active').last();
+
+		if (!$sidebar.length || !$activeItem.length) {
+			return;
+		}
+
+		var sidebarEl = $sidebar.get(0);
+		var activeEl = $activeItem.get(0);
+		var sidebarHeight = $sidebar.innerHeight();
+		var itemTop = activeEl.offsetTop;
+		var itemBottom = itemTop + $activeItem.outerHeight(true);
+		var currentScroll = $sidebar.scrollTop();
+		var topBuffer = 80;
+		var bottomBuffer = 140;
+
+		if (itemBottom + bottomBuffer > currentScroll + sidebarHeight) {
+			sidebarEl.scrollTop = itemBottom + bottomBuffer - sidebarHeight;
+		} else if (itemTop - topBuffer < currentScroll) {
+			sidebarEl.scrollTop = Math.max(itemTop - topBuffer, 0);
+		}
+	}
 	
 	// Sidebar Initiate
 	init();
+	keepActiveMenuInView();
+
+	$(window).on('resize', function() {
+		keepActiveMenuInView();
+	});
 	
 	// Mobile menu sidebar overlay
 	
@@ -111,7 +140,7 @@ Version      : 1.0
 	
     // Datatable
 
-    if ($('.datatable').length > 0) {
+    if ($('.datatable').length > 0 && $.fn.DataTable) {
         $('.datatable').DataTable({
             "bFilter": false,
         });

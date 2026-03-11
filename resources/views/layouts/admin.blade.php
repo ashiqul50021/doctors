@@ -16,6 +16,9 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
 
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="{{ asset('backend/plugins/datatables/datatables.min.css') }}">
+
 
 
     <!-- Toastr CSS -->
@@ -26,10 +29,10 @@
     @stack('styles')
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ asset('backend/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/css/style.css') }}?v={{ @filemtime(base_path('backend/css/style.css')) }}">
 
     <!-- Custom Admin CSS -->
-    <link rel="stylesheet" href="{{ asset('backend/css/admin-custom.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/css/admin-custom.css') }}?v={{ @filemtime(base_path('backend/css/admin-custom.css')) }}">
 </head>
 
 <body>
@@ -61,6 +64,9 @@
     <!-- Slimscroll JS -->
     <script src="{{ asset('backend/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
 
+    <!-- DataTables JS -->
+    <script src="{{ asset('backend/plugins/datatables/datatables.min.js') }}"></script>
+
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
@@ -82,7 +88,7 @@
     @stack('scripts')
 
     <!-- Custom JS -->
-    <script src="{{ asset('backend/js/script.js') }}"></script>
+    <script src="{{ asset('backend/js/script.js') }}?v={{ @filemtime(base_path('backend/js/script.js')) }}"></script>
 </body>
 
 </html>

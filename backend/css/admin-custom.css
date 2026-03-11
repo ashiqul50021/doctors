@@ -37,6 +37,31 @@
 .sidebar {
     background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
+    height: calc(100vh - 60px) !important;
+    max-height: calc(100vh - 60px) !important;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.45);
+    border-radius: 999px;
+}
+
+.sidebar-inner {
+    position: relative;
+    min-height: max-content;
+    overflow: visible;
+    padding-bottom: 72px;
 }
 
 .sidebar-menu li a {

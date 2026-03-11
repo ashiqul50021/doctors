@@ -1,6 +1,6 @@
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
-    <div class="sidebar-inner slimscroll">
+    <div class="sidebar-inner">
         <div id="sidebar-menu" class="sidebar-menu">
             <ul>
                 <li class="menu-title">
