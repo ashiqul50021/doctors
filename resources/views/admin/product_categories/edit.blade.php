@@ -25,7 +25,7 @@
                     @endif
                     @if($errors->any())
                         <div class="alert alert-danger">
-                            <ul>
+                            <ul class="mb-0">
                                 @foreach($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -40,31 +40,37 @@
                             <div class="col-12 col-sm-6">
                                 <div class="mb-3">
                                     <label>Category Name</label>
-                                    <input type="text" name="name" class="form-control" value="{{ $productCategory->name }}"
-                                        required>
+                                    <input type="text" name="name" class="form-control"
+                                        value="{{ old('name', $productCategory->name) }}" required>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="mb-3">
-                                    <label>Image</label>
-                                    <input type="file" name="image" class="form-control">
-                                    @if($productCategory->image)
-                                        <img src="{{ asset($productCategory->image) }}" alt="" width="50" class="mt-2">
-                                    @endif
+                                    <label for="categoryImageInput">Image</label>
+                                    <input type="file" name="image" class="form-control" id="categoryImageInput" accept="image/*">
+                                    <small id="categoryImageHelper" class="form-text text-muted">
+                                        {{ $productCategory->image ? 'Choose a new image to replace the current one. Selected image will preview instantly and be compressed before upload.' : 'Select an image to preview. Large files will be compressed automatically before upload.' }}
+                                    </small>
+                                    <div class="mt-2" id="categoryImagePreviewContainer" style="{{ $productCategory->image ? '' : 'display: none;' }}">
+                                        <img id="categoryImagePreview"
+                                            src="{{ $productCategory->image ? asset($productCategory->image) : '#' }}"
+                                            alt="Category Preview" class="img-thumbnail"
+                                            style="max-width: 150px; max-height: 150px;">
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="mb-3">
                                     <label>Description</label>
                                     <textarea name="description" class="form-control"
-                                        rows="4">{{ $productCategory->description }}</textarea>
+                                        rows="4">{{ old('description', $productCategory->description) }}</textarea>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="mb-3">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="is_active" id="is_active"
-                                            value="1" {{ $productCategory->is_active ? 'checked' : '' }}>
+                                            value="1" {{ old('is_active', $productCategory->is_active) ? 'checked' : '' }}>
                                         <label class="form-check-label" for="is_active">
                                             Is Active
                                         </label>
@@ -83,16 +89,40 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const fileInput = document.querySelector('input[name="image"]');
+            initializeCategoryImageUpload({
+                inputId: 'categoryImageInput',
+                previewId: 'categoryImagePreview',
+                previewContainerId: 'categoryImagePreviewContainer',
+                helperId: 'categoryImageHelper',
+            });
+        });
 
-            if (fileInput) {
-                fileInput.addEventListener('change', async function (e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
+        function initializeCategoryImageUpload({ inputId, previewId, previewContainerId, helperId }) {
+            const fileInput = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const previewContainer = document.getElementById(previewContainerId);
+            const helper = document.getElementById(helperId);
 
-                    // Check if file is an image
-                    if (!file.type.match(/image.*/)) return;
+            if (!fileInput || !preview || !previewContainer || !helper) {
+                return;
+            }
 
+            fileInput.addEventListener('change', async function (event) {
+                const file = event.target.files[0];
+
+                if (!file) {
+                    helper.textContent = 'Choose a new image to replace the current one. Selected image will preview instantly and be compressed before upload.';
+                    return;
+                }
+
+                if (!file.type.startsWith('image/')) {
+                    helper.textContent = 'Please select a valid image file.';
+                    return;
+                }
+
+                helper.innerHTML = '<span class="text-warning">Processing image...</span>';
+
+                try {
                     const compressedFile = await compressImage(file, {
                         quality: 0.7,
                         maxWidth: 800,
@@ -100,19 +130,29 @@
                         type: 'image/jpeg'
                     });
 
-                    // Replace input file with compressed one
                     const dataTransfer = new DataTransfer();
                     dataTransfer.items.add(compressedFile);
-                    e.target.files = dataTransfer.files;
+                    event.target.files = dataTransfer.files;
 
-                    console.log(`Compressed: ${(file.size / 1024).toFixed(2)}KB -> ${(compressedFile.size / 1024).toFixed(2)}KB`);
-                });
-            }
-        });
+                    updatePreview(preview, previewContainer, compressedFile);
 
-        /**
-         * Compress Image Utility
-         */
+                    const originalSize = (file.size / 1024).toFixed(2);
+                    const compressedSize = (compressedFile.size / 1024).toFixed(2);
+
+                    helper.innerHTML = `<span class="text-success">Preview updated. Compressed ${originalSize} KB to ${compressedSize} KB.</span>`;
+                } catch (error) {
+                    console.error(error);
+                    helper.innerHTML = '<span class="text-danger">Image processing failed. Original file will be uploaded.</span>';
+                    updatePreview(preview, previewContainer, file);
+                }
+            });
+        }
+
+        function updatePreview(preview, previewContainer, file) {
+            preview.src = URL.createObjectURL(file);
+            previewContainer.style.display = 'block';
+        }
+
         function compressImage(file, options) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -127,17 +167,12 @@
                         let width = img.width;
                         let height = img.height;
 
-                        // Resize logic
-                        if (width > height) {
-                            if (width > options.maxWidth) {
-                                height *= options.maxWidth / width;
-                                width = options.maxWidth;
-                            }
-                        } else {
-                            if (height > options.maxHeight) {
-                                width *= options.maxHeight / height;
-                                height = options.maxHeight;
-                            }
+                        if (width > height && width > options.maxWidth) {
+                            height *= options.maxWidth / width;
+                            width = options.maxWidth;
+                        } else if (height >= width && height > options.maxHeight) {
+                            width *= options.maxHeight / height;
+                            height = options.maxHeight;
                         }
 
                         canvas.width = width;
@@ -151,11 +186,11 @@
                                 reject(new Error('Canvas is empty'));
                                 return;
                             }
-                            const newFile = new File([blob], file.name, {
+
+                            resolve(new File([blob], file.name, {
                                 type: options.type || file.type,
                                 lastModified: Date.now()
-                            });
-                            resolve(newFile);
+                            }));
                         }, options.type || 'image/jpeg', options.quality || 0.7);
                     };
 
