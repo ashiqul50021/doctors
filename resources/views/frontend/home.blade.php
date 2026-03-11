@@ -2759,7 +2759,7 @@
         }
 
         .section-hero-doctime {
-            padding: 24px 0 120px 0;
+            padding: 36px 0 120px 0;
             min-height: auto;
         }
 
@@ -2801,7 +2801,7 @@
         /* Mobile Dropdown Popup Style */
         @media (max-width: 991px) {
             .section-hero-doctime {
-                padding: 16px 0 30px 0;
+                padding: 20px 0 30px 0;
             }
 
             .hero-main-wrapper {
