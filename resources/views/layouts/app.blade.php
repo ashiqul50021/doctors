@@ -88,8 +88,8 @@
 
     <script>
         $(document).ready(function () {
-            // Intercept Add to Cart forms (excluding 'buy_now')
-            $('form[action*="cart"]').on('submit', function (e) {
+            // Intercept only Add to Cart forms so cart update/remove screens can use their own handlers.
+            $('form[action*="cart/add"]').on('submit', function (e) {
                 // Check if it's a Buy Now submit
                 if ($(document.activeElement).hasClass('btn-buy-modern') || $(document.activeElement).val() == '1') {
                     return; // Allow default submission

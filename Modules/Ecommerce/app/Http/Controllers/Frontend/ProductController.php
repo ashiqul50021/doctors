@@ -11,6 +11,18 @@ use Modules\Ecommerce\Models\OrderItem;
 
 class ProductController extends Controller
 {
+    protected function shouldReturnJson(Request $request): bool
+    {
+        return $request->ajax() || $request->expectsJson();
+    }
+
+    protected function calculateCartTotal(array $cart): float
+    {
+        return collect($cart)->sum(function ($item) {
+            return ((float) ($item['price'] ?? 0)) * ((int) ($item['quantity'] ?? 0));
+        });
+    }
+
     public function index(Request $request)
     {
         $query = Product::with('category')->where('is_active', true);
@@ -81,6 +93,19 @@ class ProductController extends Controller
 
         session()->put('cart', $cart);
 
+        if ($request->has('buy_now')) {
+            return redirect()->route('ecommerce.checkout');
+        }
+
+        if ($this->shouldReturnJson($request)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Product added to cart!',
+                'cartCount' => count($cart),
+                'total' => $this->calculateCartTotal($cart),
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Product added to cart!');
     }
 
@@ -105,6 +130,15 @@ class ProductController extends Controller
             session()->put('cart', $cart);
         }
 
+        if ($this->shouldReturnJson($request)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Product removed from cart!',
+                'cartCount' => count($cart),
+                'total' => $this->calculateCartTotal($cart),
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Product removed from cart!');
     }
 
@@ -115,6 +149,20 @@ class ProductController extends Controller
         if (isset($cart[$request->product_id])) {
             $cart[$request->product_id]['quantity'] = $request->quantity;
             session()->put('cart', $cart);
+        }
+
+        if ($this->shouldReturnJson($request)) {
+            $itemSubtotal = isset($cart[$request->product_id])
+                ? ((float) $cart[$request->product_id]['price']) * ((int) $cart[$request->product_id]['quantity'])
+                : 0;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cart updated!',
+                'cartCount' => count($cart),
+                'total' => $this->calculateCartTotal($cart),
+                'itemSubtotal' => $itemSubtotal,
+            ]);
         }
 
         return redirect()->back()->with('success', 'Cart updated!');
