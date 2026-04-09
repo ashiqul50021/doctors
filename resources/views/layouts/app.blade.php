@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
     <!-- Custom Header & Banner CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/header-banner-custom.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/header-banner-custom.css') }}?v={{ @filemtime(base_path('assets/css/header-banner-custom.css')) }}">
 
     <!-- Mobile Bottom Nav CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/mobile-nav.css') }}">
