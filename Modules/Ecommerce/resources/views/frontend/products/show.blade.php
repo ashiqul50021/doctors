@@ -41,6 +41,20 @@
             <div class="alert alert-success border-0 shadow-sm">{{ session('success') }}</div>
         @endif
 
+        @if(session('error'))
+            <div class="alert alert-danger border-0 shadow-sm">{{ session('error') }}</div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-danger border-0 shadow-sm">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <nav class="product-breadcrumb">
             <a href="{{ route('home') }}">Home</a>
             <span><i class="fas fa-angle-right"></i></span>

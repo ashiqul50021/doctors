@@ -61,6 +61,20 @@
                     <div class="alert alert-success shadow-sm border-0">{{ session('success') }}</div>
                 @endif
 
+                @if(session('error'))
+                    <div class="alert alert-danger shadow-sm border-0">{{ session('error') }}</div>
+                @endif
+
+                @if($errors->any())
+                    <div class="alert alert-danger shadow-sm border-0">
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 @if(request('search') || request('category'))
                     <div class="active-filters mb-3">
                         @if(request('search'))

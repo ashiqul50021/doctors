@@ -17,10 +17,14 @@
 
     <div class="row">
         <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-center mb-0">
+                <div class="card">
+                    <div class="card-body">
+                        @if(session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center mb-0">
                             <thead>
                                 <tr>
                                     <th>Order ID</th>
@@ -56,10 +60,14 @@
                                                 <span class="badge bg-warning-light">Pending</span>
                                             @elseif($order->status == 'processing')
                                                 <span class="badge bg-info-light">Processing</span>
-                                            @elseif($order->status == 'completed')
-                                                <span class="badge bg-success-light">Completed</span>
+                                            @elseif($order->status == 'shipped')
+                                                <span class="badge bg-primary-light">Shipped</span>
+                                            @elseif($order->status == 'delivered')
+                                                <span class="badge bg-success-light">Delivered</span>
                                             @elseif($order->status == 'cancelled')
                                                 <span class="badge bg-danger-light">Cancelled</span>
+                                            @else
+                                                <span class="badge bg-secondary-light">{{ ucfirst($order->status) }}</span>
                                             @endif
                                         </td>
                                         <td>

@@ -446,6 +446,24 @@
 <div class="cart-page">
     <div class="container">
         <div id="alert-container">
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
@@ -534,6 +552,7 @@
                                                         type="number"
                                                         class="qty-input"
                                                         data-id="{{ $productId }}"
+                                                        data-last-valid="{{ $item['quantity'] }}"
                                                         value="{{ $item['quantity'] }}"
                                                         min="1"
                                                         aria-label="Quantity for {{ $item['name'] }}">
@@ -645,7 +664,25 @@
         $('.js-cart-count').text(cartCount);
     }
 
-    function updateCart(productId, quantity) {
+    function extractErrorMessage(xhr, fallback) {
+        if (xhr.responseJSON) {
+            if (xhr.responseJSON.message) {
+                return xhr.responseJSON.message;
+            }
+
+            if (xhr.responseJSON.errors) {
+                var firstKey = Object.keys(xhr.responseJSON.errors)[0];
+
+                if (firstKey && xhr.responseJSON.errors[firstKey] && xhr.responseJSON.errors[firstKey].length) {
+                    return xhr.responseJSON.errors[firstKey][0];
+                }
+            }
+        }
+
+        return fallback;
+    }
+
+    function updateCart(productId, quantity, input) {
         if (quantity < 1 || Number.isNaN(quantity)) {
             return;
         }
@@ -669,9 +706,18 @@
                 $('#cart-total').text(formatCurrency(response.total));
                 syncCartBadge(response.cartCount);
                 syncCartCount(response.cartCount);
+
+                if (input) {
+                    $(input).data('last-valid', response.quantity);
+                    $(input).val(response.quantity);
+                }
             },
-            error: function () {
-                toastr.error('Failed to update cart.');
+            error: function (xhr) {
+                if (input) {
+                    $(input).val($(input).data('last-valid') || 1);
+                }
+
+                toastr.error(extractErrorMessage(xhr, 'Failed to update cart.'));
             }
         });
     }
@@ -729,7 +775,7 @@
             var input = $('.qty-input[data-id="' + $(this).data('id') + '"]');
             var newValue = parseInt(input.val(), 10) + 1;
             input.val(newValue);
-            updateCart($(this).data('id'), newValue);
+            updateCart($(this).data('id'), newValue, input);
         });
 
         $('.btn-minus').on('click', function () {
@@ -742,7 +788,7 @@
 
             var newValue = currentValue - 1;
             input.val(newValue);
-            updateCart($(this).data('id'), newValue);
+            updateCart($(this).data('id'), newValue, input);
         });
 
         $('.qty-input').on('change', function () {
@@ -753,7 +799,7 @@
                 $(this).val(quantity);
             }
 
-            updateCart($(this).data('id'), quantity);
+            updateCart($(this).data('id'), quantity, this);
         });
     });
 </script>

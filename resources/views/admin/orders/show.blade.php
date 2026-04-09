@@ -16,6 +16,20 @@
         </div>
     </div>
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-md-8">
             <div class="card">
@@ -72,11 +86,16 @@
                                     </option>
                                     <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>
                                         Processing</option>
-                                    <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Completed
+                                    <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>Shipped
+                                    </option>
+                                    <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered
                                     </option>
                                     <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled
                                     </option>
                                 </select>
+                                <small class="text-muted d-block mt-2">
+                                    Cancelling an order will add its quantities back into product stock.
+                                </small>
                             </div>
                             <div class="col-md-6">
                                 <button type="submit" class="btn btn-primary">Update Status</button>

@@ -2,8 +2,11 @@
 
 namespace Modules\Ecommerce\Http\Controllers\Frontend;
 
+use App\Services\ProductStockService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Modules\Ecommerce\Models\Product;
 use Modules\Ecommerce\Models\ProductCategory;
 use Modules\Ecommerce\Models\Order;
@@ -11,6 +14,10 @@ use Modules\Ecommerce\Models\OrderItem;
 
 class ProductController extends Controller
 {
+    public function __construct(protected ProductStockService $stockService)
+    {
+    }
+
     protected function shouldReturnJson(Request $request): bool
     {
         return $request->ajax() || $request->expectsJson();
@@ -21,6 +28,34 @@ class ProductController extends Controller
         return collect($cart)->sum(function ($item) {
             return ((float) ($item['price'] ?? 0)) * ((int) ($item['quantity'] ?? 0));
         });
+    }
+
+    protected function handleInventoryException(Request $request, ValidationException $exception)
+    {
+        $message = collect($exception->errors())->flatten()->first()
+            ?? 'Unable to process the requested stock quantity.';
+
+        if ($this->shouldReturnJson($request)) {
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+                'errors' => $exception->errors(),
+            ], 422);
+        }
+
+        return redirect()->back()
+            ->withErrors($exception->errors())
+            ->withInput();
+    }
+
+    protected function ensureCartHasAvailableStock(array $cart): void
+    {
+        foreach ($cart as $productId => $item) {
+            $this->stockService->ensureRequestedQuantityIsAvailable(
+                (int) $productId,
+                (int) ($item['quantity'] ?? 0)
+            );
+        }
     }
 
     public function index(Request $request)
@@ -74,22 +109,26 @@ class ProductController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1'
+            'quantity' => 'required|integer|min:1',
         ]);
 
-        $product = Product::findOrFail($request->product_id);
         $cart = session()->get('cart', []);
+        $productId = (int) $request->product_id;
+        $requestedQuantity = (int) $request->quantity;
+        $newQuantity = ((int) ($cart[$productId]['quantity'] ?? 0)) + $requestedQuantity;
 
-        if (isset($cart[$request->product_id])) {
-            $cart[$request->product_id]['quantity'] += $request->quantity;
-        } else {
-            $cart[$request->product_id] = [
-                'name' => $product->name,
-                'price' => $product->sale_price ?? $product->price,
-                'image' => $product->image,
-                'quantity' => $request->quantity
-            ];
+        try {
+            $product = $this->stockService->ensureRequestedQuantityIsAvailable($productId, $newQuantity);
+        } catch (ValidationException $exception) {
+            return $this->handleInventoryException($request, $exception);
         }
+
+        $cart[$productId] = [
+            'name' => $product->name,
+            'price' => $product->sale_price ?? $product->price,
+            'image' => $product->image,
+            'quantity' => $newQuantity,
+        ];
 
         session()->put('cart', $cart);
 
@@ -112,11 +151,7 @@ class ProductController extends Controller
     public function cart()
     {
         $cart = session()->get('cart', []);
-        $total = 0;
-
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
+        $total = $this->calculateCartTotal($cart);
 
         return view('ecommerce::frontend.cart', compact('cart', 'total'));
     }
@@ -144,16 +179,45 @@ class ProductController extends Controller
 
     public function updateCart(Request $request)
     {
-        $cart = session()->get('cart', []);
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
 
-        if (isset($cart[$request->product_id])) {
-            $cart[$request->product_id]['quantity'] = $request->quantity;
-            session()->put('cart', $cart);
+        $cart = session()->get('cart', []);
+        $productId = (int) $request->product_id;
+
+        if (!isset($cart[$productId])) {
+            $message = 'This product is no longer in your cart.';
+
+            if ($this->shouldReturnJson($request)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                ], 404);
+            }
+
+            return redirect()->route('ecommerce.cart')->with('error', $message);
         }
 
+        try {
+            $product = $this->stockService->ensureRequestedQuantityIsAvailable($productId, (int) $request->quantity);
+        } catch (ValidationException $exception) {
+            return $this->handleInventoryException($request, $exception);
+        }
+
+        $cart[$productId] = [
+            'name' => $product->name,
+            'price' => $product->sale_price ?? $product->price,
+            'image' => $product->image,
+            'quantity' => (int) $request->quantity,
+        ];
+
+        session()->put('cart', $cart);
+
         if ($this->shouldReturnJson($request)) {
-            $itemSubtotal = isset($cart[$request->product_id])
-                ? ((float) $cart[$request->product_id]['price']) * ((int) $cart[$request->product_id]['quantity'])
+            $itemSubtotal = isset($cart[$productId])
+                ? ((float) $cart[$productId]['price']) * ((int) $cart[$productId]['quantity'])
                 : 0;
 
             return response()->json([
@@ -162,6 +226,7 @@ class ProductController extends Controller
                 'cartCount' => count($cart),
                 'total' => $this->calculateCartTotal($cart),
                 'itemSubtotal' => $itemSubtotal,
+                'quantity' => (int) $cart[$productId]['quantity'],
             ]);
         }
 
@@ -176,10 +241,13 @@ class ProductController extends Controller
             return redirect()->route('ecommerce.products')->with('error', 'Your cart is empty!');
         }
 
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
+        try {
+            $this->ensureCartHasAvailableStock($cart);
+        } catch (ValidationException $exception) {
+            return redirect()->route('ecommerce.cart')->withErrors($exception->errors());
         }
+
+        $total = $this->calculateCartTotal($cart);
 
         return view('ecommerce::frontend.product-checkout', compact('cart', 'total'));
     }
@@ -199,39 +267,43 @@ class ProductController extends Controller
             return redirect()->route('ecommerce.products')->with('error', 'Your cart is empty!');
         }
 
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
+        $total = $this->calculateCartTotal($cart);
+
+        try {
+            $order = DB::transaction(function () use ($cart, $request, $total) {
+                $this->stockService->reserveCart($cart);
+
+                $order = Order::create([
+                    'order_number' => 'ORD-' . strtoupper(uniqid()),
+                    'customer_name' => $request->name,
+                    'customer_email' => $request->email,
+                    'customer_phone' => $request->phone,
+                    'shipping_address' => $request->address,
+                    'shipping_city' => $request->city ?? 'Dhaka',
+                    'shipping_phone' => $request->phone,
+                    'subtotal' => $total,
+                    'shipping' => 0,
+                    'total' => $total,
+                    'status' => 'pending',
+                    'notes' => $request->notes,
+                ]);
+
+                foreach ($cart as $productId => $item) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $productId,
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                        'total' => $item['price'] * $item['quantity'],
+                    ]);
+                }
+
+                return $order;
+            });
+        } catch (ValidationException $exception) {
+            return $this->handleInventoryException($request, $exception);
         }
 
-        // Create order
-        $order = Order::create([
-            'order_number' => 'ORD-' . strtoupper(uniqid()),
-            'customer_name' => $request->name,
-            'customer_email' => $request->email,
-            'customer_phone' => $request->phone,
-            'shipping_address' => $request->address,
-            'shipping_city' => $request->city ?? 'Dhaka',
-            'shipping_phone' => $request->phone,
-            'subtotal' => $total,
-            'shipping' => 0,
-            'total' => $total,
-            'status' => 'pending',
-            'notes' => $request->notes,
-        ]);
-
-        // Create order items
-        foreach ($cart as $productId => $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $productId,
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-                'total' => $item['price'] * $item['quantity'],
-            ]);
-        }
-
-        // Clear cart
         session()->forget('cart');
 
         return redirect()->route('ecommerce.order.success', ['order' => $order->id]);

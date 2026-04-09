@@ -41,6 +41,18 @@
                         </thead>
                         <tbody>
                             @foreach($products as $product)
+                            @php
+                                if ($product->stock < 1) {
+                                    $stockBadgeClass = 'bg-danger-light text-danger';
+                                    $stockLabel = 'Out of Stock';
+                                } elseif ($product->stock <= 10) {
+                                    $stockBadgeClass = 'bg-warning-light text-warning';
+                                    $stockLabel = 'Low Stock';
+                                } else {
+                                    $stockBadgeClass = 'bg-success-light text-success';
+                                    $stockLabel = 'In Stock';
+                                }
+                            @endphp
                             <tr>
                                 <td>#PRO{{ $product->id }}</td>
                                 <td>
@@ -60,7 +72,14 @@
                                 </td>
                                 <td>{{ $product->category->name ?? 'N/A' }}</td>
                                 <td>${{ number_format($product->price, 2) }}</td>
-                                <td>{{ $product->stock }}</td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="font-weight-bold">{{ $product->stock }}</span>
+                                        <span class="badge {{ $stockBadgeClass }} mt-1" style="width: fit-content;">
+                                            {{ $stockLabel }}
+                                        </span>
+                                    </div>
+                                </td>
                                 <td>
                                     <div class="status-toggle">
                                         <input type="checkbox" id="status_{{ $product->id }}" class="check" {{ $product->is_active ? 'checked' : '' }} disabled>
