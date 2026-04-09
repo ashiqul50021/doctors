@@ -108,6 +108,10 @@
 
                     <div class="row">
                         @forelse($products as $product)
+                            @php
+                                $productReviewCount = (int) ($product->reviews_count ?? 0);
+                                $productRating = $productReviewCount > 0 ? (float) ($product->rating ?? 0) : 0;
+                            @endphp
                             <div class="col-md-6 col-lg-4 col-xl-4 mb-4">
                                 <div class="product-card-modern">
                                     <!-- Stock Badge -->
@@ -128,8 +132,8 @@
                                         <!-- Rating -->
                                         <div class="product-rating">
                                             <i class="fas fa-star"></i>
-                                            <span class="rating-value">{{ number_format($product->rating ?? 4.5, 1) }}</span>
-                                            <span class="review-count">({{ $product->reviews_count ?? rand(10, 200) }})</span>
+                                            <span class="rating-value">{{ number_format($productRating, 1) }}</span>
+                                            <span class="review-count">({{ $productReviewCount }})</span>
                                         </div>
 
                                         <!-- Brand/Category -->
@@ -454,4 +458,3 @@
         box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
     }
 </style>
-

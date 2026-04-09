@@ -2,6 +2,7 @@
 
 namespace Modules\Ecommerce\Http\Controllers\Frontend;
 
+use App\Models\Patient;
 use App\Services\ProductStockService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -12,6 +13,7 @@ use Modules\Ecommerce\Models\Product;
 use Modules\Ecommerce\Models\ProductCategory;
 use Modules\Ecommerce\Models\Order;
 use Modules\Ecommerce\Models\OrderItem;
+use Modules\Ecommerce\Models\ProductReview;
 
 class ProductController extends Controller
 {
@@ -66,6 +68,42 @@ class ProductController extends Controller
         }
 
         return asset(ltrim($image, '/'));
+    }
+
+    protected function withReviewStats($query)
+    {
+        return $query
+            ->withCount('approvedProductReviews as reviews_count')
+            ->withAvg('approvedProductReviews as rating', 'rating');
+    }
+
+    protected function resolvePatientFromUser(Request $request): ?Patient
+    {
+        $user = $request->user();
+
+        if (! $user || $user->role !== 'patient') {
+            return null;
+        }
+
+        if ($user->patient) {
+            return $user->patient;
+        }
+
+        return Patient::create([
+            'user_id' => $user->id,
+            'phone' => $request->input('phone'),
+            'address' => $request->input('address'),
+        ]);
+    }
+
+    protected function latestOrderContainingProduct(int $patientId, int $productId): ?Order
+    {
+        return Order::where('patient_id', $patientId)
+            ->whereHas('items', function ($query) use ($productId) {
+                $query->where('product_id', $productId);
+            })
+            ->latest()
+            ->first();
     }
 
     protected function ensureCartHasAvailableStock(array $cart): void
@@ -157,7 +195,8 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'variants'])->where('is_active', true);
+        $query = $this->withReviewStats(Product::with(['category', 'variants']))
+            ->where('is_active', true);
 
         if ($request->has('category') && $request->category) {
             $query->where('product_category_id', $request->category);
@@ -175,8 +214,10 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::with(['category', 'variants'])->findOrFail($id);
-        $relatedProducts = Product::with(['category', 'variants'])->where('product_category_id', $product->product_category_id)
+        $product = $this->withReviewStats(Product::with(['category', 'variants', 'approvedProductReviews.patient.user']))
+            ->findOrFail($id);
+        $relatedProducts = $this->withReviewStats(Product::with(['category', 'variants']))
+            ->where('product_category_id', $product->product_category_id)
             ->where('id', '!=', $id)
             ->where('is_active', true)
             ->limit(4)
@@ -187,7 +228,8 @@ class ProductController extends Controller
 
     public function filter(Request $request)
     {
-        $query = Product::with(['category', 'variants'])->where('is_active', true);
+        $query = $this->withReviewStats(Product::with(['category', 'variants']))
+            ->where('is_active', true);
 
         if ($request->category && $request->category !== 'all') {
             $query->where('product_category_id', $request->category);
@@ -222,6 +264,42 @@ class ProductController extends Controller
             });
 
         return response()->json($products->values());
+    }
+
+    public function storeReview(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'title' => 'nullable|string|max:120',
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        $patient = $this->resolvePatientFromUser($request);
+
+        if (! $patient) {
+            return redirect()->back()->with('error', 'Only patient accounts can review products.');
+        }
+
+        $order = $this->latestOrderContainingProduct($patient->id, $product->id);
+
+        $review = ProductReview::updateOrCreate(
+            [
+                'product_id' => $product->id,
+                'patient_id' => $patient->id,
+            ],
+            [
+                'order_id' => $order?->id,
+                'rating' => (int) $validated['rating'],
+                'title' => $validated['title'] ?? null,
+                'comment' => $validated['comment'],
+                'is_verified_purchase' => (bool) $order,
+                'is_approved' => true,
+            ]
+        );
+
+        return redirect()
+            ->route('ecommerce.products.show', $product->id)
+            ->with('success', $review->wasRecentlyCreated ? 'Review submitted successfully.' : 'Review updated successfully.');
     }
 
     public function addToCart(Request $request)
@@ -407,13 +485,15 @@ class ProductController extends Controller
         }
 
         $total = $this->calculateCartTotal($cart);
+        $patient = $this->resolvePatientFromUser($request);
 
         try {
-            $order = DB::transaction(function () use ($cart, $request, $total) {
+            $order = DB::transaction(function () use ($cart, $request, $total, $patient) {
                 $this->stockService->reserveCart($cart);
 
                 $order = Order::create([
                     'order_number' => 'ORD-' . strtoupper(uniqid()),
+                    'patient_id' => $patient?->id,
                     'customer_name' => $request->name,
                     'customer_email' => $request->email,
                     'customer_phone' => $request->phone,

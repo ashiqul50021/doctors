@@ -13,6 +13,9 @@ use Modules\Ecommerce\Http\Controllers\Backend\ProductCategoryController as Admi
 
 Route::prefix('products')->name('ecommerce.')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('products');
+    Route::post('/{product}/reviews', [ProductController::class, 'storeReview'])
+        ->middleware('auth')
+        ->name('products.reviews.store');
     Route::get('/{id}', [ProductController::class, 'show'])->name('products.show');
 });
 

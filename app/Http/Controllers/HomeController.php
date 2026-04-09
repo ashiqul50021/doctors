@@ -46,6 +46,8 @@ class HomeController extends Controller
         $products = Product::where('is_active', true)
                           ->where('is_featured', true)
                           ->with(['category', 'variants'])
+                          ->withCount('approvedProductReviews as reviews_count')
+                          ->withAvg('approvedProductReviews as rating', 'rating')
                           ->take(8)
                           ->latest()
                           ->get();
@@ -54,6 +56,8 @@ class HomeController extends Controller
         if ($products->isEmpty()) {
             $products = Product::where('is_active', true)
                               ->with(['category', 'variants'])
+                              ->withCount('approvedProductReviews as reviews_count')
+                              ->withAvg('approvedProductReviews as rating', 'rating')
                               ->take(8)
                               ->latest()
                               ->get();

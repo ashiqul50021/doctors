@@ -25,7 +25,13 @@
     $mainImage = $galleryImages->first() ?: $fallbackImage;
     $brandName = $product->brand ?: ($product->category->name ?? 'ABCSheba');
     $sku = $selectedVariant?->sku ?: ($product->sku ?: strtoupper($product->slug ?: ('PRO-' . $product->id)));
-    $reviewCount = (int) ($product->reviews_count ?? 0);
+    $productReviews = $product->approvedProductReviews->sortByDesc('created_at')->values();
+    $reviewCount = (int) ($product->reviews_count ?? $productReviews->count());
+    $averageRating = $reviewCount > 0 ? (float) ($product->rating ?? 0) : 0;
+    $currentUserReview = auth()->check() && auth()->user()->patient
+        ? $productReviews->firstWhere('patient_id', auth()->user()->patient->id)
+        : null;
+    $selectedReviewRating = (int) old('rating', $currentUserReview->rating ?? 5);
     $tagList = collect(preg_split('/\s*,\s*/', (string) $product->tags))
         ->map(fn ($tag) => trim($tag))
         ->filter()
@@ -143,7 +149,7 @@
                     <aside class="product-summary-card">
                         <div class="product-rating product-rating-large">
                             <i class="fas fa-star"></i>
-                            <span class="rating-value">{{ number_format((float) ($product->rating ?? 4.8), 1) }}</span>
+                            <span class="rating-value">{{ number_format($averageRating, 1) }}</span>
                             <span class="review-count">({{ $reviewCount }} reviews)</span>
                         </div>
 
@@ -330,6 +336,140 @@
             </div>
         </section>
 
+        <section class="product-reviews-section">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="info-card review-form-card">
+                        <div class="section-heading">
+                            <span class="section-tag">Customer Reviews</span>
+                            <h2>Share your experience</h2>
+                        </div>
+
+                        <div class="review-score-card">
+                            <strong>{{ number_format($averageRating, 1) }}</strong>
+                            <div>
+                                <div class="review-stars">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="fas fa-star {{ $i <= round($averageRating) ? 'is-filled' : '' }}"></i>
+                                    @endfor
+                                </div>
+                                <span>{{ $reviewCount }} customer {{ $reviewCount === 1 ? 'review' : 'reviews' }}</span>
+                            </div>
+                        </div>
+
+                        @auth
+                            @if(auth()->user()->role === 'patient')
+                                <form action="{{ route('ecommerce.products.reviews.store', $product->id) }}" method="POST" class="review-form">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label>Your rating</label>
+                                        <div class="review-rating-options">
+                                            @for($rating = 5; $rating >= 1; $rating--)
+                                                <label class="review-rating-choice">
+                                                    <input type="radio" name="rating" value="{{ $rating }}" {{ $selectedReviewRating === $rating ? 'checked' : '' }}>
+                                                    <span>
+                                                        @for($star = 1; $star <= 5; $star++)
+                                                            <i class="fas fa-star {{ $star <= $rating ? 'is-filled' : '' }}"></i>
+                                                        @endfor
+                                                        {{ $rating }}/5
+                                                    </span>
+                                                </label>
+                                            @endfor
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="reviewTitle">Review title</label>
+                                        <input id="reviewTitle"
+                                            type="text"
+                                            name="title"
+                                            class="form-control"
+                                            value="{{ old('title', $currentUserReview->title ?? '') }}"
+                                            placeholder="Short summary (optional)">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="reviewComment">Your review</label>
+                                        <textarea id="reviewComment"
+                                            name="comment"
+                                            class="form-control"
+                                            rows="5"
+                                            required
+                                            placeholder="Write what was helpful, quality, delivery, or usage experience...">{{ old('comment', $currentUserReview->comment ?? '') }}</textarea>
+                                    </div>
+
+                                    <button type="submit" class="btn-buy-modern review-submit-btn">
+                                        {{ $currentUserReview ? 'Update Review' : 'Submit Review' }}
+                                    </button>
+                                </form>
+                            @else
+                                <div class="review-access-card">
+                                    <strong>Patient account required</strong>
+                                    <span>Only patient accounts can write product reviews.</span>
+                                </div>
+                            @endif
+                        @else
+                            <div class="review-access-card">
+                                <strong>Login to write a review</strong>
+                                <span>Sign in with a patient account to share your product experience.</span>
+                                <a href="{{ route('login') }}" class="btn-view-all-arrow">Login</a>
+                            </div>
+                        @endauth
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="info-card review-list-card">
+                        <div class="section-heading">
+                            <span class="section-tag">Feedback</span>
+                            <h2>What customers say</h2>
+                        </div>
+
+                        <div class="review-list">
+                            @forelse($productReviews as $review)
+                                @php
+                                    $reviewerName = $review->patient?->user?->name ?? 'Patient';
+                                    $reviewerInitial = strtoupper(substr($reviewerName, 0, 1));
+                                @endphp
+                                <article class="review-item-card">
+                                    <div class="review-avatar">{{ $reviewerInitial }}</div>
+                                    <div class="review-content">
+                                        <div class="review-meta-row">
+                                            <div>
+                                                <strong>{{ $reviewerName }}</strong>
+                                                <span>{{ $review->created_at->diffForHumans() }}</span>
+                                            </div>
+                                            @if($review->is_verified_purchase)
+                                                <em class="review-verified-badge">Verified purchase</em>
+                                            @endif
+                                        </div>
+
+                                        <div class="review-stars">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star {{ $i <= $review->rating ? 'is-filled' : '' }}"></i>
+                                            @endfor
+                                        </div>
+
+                                        @if($review->title)
+                                            <h3>{{ $review->title }}</h3>
+                                        @endif
+
+                                        <p>{{ $review->comment }}</p>
+                                    </div>
+                                </article>
+                            @empty
+                                <div class="review-empty-state">
+                                    <i class="far fa-star"></i>
+                                    <strong>No reviews yet</strong>
+                                    <span>Be the first patient to review this product.</span>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         @if($relatedProducts->count() > 0)
             <section class="related-products-section">
                 <div class="related-head">
@@ -350,7 +490,8 @@
                             $relatedRegularPrice = $relProduct->effectiveRegularPrice();
                             $relatedHasVariants = $relProduct->hasActiveVariants();
                             $relatedStock = $relProduct->availableStock();
-                            $relatedReviews = (int) ($relProduct->reviews_count ?? 24);
+                            $relatedReviews = (int) ($relProduct->reviews_count ?? 0);
+                            $relatedRating = $relatedReviews > 0 ? (float) ($relProduct->rating ?? 0) : 0;
                         @endphp
                         <div class="col-md-6 col-xl-3">
                             <div class="product-card-modern">
@@ -370,7 +511,7 @@
                                 <div class="product-details">
                                     <div class="product-rating">
                                         <i class="fas fa-star"></i>
-                                        <span class="rating-value">{{ number_format((float) ($relProduct->rating ?? 4.7), 1) }}</span>
+                                        <span class="rating-value">{{ number_format($relatedRating, 1) }}</span>
                                         <span class="review-count">({{ $relatedReviews }})</span>
                                     </div>
 
@@ -1076,6 +1217,217 @@
         margin-top: 0;
     }
 
+    .product-reviews-section {
+        margin-bottom: 28px;
+    }
+
+    .review-form-card,
+    .review-list-card {
+        height: 100%;
+    }
+
+    .review-score-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 18px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
+        margin-bottom: 20px;
+    }
+
+    .review-score-card strong {
+        color: #0f172a;
+        font-size: 42px;
+        line-height: 1;
+    }
+
+    .review-score-card span {
+        display: block;
+        color: #64748b;
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+    .review-stars {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        color: #cbd5e1;
+        font-size: 13px;
+    }
+
+    .review-stars .is-filled,
+    .review-rating-choice .is-filled {
+        color: #f59e0b;
+    }
+
+    .review-form {
+        display: grid;
+        gap: 16px;
+    }
+
+    .review-form label {
+        color: #0f172a;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .review-form .form-control {
+        min-height: 48px;
+        border: 1px solid #dbeafe;
+        border-radius: 14px;
+        background: #f8fbff;
+        color: #0f172a;
+        box-shadow: none;
+    }
+
+    .review-form textarea.form-control {
+        min-height: 130px;
+        resize: vertical;
+    }
+
+    .review-rating-options {
+        display: grid;
+        gap: 8px;
+    }
+
+    .review-rating-choice {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        background: #fff;
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .review-rating-choice span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .review-submit-btn {
+        width: 100%;
+        height: 50px;
+        border-radius: 14px;
+    }
+
+    .review-access-card,
+    .review-empty-state {
+        display: grid;
+        gap: 10px;
+        padding: 18px;
+        border-radius: 18px;
+        background: #f8fbff;
+        border: 1px solid #dbeafe;
+        color: #64748b;
+    }
+
+    .review-access-card strong,
+    .review-empty-state strong {
+        color: #0f172a;
+        font-size: 16px;
+    }
+
+    .review-access-card .btn-view-all-arrow {
+        width: fit-content;
+        margin-top: 4px;
+    }
+
+    .review-list {
+        display: grid;
+        gap: 16px;
+    }
+
+    .review-item-card {
+        display: flex;
+        gap: 14px;
+        padding: 18px;
+        border: 1px solid #eef2f7;
+        border-radius: 18px;
+        background: #fff;
+    }
+
+    .review-avatar {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1d4ed8 0%, #60a5fa 100%);
+        color: #fff;
+        font-weight: 800;
+    }
+
+    .review-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .review-meta-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+    }
+
+    .review-meta-row strong {
+        display: block;
+        color: #0f172a;
+        font-size: 15px;
+    }
+
+    .review-meta-row span {
+        color: #94a3b8;
+        font-size: 12px;
+    }
+
+    .review-verified-badge {
+        align-self: flex-start;
+        border-radius: 999px;
+        background: #dcfce7;
+        color: #15803d;
+        padding: 5px 10px;
+        font-size: 11px;
+        font-style: normal;
+        font-weight: 800;
+    }
+
+    .review-content h3 {
+        margin: 10px 0 6px;
+        color: #0f172a;
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .review-content p {
+        color: #475569;
+        line-height: 1.7;
+        margin: 8px 0 0;
+    }
+
+    .review-empty-state {
+        text-align: center;
+        justify-items: center;
+        padding: 34px 18px;
+    }
+
+    .review-empty-state i {
+        color: #cbd5e1;
+        font-size: 28px;
+    }
+
     .related-products-section {
         margin-top: 0;
     }
@@ -1200,6 +1552,10 @@
 
         .detail-cart-btn {
             width: 100%;
+        }
+
+        .review-item-card {
+            flex-direction: column;
         }
     }
 </style>

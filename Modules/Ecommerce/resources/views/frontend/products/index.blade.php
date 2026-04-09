@@ -99,6 +99,8 @@
                             $hasVariants = $product->hasActiveVariants();
                             $displayPrice = $product->effectivePrice();
                             $displayRegularPrice = $product->effectiveRegularPrice();
+                            $productReviewCount = (int) ($product->reviews_count ?? 0);
+                            $productRating = $productReviewCount > 0 ? (float) ($product->rating ?? 0) : 0;
                         @endphp
                         <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-grid-item">
                             <div class="product-card-modern">
@@ -122,8 +124,8 @@
                                 <div class="product-details">
                                     <div class="product-rating">
                                         <i class="fas fa-star"></i>
-                                        <span class="rating-value">{{ number_format($product->rating ?? 4.5, 1) }}</span>
-                                        <span class="review-count">({{ $product->reviews_count ?? rand(10, 200) }})</span>
+                                        <span class="rating-value">{{ number_format($productRating, 1) }}</span>
+                                        <span class="review-count">({{ $productReviewCount }})</span>
                                     </div>
 
                                     <div class="product-brand">{{ $product->category->name ?? 'Medicine' }}</div>

@@ -302,6 +302,8 @@
                                 $hasVariants = $product->hasActiveVariants();
                                 $displayPrice = $product->effectivePrice();
                                 $displayRegularPrice = $product->effectiveRegularPrice();
+                                $productReviewCount = (int) ($product->reviews_count ?? 0);
+                                $productRating = $productReviewCount > 0 ? (float) ($product->rating ?? 0) : 0;
                             @endphp
                             <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-grid-item">
                                 <div class="product-card-modern">
@@ -329,8 +331,8 @@
                                         <!-- Rating -->
                                         <div class="product-rating">
                                             <i class="fas fa-star"></i>
-                                            <span class="rating-value">{{ number_format($product->rating ?? 4.5, 1) }}</span>
-                                            <span class="review-count">({{ $product->reviews_count ?? rand(10, 200) }})</span>
+                                            <span class="rating-value">{{ number_format($productRating, 1) }}</span>
+                                            <span class="review-count">({{ $productReviewCount }})</span>
                                         </div>
 
                                         <!-- Brand/Category -->
@@ -1307,8 +1309,8 @@
 
                     var stockClass = (product.stock > 0) ? 'in-stock' : 'out-of-stock';
                     var stockText = (product.stock > 0) ? 'IN STOCK' : 'OUT OF STOCK';
-                    var rating = product.rating || 4.5;
-                    var reviewCount = product.reviews_count || Math.floor(Math.random() * 190) + 10;
+                    var rating = product.rating === null || product.rating === undefined ? 0 : Number(product.rating);
+                    var reviewCount = product.reviews_count === null || product.reviews_count === undefined ? 0 : Number(product.reviews_count);
                     var categoryName = product.category ? product.category.name : 'Medicine';
                     var actionHtml = product.has_variants
                         ? `<a href="/products/${product.id}" class="btn-buy-modern btn-link-modern">Select Options</a>`

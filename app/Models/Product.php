@@ -33,6 +33,16 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class)->orderBy('sort_order')->orderBy('id');
     }
 
+    public function productReviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function approvedProductReviews()
+    {
+        return $this->productReviews()->where('is_approved', true);
+    }
+
     public function activeVariantItems(): Collection
     {
         if ($this->relationLoaded('variants')) {
@@ -119,5 +129,31 @@ class Product extends Model
         }
 
         return 0;
+    }
+
+    public function getRatingAttribute($value): float
+    {
+        if ($value !== null) {
+            return (float) $value;
+        }
+
+        if ($this->relationLoaded('approvedProductReviews')) {
+            return (float) $this->approvedProductReviews->avg('rating');
+        }
+
+        return (float) $this->approvedProductReviews()->avg('rating');
+    }
+
+    public function getReviewsCountAttribute($value): int
+    {
+        if ($value !== null) {
+            return (int) $value;
+        }
+
+        if ($this->relationLoaded('approvedProductReviews')) {
+            return $this->approvedProductReviews->count();
+        }
+
+        return $this->approvedProductReviews()->count();
     }
 }

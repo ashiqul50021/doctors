@@ -6,23 +6,30 @@ use App\Models\Patient;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Order extends Model
+class ProductReview extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
 
     protected $casts = [
-        'total_amount' => 'decimal:2',
+        'rating' => 'integer',
+        'is_verified_purchase' => 'boolean',
+        'is_approved' => 'boolean',
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 
     public function patient()
     {
         return $this->belongsTo(Patient::class);
     }
 
-    public function items()
+    public function order()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->belongsTo(Order::class);
     }
 }
