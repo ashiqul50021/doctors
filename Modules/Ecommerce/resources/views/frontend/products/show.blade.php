@@ -96,7 +96,7 @@
                             {{ $discountPercentage }}% OFF
                         </div>
 
-                        <div class="product-image-container product-image-main detail-main-image">
+                        <div class="product-image-container product-image-main detail-main-image product-zoom-frame">
                             <img id="activeProductImage"
                                 src="{{ $mainImage }}"
                                 class="product-main-img"
@@ -663,6 +663,46 @@
         border-radius: 18px;
         background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
         padding: 20px;
+    }
+
+    .product-zoom-frame {
+        cursor: zoom-in;
+    }
+
+    .product-zoom-frame::after {
+        content: 'Hover to zoom';
+        position: absolute;
+        right: 18px;
+        bottom: 18px;
+        z-index: 5;
+        border-radius: 999px;
+        padding: 7px 12px;
+        background: rgba(15, 23, 42, 0.72);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        pointer-events: none;
+    }
+
+    .product-zoom-frame:hover::after {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .product-zoom-frame.is-zooming {
+        cursor: zoom-out;
+    }
+
+    .product-zoom-frame .product-main-img {
+        will-change: transform, transform-origin;
+    }
+
+    .product-zoom-frame.is-zooming .product-main-img {
+        transform: scale(1.9);
+        transition-duration: 0.12s;
     }
 
     .product-image-link {
@@ -1500,6 +1540,20 @@
         }
     }
 
+    @media (hover: none), (pointer: coarse) {
+        .product-zoom-frame {
+            cursor: default;
+        }
+
+        .product-zoom-frame::after {
+            display: none;
+        }
+
+        .product-zoom-frame.is-zooming .product-main-img {
+            transform: none;
+        }
+    }
+
     @media (max-width: 991px) {
         .product-single-page {
             padding-top: 18px;
@@ -1565,6 +1619,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const activeImage = document.getElementById('activeProductImage');
+        const zoomFrame = document.querySelector('.product-zoom-frame');
         const thumbs = document.querySelectorAll('.product-thumb');
         const variantSelect = document.getElementById('productVariant');
         const quantityInput = document.getElementById('productQuantity');
@@ -1581,6 +1636,32 @@
         const stockBadgeText = document.getElementById('productStockBadgeText');
         const priceType = document.getElementById('productPriceType');
         const submitButtons = document.querySelectorAll('.detail-cart-btn, .detail-buy-btn');
+
+        function updateZoomOrigin(event) {
+            if (!zoomFrame || !activeImage) {
+                return;
+            }
+
+            const rect = zoomFrame.getBoundingClientRect();
+            const x = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
+            const y = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100));
+
+            activeImage.style.transformOrigin = x.toFixed(2) + '% ' + y.toFixed(2) + '%';
+        }
+
+        if (zoomFrame && activeImage && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+            zoomFrame.addEventListener('mouseenter', function (event) {
+                zoomFrame.classList.add('is-zooming');
+                updateZoomOrigin(event);
+            });
+
+            zoomFrame.addEventListener('mousemove', updateZoomOrigin);
+
+            zoomFrame.addEventListener('mouseleave', function () {
+                zoomFrame.classList.remove('is-zooming');
+                activeImage.style.transformOrigin = 'center center';
+            });
+        }
 
         thumbs.forEach((thumb) => {
             thumb.addEventListener('click', function () {
