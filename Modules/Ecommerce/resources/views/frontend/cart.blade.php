@@ -516,14 +516,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($cart as $productId => $item)
+                                    @foreach($cart as $cartKey => $item)
                                         @php
+                                            $productId = $item['product_id'] ?? $cartKey;
                                             $imagePath = $item['image'] ?? null;
                                             $imageUrl = $imagePath
                                                 ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset($imagePath))
                                                 : $productImageFallback;
+                                            $safeCartKey = preg_replace('/[^A-Za-z0-9_-]/', '_', (string) $cartKey);
                                         @endphp
-                                        <tr id="row-{{ $productId }}">
+                                        <tr id="row-{{ $safeCartKey }}">
                                             <td>
                                                 <div class="cart-product">
                                                     <img
@@ -536,6 +538,9 @@
                                                             {{ $item['name'] }}
                                                         </a>
                                                         <p class="cart-product-meta mb-0">
+                                                            @if(!empty($item['variant_label']))
+                                                                Variant: {{ $item['variant_label'] }}<br>
+                                                            @endif
                                                             Product ID: #{{ $productId }}<br>
                                                             Ready for checkout
                                                         </p>
@@ -547,25 +552,25 @@
                                             </td>
                                             <td>
                                                 <div class="qty-control">
-                                                    <button type="button" class="qty-btn btn-minus" data-id="{{ $productId }}" aria-label="Decrease quantity">-</button>
+                                                    <button type="button" class="qty-btn btn-minus" data-key="{{ $cartKey }}" aria-label="Decrease quantity">-</button>
                                                     <input
                                                         type="number"
                                                         class="qty-input"
-                                                        data-id="{{ $productId }}"
+                                                        data-key="{{ $cartKey }}"
                                                         data-last-valid="{{ $item['quantity'] }}"
                                                         value="{{ $item['quantity'] }}"
                                                         min="1"
                                                         aria-label="Quantity for {{ $item['name'] }}">
-                                                    <button type="button" class="qty-btn btn-plus" data-id="{{ $productId }}" aria-label="Increase quantity">+</button>
+                                                    <button type="button" class="qty-btn btn-plus" data-key="{{ $cartKey }}" aria-label="Increase quantity">+</button>
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="cart-subtotal" id="subtotal-{{ $productId }}">
+                                                <span class="cart-subtotal" id="subtotal-{{ $safeCartKey }}">
                                                     ৳{{ number_format($item['price'] * $item['quantity'], 2) }}
                                                 </span>
                                             </td>
                                             <td class="text-end">
-                                                <button type="button" class="remove-btn" onclick="removeFromCart('{{ $productId }}')" aria-label="Remove {{ $item['name'] }}">
+                                                <button type="button" class="remove-btn" onclick="removeFromCart('{{ $cartKey }}', '{{ $safeCartKey }}')" aria-label="Remove {{ $item['name'] }}">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </td>
@@ -682,7 +687,7 @@
         return fallback;
     }
 
-    function updateCart(productId, quantity, input) {
+    function updateCart(cartKey, safeCartKey, quantity, input) {
         if (quantity < 1 || Number.isNaN(quantity)) {
             return;
         }
@@ -692,7 +697,7 @@
             method: 'POST',
             data: {
                 _token: '{{ csrf_token() }}',
-                product_id: productId,
+                cart_key: cartKey,
                 quantity: quantity
             },
             success: function (response) {
@@ -701,7 +706,7 @@
                     return;
                 }
 
-                $('#subtotal-' + productId).text(formatCurrency(response.itemSubtotal));
+                $('#subtotal-' + safeCartKey).text(formatCurrency(response.itemSubtotal));
                 $('#cart-subtotal').text(formatCurrency(response.total));
                 $('#cart-total').text(formatCurrency(response.total));
                 syncCartBadge(response.cartCount);
@@ -722,7 +727,7 @@
         });
     }
 
-    function removeFromCart(productId) {
+    function removeFromCart(cartKey, safeCartKey) {
         Swal.fire({
             title: 'Remove item?',
             text: 'Do you want to remove this product from your cart?',
@@ -741,7 +746,7 @@
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    product_id: productId
+                    cart_key: cartKey
                 },
                 success: function (response) {
                     if (!response.success) {
@@ -749,7 +754,7 @@
                         return;
                     }
 
-                    $('#row-' + productId).fadeOut(250, function () {
+                    $('#row-' + safeCartKey).fadeOut(250, function () {
                         $(this).remove();
 
                         if (!$('.cart-table tbody tr').length) {
@@ -772,14 +777,14 @@
 
     $(document).ready(function () {
         $('.btn-plus').on('click', function () {
-            var input = $('.qty-input[data-id="' + $(this).data('id') + '"]');
+            var input = $('.qty-input[data-key="' + $(this).data('key') + '"]');
             var newValue = parseInt(input.val(), 10) + 1;
             input.val(newValue);
-            updateCart($(this).data('id'), newValue, input);
+            updateCart($(this).data('key'), $(this).data('key').replace(/[^A-Za-z0-9_-]/g, '_'), newValue, input);
         });
 
         $('.btn-minus').on('click', function () {
-            var input = $('.qty-input[data-id="' + $(this).data('id') + '"]');
+            var input = $('.qty-input[data-key="' + $(this).data('key') + '"]');
             var currentValue = parseInt(input.val(), 10);
 
             if (currentValue <= 1) {
@@ -788,7 +793,7 @@
 
             var newValue = currentValue - 1;
             input.val(newValue);
-            updateCart($(this).data('id'), newValue, input);
+            updateCart($(this).data('key'), $(this).data('key').replace(/[^A-Za-z0-9_-]/g, '_'), newValue, input);
         });
 
         $('.qty-input').on('change', function () {
@@ -799,7 +804,7 @@
                 $(this).val(quantity);
             }
 
-            updateCart($(this).data('id'), quantity, this);
+            updateCart($(this).data('key'), $(this).data('key').replace(/[^A-Za-z0-9_-]/g, '_'), quantity, this);
         });
     });
 </script>

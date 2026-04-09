@@ -5,9 +5,16 @@
 @section('content')
 @php
     $fallbackImage = asset('assets/img/products/default-product.png');
-    $stockQty = (int) ($product->stock ?? 0);
-    $regularPrice = (float) ($product->price ?? 0);
-    $displayPrice = (float) ($product->sale_price ?: $product->price);
+    $activeVariants = $product->activeVariantItems();
+    $hasVariants = $product->hasActiveVariants();
+    $selectedVariant = $activeVariants->firstWhere('id', (int) old('variant_id'))
+        ?: ($activeVariants->first(fn ($variant) => $variant->stock > 0) ?? $activeVariants->first());
+    $stockQty = $selectedVariant ? (int) $selectedVariant->stock : $product->availableStock();
+    $regularPrice = $selectedVariant ? $selectedVariant->regularPrice() : $product->effectiveRegularPrice();
+    $displayPrice = $selectedVariant ? $selectedVariant->currentPrice() : $product->effectivePrice();
+    $discountPercentage = $regularPrice > 0 && $displayPrice < $regularPrice
+        ? round((($regularPrice - $displayPrice) / $regularPrice) * 100)
+        : 0;
     $discountAmount = max(0, $regularPrice - $displayPrice);
     $galleryImages = collect($product->gallery ?? [])
         ->prepend($product->image)
@@ -16,7 +23,7 @@
         ->values();
     $mainImage = $galleryImages->first();
     $brandName = $product->brand ?: ($product->category->name ?? 'ABCSheba');
-    $sku = $product->sku ?: strtoupper($product->slug ?: ('PRO-' . $product->id));
+    $sku = $selectedVariant?->sku ?: ($product->sku ?: strtoupper($product->slug ?: ('PRO-' . $product->id)));
     $reviewCount = (int) ($product->reviews_count ?? 0);
     $tagList = collect(preg_split('/\s*,\s*/', (string) $product->tags))
         ->map(fn ($tag) => trim($tag))
@@ -30,8 +37,9 @@
     $summaryPoints = collect([
         $product->brand ? 'Brand: ' . $brandName : null,
         $product->category ? 'Category: ' . $product->category->name : null,
+        $hasVariants ? $activeVariants->count() . ' variant option(s) available' : null,
         $stockQty > 0 ? 'Available stock: ' . $stockQty . ' units' : 'This item is currently out of stock',
-        $product->sale_price ? 'Current sale price is active' : 'Standard listed price',
+        $displayPrice < $regularPrice ? 'Current sale price is active' : 'Standard listed price',
     ])->filter()->values();
 @endphp
 
@@ -71,13 +79,15 @@
             <div class="row g-4 align-items-start">
                 <div class="col-lg-7">
                     <div class="product-gallery-shell product-card-modern">
-                        <div class="stock-badge {{ $stockQty > 0 ? 'in-stock' : 'out-of-stock' }}">
+                        <div id="productStockBadge" class="stock-badge {{ $stockQty > 0 ? 'in-stock' : 'out-of-stock' }}">
+                            <span id="productStockBadgeText">
                             {{ $stockQty > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
+                            </span>
                         </div>
 
-                        @if($product->sale_price)
-                            <div class="detail-offer-badge">{{ $product->discount_percentage }}% OFF</div>
-                        @endif
+                        <div id="productOfferBadge" class="detail-offer-badge" style="{{ $discountPercentage > 0 ? '' : 'display:none;' }}">
+                            {{ $discountPercentage }}% OFF
+                        </div>
 
                         <div class="product-image-container product-image-main detail-main-image">
                             <img id="activeProductImage"
@@ -113,8 +123,8 @@
                             <div class="detail-trust-card">
                                 <i class="fas fa-truck"></i>
                                 <div>
-                                    <strong>{{ $stockQty > 0 ? 'Ready to order' : 'Currently unavailable' }}</strong>
-                                    <span>{{ $stockQty > 0 ? 'Add to cart or buy now directly from this page.' : 'You can revisit later when stock is updated.' }}</span>
+                                    <strong>{{ $stockQty > 0 ? ($hasVariants ? 'Variant ready to order' : 'Ready to order') : 'Currently unavailable' }}</strong>
+                                    <span>{{ $hasVariants ? 'Choose the right option below to confirm exact price and stock.' : ($stockQty > 0 ? 'Add to cart or buy now directly from this page.' : 'You can revisit later when stock is updated.') }}</span>
                                 </div>
                             </div>
                             <div class="detail-trust-card">
@@ -145,15 +155,17 @@
 
                         <div class="summary-price-box">
                             <div class="product-price-tag">
-                                <span class="price-current">৳{{ number_format($displayPrice, 0) }}</span>
-                                @if($product->sale_price)
-                                    <span class="price-original">৳{{ number_format($regularPrice, 0) }}</span>
-                                @endif
+                                <span id="productCurrentPrice" class="price-current">৳{{ number_format($displayPrice, 0) }}</span>
+                                <span id="productOriginalPrice" class="price-original" style="{{ $displayPrice < $regularPrice ? '' : 'display:none;' }}">
+                                    ৳{{ number_format($regularPrice, 0) }}
+                                </span>
                             </div>
 
-                            <div class="price-meta">
-                                @if($product->sale_price)
+                            <div id="productPriceMeta" class="price-meta">
+                                @if($displayPrice < $regularPrice)
                                     <span class="price-save">Save ৳{{ number_format($discountAmount, 0) }}</span>
+                                @elseif($hasVariants)
+                                    <span class="price-note">Selected variant price</span>
                                 @else
                                     <span class="price-note">Standard listed price</span>
                                 @endif
@@ -163,13 +175,13 @@
                         <div class="summary-status-grid">
                             <div class="status-card">
                                 <span class="status-label">Availability</span>
-                                <strong class="{{ $stockQty > 0 ? 'text-success' : 'text-danger' }}">
+                                <strong id="productAvailabilityValue" class="{{ $stockQty > 0 ? 'text-success' : 'text-danger' }}">
                                     {{ $stockQty > 0 ? 'In stock' : 'Out of stock' }}
                                 </strong>
                             </div>
                             <div class="status-card">
                                 <span class="status-label">SKU</span>
-                                <strong>{{ $sku }}</strong>
+                                <strong id="productSkuValue">{{ $sku }}</strong>
                             </div>
                             <div class="status-card">
                                 <span class="status-label">Category</span>
@@ -177,7 +189,7 @@
                             </div>
                             <div class="status-card">
                                 <span class="status-label">Price Type</span>
-                                <strong>{{ $product->sale_price ? 'Discounted' : 'Regular' }}</strong>
+                                <strong id="productPriceType">{{ $displayPrice < $regularPrice ? 'Discounted' : ($hasVariants ? 'Variant' : 'Regular') }}</strong>
                             </div>
                         </div>
 
@@ -202,6 +214,25 @@
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
 
                             <div class="purchase-controls">
+                                @if($hasVariants)
+                                    <div class="variant-box">
+                                        <label for="productVariant">Choose Variant</label>
+                                        <select id="productVariant" name="variant_id" class="variant-select" required>
+                                            @foreach($activeVariants as $variant)
+                                                <option value="{{ $variant->id }}"
+                                                    data-price="{{ $variant->currentPrice() }}"
+                                                    data-regular-price="{{ $variant->regularPrice() }}"
+                                                    data-stock="{{ $variant->stock }}"
+                                                    data-sku="{{ $variant->sku ?: ($product->sku ?: strtoupper($product->slug ?: ('PRO-' . $product->id))) }}"
+                                                    data-label="{{ $variant->display_label }}"
+                                                    {{ $selectedVariant && $selectedVariant->id === $variant->id ? 'selected' : '' }}>
+                                                    {{ $variant->display_label }} | ৳{{ number_format($variant->currentPrice(), 0) }} | Stock: {{ $variant->stock }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endif
+
                                 <div class="quantity-box">
                                     <label for="productQuantity">Quantity</label>
                                     <div class="quantity-control">
@@ -275,8 +306,8 @@
                         <div class="info-chip-list">
                             <span>{{ $brandName }}</span>
                             <span>{{ $product->category->name ?? 'General' }}</span>
-                            <span>{{ $sku }}</span>
-                            <span>{{ $stockQty > 0 ? $stockQty . ' units available' : 'Currently unavailable' }}</span>
+                            <span id="productInfoSku">{{ $sku }}</span>
+                            <span id="productInfoStock">{{ $stockQty > 0 ? $stockQty . ' units available' : 'Currently unavailable' }}</span>
                         </div>
                     </div>
                 </div>
@@ -314,13 +345,16 @@
                     @foreach($relatedProducts as $relProduct)
                         @php
                             $relatedImage = $relProduct->image ?: 'assets/img/products/default-product.png';
-                            $relatedPrice = $relProduct->sale_price ?: $relProduct->price;
+                            $relatedPrice = $relProduct->effectivePrice();
+                            $relatedRegularPrice = $relProduct->effectiveRegularPrice();
+                            $relatedHasVariants = $relProduct->hasActiveVariants();
+                            $relatedStock = $relProduct->availableStock();
                             $relatedReviews = (int) ($relProduct->reviews_count ?? 24);
                         @endphp
                         <div class="col-md-6 col-xl-3">
                             <div class="product-card-modern">
-                                <div class="stock-badge {{ ($relProduct->stock ?? 0) > 0 ? 'in-stock' : 'out-of-stock' }}">
-                                    {{ ($relProduct->stock ?? 0) > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
+                                <div class="stock-badge {{ $relatedStock > 0 ? 'in-stock' : 'out-of-stock' }}">
+                                    {{ $relatedStock > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
                                 </div>
 
                                 <div class="product-image-container">
@@ -348,24 +382,30 @@
                                     <div class="product-footer">
                                         <div class="product-price-tag">
                                             <span class="price-current">৳{{ number_format($relatedPrice, 0) }}</span>
-                                            @if($relProduct->sale_price)
-                                                <span class="price-original">৳{{ number_format((float) $relProduct->price, 0) }}</span>
+                                            @if($relatedPrice < $relatedRegularPrice)
+                                                <span class="price-original">৳{{ number_format($relatedRegularPrice, 0) }}</span>
                                             @endif
                                         </div>
 
-                                        <form action="{{ route('ecommerce.cart.add') }}" method="POST" class="product-actions-form">
-                                            @csrf
-                                            <input type="hidden" name="product_id" value="{{ $relProduct->id }}">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <div class="btn-group-modern">
-                                                <button type="submit" class="btn-cart-modern" title="Add to Cart" {{ ($relProduct->stock ?? 0) < 1 ? 'disabled' : '' }}>
-                                                    <i class="fas fa-shopping-cart"></i>
-                                                </button>
-                                                <button type="submit" name="buy_now" value="1" class="btn-buy-modern" {{ ($relProduct->stock ?? 0) < 1 ? 'disabled' : '' }}>
-                                                    Buy
-                                                </button>
-                                            </div>
-                                        </form>
+                                        @if($relatedHasVariants)
+                                            <a href="{{ route('ecommerce.products.show', $relProduct->id) }}" class="btn-buy-modern btn-link-modern">
+                                                Select Options
+                                            </a>
+                                        @else
+                                            <form action="{{ route('ecommerce.cart.add') }}" method="POST" class="product-actions-form">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $relProduct->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <div class="btn-group-modern">
+                                                    <button type="submit" class="btn-cart-modern" title="Add to Cart" {{ $relatedStock < 1 ? 'disabled' : '' }}>
+                                                        <i class="fas fa-shopping-cart"></i>
+                                                    </button>
+                                                    <button type="submit" name="buy_now" value="1" class="btn-buy-modern" {{ $relatedStock < 1 ? 'disabled' : '' }}>
+                                                        Buy
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -743,6 +783,31 @@
         gap: 14px;
     }
 
+    .variant-box label {
+        display: block;
+        margin-bottom: 10px;
+        color: #0f172a;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .variant-select {
+        width: 100%;
+        min-height: 52px;
+        border-radius: 14px;
+        border: 1px solid #dbeafe;
+        background: #f8fbff;
+        color: #0f172a;
+        padding: 12px 14px;
+        font-weight: 600;
+    }
+
+    .variant-select:focus {
+        outline: none;
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+
     .quantity-box label {
         display: block;
         margin-bottom: 10px;
@@ -863,6 +928,14 @@
         background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
         transform: translateY(-2px);
         box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
+    }
+
+    .btn-link-modern {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
     }
 
     .detail-cart-btn,
@@ -1136,8 +1209,21 @@
     document.addEventListener('DOMContentLoaded', function () {
         const activeImage = document.getElementById('activeProductImage');
         const thumbs = document.querySelectorAll('.product-thumb');
+        const variantSelect = document.getElementById('productVariant');
         const quantityInput = document.getElementById('productQuantity');
         const qtyButtons = document.querySelectorAll('.qty-btn');
+        const currentPrice = document.getElementById('productCurrentPrice');
+        const originalPrice = document.getElementById('productOriginalPrice');
+        const offerBadge = document.getElementById('productOfferBadge');
+        const priceMeta = document.getElementById('productPriceMeta');
+        const availabilityValue = document.getElementById('productAvailabilityValue');
+        const skuValue = document.getElementById('productSkuValue');
+        const infoSku = document.getElementById('productInfoSku');
+        const infoStock = document.getElementById('productInfoStock');
+        const stockBadge = document.getElementById('productStockBadge');
+        const stockBadgeText = document.getElementById('productStockBadgeText');
+        const priceType = document.getElementById('productPriceType');
+        const submitButtons = document.querySelectorAll('.detail-cart-btn, .detail-buy-btn');
 
         thumbs.forEach((thumb) => {
             thumb.addEventListener('click', function () {
@@ -1167,6 +1253,108 @@
                 quantityInput.value = nextValue;
             });
         });
+
+        function formatMoney(amount) {
+            return '৳' + Math.round(Number(amount || 0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function syncVariantDetails() {
+            if (!variantSelect || !quantityInput) {
+                return;
+            }
+
+            const selectedOption = variantSelect.options[variantSelect.selectedIndex];
+
+            if (!selectedOption) {
+                return;
+            }
+
+            const current = Number(selectedOption.dataset.price || 0);
+            const regular = Number(selectedOption.dataset.regularPrice || current);
+            const stock = Number(selectedOption.dataset.stock || 0);
+            const sku = selectedOption.dataset.sku || '';
+
+            if (currentPrice) {
+                currentPrice.textContent = formatMoney(current);
+            }
+
+            if (originalPrice) {
+                if (current < regular) {
+                    originalPrice.style.display = '';
+                    originalPrice.textContent = formatMoney(regular);
+                } else {
+                    originalPrice.style.display = 'none';
+                    originalPrice.textContent = '';
+                }
+            }
+
+            if (offerBadge) {
+                if (current < regular && regular > 0) {
+                    offerBadge.style.display = '';
+                    offerBadge.textContent = Math.round(((regular - current) / regular) * 100) + '% OFF';
+                } else {
+                    offerBadge.style.display = 'none';
+                    offerBadge.textContent = '';
+                }
+            }
+
+            if (priceMeta) {
+                if (current < regular) {
+                    priceMeta.innerHTML = '<span class="price-save">Save ' + formatMoney(regular - current) + '</span>';
+                } else {
+                    priceMeta.innerHTML = '<span class="price-note">Selected variant price</span>';
+                }
+            }
+
+            if (availabilityValue) {
+                availabilityValue.textContent = stock > 0 ? 'In stock' : 'Out of stock';
+                availabilityValue.classList.toggle('text-success', stock > 0);
+                availabilityValue.classList.toggle('text-danger', stock < 1);
+            }
+
+            if (stockBadge && stockBadgeText) {
+                stockBadge.classList.toggle('in-stock', stock > 0);
+                stockBadge.classList.toggle('out-of-stock', stock < 1);
+                stockBadgeText.textContent = stock > 0 ? 'IN STOCK' : 'OUT OF STOCK';
+            }
+
+            if (skuValue) {
+                skuValue.textContent = sku;
+            }
+
+            if (infoSku) {
+                infoSku.textContent = sku;
+            }
+
+            if (infoStock) {
+                infoStock.textContent = stock > 0 ? stock + ' units available' : 'Currently unavailable';
+            }
+
+            if (priceType) {
+                priceType.textContent = current < regular ? 'Discounted' : 'Variant';
+            }
+
+            quantityInput.max = Math.max(1, stock);
+            if (Number(quantityInput.value || 1) > Math.max(1, stock)) {
+                quantityInput.value = Math.max(1, stock);
+            }
+
+            const disabled = stock < 1;
+            quantityInput.disabled = disabled;
+
+            qtyButtons.forEach((button) => {
+                button.disabled = disabled;
+            });
+
+            submitButtons.forEach((button) => {
+                button.disabled = disabled;
+            });
+        }
+
+        if (variantSelect) {
+            variantSelect.addEventListener('change', syncVariantDetails);
+            syncVariantDetails();
+        }
     });
 </script>
 @endpush

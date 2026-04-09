@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Product;
-use Illuminate\Support\Collection;
+use App\Models\ProductVariant;
 use Illuminate\Validation\ValidationException;
 
 class ProductStockService
@@ -11,90 +11,177 @@ class ProductStockService
     public function ensureRequestedQuantityIsAvailable(
         int $productId,
         int $requestedQuantity,
+        ?int $variantId = null,
         bool $requireActive = true,
         bool $lock = false
-    ): Product {
-        $query = Product::query();
+    ): array {
+        $productQuery = Product::query();
 
         if ($lock) {
-            $query->lockForUpdate();
+            $productQuery->lockForUpdate();
         }
 
-        $product = $query->find($productId);
+        $product = $productQuery->find($productId);
 
-        $this->assertProductCanFulfill($product, $requestedQuantity, $requireActive);
+        $this->assertRequestedQuantity($requestedQuantity);
+        $this->assertProductCanBeOrdered($product, $requireActive);
 
-        return $product;
+        if ($variantId) {
+            $variantQuery = ProductVariant::query()
+                ->where('product_id', $productId);
+
+            if ($lock) {
+                $variantQuery->lockForUpdate();
+            }
+
+            $variant = $variantQuery->whereKey($variantId)->first();
+
+            $this->assertVariantCanFulfill($variant, $requestedQuantity, $requireActive);
+
+            return [
+                'product' => $product,
+                'variant' => $variant,
+            ];
+        }
+
+        if ($this->productHasActiveVariants($productId)) {
+            throw ValidationException::withMessages([
+                'variant_id' => "Please select a variant for {$product->name}.",
+            ]);
+        }
+
+        $this->assertAvailableStock($product->name, (int) $product->stock, $requestedQuantity);
+
+        return [
+            'product' => $product,
+            'variant' => null,
+        ];
     }
 
     public function reserveCart(array $cart): void
     {
-        foreach ($this->extractCartQuantities($cart) as $productId => $quantity) {
-            $product = $this->ensureRequestedQuantityIsAvailable((int) $productId, $quantity, true, true);
-            $product->decrement('stock', $quantity);
+        $productsToSync = [];
+
+        foreach ($cart as $item) {
+            $productId = (int) ($item['product_id'] ?? 0);
+            $variantId = isset($item['variant_id']) ? (int) $item['variant_id'] : null;
+            $quantity = (int) ($item['quantity'] ?? 0);
+
+            $inventory = $this->ensureRequestedQuantityIsAvailable($productId, $quantity, $variantId, true, true);
+
+            if ($inventory['variant']) {
+                $inventory['variant']->decrement('stock', $quantity);
+                $productsToSync[] = $productId;
+                continue;
+            }
+
+            $inventory['product']->decrement('stock', $quantity);
+        }
+
+        foreach (array_unique($productsToSync) as $productId) {
+            $this->syncAggregateStock((int) $productId);
         }
     }
 
     public function reserveOrderItems(iterable $orderItems): void
     {
-        foreach ($this->summarizeOrderItems($orderItems) as $productId => $quantity) {
-            $product = $this->ensureRequestedQuantityIsAvailable((int) $productId, $quantity, false, true);
-            $product->decrement('stock', $quantity);
+        $productsToSync = [];
+
+        foreach ($orderItems as $orderItem) {
+            $productId = (int) $orderItem->product_id;
+            $variantId = $orderItem->product_variant_id ? (int) $orderItem->product_variant_id : null;
+            $quantity = (int) $orderItem->quantity;
+
+            $inventory = $this->ensureRequestedQuantityIsAvailable($productId, $quantity, $variantId, false, true);
+
+            if ($inventory['variant']) {
+                $inventory['variant']->decrement('stock', $quantity);
+                $productsToSync[] = $productId;
+                continue;
+            }
+
+            $inventory['product']->decrement('stock', $quantity);
+        }
+
+        foreach (array_unique($productsToSync) as $productId) {
+            $this->syncAggregateStock((int) $productId);
         }
     }
 
     public function restoreOrderItems(iterable $orderItems): void
     {
-        $quantities = $this->summarizeOrderItems($orderItems);
+        $productsToSync = [];
 
-        if ($quantities->isEmpty()) {
-            return;
-        }
+        foreach ($orderItems as $orderItem) {
+            $quantity = (int) $orderItem->quantity;
 
-        $products = Product::query()
-            ->whereIn('id', $quantities->keys()->all())
-            ->lockForUpdate()
-            ->get()
-            ->keyBy('id');
+            if ($orderItem->product_variant_id) {
+                $variant = ProductVariant::query()
+                    ->lockForUpdate()
+                    ->whereKey((int) $orderItem->product_variant_id)
+                    ->first();
 
-        foreach ($quantities as $productId => $quantity) {
-            $product = $products->get((int) $productId);
+                if ($variant) {
+                    $variant->increment('stock', $quantity);
+                    $productsToSync[] = (int) $orderItem->product_id;
+                }
 
-            if (!$product) {
                 continue;
             }
 
-            $product->increment('stock', $quantity);
+            $product = Product::query()
+                ->lockForUpdate()
+                ->find((int) $orderItem->product_id);
+
+            if ($product) {
+                $product->increment('stock', $quantity);
+            }
+        }
+
+        foreach (array_unique($productsToSync) as $productId) {
+            $this->syncAggregateStock((int) $productId);
         }
     }
 
-    protected function extractCartQuantities(array $cart): Collection
+    public function syncAggregateStock(int $productId): void
     {
-        return collect($cart)
-            ->mapWithKeys(function ($item, $productId) {
-                return [(int) $productId => (int) ($item['quantity'] ?? 0)];
-            })
-            ->filter(fn (int $quantity) => $quantity > 0)
-            ->sortKeys();
+        $product = Product::query()
+            ->lockForUpdate()
+            ->find($productId);
+
+        if (! $product) {
+            return;
+        }
+
+        $aggregateStock = (int) ProductVariant::query()
+            ->where('product_id', $productId)
+            ->where('is_active', true)
+            ->sum('stock');
+
+        $product->forceFill([
+            'stock' => $aggregateStock,
+        ])->saveQuietly();
     }
 
-    protected function summarizeOrderItems(iterable $orderItems): Collection
+    protected function productHasActiveVariants(int $productId): bool
     {
-        return collect($orderItems)
-            ->groupBy('product_id')
-            ->map(fn (Collection $items) => (int) $items->sum('quantity'))
-            ->filter(fn (int $quantity) => $quantity > 0)
-            ->sortKeys();
+        return ProductVariant::query()
+            ->where('product_id', $productId)
+            ->where('is_active', true)
+            ->exists();
     }
 
-    protected function assertProductCanFulfill(?Product $product, int $requestedQuantity, bool $requireActive): void
+    protected function assertRequestedQuantity(int $requestedQuantity): void
     {
         if ($requestedQuantity < 1) {
             throw ValidationException::withMessages([
                 'quantity' => 'Quantity must be at least 1.',
             ]);
         }
+    }
 
+    protected function assertProductCanBeOrdered(?Product $product, bool $requireActive): void
+    {
         if (!$product) {
             throw ValidationException::withMessages([
                 'stock' => 'This product is no longer available.',
@@ -106,16 +193,36 @@ class ProductStockService
                 'stock' => "{$product->name} is currently unavailable for ordering.",
             ]);
         }
+    }
 
-        if ($product->stock < 1) {
+    protected function assertVariantCanFulfill(?ProductVariant $variant, int $requestedQuantity, bool $requireActive): void
+    {
+        if (! $variant) {
             throw ValidationException::withMessages([
-                'stock' => "{$product->name} is out of stock.",
+                'variant_id' => 'The selected variant is no longer available.',
             ]);
         }
 
-        if ($requestedQuantity > $product->stock) {
+        if ($requireActive && ! $variant->is_active) {
             throw ValidationException::withMessages([
-                'stock' => "Only {$product->stock} unit(s) of {$product->name} available right now.",
+                'variant_id' => "{$variant->display_label} is currently unavailable.",
+            ]);
+        }
+
+        $this->assertAvailableStock($variant->display_label, (int) $variant->stock, $requestedQuantity);
+    }
+
+    protected function assertAvailableStock(string $name, int $availableStock, int $requestedQuantity): void
+    {
+        if ($availableStock < 1) {
+            throw ValidationException::withMessages([
+                'stock' => "{$name} is out of stock.",
+            ]);
+        }
+
+        if ($requestedQuantity > $availableStock) {
+            throw ValidationException::withMessages([
+                'stock' => "Only {$availableStock} unit(s) of {$name} available right now.",
             ]);
         }
     }

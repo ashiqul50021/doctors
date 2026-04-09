@@ -45,7 +45,7 @@ class HomeController extends Controller
         // Get featured products
         $products = Product::where('is_active', true)
                           ->where('is_featured', true)
-                          ->with('category')
+                          ->with(['category', 'variants'])
                           ->take(8)
                           ->latest()
                           ->get();
@@ -53,7 +53,7 @@ class HomeController extends Controller
         // If no featured products, get latest products
         if ($products->isEmpty()) {
             $products = Product::where('is_active', true)
-                              ->with('category')
+                              ->with(['category', 'variants'])
                               ->take(8)
                               ->latest()
                               ->get();

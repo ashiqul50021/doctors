@@ -57,7 +57,12 @@
                                                         src="{{ $item->product->image ? asset($item->product->image) : asset('assets/img/products/product.jpg') }}"
                                                         alt="Product Image">
                                                 </a>
-                                                <a href="#">{{ $item->product->name }}</a>
+                                                <div>
+                                                    <a href="#">{{ $item->product->name }}</a>
+                                                    @if($item->display_variant_label)
+                                                        <div class="text-muted small">{{ $item->display_variant_label }}</div>
+                                                    @endif
+                                                </div>
                                             </h2>
                                         </td>
                                         <td>৳{{ number_format($item->price, 2) }}</td>

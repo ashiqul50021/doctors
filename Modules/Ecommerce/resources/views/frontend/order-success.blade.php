@@ -60,7 +60,12 @@
                                                 @if($item->product && $item->product->image)
                                                     <img src="{{ asset('storage/'.$item->product->image) }}" alt="{{ $item->product->name ?? 'Product' }}" class="me-3" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                                 @endif
-                                                <span>{{ $item->product->name ?? 'Product' }}</span>
+                                                <div>
+                                                    <div>{{ $item->product->name ?? 'Product' }}</div>
+                                                    @if($item->display_variant_label)
+                                                        <small class="text-muted">{{ $item->display_variant_label }}</small>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </td>
                                         <td>৳{{ number_format($item->price, 2) }}</td>

@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
@@ -23,7 +24,8 @@ class StockManagementTest extends TestCase
 
         $response = $this->withSession([
             'cart' => [
-                $product->id => [
+                "product_{$product->id}" => [
+                    'product_id' => $product->id,
                     'name' => $product->name,
                     'price' => 120,
                     'image' => null,
@@ -58,7 +60,8 @@ class StockManagementTest extends TestCase
 
         $response = $this->from(route('ecommerce.checkout'))->withSession([
             'cart' => [
-                $product->id => [
+                "product_{$product->id}" => [
+                    'product_id' => $product->id,
                     'name' => $product->name,
                     'price' => 80,
                     'image' => null,
@@ -122,6 +125,70 @@ class StockManagementTest extends TestCase
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
             'stock' => 6,
+        ]);
+    }
+
+    public function test_place_order_decrements_variant_stock_and_updates_parent_stock(): void
+    {
+        $product = $this->createProduct(stock: 8, price: 120);
+        $variant = ProductVariant::create([
+            'product_id' => $product->id,
+            'option_name' => 'Strength',
+            'option_value' => '500mg',
+            'price' => 130,
+            'sale_price' => 110,
+            'stock' => 5,
+            'is_active' => true,
+            'sort_order' => 0,
+        ]);
+
+        ProductVariant::create([
+            'product_id' => $product->id,
+            'option_name' => 'Strength',
+            'option_value' => '650mg',
+            'price' => 150,
+            'stock' => 3,
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+
+        $response = $this->withSession([
+            'cart' => [
+                "product_{$product->id}_variant_{$variant->id}" => [
+                    'product_id' => $product->id,
+                    'variant_id' => $variant->id,
+                    'variant_label' => $variant->display_label,
+                    'name' => $product->name,
+                    'price' => 110,
+                    'image' => null,
+                    'quantity' => 2,
+                ],
+            ],
+        ])->post(route('ecommerce.order.place'), [
+            'name' => 'Test Customer',
+            'email' => 'customer@example.com',
+            'phone' => '01700000000',
+            'address' => 'Dhaka',
+        ]);
+
+        $order = Order::first();
+
+        $this->assertNotNull($order);
+        $response->assertRedirect(route('ecommerce.order.success', ['order' => $order->id]));
+        $this->assertDatabaseHas('product_variants', [
+            'id' => $variant->id,
+            'stock' => 3,
+        ]);
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'stock' => 6,
+        ]);
+        $this->assertDatabaseHas('order_items', [
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'product_variant_id' => $variant->id,
+            'variant_label' => $variant->display_label,
+            'quantity' => 2,
         ]);
     }
 

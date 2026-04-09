@@ -83,7 +83,7 @@
                             <h4 class="card-title mb-0">Order Summary</h4>
                         </div>
                         <div class="checkout-card-body">
-                            @foreach($cart as $productId => $item)
+                            @foreach($cart as $cartKey => $item)
                                 @php
                                     $imagePath = $item['image'] ?? null;
                                     $imageUrl = $imagePath
@@ -98,7 +98,12 @@
                                             onerror="this.onerror=null;this.src='{{ asset('assets/img/products/product-1.jpg') }}';">
                                         <div>
                                             <h6>{{ Str::limit($item['name'], 24) }}</h6>
-                                            <span>x{{ $item['quantity'] }}</span>
+                                            <span>
+                                                @if(!empty($item['variant_label']))
+                                                    {{ $item['variant_label'] }} |
+                                                @endif
+                                                x{{ $item['quantity'] }}
+                                            </span>
                                         </div>
                                     </div>
                                     <strong>৳{{ number_format($item['price'] * $item['quantity'], 2) }}</strong>

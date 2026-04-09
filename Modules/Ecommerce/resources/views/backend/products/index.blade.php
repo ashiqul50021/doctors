@@ -42,10 +42,13 @@
                         <tbody>
                             @foreach($products as $product)
                             @php
-                                if ($product->stock < 1) {
+                                $availableStock = $product->availableStock();
+                                $activeVariantCount = $product->activeVariantItems()->count();
+
+                                if ($availableStock < 1) {
                                     $stockBadgeClass = 'bg-danger-light text-danger';
                                     $stockLabel = 'Out of Stock';
-                                } elseif ($product->stock <= 10) {
+                                } elseif ($availableStock <= 10) {
                                     $stockBadgeClass = 'bg-warning-light text-warning';
                                     $stockLabel = 'Low Stock';
                                 } else {
@@ -74,10 +77,13 @@
                                 <td>${{ number_format($product->price, 2) }}</td>
                                 <td>
                                     <div class="d-flex flex-column">
-                                        <span class="font-weight-bold">{{ $product->stock }}</span>
+                                        <span class="font-weight-bold">{{ $availableStock }}</span>
                                         <span class="badge {{ $stockBadgeClass }} mt-1" style="width: fit-content;">
                                             {{ $stockLabel }}
                                         </span>
+                                        <small class="text-muted mt-1">
+                                            {{ $activeVariantCount > 0 ? $activeVariantCount . ' variant(s)' : 'Simple product' }}
+                                        </small>
                                     </div>
                                 </td>
                                 <td>

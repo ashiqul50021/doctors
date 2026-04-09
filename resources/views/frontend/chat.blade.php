@@ -3,8 +3,9 @@
 @section('title', 'Chat Function - Doccure')
 
 @section('content')
+@include('frontend.includes.chat-page-assets')
 <!-- Page Content -->
-<div class="content">
+<div class="content chat-page-shell">
     <div class="container-fluid">
         <div class="row">
             <div class="col-xl-12">

@@ -50,17 +50,94 @@ class ProductController extends Controller
 
     protected function ensureCartHasAvailableStock(array $cart): void
     {
-        foreach ($cart as $productId => $item) {
+        foreach ($cart as $cartKey => $item) {
             $this->stockService->ensureRequestedQuantityIsAvailable(
-                (int) $productId,
-                (int) ($item['quantity'] ?? 0)
+                $this->resolveCartProductId($cartKey, $item),
+                (int) ($item['quantity'] ?? 0),
+                $this->resolveCartVariantId($cartKey, $item)
             );
         }
     }
 
+    protected function getNormalizedCart(): array
+    {
+        $cart = session()->get('cart', []);
+        $normalizedCart = $this->normalizeCart($cart);
+
+        if ($normalizedCart != $cart) {
+            session()->put('cart', $normalizedCart);
+        }
+
+        return $normalizedCart;
+    }
+
+    protected function normalizeCart(array $cart): array
+    {
+        $normalizedCart = [];
+
+        foreach ($cart as $cartKey => $item) {
+            $productId = $this->resolveCartProductId($cartKey, $item);
+
+            if ($productId < 1) {
+                continue;
+            }
+
+            $variantId = $this->resolveCartVariantId($cartKey, $item);
+            $normalizedKey = $this->buildCartKey($productId, $variantId);
+            $quantity = max(1, (int) ($item['quantity'] ?? 1));
+
+            if (isset($normalizedCart[$normalizedKey])) {
+                $normalizedCart[$normalizedKey]['quantity'] += $quantity;
+                continue;
+            }
+
+            $normalizedCart[$normalizedKey] = [
+                'product_id' => $productId,
+                'variant_id' => $variantId,
+                'variant_label' => $item['variant_label'] ?? null,
+                'name' => $item['name'] ?? '',
+                'price' => (float) ($item['price'] ?? 0),
+                'image' => $item['image'] ?? null,
+                'quantity' => $quantity,
+            ];
+        }
+
+        return $normalizedCart;
+    }
+
+    protected function resolveCartProductId(string|int $cartKey, array $item): int
+    {
+        if (!empty($item['product_id'])) {
+            return (int) $item['product_id'];
+        }
+
+        if (is_numeric($cartKey)) {
+            return (int) $cartKey;
+        }
+
+        if (preg_match('/product_(\d+)/', (string) $cartKey, $matches)) {
+            return (int) $matches[1];
+        }
+
+        return 0;
+    }
+
+    protected function resolveCartVariantId(string|int $cartKey, array $item): ?int
+    {
+        if (!empty($item['variant_id'])) {
+            return (int) $item['variant_id'];
+        }
+
+        if (preg_match('/variant_(\d+)/', (string) $cartKey, $matches)) {
+            return (int) $matches[1];
+        }
+
+        return null;
+    }
+
     public function index(Request $request)
     {
-        $query = Product::with('category')->where('is_active', true);
+        $query = Product::with(['category', 'variants'])->where('is_active', true);
 
         if ($request->has('category') && $request->category) {
             $query->where('product_category_id', $request->category);
@@ -78,8 +155,8 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::with('category')->findOrFail($id);
-        $relatedProducts = Product::where('product_category_id', $product->product_category_id)
+        $product = Product::with(['category', 'variants'])->findOrFail($id);
+        $relatedProducts = Product::with(['category', 'variants'])->where('product_category_id', $product->product_category_id)
             ->where('id', '!=', $id)
             ->where('is_active', true)
             ->limit(4)
@@ -90,7 +167,7 @@ class ProductController extends Controller
 
     public function filter(Request $request)
     {
-        $query = Product::with('category')->where('is_active', true);
+        $query = Product::with(['category', 'variants'])->where('is_active', true);
 
         if ($request->category && $request->category !== 'all') {
             $query->where('product_category_id', $request->category);
@@ -100,9 +177,30 @@ class ProductController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $products = $query->take(8)->latest()->get();
+        $products = $query->take(8)->latest()->get()
+            ->map(function (Product $product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'image' => $product->image,
+                    'price' => $product->effectivePrice(),
+                    'regular_price' => $product->effectiveRegularPrice(),
+                    'sale_price' => $product->effectivePrice() < $product->effectiveRegularPrice()
+                        ? $product->effectivePrice()
+                        : null,
+                    'stock' => $product->availableStock(),
+                    'has_variants' => $product->hasActiveVariants(),
+                    'uses_price_range' => $product->usesPriceRange(),
+                    'category' => $product->category ? [
+                        'id' => $product->category->id,
+                        'name' => $product->category->name,
+                    ] : null,
+                    'rating' => $product->rating ?? null,
+                    'reviews_count' => $product->reviews_count ?? null,
+                ];
+            });
 
-        return response()->json($products);
+        return response()->json($products->values());
     }
 
     public function addToCart(Request $request)
@@ -110,22 +208,31 @@ class ProductController extends Controller
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
+            'variant_id' => 'nullable|integer|exists:product_variants,id',
         ]);
 
-        $cart = session()->get('cart', []);
+        $cart = $this->getNormalizedCart();
         $productId = (int) $request->product_id;
+        $variantId = $request->filled('variant_id') ? (int) $request->variant_id : null;
+        $cartKey = $this->buildCartKey($productId, $variantId);
         $requestedQuantity = (int) $request->quantity;
-        $newQuantity = ((int) ($cart[$productId]['quantity'] ?? 0)) + $requestedQuantity;
+        $newQuantity = ((int) ($cart[$cartKey]['quantity'] ?? 0)) + $requestedQuantity;
 
         try {
-            $product = $this->stockService->ensureRequestedQuantityIsAvailable($productId, $newQuantity);
+            $inventory = $this->stockService->ensureRequestedQuantityIsAvailable($productId, $newQuantity, $variantId);
         } catch (ValidationException $exception) {
             return $this->handleInventoryException($request, $exception);
         }
 
-        $cart[$productId] = [
+        $product = $inventory['product'];
+        $variant = $inventory['variant'];
+
+        $cart[$cartKey] = [
+            'product_id' => $productId,
+            'variant_id' => $variant?->id,
+            'variant_label' => $variant?->display_label,
             'name' => $product->name,
-            'price' => $product->sale_price ?? $product->price,
+            'price' => $variant ? $variant->currentPrice() : ($product->sale_price ?? $product->price),
             'image' => $product->image,
             'quantity' => $newQuantity,
         ];
@@ -150,7 +257,7 @@ class ProductController extends Controller
 
     public function cart()
     {
-        $cart = session()->get('cart', []);
+        $cart = $this->getNormalizedCart();
         $total = $this->calculateCartTotal($cart);
 
         return view('ecommerce::frontend.cart', compact('cart', 'total'));
@@ -158,10 +265,11 @@ class ProductController extends Controller
 
     public function removeFromCart(Request $request)
     {
-        $cart = session()->get('cart', []);
+        $cart = $this->getNormalizedCart();
+        $cartKey = (string) $request->input('cart_key', $request->input('product_id'));
 
-        if (isset($cart[$request->product_id])) {
-            unset($cart[$request->product_id]);
+        if (isset($cart[$cartKey])) {
+            unset($cart[$cartKey]);
             session()->put('cart', $cart);
         }
 
@@ -180,14 +288,14 @@ class ProductController extends Controller
     public function updateCart(Request $request)
     {
         $request->validate([
-            'product_id' => 'required|exists:products,id',
+            'cart_key' => 'required|string',
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $cart = session()->get('cart', []);
-        $productId = (int) $request->product_id;
+        $cart = $this->getNormalizedCart();
+        $cartKey = (string) $request->cart_key;
 
-        if (!isset($cart[$productId])) {
+        if (!isset($cart[$cartKey])) {
             $message = 'This product is no longer in your cart.';
 
             if ($this->shouldReturnJson($request)) {
@@ -200,15 +308,25 @@ class ProductController extends Controller
             return redirect()->route('ecommerce.cart')->with('error', $message);
         }
 
+        $cartItem = $cart[$cartKey];
+        $productId = $this->resolveCartProductId($cartKey, $cartItem);
+        $variantId = $this->resolveCartVariantId($cartKey, $cartItem);
+
         try {
-            $product = $this->stockService->ensureRequestedQuantityIsAvailable($productId, (int) $request->quantity);
+            $inventory = $this->stockService->ensureRequestedQuantityIsAvailable($productId, (int) $request->quantity, $variantId);
         } catch (ValidationException $exception) {
             return $this->handleInventoryException($request, $exception);
         }
 
-        $cart[$productId] = [
+        $product = $inventory['product'];
+        $variant = $inventory['variant'];
+
+        $cart[$cartKey] = [
+            'product_id' => $productId,
+            'variant_id' => $variant?->id,
+            'variant_label' => $variant?->display_label,
             'name' => $product->name,
-            'price' => $product->sale_price ?? $product->price,
+            'price' => $variant ? $variant->currentPrice() : ($product->sale_price ?? $product->price),
             'image' => $product->image,
             'quantity' => (int) $request->quantity,
         ];
@@ -216,8 +334,8 @@ class ProductController extends Controller
         session()->put('cart', $cart);
 
         if ($this->shouldReturnJson($request)) {
-            $itemSubtotal = isset($cart[$productId])
-                ? ((float) $cart[$productId]['price']) * ((int) $cart[$productId]['quantity'])
+            $itemSubtotal = isset($cart[$cartKey])
+                ? ((float) $cart[$cartKey]['price']) * ((int) $cart[$cartKey]['quantity'])
                 : 0;
 
             return response()->json([
@@ -226,7 +344,7 @@ class ProductController extends Controller
                 'cartCount' => count($cart),
                 'total' => $this->calculateCartTotal($cart),
                 'itemSubtotal' => $itemSubtotal,
-                'quantity' => (int) $cart[$productId]['quantity'],
+                'quantity' => (int) $cart[$cartKey]['quantity'],
             ]);
         }
 
@@ -235,7 +353,7 @@ class ProductController extends Controller
 
     public function checkout()
     {
-        $cart = session()->get('cart', []);
+        $cart = $this->getNormalizedCart();
 
         if (empty($cart)) {
             return redirect()->route('ecommerce.products')->with('error', 'Your cart is empty!');
@@ -261,7 +379,7 @@ class ProductController extends Controller
             'address' => 'required|string',
         ]);
 
-        $cart = session()->get('cart', []);
+        $cart = $this->getNormalizedCart();
 
         if (empty($cart)) {
             return redirect()->route('ecommerce.products')->with('error', 'Your cart is empty!');
@@ -288,10 +406,12 @@ class ProductController extends Controller
                     'notes' => $request->notes,
                 ]);
 
-                foreach ($cart as $productId => $item) {
+                foreach ($cart as $cartKey => $item) {
                     OrderItem::create([
                         'order_id' => $order->id,
-                        'product_id' => $productId,
+                        'product_id' => $this->resolveCartProductId($cartKey, $item),
+                        'product_variant_id' => $this->resolveCartVariantId($cartKey, $item),
+                        'variant_label' => $item['variant_label'] ?? null,
                         'quantity' => $item['quantity'],
                         'price' => $item['price'],
                         'total' => $item['price'] * $item['quantity'],
@@ -311,8 +431,17 @@ class ProductController extends Controller
 
     public function orderSuccess(Request $request)
     {
-        $order = Order::with('items.product')->findOrFail($request->order);
+        $order = Order::with('items.product', 'items.variant')->findOrFail($request->order);
 
         return view('ecommerce::frontend.order-success', compact('order'));
+    }
+
+    protected function buildCartKey(int $productId, ?int $variantId): string
+    {
+        if ($variantId) {
+            return "product_{$productId}_variant_{$variantId}";
+        }
+
+        return "product_{$productId}";
     }
 }

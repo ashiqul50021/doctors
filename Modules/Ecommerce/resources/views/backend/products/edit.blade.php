@@ -18,6 +18,20 @@
 
 <div class="row">
     <div class="col-sm-12">
+        @php
+            $variantRows = old('variants', $product->variants->map(function ($variant) {
+                return [
+                    'id' => $variant->id,
+                    'option_name' => $variant->option_name,
+                    'option_value' => $variant->option_value,
+                    'price' => $variant->price,
+                    'sale_price' => $variant->sale_price,
+                    'stock' => $variant->stock,
+                    'sku' => $variant->sku,
+                    'is_active' => $variant->is_active,
+                ];
+            })->all());
+        @endphp
         <div class="card">
             <div class="card-body">
                 @if($errors->any())
@@ -66,6 +80,7 @@
                             <div class="form-group">
                                 <label>Stock</label>
                                 <input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" required>
+                                <small class="text-muted d-block mt-1">Used for simple products. Active variants below will control stock automatically.</small>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -105,6 +120,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        @include('ecommerce::backend.products.partials.variant-manager', ['variantRows' => $variantRows])
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
                 </form>
@@ -124,6 +141,8 @@
                 helperId: 'productImageHelper',
                 emptyMessage: 'Choose a new image to replace the current one. Selected image will preview instantly and be compressed before upload.'
             });
+
+            initializeVariantManager();
         });
 
         function initializeProductImageUpload({ inputId, previewId, previewContainerId, helperId, emptyMessage }) {
@@ -226,6 +245,35 @@
                 };
 
                 reader.onerror = (error) => reject(error);
+            });
+        }
+
+        function initializeVariantManager() {
+            const rowsContainer = document.getElementById('variantRows');
+            const template = document.getElementById('variantRowTemplate');
+            const addButton = document.getElementById('addVariantRowBtn');
+
+            if (!rowsContainer || !template || !addButton) {
+                return;
+            }
+
+            let nextIndex = rowsContainer.querySelectorAll('.variant-row').length;
+
+            addButton.addEventListener('click', function () {
+                const wrapper = document.createElement('tbody');
+                wrapper.innerHTML = template.innerHTML.replace(/__INDEX__/g, nextIndex);
+                rowsContainer.appendChild(wrapper.firstElementChild);
+                nextIndex += 1;
+            });
+
+            rowsContainer.addEventListener('click', function (event) {
+                const removeButton = event.target.closest('.js-remove-variant-row');
+
+                if (!removeButton) {
+                    return;
+                }
+
+                removeButton.closest('.variant-row')?.remove();
             });
         }
     </script>

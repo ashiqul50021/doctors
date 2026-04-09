@@ -297,11 +297,17 @@
                 <div class="col-lg-9 col-md-8">
                     <div class="row" id="productsGrid">
                         @foreach($products as $product)
+                            @php
+                                $availableStock = $product->availableStock();
+                                $hasVariants = $product->hasActiveVariants();
+                                $displayPrice = $product->effectivePrice();
+                                $displayRegularPrice = $product->effectiveRegularPrice();
+                            @endphp
                             <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-grid-item">
                                 <div class="product-card-modern">
                                     <!-- Stock Badge -->
-                                    <div class="stock-badge {{ $product->stock > 0 ? 'in-stock' : 'out-of-stock' }}">
-                                        {{ $product->stock > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
+                                    <div class="stock-badge {{ $availableStock > 0 ? 'in-stock' : 'out-of-stock' }}">
+                                        {{ $availableStock > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
                                     </div>
 
                                     <!-- Product Image -->
@@ -338,26 +344,36 @@
                                         <!-- Price & Actions -->
                                         <div class="product-footer">
                                             <div class="product-price-tag">
-                                                @if($product->sale_price)
-                                                    <span class="price-current">৳{{ number_format($product->sale_price, 0) }}</span>
-                                                    <span class="price-original">৳{{ number_format($product->price, 0) }}</span>
-                                                @else
-                                                    <span class="price-current">৳{{ number_format($product->price, 0) }}</span>
+                                                @if($hasVariants)
+                                                    <span class="d-block text-muted small mb-1">From</span>
+                                                @endif
+
+                                                <span class="price-current">৳{{ number_format($displayPrice, 0) }}</span>
+
+                                                @if($displayPrice < $displayRegularPrice)
+                                                    <span class="price-original">৳{{ number_format($displayRegularPrice, 0) }}</span>
                                                 @endif
                                             </div>
-                                            <form action="{{ route('ecommerce.cart.add') }}" method="POST" class="product-actions-form">
-                                                @csrf
-                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <div class="btn-group-modern">
-                                                    <button type="submit" class="btn-cart-modern" title="Add to Cart">
-                                                        <i class="fas fa-shopping-cart"></i>
-                                                    </button>
-                                                    <button type="submit" name="buy_now" value="1" class="btn-buy-modern">
-                                                        Buy
-                                                    </button>
-                                                </div>
-                                            </form>
+
+                                            @if($hasVariants)
+                                                <a href="{{ route('ecommerce.products.show', $product->id) }}" class="btn-buy-modern btn-link-modern">
+                                                    Select Options
+                                                </a>
+                                            @else
+                                                <form action="{{ route('ecommerce.cart.add') }}" method="POST" class="product-actions-form">
+                                                    @csrf
+                                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                    <input type="hidden" name="quantity" value="1">
+                                                    <div class="btn-group-modern">
+                                                        <button type="submit" class="btn-cart-modern" title="Add to Cart" {{ $availableStock < 1 ? 'disabled' : '' }}>
+                                                            <i class="fas fa-shopping-cart"></i>
+                                                        </button>
+                                                        <button type="submit" name="buy_now" value="1" class="btn-buy-modern" {{ $availableStock < 1 ? 'disabled' : '' }}>
+                                                            Buy
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -1274,11 +1290,19 @@
                     var imageSrc = product.image ? (product.image.startsWith('http') ? product.image : '/' + product.image) : '/assets/img/products/default-product.png';
 
                     var priceHtml = '';
+                    if (product.has_variants) {
+                        priceHtml += '<span class="d-block text-muted small mb-1">From</span>';
+                    }
+
                     if (product.sale_price) {
                         priceHtml = '<span class="price-current">৳' + numberFormat(product.sale_price) + '</span>' +
-                            '<span class="price-original">৳' + numberFormat(product.price) + '</span>';
+                            '<span class="price-original">৳' + numberFormat(product.regular_price) + '</span>';
                     } else {
                         priceHtml = '<span class="price-current">৳' + numberFormat(product.price) + '</span>';
+                    }
+
+                    if (product.has_variants) {
+                        priceHtml = '<span class="d-block text-muted small mb-1">From</span>' + priceHtml;
                     }
 
                     var stockClass = (product.stock > 0) ? 'in-stock' : 'out-of-stock';
@@ -1286,6 +1310,21 @@
                     var rating = product.rating || 4.5;
                     var reviewCount = product.reviews_count || Math.floor(Math.random() * 190) + 10;
                     var categoryName = product.category ? product.category.name : 'Medicine';
+                    var actionHtml = product.has_variants
+                        ? `<a href="/products/${product.id}" class="btn-buy-modern btn-link-modern">Select Options</a>`
+                        : `<form action="/cart/add" method="POST" class="product-actions-form">
+                                <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
+                                <input type="hidden" name="product_id" value="${product.id}">
+                                <input type="hidden" name="quantity" value="1">
+                                <div class="btn-group-modern">
+                                    <button type="submit" class="btn-cart-modern" title="Add to Cart" ${product.stock < 1 ? 'disabled' : ''}>
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                    <button type="submit" name="buy_now" value="1" class="btn-buy-modern" ${product.stock < 1 ? 'disabled' : ''}>
+                                        Buy
+                                    </button>
+                                </div>
+                            </form>`;
 
                     var html = `
                                                                                                                 <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-grid-item">
@@ -1308,19 +1347,7 @@
                                                                                                                             </h4>
                                                                                                                             <div class="product-footer">
                                                                                                                                 <div class="product-price-tag">${priceHtml}</div>
-                                                                                                                                <form action="/cart/add" method="POST" class="product-actions-form">
-                                                                                                                                    <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
-                                                                                                                                    <input type="hidden" name="product_id" value="${product.id}">
-                                                                                                                                    <input type="hidden" name="quantity" value="1">
-                                                                                                                                    <div class="btn-group-modern">
-                                                                                                                                        <button type="submit" class="btn-cart-modern" title="Add to Cart">
-                                                                                                                                            <i class="fas fa-shopping-cart"></i>
-                                                                                                                                        </button>
-                                                                                                                                        <button type="submit" name="buy_now" value="1" class="btn-buy-modern">
-                                                                                                                                            Buy
-                                                                                                                                        </button>
-                                                                                                                                    </div>
-                                                                                                                                </form>
+                                                                                                                                ${actionHtml}
                                                                                                                             </div>
                                                                                                                         </div>
                                                                                                                     </div>
@@ -1945,6 +1972,14 @@
             background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
+        }
+
+        .btn-link-modern {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
         }
 
         /* View All Button */
