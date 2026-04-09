@@ -106,6 +106,28 @@ class ImageService
     }
 
     /**
+     * Upload multiple images and return their stored relative paths.
+     *
+     * @param array<int, UploadedFile>|UploadedFile $files
+     * @return array<int, string>
+     */
+    public static function uploadMany(array|UploadedFile $files, string $folder, int $quality = 80, ?int $maxWidth = 1200): array
+    {
+        $files = $files instanceof UploadedFile ? [$files] : $files;
+        $uploads = [];
+
+        foreach ($files as $file) {
+            if (! $file instanceof UploadedFile) {
+                continue;
+            }
+
+            $uploads[] = self::upload($file, $folder, $quality, $maxWidth);
+        }
+
+        return $uploads;
+    }
+
+    /**
      * Delete image from public folder
      *
      * @param string|null $path - relative path from public/
@@ -130,6 +152,18 @@ class ImageService
         }
 
         return false;
+    }
+
+    /**
+     * Delete many stored image paths.
+     *
+     * @param iterable<int, string|null> $paths
+     */
+    public static function deleteMany(iterable $paths): void
+    {
+        foreach ($paths as $path) {
+            self::delete($path);
+        }
     }
 
     protected static function moveOriginal(UploadedFile $file, string $uploadPath, string $folder): string

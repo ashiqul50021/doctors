@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@include('ecommerce::backend.products.partials.image-manager-styles')
+
 @section('title', 'Add Product - Doccure Admin')
 
 @section('content')
@@ -84,12 +86,26 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="productImageInput">Image</label>
+                                <label for="productImageInput">Primary Image</label>
                                 <input type="file" name="image" class="form-control" id="productImageInput" accept="image/*">
-                                <small id="productImageHelper" class="form-text text-muted">Select an image to preview. Large files will be compressed automatically before upload.</small>
-                                <div class="mt-2" id="productImagePreviewContainer" style="display: none;">
-                                    <img id="productImagePreview" src="#" alt="Product Preview" class="img-thumbnail"
-                                        style="max-width: 150px; max-height: 150px;">
+                                <small id="productImageHelper" class="form-text text-muted">Select the main product image. Large files will be compressed automatically before upload.</small>
+                                <div class="image-manager-shell mt-2 single-image-preview" id="productImagePreviewContainer" style="display: none;">
+                                    <img id="productImagePreview" src="#" alt="Product Preview" class="img-thumbnail">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="productGalleryInput">Gallery Images</label>
+                                <input type="file" name="gallery[]" class="form-control" id="productGalleryInput" accept="image/*" multiple>
+                                <small id="productGalleryHelper" class="form-text text-muted">Upload multiple gallery images. These will appear as thumbnails on the product details page.</small>
+
+                                <div class="image-manager-shell mt-2" id="productGalleryPreviewContainer" style="display: none;">
+                                    <div class="gallery-preview-group">
+                                        <span class="gallery-preview-label">Selected Gallery Images</span>
+                                        <div id="productGalleryPreviewGrid" class="gallery-preview-grid"></div>
+                                    </div>
+                                    <div class="gallery-empty-note">Choose files again if you want to replace the current selection before saving.</div>
                                 </div>
                             </div>
                         </div>
@@ -128,7 +144,15 @@
                 previewId: 'productImagePreview',
                 previewContainerId: 'productImagePreviewContainer',
                 helperId: 'productImageHelper',
-                emptyMessage: 'Select an image to preview. Large files will be compressed automatically before upload.'
+                emptyMessage: 'Select the main product image. Large files will be compressed automatically before upload.'
+            });
+
+            initializeProductGalleryUpload({
+                inputId: 'productGalleryInput',
+                previewContainerId: 'productGalleryPreviewContainer',
+                previewGridId: 'productGalleryPreviewGrid',
+                helperId: 'productGalleryHelper',
+                emptyMessage: 'Upload multiple gallery images. These will appear as thumbnails on the product details page.'
             });
 
             initializeVariantManager();
@@ -150,9 +174,9 @@
                 if (!file) {
                     preview.src = '#';
                     previewContainer.style.display = 'none';
-                    helper.textContent = emptyMessage;
-                    return;
-                }
+                helper.textContent = emptyMessage;
+                return;
+            }
 
                 if (!file.type.startsWith('image/')) {
                     helper.textContent = 'Please select a valid image file.';
@@ -186,9 +210,87 @@
             });
         }
 
+        async function initializeProductGalleryUpload({ inputId, previewContainerId, previewGridId, helperId, emptyMessage }) {
+            const fileInput = document.getElementById(inputId);
+            const previewContainer = document.getElementById(previewContainerId);
+            const previewGrid = document.getElementById(previewGridId);
+            const helper = document.getElementById(helperId);
+
+            if (!fileInput || !previewContainer || !previewGrid || !helper) {
+                return;
+            }
+
+            fileInput.addEventListener('change', async function (event) {
+                const files = Array.from(event.target.files || []);
+
+                if (!files.length) {
+                    previewGrid.innerHTML = '';
+                    previewContainer.style.display = 'none';
+                    helper.textContent = emptyMessage;
+                    return;
+                }
+
+                helper.innerHTML = '<span class="text-warning">Processing gallery images...</span>';
+
+                try {
+                    const result = await compressFiles(files, {
+                        quality: 0.7,
+                        maxWidth: 1200,
+                        maxHeight: 1200,
+                        type: 'image/jpeg'
+                    });
+
+                    if (!result.files.length) {
+                        previewGrid.innerHTML = '';
+                        previewContainer.style.display = 'none';
+                        helper.innerHTML = '<span class="text-danger">Please select valid image files.</span>';
+                        event.target.value = '';
+                        return;
+                    }
+
+                    const dataTransfer = new DataTransfer();
+                    result.files.forEach((file) => dataTransfer.items.add(file));
+                    event.target.files = dataTransfer.files;
+
+                    renderGalleryPreview(previewGrid, result.files);
+                    previewContainer.style.display = 'block';
+                    helper.innerHTML = `<span class="text-success">${result.files.length} image(s) ready. Compressed ${result.originalSize} KB to ${result.compressedSize} KB.</span>`;
+                } catch (error) {
+                    console.error(error);
+                    helper.innerHTML = '<span class="text-danger">Gallery image processing failed. Original files will be uploaded.</span>';
+                    renderGalleryPreview(previewGrid, files);
+                    previewContainer.style.display = 'block';
+                }
+            });
+        }
+
         function updatePreview(preview, previewContainer, file) {
             preview.src = URL.createObjectURL(file);
             previewContainer.style.display = 'block';
+        }
+
+        function renderGalleryPreview(previewGrid, files) {
+            previewGrid.innerHTML = '';
+
+            files.forEach((file) => {
+                const objectUrl = URL.createObjectURL(file);
+                const card = document.createElement('div');
+                card.className = 'gallery-preview-card';
+                card.innerHTML = `
+                    <img src="${objectUrl}" alt="${file.name}">
+                    <div class="gallery-preview-meta">
+                        <strong>${file.name}</strong><br>
+                        ${(file.size / 1024).toFixed(2)} KB
+                    </div>
+                `;
+
+                const image = card.querySelector('img');
+                image.addEventListener('load', function () {
+                    URL.revokeObjectURL(objectUrl);
+                }, { once: true });
+
+                previewGrid.appendChild(card);
+            });
         }
 
         function compressImage(file, options) {
@@ -237,6 +339,35 @@
 
                 reader.onerror = (error) => reject(error);
             });
+        }
+
+        async function compressFiles(files, options) {
+            const processedFiles = [];
+            let originalBytes = 0;
+            let compressedBytes = 0;
+
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) {
+                    continue;
+                }
+
+                originalBytes += file.size;
+
+                try {
+                    const processedFile = await compressImage(file, options);
+                    processedFiles.push(processedFile);
+                    compressedBytes += processedFile.size;
+                } catch (error) {
+                    processedFiles.push(file);
+                    compressedBytes += file.size;
+                }
+            }
+
+            return {
+                files: processedFiles,
+                originalSize: (originalBytes / 1024).toFixed(2),
+                compressedSize: (compressedBytes / 1024).toFixed(2),
+            };
         }
 
         function initializeVariantManager() {

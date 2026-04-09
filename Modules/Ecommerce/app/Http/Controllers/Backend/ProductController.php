@@ -38,6 +38,8 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'nullable|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery' => 'nullable|array|max:12',
+            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
         ]);
 
         $variants = $this->extractVariantPayloads($request);
@@ -47,22 +49,32 @@ class ProductController extends Controller
             $imagePath = ImageService::upload($request->file('image'), 'products');
         }
 
-        DB::transaction(function () use ($validated, $request, $imagePath, $variants) {
-            $product = Product::create([
-                'name' => $validated['name'],
-                'slug' => Str::slug($validated['name']),
-                'product_category_id' => $validated['product_category_id'],
-                'description' => $request->description,
-                'price' => $validated['price'],
-                'sale_price' => $request->sale_price,
-                'stock' => (int) ($validated['stock'] ?? 0),
-                'image' => $imagePath,
-                'is_active' => true,
-                'is_featured' => $request->has('is_featured'),
-            ]);
+        $galleryPaths = $request->hasFile('gallery')
+            ? ImageService::uploadMany($request->file('gallery'), 'products')
+            : [];
 
-            $this->syncVariants($product, $variants);
-        });
+        try {
+            DB::transaction(function () use ($validated, $request, $imagePath, $galleryPaths, $variants) {
+                $product = Product::create([
+                    'name' => $validated['name'],
+                    'slug' => Str::slug($validated['name']),
+                    'product_category_id' => $validated['product_category_id'],
+                    'description' => $request->description,
+                    'price' => $validated['price'],
+                    'sale_price' => $request->sale_price,
+                    'stock' => (int) ($validated['stock'] ?? 0),
+                    'image' => $imagePath,
+                    'gallery' => $galleryPaths,
+                    'is_active' => true,
+                    'is_featured' => $request->has('is_featured'),
+                ]);
+
+                $this->syncVariants($product, $variants);
+            });
+        } catch (\Throwable $exception) {
+            ImageService::deleteMany(array_filter([$imagePath, ...$galleryPaths]));
+            throw $exception;
+        }
 
         return redirect()->route('ecommerce.admin.products.index')->with('success', 'Product created successfully.');
     }
@@ -84,9 +96,34 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'nullable|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery' => 'nullable|array|max:12',
+            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
+            'removed_gallery' => 'nullable|array',
+            'removed_gallery.*' => 'nullable|string',
         ]);
 
         $variants = $this->extractVariantPayloads($request);
+        $currentGalleryPaths = collect($product->gallery ?? [])
+            ->filter()
+            ->values();
+        $removedGalleryPaths = collect($request->input('removed_gallery', []))
+            ->filter()
+            ->values();
+        $galleryPaths = $currentGalleryPaths
+            ->reject(fn ($path) => $removedGalleryPaths->contains($path))
+            ->values()
+            ->all();
+        $newGalleryPaths = $request->hasFile('gallery')
+            ? ImageService::uploadMany($request->file('gallery'), 'products')
+            : [];
+        $galleryPaths = collect($galleryPaths)
+            ->merge($newGalleryPaths)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+        $oldPrimaryImagePath = $product->image;
+        $newPrimaryImagePath = null;
 
         $data = [
             'name' => $validated['name'],
@@ -96,26 +133,55 @@ class ProductController extends Controller
             'price' => $validated['price'],
             'sale_price' => $request->sale_price,
             'stock' => (int) ($validated['stock'] ?? 0),
+            'gallery' => $galleryPaths,
             'is_active' => $request->has('is_active'),
             'is_featured' => $request->has('is_featured'),
         ];
 
         if ($request->hasFile('image')) {
-            ImageService::delete($product->image);
-            $data['image'] = ImageService::upload($request->file('image'), 'products');
+            $newPrimaryImagePath = ImageService::upload($request->file('image'), 'products');
+            $data['image'] = $newPrimaryImagePath;
         }
 
-        DB::transaction(function () use ($product, $data, $variants) {
-            $product->update($data);
-            $this->syncVariants($product, $variants);
-        });
+        try {
+            DB::transaction(function () use ($product, $data, $variants) {
+                $product->update($data);
+                $this->syncVariants($product, $variants);
+            });
+        } catch (\Throwable $exception) {
+            ImageService::deleteMany(array_filter([
+                $newPrimaryImagePath,
+                ...$newGalleryPaths,
+            ]));
+
+            throw $exception;
+        }
+
+        $pathsToDelete = $currentGalleryPaths
+            ->intersect($removedGalleryPaths)
+            ->reject(fn ($path) => $path === $product->image)
+            ->values()
+            ->all();
+
+        if ($oldPrimaryImagePath && $newPrimaryImagePath && $oldPrimaryImagePath !== $newPrimaryImagePath && ! in_array($oldPrimaryImagePath, $galleryPaths, true)) {
+            $pathsToDelete[] = $oldPrimaryImagePath;
+        }
+
+        ImageService::deleteMany(array_unique(array_filter($pathsToDelete)));
 
         return redirect()->route('ecommerce.admin.products.index')->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product)
     {
-        ImageService::delete($product->image);
+        ImageService::deleteMany(
+            collect([$product->image])
+                ->merge($product->gallery ?? [])
+                ->filter()
+                ->unique()
+                ->values()
+                ->all()
+        );
         $product->delete();
 
         return redirect()->route('ecommerce.admin.products.index')->with('success', 'Product deleted successfully.');

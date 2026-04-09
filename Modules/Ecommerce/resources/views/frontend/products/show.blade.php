@@ -19,9 +19,10 @@
     $galleryImages = collect($product->gallery ?? [])
         ->prepend($product->image)
         ->filter()
+        ->map(fn ($image) => \Illuminate\Support\Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image))
         ->unique()
         ->values();
-    $mainImage = $galleryImages->first();
+    $mainImage = $galleryImages->first() ?: $fallbackImage;
     $brandName = $product->brand ?: ($product->category->name ?? 'ABCSheba');
     $sku = $selectedVariant?->sku ?: ($product->sku ?: strtoupper($product->slug ?: ('PRO-' . $product->id)));
     $reviewCount = (int) ($product->reviews_count ?? 0);
@@ -91,7 +92,7 @@
 
                         <div class="product-image-container product-image-main detail-main-image">
                             <img id="activeProductImage"
-                                src="{{ $mainImage ? asset($mainImage) : $fallbackImage }}"
+                                src="{{ $mainImage }}"
                                 class="product-main-img"
                                 alt="{{ $product->name }}"
                                 onerror="this.onerror=null;this.src='{{ $fallbackImage }}';">
@@ -102,9 +103,9 @@
                                 @foreach($galleryImages as $image)
                                     <button type="button"
                                         class="product-thumb {{ $loop->first ? 'is-active' : '' }}"
-                                        data-image="{{ asset($image) }}"
+                                        data-image="{{ $image }}"
                                         aria-label="Preview image {{ $loop->iteration }}">
-                                        <img src="{{ asset($image) }}"
+                                        <img src="{{ $image }}"
                                             alt="{{ $product->name }} thumbnail {{ $loop->iteration }}"
                                             onerror="this.onerror=null;this.src='{{ $fallbackImage }}';">
                                     </button>
