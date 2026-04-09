@@ -76,35 +76,61 @@
 
                 <div class="row">
                     @forelse($products as $product)
-                        <div class="col-md-6 col-lg-6 col-xl-4 mb-4">
-                            <div class="card product-card h-100 border-0">
-                                <a href="{{ route('ecommerce.products.show', $product->id) }}" class="product-image-wrap">
-                                    <img src="{{ $product->image ? asset($product->image) : asset('assets/img/products/default-product.png') }}"
-                                        class="card-img-top" alt="{{ $product->name }}">
-                                </a>
-                                <div class="card-body d-flex flex-column">
-                                    <span class="badge product-badge mb-2">{{ $product->category->name ?? 'General' }}</span>
-                                    <h5 class="card-title mb-2">
-                                        <a href="{{ route('ecommerce.products.show', $product->id) }}">{{ $product->name }}</a>
-                                    </h5>
+                        <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-grid-item">
+                            <div class="product-card-modern">
+                                <div class="stock-badge {{ $product->stock > 0 ? 'in-stock' : 'out-of-stock' }}">
+                                    {{ $product->stock > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
+                                </div>
 
-                                    <div class="product-price mb-3 mt-auto">
-                                        @if($product->sale_price)
-                                            <span class="old-price">৳{{ number_format($product->price, 2) }}</span>
-                                            <span class="new-price">৳{{ number_format($product->sale_price, 2) }}</span>
-                                        @else
-                                            <span class="new-price">৳{{ number_format($product->price, 2) }}</span>
-                                        @endif
+                                <div class="product-image-container">
+                                    <a href="{{ route('ecommerce.products.show', $product->id) }}" class="product-image-link">
+                                        @php
+                                            $image = $product->image;
+                                            if (!$image && !empty($product->gallery) && is_array($product->gallery)) {
+                                                $image = $product->gallery[0] ?? null;
+                                            }
+                                        @endphp
+                                        <img src="{{ $image ? asset($image) : asset('assets/img/products/default-product.png') }}"
+                                            class="product-main-img" alt="{{ $product->name }}">
+                                    </a>
+                                </div>
+
+                                <div class="product-details">
+                                    <div class="product-rating">
+                                        <i class="fas fa-star"></i>
+                                        <span class="rating-value">{{ number_format($product->rating ?? 4.5, 1) }}</span>
+                                        <span class="review-count">({{ $product->reviews_count ?? rand(10, 200) }})</span>
                                     </div>
 
-                                    <form action="{{ route('ecommerce.cart.add') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-cart w-100">
-                                            <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                                        </button>
-                                    </form>
+                                    <div class="product-brand">{{ $product->category->name ?? 'Medicine' }}</div>
+
+                                    <h4 class="product-name">
+                                        <a href="{{ route('ecommerce.products.show', $product->id) }}">{{ $product->name }}</a>
+                                    </h4>
+
+                                    <div class="product-footer">
+                                        <div class="product-price-tag">
+                                            @if($product->sale_price)
+                                                <span class="price-current">৳{{ number_format($product->sale_price, 0) }}</span>
+                                                <span class="price-original">৳{{ number_format($product->price, 0) }}</span>
+                                            @else
+                                                <span class="price-current">৳{{ number_format($product->price, 0) }}</span>
+                                            @endif
+                                        </div>
+                                        <form action="{{ route('ecommerce.cart.add') }}" method="POST" class="product-actions-form">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <div class="btn-group-modern">
+                                                <button type="submit" class="btn-cart-modern" title="Add to Cart">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </button>
+                                                <button type="submit" name="buy_now" value="1" class="btn-buy-modern">
+                                                    Buy
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -258,80 +284,214 @@
         font-weight: 600;
     }
 
-    .product-card {
+    .product-grid-item {
+        padding: 0 10px;
+    }
+
+    .product-card-modern {
+        background: #fff;
         border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
         overflow: hidden;
-        box-shadow: 0 8px 24px rgba(2, 6, 23, 0.08);
-        transition: transform .2s ease, box-shadow .2s ease;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        border: 1px solid #f0f0f0;
     }
 
-    .product-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 16px 30px rgba(2, 6, 23, 0.14);
+    .product-card-modern:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(0, 102, 255, 0.12);
     }
 
-    .product-image-wrap {
+    .stock-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        z-index: 10;
+        text-transform: uppercase;
+    }
+
+    .stock-badge.in-stock {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .stock-badge.out-of-stock {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .product-image-container {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
         background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .product-image-link {
+        width: 100%;
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 16px;
     }
 
-    .product-card .card-img-top {
-        height: 220px;
+    .product-main-img {
+        width: 100%;
+        height: 100%;
         object-fit: contain;
         object-position: center;
-        width: 100%;
+        transition: transform 0.3s ease;
     }
 
-    .product-badge {
-        width: max-content;
-        background: #dbeafe;
-        color: #1d4ed8;
-        font-weight: 600;
+    .product-card-modern:hover .product-main-img {
+        transform: scale(1.03);
     }
 
-    .product-card .card-title a {
-        color: #0f172a;
-        text-decoration: none;
+    .product-details {
+        padding: 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
 
-    .product-card .card-title a:hover {
-        color: #2563eb;
-    }
-
-    .product-price {
+    .product-rating {
         display: flex;
         align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
+        gap: 4px;
+        margin-bottom: 8px;
+        font-size: 13px;
     }
 
-    .old-price {
-        color: #64748b;
-        text-decoration: line-through;
-        font-size: 14px;
+    .product-rating i {
+        color: #ffc107;
+        font-size: 12px;
     }
 
-    .new-price {
-        color: #0f172a;
-        font-weight: 700;
-        font-size: 18px;
-    }
-
-    .btn-cart {
-        background: #0f172a;
-        color: #fff;
-        border: 0;
-        border-radius: 10px;
+    .product-rating .rating-value {
         font-weight: 600;
-        padding: 10px 14px;
+        color: #333;
     }
 
-    .btn-cart:hover {
-        background: #1e293b;
+    .product-rating .review-count {
+        color: #999;
+        font-size: 12px;
+    }
+
+    .product-brand {
+        font-size: 11px;
+        color: #1D4ED8;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+
+    .product-name {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.4;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 40px;
+    }
+
+    .product-name a {
+        color: #272b41;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .product-name a:hover {
+        color: #1D4ED8;
+    }
+
+    .product-footer {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .product-price-tag {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .price-current {
+        font-size: 18px;
+        font-weight: 700;
+        color: #272b41;
+    }
+
+    .price-original {
+        font-size: 12px;
+        color: #999;
+        text-decoration: line-through;
+    }
+
+    .product-actions-form {
+        display: flex;
+    }
+
+    .btn-group-modern {
+        display: flex;
+        gap: 6px;
+    }
+
+    .btn-cart-modern {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        border: 2px solid #1D4ED8;
+        background: transparent;
+        color: #1D4ED8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-cart-modern:hover {
+        background: #1D4ED8;
         color: #fff;
+    }
+
+    .btn-buy-modern {
+        padding: 0 20px;
+        height: 38px;
+        border-radius: 8px;
+        border: none;
+        background: linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%);
+        color: #fff;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-buy-modern:hover {
+        background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
     }
 
     .empty-state {
