@@ -22,11 +22,12 @@
                         <h4 class="mb-0">Filter Products</h4>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('ecommerce.products') }}" method="GET">
+                        <form id="productFilterForm" action="{{ route('ecommerce.products') }}" method="GET">
                             <div class="filter-widget mb-4">
                                 <label class="filter-label">Search</label>
-                                <input type="text" name="search" class="form-control"
+                                <input type="text" id="productSearchInput" name="search" class="form-control"
                                     placeholder="Type product name..." value="{{ request('search') }}">
+                                <small class="filter-help-text">Search applies automatically while typing.</small>
                             </div>
 
                             <div class="filter-widget mb-4">
@@ -47,8 +48,11 @@
                                 </div>
                             </div>
 
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-filter">Apply Filter</button>
+                            <div class="filter-auto-note mb-3">
+                                Filters update automatically. Use reset to clear all filters.
+                            </div>
+
+                            <div class="d-grid">
                                 <a href="{{ route('ecommerce.products') }}" class="btn btn-clear">Reset</a>
                             </div>
                         </form>
@@ -257,6 +261,13 @@
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
     }
 
+    .filter-help-text {
+        display: block;
+        margin-top: 8px;
+        color: #64748b;
+        font-size: 12px;
+    }
+
     .category-list {
         max-height: 280px;
         overflow: auto;
@@ -297,6 +308,20 @@
         padding: 10px 14px;
         font-weight: 600;
         background: #fff;
+    }
+
+    .filter-auto-note {
+        border-radius: 10px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 10px 12px;
+    }
+
+    #productFilterForm.is-filtering {
+        opacity: 0.72;
+        transition: opacity .2s ease;
     }
 
     .active-filters {
@@ -550,4 +575,90 @@
         }
     }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('productFilterForm');
+
+        if (!form) {
+            return;
+        }
+
+        const searchInput = document.getElementById('productSearchInput');
+        const categoryInputs = form.querySelectorAll('input[name="category"]');
+        let searchTimer = null;
+
+        function buildFilterUrl() {
+            const url = new URL(form.action, window.location.origin);
+            const formData = new FormData(form);
+            const search = (formData.get('search') || '').toString().trim();
+            const category = (formData.get('category') || '').toString().trim();
+
+            if (search) {
+                url.searchParams.set('search', search);
+            }
+
+            if (category) {
+                url.searchParams.set('category', category);
+            }
+
+            return url;
+        }
+
+        function getCurrentUrl() {
+            const url = new URL(window.location.href);
+            const normalizedUrl = new URL(url.pathname, window.location.origin);
+            const search = (url.searchParams.get('search') || '').trim();
+            const category = (url.searchParams.get('category') || '').trim();
+
+            if (search) {
+                normalizedUrl.searchParams.set('search', search);
+            }
+
+            if (category) {
+                normalizedUrl.searchParams.set('category', category);
+            }
+
+            return normalizedUrl;
+        }
+
+        function submitFilters() {
+            const nextUrl = buildFilterUrl();
+            const currentUrl = getCurrentUrl();
+
+            if (nextUrl.toString() === currentUrl.toString()) {
+                return;
+            }
+
+            form.classList.add('is-filtering');
+            window.location.assign(nextUrl.toString());
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                window.clearTimeout(searchTimer);
+                searchTimer = window.setTimeout(submitFilters, 350);
+            });
+
+            searchInput.addEventListener('keydown', function (event) {
+                if (event.key !== 'Enter') {
+                    return;
+                }
+
+                event.preventDefault();
+                window.clearTimeout(searchTimer);
+                submitFilters();
+            });
+        }
+
+        categoryInputs.forEach(function (input) {
+            input.addEventListener('change', function () {
+                window.clearTimeout(searchTimer);
+                submitFilters();
+            });
+        });
+    });
+</script>
 @endpush
