@@ -1287,7 +1287,7 @@
                 }
 
                 products.forEach(function (product) {
-                    var imageSrc = product.image ? (product.image.startsWith('http') ? product.image : '/' + product.image) : '/assets/img/products/default-product.png';
+                    var imageSrc = product.image_url || (product.image ? (product.image.startsWith('http') ? product.image : '/' + product.image.replace(/^\/+/, '')) : '/assets/img/products/default-product.png');
 
                     var priceHtml = '';
                     if (product.has_variants) {
@@ -1331,7 +1331,7 @@
                                                                                                                     <div class="product-card-modern">
                                                                                                                         <div class="stock-badge ${stockClass}">${stockText}</div>
                                                                                                                         <div class="product-image-container">
-                                                                                                                            <a href="/products/${product.id}">
+                                                                                                                            <a href="/products/${product.id}" class="product-image-link">
                                                                                                                                 <img src="${imageSrc}" class="product-main-img" alt="${product.name}">
                                                                                                                             </a>
                                                                                                                         </div>

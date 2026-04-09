@@ -6,6 +6,7 @@ use App\Services\ProductStockService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Modules\Ecommerce\Models\Product;
 use Modules\Ecommerce\Models\ProductCategory;
@@ -46,6 +47,25 @@ class ProductController extends Controller
         return redirect()->back()
             ->withErrors($exception->errors())
             ->withInput();
+    }
+
+    protected function productImageUrl(Product $product): string
+    {
+        $image = $product->image;
+
+        if (! $image && is_array($product->gallery) && ! empty($product->gallery)) {
+            $image = $product->gallery[0] ?? null;
+        }
+
+        if (! $image) {
+            return asset('assets/img/products/default-product.png');
+        }
+
+        if (Str::startsWith($image, ['http://', 'https://', '//'])) {
+            return $image;
+        }
+
+        return asset(ltrim($image, '/'));
     }
 
     protected function ensureCartHasAvailableStock(array $cart): void
@@ -183,6 +203,7 @@ class ProductController extends Controller
                     'id' => $product->id,
                     'name' => $product->name,
                     'image' => $product->image,
+                    'image_url' => $this->productImageUrl($product),
                     'price' => $product->effectivePrice(),
                     'regular_price' => $product->effectiveRegularPrice(),
                     'sale_price' => $product->effectivePrice() < $product->effectiveRegularPrice()
