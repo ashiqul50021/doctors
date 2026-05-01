@@ -391,8 +391,21 @@
                                                                                         <i class="fas fa-times"></i> Cancel
                                                                                     </button>
                                                                                 </form>
+                                                                            @elseif($appt->status == 'confirmed')
+                                                                                <form action="{{ route('appointment.complete', $appt->id) }}" method="POST" class="d-inline">
+                                                                                    @csrf
+                                                                                    <button type="submit" class="btn btn-sm bg-info-light">
+                                                                                        <i class="fas fa-check-double"></i> Complete
+                                                                                    </button>
+                                                                                </form>
+                                                                                <form action="{{ route('appointment.cancel', $appt->id) }}" method="POST" class="d-inline">
+                                                                                    @csrf
+                                                                                    <button type="submit" class="btn btn-sm bg-danger-light">
+                                                                                        <i class="fas fa-times"></i> Cancel
+                                                                                    </button>
+                                                                                </form>
                                                                             @else
-                                                                                <span class="badge bg-{{ $appt->status == 'confirmed' ? 'success' : ($appt->status == 'cancelled' ? 'danger' : 'info') }}">{{ ucfirst($appt->status) }}</span>
+                                                                                <span class="badge bg-{{ $appt->status == 'completed' ? 'info' : 'danger' }}">{{ ucfirst($appt->status) }}</span>
                                                                             @endif
                                                                         </div>
                                                                     </td>
@@ -463,8 +476,21 @@
                                                                                         <i class="fas fa-times"></i> Cancel
                                                                                     </button>
                                                                                 </form>
+                                                                            @elseif($appt->status == 'confirmed')
+                                                                                <form action="{{ route('appointment.complete', $appt->id) }}" method="POST" class="d-inline">
+                                                                                    @csrf
+                                                                                    <button type="submit" class="btn btn-sm bg-info-light">
+                                                                                        <i class="fas fa-check-double"></i> Complete
+                                                                                    </button>
+                                                                                </form>
+                                                                                <form action="{{ route('appointment.cancel', $appt->id) }}" method="POST" class="d-inline">
+                                                                                    @csrf
+                                                                                    <button type="submit" class="btn btn-sm bg-danger-light">
+                                                                                        <i class="fas fa-times"></i> Cancel
+                                                                                    </button>
+                                                                                </form>
                                                                             @else
-                                                                                <span class="badge bg-{{ $appt->status == 'confirmed' ? 'success' : ($appt->status == 'cancelled' ? 'danger' : 'info') }}">{{ ucfirst($appt->status) }}</span>
+                                                                                <span class="badge bg-{{ $appt->status == 'completed' ? 'info' : 'danger' }}">{{ ucfirst($appt->status) }}</span>
                                                                             @endif
                                                                         </div>
                                                                     </td>

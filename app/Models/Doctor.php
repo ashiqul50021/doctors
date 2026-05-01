@@ -41,6 +41,11 @@ class Doctor extends Model
         return $this->hasMany(Appointment::class);
     }
 
+    public function offDays()
+    {
+        return $this->hasMany(DoctorOffDay::class);
+    }
+
     public function reviews()
     {
         return $this->hasMany(Review::class);

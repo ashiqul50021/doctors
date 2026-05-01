@@ -24,7 +24,13 @@ class ScheduleController extends Controller
             $groupedSchedules[$schedule->day][] = $schedule;
         }
 
-        return view('frontend.schedule-timings', compact('doctor', 'groupedSchedules'));
+        // Load upcoming off days (today onwards)
+        $offDays = \App\Models\DoctorOffDay::where('doctor_id', $doctor->id)
+            ->where('off_date', '>=', today())
+            ->orderBy('off_date')
+            ->get();
+
+        return view('frontend.schedule-timings', compact('doctor', 'groupedSchedules', 'offDays'));
     }
 
     public function store(Request $request)

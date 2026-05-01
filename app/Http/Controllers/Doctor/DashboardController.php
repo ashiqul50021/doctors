@@ -8,6 +8,7 @@ use App\Models\Appointment;
 use App\Models\Patient;
 use App\Models\Review;
 use App\Models\Schedule;
+use App\Models\DoctorOffDay;
 use App\Models\Area;
 use App\Services\ImageService;
 use Illuminate\Support\Facades\Auth;
@@ -396,5 +397,72 @@ class DashboardController extends Controller
         $appointment->save();
 
         return redirect()->back()->with('success', 'Appointment cancelled successfully.');
+    }
+
+    /**
+     * Complete Appointment
+     */
+    public function completeAppointment($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+
+        if ($appointment->doctor_id !== Auth::user()->doctor->id) {
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+
+        if ($appointment->status !== 'confirmed') {
+            return redirect()->back()->with('error', 'Only confirmed appointments can be marked as completed.');
+        }
+
+        $appointment->status = 'completed';
+        $appointment->save();
+
+        return redirect()->back()->with('success', 'Appointment marked as completed.');
+    }
+
+    /**
+     * Off Days management — add a specific date as off day
+     */
+    public function addOffDay(Request $request)
+    {
+        $request->validate([
+            'off_date' => 'required|date|after_or_equal:today',
+            'reason' => 'nullable|string|max:255',
+        ]);
+
+        $doctor = $this->getDoctor();
+
+        // Check if already marked as off
+        $exists = DoctorOffDay::where('doctor_id', $doctor->id)
+            ->where('off_date', $request->off_date)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->back()->with('warning', 'This date is already marked as off day.');
+        }
+
+        DoctorOffDay::create([
+            'doctor_id' => $doctor->id,
+            'off_date' => $request->off_date,
+            'reason' => $request->reason,
+        ]);
+
+        return redirect()->back()->with('success', 'Off day added successfully for ' . \Carbon\Carbon::parse($request->off_date)->format('d M Y') . '.');
+    }
+
+    /**
+     * Remove a specific off day
+     */
+    public function removeOffDay($id)
+    {
+        $doctor = $this->getDoctor();
+
+        $offDay = DoctorOffDay::where('id', $id)
+            ->where('doctor_id', $doctor->id)
+            ->firstOrFail();
+
+        $offDay->delete();
+
+        return redirect()->back()->with('success', 'Off day removed successfully.');
     }
 }

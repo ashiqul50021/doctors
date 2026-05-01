@@ -52,8 +52,21 @@
                                         <i class="fas fa-times"></i> Cancel
                                     </button>
                                 </form>
+                            @elseif($appointment->status == 'confirmed')
+                                <form action="{{ route('appointment.complete', $appointment->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm bg-info-light">
+                                        <i class="fas fa-check-double"></i> Complete
+                                    </button>
+                                </form>
+                                <form action="{{ route('appointment.cancel', $appointment->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm bg-danger-light">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                </form>
                             @else
-                                <span class="badge bg-{{ $appointment->status == 'confirmed' ? 'success' : ($appointment->status == 'completed' ? 'info' : 'danger') }}">
+                                <span class="badge bg-{{ $appointment->status == 'completed' ? 'info' : 'danger' }}">
                                     {{ ucfirst($appointment->status) }}
                                 </span>
                             @endif

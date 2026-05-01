@@ -148,9 +148,107 @@
             </div>
 
         </div>
-
-    </div>
     <!-- /Page Content -->
+
+    <!-- Off Days Management Section -->
+    <div class="content pt-0">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5 col-lg-4 col-xl-3">
+                    <!-- Spacer for sidebar alignment -->
+                </div>
+                <div class="col-md-7 col-lg-8 col-xl-9">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-calendar-times text-danger me-2"></i>Off Days (ছুটির দিন)</span>
+                                    </h4>
+                                    <p class="text-muted mb-4">নির্দিষ্ট তারিখে ছুটি থাকলে এখানে add করুন। এই দিনগুলোতে রোগী appointment নিতে পারবে না।</p>
+
+                                    <!-- Add Off Day Form -->
+                                    <form action="{{ route('doctors.off-day.store') }}" method="POST" class="mb-4">
+                                        @csrf
+                                        <div class="row align-items-end">
+                                            <div class="col-md-4">
+                                                <div class="mb-3 mb-md-0">
+                                                    <label class="fw-semibold">তারিখ নির্বাচন করুন</label>
+                                                    <input type="date" name="off_date" class="form-control" 
+                                                           min="{{ date('Y-m-d') }}" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="mb-3 mb-md-0">
+                                                    <label class="fw-semibold">কারণ (ঐচ্ছিক)</label>
+                                                    <input type="text" name="reason" class="form-control" 
+                                                           placeholder="e.g., Personal leave, Conference...">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button type="submit" class="btn btn-danger w-100">
+                                                    <i class="fas fa-plus-circle me-1"></i> Off Day Add করুন
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <!-- Off Days List -->
+                                    @if(isset($offDays) && $offDays->count() > 0)
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>তারিখ</th>
+                                                        <th>দিন</th>
+                                                        <th>কারণ</th>
+                                                        <th class="text-end">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($offDays as $offDay)
+                                                        <tr>
+                                                            <td>
+                                                                <span class="fw-semibold">{{ $offDay->off_date->format('d M, Y') }}</span>
+                                                            </td>
+                                                            <td>{{ $offDay->off_date->format('l') }}</td>
+                                                            <td>
+                                                                @if($offDay->reason)
+                                                                    <span class="text-muted">{{ $offDay->reason }}</span>
+                                                                @else
+                                                                    <span class="text-muted fst-italic">—</span>
+                                                                @endif
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <form action="{{ route('doctors.off-day.destroy', $offDay->id) }}" 
+                                                                      method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                                            onclick="return confirm('এই off day remove করতে চান?')">
+                                                                        <i class="fas fa-trash-alt"></i> Remove
+                                                                    </button>
+                                                                </form>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @else
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                            <p class="text-muted mb-0">কোনো off day সেট করা নেই। আপনার সাপ্তাহিক schedule অনুযায়ী সব দিন available।</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Add Time Slot Modal -->
     <div class="modal fade custom-modal" id="add_time_slot">

@@ -26,7 +26,7 @@ Route::name('doctors.')->group(function () {
     Route::post('/booking/{doctor_id}', [BookingController::class, 'bookAppointment'])->name('booking.submit');
     Route::get('/checkout', [BookingController::class, 'checkout'])->name('checkout');
     Route::post('/checkout', [BookingController::class, 'processPayment'])->name('booking.payment');
-    Route::view('/booking-success', 'doctors::frontend.booking-success')->name('booking.success');
+    Route::view('/booking-success', 'frontend.booking-success')->name('booking.success');
 
     // Doctor Dashboard & Settings
     Route::middleware(['auth', 'role:doctor'])->group(function () {
@@ -38,6 +38,7 @@ Route::name('doctors.')->group(function () {
             Route::get('/doctor-dashboard', [\App\Http\Controllers\Doctor\DashboardController::class, 'index'])->name('dashboard');
             Route::post('/appointment/accept/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'acceptAppointment'])->name('appointment.accept');
             Route::post('/appointment/cancel/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'cancelAppointment'])->name('appointment.cancel');
+            Route::post('/appointment/complete/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'completeAppointment'])->name('appointment.complete');
 
             // Change Password
             Route::get('/doctor-change-password', [\App\Http\Controllers\Doctor\DashboardController::class, 'changePassword'])->name('change.password');
@@ -64,6 +65,10 @@ Route::name('doctors.')->group(function () {
             Route::post('/schedule-timings', [\App\Http\Controllers\Doctor\ScheduleController::class, 'store'])->name('schedule.store');
             Route::delete('/schedule-timings/{id}', [\App\Http\Controllers\Doctor\ScheduleController::class, 'destroy'])->name('schedule.destroy');
 
+            // Off Days Management
+            Route::post('/off-days', [\App\Http\Controllers\Doctor\DashboardController::class, 'addOffDay'])->name('off-day.store');
+            Route::delete('/off-days/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'removeOffDay'])->name('off-day.destroy');
+
             // Calendar
             Route::view('/calendar', 'frontend.calendar')->name('calendar');
 
@@ -77,6 +82,25 @@ Route::name('doctors.')->group(function () {
             Route::view('/edit-prescription', 'frontend.edit-prescription')->name('edit.prescription');
         });
     });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Legacy Route Aliases (for views using non-prefixed names)
+|--------------------------------------------------------------------------
+| Existing views use route('booking', ...) instead of route('doctors.booking', ...)
+| These aliases ensure backward compatibility.
+*/
+Route::get('/booking/{doctor_id}', [BookingController::class, 'index'])->name('booking');
+Route::post('/booking/{doctor_id}', [BookingController::class, 'bookAppointment'])->name('booking.submit');
+Route::get('/checkout', [BookingController::class, 'checkout'])->name('checkout');
+Route::post('/checkout', [BookingController::class, 'processPayment'])->name('booking.payment');
+Route::view('/booking-success', 'frontend.booking-success')->name('booking.success');
+
+Route::middleware(['auth', 'role:doctor'])->group(function () {
+    Route::post('/appointment/accept/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'acceptAppointment'])->name('appointment.accept');
+    Route::post('/appointment/cancel/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'cancelAppointment'])->name('appointment.cancel');
+    Route::post('/appointment/complete/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'completeAppointment'])->name('appointment.complete');
 });
 
 /*

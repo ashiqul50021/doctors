@@ -13,12 +13,7 @@ use Modules\Site\Http\Controllers\SiteController;
 // Home
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-// Search & Booking
-Route::get('/booking/{doctor_id}', [App\Http\Controllers\BookingController::class, 'index'])->name('booking');
-Route::post('/booking/{doctor_id}', [App\Http\Controllers\BookingController::class, 'bookAppointment'])->name('booking.submit');
-Route::get('/checkout', [App\Http\Controllers\BookingController::class, 'checkout'])->name('checkout');
-Route::post('/checkout', [App\Http\Controllers\BookingController::class, 'processPayment'])->name('booking.payment');
-Route::view('/booking-success', 'frontend.booking-success')->name('booking.success');
+// Booking routes are handled by Modules/Doctors/routes/web.php
 
 // Chat & Calls
 Route::view('/chat', 'frontend.chat')->name('chat');

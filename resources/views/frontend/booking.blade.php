@@ -83,6 +83,7 @@
                             </div>
                         </div>
 
+                        @if(count($dates) > 0)
                         <!-- Schedule Widget -->
                         <div class="card booking-schedule schedule-widget">
 
@@ -163,6 +164,16 @@
                                     class="fas fa-chevron-right ms-2"></i></button>
                         </div>
                         <!-- /Submit Section -->
+                        @else
+                        <!-- No Available Dates -->
+                        <div class="card">
+                            <div class="card-body text-center py-5">
+                                <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">এই ডাক্তারের কোনো available date নেই</h5>
+                                <p class="text-muted mb-0">ডাক্তার এখনো schedule সেট করেননি অথবা আগামী দিনগুলোতে off day আছে। পরে আবার চেষ্টা করুন।</p>
+                            </div>
+                        </div>
+                        @endif
                     </form>
 
                 </div>
