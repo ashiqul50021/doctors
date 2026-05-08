@@ -18,4 +18,10 @@
 // Admin Routes
 require __DIR__ . '/admin.php';
 
+use App\Http\Controllers\SslCommerzPaymentController;
 
+// SSLCommerz Routes
+Route::post('/sslcommerz/success', [SslCommerzPaymentController::class, 'success']);
+Route::post('/sslcommerz/fail', [SslCommerzPaymentController::class, 'fail']);
+Route::post('/sslcommerz/cancel', [SslCommerzPaymentController::class, 'cancel']);
+Route::post('/sslcommerz/ipn', [SslCommerzPaymentController::class, 'ipn']);

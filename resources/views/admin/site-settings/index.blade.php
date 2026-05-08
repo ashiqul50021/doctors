@@ -143,6 +143,48 @@
                 </div>
             </div>
         </div>
+        <!-- Payment Gateway Settings -->
+        <div class="col-lg-12 mt-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title"><i class="fas fa-credit-card me-2"></i>Payment Gateway (SSLCommerz)</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('admin.site-settings.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label>Store ID</label>
+                                    <input type="text" class="form-control" name="sslcz_store_id"
+                                        value="{{ $ecommerceSettings['sslcz_store_id'] ?? 'testbox' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label>Store Password</label>
+                                    <input type="text" class="form-control" name="sslcz_store_password"
+                                        value="{{ $ecommerceSettings['sslcz_store_password'] ?? 'qwerty' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="sslcz_testmode" name="sslcz_testmode" value="1" {{ isset($ecommerceSettings['sslcz_testmode']) && $ecommerceSettings['sslcz_testmode'] == '1' ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="sslcz_testmode">Enable Test Mode (Sandbox)</label>
+                                    </div>
+                                    <small class="text-muted">Uncheck this when making your site live.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Payment Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">

@@ -60,6 +60,8 @@ class SiteSettingController extends Controller
             'footer_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:20480',
             'shipping_inside_dhaka' => 'nullable|numeric|min:0',
             'shipping_outside_dhaka' => 'nullable|numeric|min:0',
+            'sslcz_store_id' => 'nullable|string|max:255',
+            'sslcz_store_password' => 'nullable|string|max:255',
         ]);
 
         // Text settings
@@ -74,8 +76,13 @@ class SiteSettingController extends Controller
             'instagram_url',
             'linkedin_url',
             'shipping_inside_dhaka',
-            'shipping_outside_dhaka'
+            'shipping_outside_dhaka',
+            'sslcz_store_id',
+            'sslcz_store_password'
         ];
+
+        // Handle checkbox for sslcz_testmode explicitly since unchecking means it won't be in request
+        SiteSetting::set('sslcz_testmode', $request->has('sslcz_testmode') ? '1' : '0', 'boolean', 'ecommerce');
 
         foreach ($textSettings as $key) {
             if ($request->has($key)) {
@@ -151,7 +158,7 @@ class SiteSettingController extends Controller
             return 'social';
         if (str_starts_with($key, 'banner_'))
             return 'banner';
-        if (str_starts_with($key, 'shipping_'))
+        if (str_starts_with($key, 'shipping_') || str_starts_with($key, 'sslcz_'))
             return 'ecommerce';
         return 'general';
     }

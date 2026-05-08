@@ -54,47 +54,20 @@
                             <div class="payment-widget">
                                 <h4 class="card-title">Payment Method</h4>
 
-                                <!-- Credit Card Payment -->
+                                <!-- SSLCommerz Payment -->
                                 <div class="payment-list">
                                     <label class="payment-radio credit-card-option">
-                                        <input type="radio" name="radio" checked>
+                                        <input type="radio" name="payment_method" value="sslcommerz" checked>
                                         <span class="checkmark"></span>
-                                        Credit card
+                                        SSLCommerz (Credit Card / Mobile Banking)
                                     </label>
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group card-label">
-                                                <label for="card_name">Name on Card</label>
-                                                <input class="form-control" id="card_name" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group card-label">
-                                                <label for="card_number">Card Number</label>
-                                                <input class="form-control" id="card_number" placeholder="1234  5678  9876  5432" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group card-label">
-                                                <label for="expiry_month">Expiry Month</label>
-                                                <input class="form-control" id="expiry_month" placeholder="MM" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group card-label">
-                                                <label for="expiry_year">Expiry Year</label>
-                                                <input class="form-control" id="expiry_year" placeholder="YY" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group card-label">
-                                                <label for="cvv">CVV</label>
-                                                <input class="form-control" id="cvv" type="text">
-                                            </div>
+                                        <div class="col-md-12">
+                                            <p class="text-muted mt-3 mb-0">You will be redirected to SSLCommerz's secure gateway to complete your payment.</p>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- /Credit Card Payment -->
+                                <!-- /SSLCommerz Payment -->
 
                                 <!-- Terms Accept -->
                                 <div class="terms-accept">

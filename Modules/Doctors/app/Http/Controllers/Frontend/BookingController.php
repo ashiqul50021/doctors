@@ -222,7 +222,7 @@ class BookingController extends Controller
             $token_number = 'TKN-' . ($count + 1);
         }
 
-        Appointment::create([
+        $appointment = Appointment::create([
             'doctor_id' => $booking['doctor_id'],
             'patient_id' => $user->patient->id,
             'appointment_date' => $booking['date'],
@@ -235,8 +235,56 @@ class BookingController extends Controller
             'reason' => 'Consultation',
         ]);
 
-        // Clear session
+        if ($request->payment_method === 'sslcommerz') {
+            $store_id = \App\Models\SiteSetting::get('sslcz_store_id', env('SSLCZ_STORE_ID', 'testbox'));
+            $store_password = \App\Models\SiteSetting::get('sslcz_store_password', env('SSLCZ_STORE_PASSWORD', 'qwerty'));
+            $is_testmode = \App\Models\SiteSetting::get('sslcz_testmode', '1') == '1';
+
+            $post_data = array();
+            $post_data['store_id'] = $store_id;
+            $post_data['store_passwd'] = $store_password;
+            $post_data['total_amount'] = $booking['fee'];
+            $post_data['currency'] = "BDT";
+            $post_data['tran_id'] = "APT-" . $appointment->id;
+            $post_data['success_url'] = url('/sslcommerz/success');
+            $post_data['fail_url'] = url('/sslcommerz/fail');
+            $post_data['cancel_url'] = url('/sslcommerz/cancel');
+            
+            # CUSTOMER INFORMATION
+            $post_data['cus_name'] = $user->name;
+            $post_data['cus_email'] = $user->email;
+            $post_data['cus_add1'] = "Dhaka";
+            $post_data['cus_city'] = "Dhaka";
+            $post_data['cus_postcode'] = "1000";
+            $post_data['cus_country'] = "Bangladesh";
+            $post_data['cus_phone'] = $request->phone ?? '01711111111';
+            
+            $post_data['shipping_method'] = "NO";
+            $post_data['product_name'] = "Appointment Booking";
+            $post_data['product_category'] = "Medical Service";
+            $post_data['product_profile'] = "non-physical-goods";
+
+            $apiUrl = $is_testmode ? "https://sandbox.sslcommerz.com/gwprocess/v4/api.php" : "https://securepay.sslcommerz.com/gwprocess/v4/api.php";
+            
+            $response = \Illuminate\Support\Facades\Http::asForm()->post($apiUrl, $post_data);
+            $sslcz = $response->json();
+
+            if (isset($sslcz['GatewayPageURL'])) {
+                session()->forget('booking_details');
+                return redirect($sslcz['GatewayPageURL']);
+            } else {
+                return back()->withErrors(['payment' => 'SSLCommerz Gateway Error: ' . ($sslcz['failedreason'] ?? 'Unknown error')]);
+            }
+        }
+
+        // Clear session for other payment methods (if any)
+        $appointment->update(['status' => 'confirmed']);
         session()->forget('booking_details');
+
+        // Send Email Notification
+        if ($appointment->patient && $appointment->patient->user) {
+            \Illuminate\Support\Facades\Mail::to($appointment->patient->user->email)->send(new \App\Mail\AppointmentBookedMail($appointment));
+        }
 
         $flashData = [
             'meeting_link' => $meeting_link,

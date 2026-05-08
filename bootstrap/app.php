@@ -16,6 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\UpdateLastSeen::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'sslcommerz/success',
+            'sslcommerz/cancel',
+            'sslcommerz/fail',
+            'sslcommerz/ipn',
+        ]);
+
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'doctor.profile.completed' => \App\Http\Middleware\EnsureDoctorProfileCompleted::class,
