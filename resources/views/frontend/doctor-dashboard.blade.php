@@ -378,6 +378,18 @@
                                                                                 <i class="far fa-eye"></i> View
                                                                             </a>
 
+                                                                            @if(in_array($appt->status, ['confirmed', 'completed']))
+                                                                                <a href="{{ route('doctors.add.prescription', $appt->id) }}" class="btn btn-sm bg-primary-light">
+                                                                                    <i class="fas fa-prescription"></i> Prescription
+                                                                                </a>
+                                                                            @endif
+
+                                                                            @if($appt->type === 'online' && $appt->meeting_link && in_array($appt->status, ['pending', 'confirmed']))
+                                                                                <a href="{{ $appt->meeting_link }}" target="_blank" class="btn btn-sm bg-success-light">
+                                                                                    <i class="fas fa-video"></i> Join Call
+                                                                                </a>
+                                                                            @endif
+
                                                                             @if($appt->status == 'pending')
                                                                                 <form action="{{ route('appointment.accept', $appt->id) }}" method="POST" class="d-inline">
                                                                                     @csrf
@@ -462,6 +474,18 @@
                                                                                 class="btn btn-sm bg-info-light">
                                                                                 <i class="far fa-eye"></i> View
                                                                             </a>
+
+                                                                            @if(in_array($appt->status, ['confirmed', 'completed']))
+                                                                                <a href="{{ route('doctors.add.prescription', $appt->id) }}" class="btn btn-sm bg-primary-light">
+                                                                                    <i class="fas fa-prescription"></i> Prescription
+                                                                                </a>
+                                                                            @endif
+
+                                                                            @if($appt->type === 'online' && $appt->meeting_link && in_array($appt->status, ['pending', 'confirmed']))
+                                                                                <a href="{{ $appt->meeting_link }}" target="_blank" class="btn btn-sm bg-success-light">
+                                                                                    <i class="fas fa-video"></i> Join Call
+                                                                                </a>
+                                                                            @endif
 
                                                                             @if($appt->status == 'pending')
                                                                                 <form action="{{ route('appointment.accept', $appt->id) }}" method="POST" class="d-inline">

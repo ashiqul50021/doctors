@@ -46,6 +46,13 @@ Route::get('/forgot-password', function () {
     return view('frontend.forgot-password');
 })->name('forgot.password');
 
+// Google Calendar OAuth
+Route::get('/google/callback', [App\Http\Controllers\GoogleAuthController::class, 'callback'])->name('google.callback');
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/google/connect', [App\Http\Controllers\GoogleAuthController::class, 'connect'])->name('google.connect');
+    Route::get('/google/status', [App\Http\Controllers\GoogleAuthController::class, 'status'])->name('google.status');
+});
+
 // Static Pages
 Route::view('/components', 'frontend.components')->name('components');
 Route::view('/blank-page', 'frontend.blank-page')->name('blank.page');
@@ -110,7 +117,8 @@ Route::get('/api/doctors/filter', [App\Http\Controllers\HomeController::class, '
 
 // Patient Pages
 Route::middleware(['auth', 'role:patient'])->name('patient.')->group(function () {
-    Route::view('/patient-dashboard', 'frontend.patient-dashboard')->name('dashboard');
+    Route::get('/patient-dashboard', [\App\Http\Controllers\Patient\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/prescription/{id}', [\App\Http\Controllers\Doctor\PrescriptionController::class, 'show'])->name('prescription.view');
     Route::view('/patient-profile', 'frontend.patient-profile')->name('profile');
     Route::view('/profile-settings', 'frontend.profile-settings')->name('profile.settings');
     Route::view('/change-password', 'frontend.change-password')->name('change.password');

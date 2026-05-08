@@ -36,7 +36,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('favourites') }}">
+                                    <a href="{{ route('patient.favourites') }}">
                                         <i class="fas fa-bookmark"></i>
                                         <span>Favourites</span>
                                     </a>
@@ -49,13 +49,13 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('profile.settings') }}">
+                                    <a href="{{ route('patient.profile.settings') }}">
                                         <i class="fas fa-user-cog"></i>
                                         <span>Profile Settings</span>
                                     </a>
                                 </li>
                                 <li class="active">
-                                    <a href="{{ route('change.password') }}">
+                                    <a href="{{ route('patient.change.password') }}">
                                         <i class="fas fa-lock"></i>
                                         <span>Change Password</span>
                                     </a>

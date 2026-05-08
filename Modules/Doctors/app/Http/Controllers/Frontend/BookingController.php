@@ -206,17 +206,13 @@ class BookingController extends Controller
         $doctor = Doctor::with('user')->findOrFail($booking['doctor_id']);
 
         if ($booking['type'] === 'online') {
-            try {
-                $meetService = new \App\Services\GoogleMeetService();
-                $meeting_link = $meetService->createMeeting(
-                    'Consultation with Dr. ' . $doctor->user->name,
-                    $booking['date'] . ' ' . $booking['time']
-                );
-            } catch (\Exception $e) {
-                // Fallback if Google API fails or credentials missing
-                \Illuminate\Support\Facades\Log::error('Google Meet Error: ' . $e->getMessage());
-                $meeting_link = null;
-            }
+            // Generate Jitsi Meet link — no credentials needed!
+            $videoService = new \App\Services\VideoCallService();
+            $meeting_link = $videoService->createMeeting(
+                $doctor->user->name,
+                $booking['date'],
+                $booking['time']
+            );
         } elseif ($booking['type'] === 'offline') {
             // Generate Token Number
             $count = Appointment::where('doctor_id', $booking['doctor_id'])
@@ -226,7 +222,6 @@ class BookingController extends Controller
             $token_number = 'TKN-' . ($count + 1);
         }
 
-        // ---- Bug Fix #5: Start with 'pending' status instead of instant 'confirmed' ----
         Appointment::create([
             'doctor_id' => $booking['doctor_id'],
             'patient_id' => $user->patient->id,
@@ -243,7 +238,6 @@ class BookingController extends Controller
         // Clear session
         session()->forget('booking_details');
 
-        // ---- Bug Fix #6: Notify if Google Meet link failed for online booking ----
         $flashData = [
             'meeting_link' => $meeting_link,
             'token_number' => $token_number,
@@ -252,10 +246,6 @@ class BookingController extends Controller
             'date' => $booking['date'],
             'time' => $booking['time'],
         ];
-
-        if ($booking['type'] === 'online' && !$meeting_link) {
-            $flashData['warning'] = 'Your appointment is booked, but the video meeting link could not be generated. The doctor will share the link with you.';
-        }
 
         return redirect()->route('booking.success')->with($flashData);
     }

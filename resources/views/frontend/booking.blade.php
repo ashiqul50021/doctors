@@ -121,26 +121,16 @@
 
                                                         @if($daySchedule)
                                                             @php
-                                                                $startTime = \Carbon\Carbon::parse($daySchedule->start_time);
-                                                                $endTime = \Carbon\Carbon::parse($daySchedule->end_time);
-                                                                $interval = $daySchedule->slot_duration ?? 60; // Default 60 mins
+                                                                $startTime = \Carbon\Carbon::parse($daySchedule->start_time)->format('g:i A');
+                                                                $endTime = \Carbon\Carbon::parse($daySchedule->end_time)->format('g:i A');
                                                                 $dateKey = $date->format('Y-m-d');
                                                             @endphp
 
-                                                            @while($startTime < $endTime)
-                                                                @php
-                                                                    $time = $startTime->format('H:i:s');
-                                                                    $displayTime = $startTime->format('g:i A');
-                                                                    $isBooked = isset($bookedSlots[$dateKey]) && in_array($time, $bookedSlots[$dateKey]);
-                                                                @endphp
-                                                                <a class="timing {{ $isBooked ? 'disabled bg-light text-muted' : '' }}"
-                                                                   href="javascript:void(0)"
-                                                                   @if(!$isBooked) onclick="selectSlot(this, '{{ $date->format('Y-m-d') }}', '{{ $startTime->format('H:i') }}')" @endif
-                                                                   {{ $isBooked ? 'style=pointer-events:none;cursor:not-allowed;' : '' }}>
-                                                                    <span>{{ $displayTime }}</span>
-                                                                </a>
-                                                                @php $startTime->addMinutes($interval); @endphp
-                                                            @endwhile
+                                                            <a class="timing"
+                                                               href="javascript:void(0)"
+                                                               onclick="selectSlot(this, '{{ $date->format('Y-m-d') }}', '{{ $daySchedule->start_time }}')">
+                                                                <span>{{ $startTime }} - {{ $endTime }}</span>
+                                                            </a>
                                                         @else
                                                             <a class="timing disabled" href="javascript:void(0)">
                                                                 <span>Closed</span>

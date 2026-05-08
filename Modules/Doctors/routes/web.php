@@ -78,8 +78,11 @@ Route::name('doctors.')->group(function () {
             Route::view('/edit-billing', 'frontend.edit-billing')->name('edit.billing');
 
             // Prescriptions
-            Route::view('/add-prescription', 'frontend.add-prescription')->name('add.prescription');
-            Route::view('/edit-prescription', 'frontend.edit-prescription')->name('edit.prescription');
+            Route::get('/add-prescription/{appointment_id?}', [\App\Http\Controllers\Doctor\PrescriptionController::class, 'create'])->name('add.prescription');
+            Route::post('/store-prescription', [\App\Http\Controllers\Doctor\PrescriptionController::class, 'store'])->name('store.prescription');
+            Route::get('/edit-prescription/{id}', [\App\Http\Controllers\Doctor\PrescriptionController::class, 'edit'])->name('edit.prescription');
+            Route::put('/update-prescription/{id}', [\App\Http\Controllers\Doctor\PrescriptionController::class, 'update'])->name('update.prescription');
+            Route::get('/view-prescription/{id}', [\App\Http\Controllers\Doctor\PrescriptionController::class, 'show'])->name('view.prescription');
         });
     });
 });

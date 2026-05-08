@@ -75,18 +75,7 @@ class BookingController extends Controller
 
         $doctor = Doctor::findOrFail($doctor_id);
 
-        // Server-side double-booking prevention
-        $alreadyBooked = Appointment::where('doctor_id', $doctor_id)
-            ->where('appointment_date', $request->appointment_date)
-            ->where('appointment_time', $request->appointment_time)
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->exists();
-
-        if ($alreadyBooked) {
-            return redirect()->back()
-                ->withErrors(['appointment_time' => 'This time slot is already booked. Please select a different time.'])
-                ->withInput();
-        }
+        // Server-side double-booking prevention is removed because the system is now daily-based instead of slot-based.
 
         // Use correct fee columns from schema
         $fee = match ($request->type) {
@@ -171,18 +160,7 @@ class BookingController extends Controller
             $user->refresh();
         }
 
-        // Double-booking check at creation time (race condition guard)
-        $alreadyBooked = Appointment::where('doctor_id', $booking['doctor_id'])
-            ->where('appointment_date', $booking['date'])
-            ->where('appointment_time', $booking['time'])
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->exists();
-
-        if ($alreadyBooked) {
-            session()->forget('booking_details');
-            return redirect()->route('home')
-                ->with('error', 'Sorry, this time slot was just booked by someone else. Please try again.');
-        }
+        // Double-booking check removed because system is daily-based now.
 
         $meeting_link = null;
         $token_number = null;
@@ -191,16 +169,13 @@ class BookingController extends Controller
         $doctor = Doctor::with('user')->findOrFail($booking['doctor_id']);
 
         if ($booking['type'] === 'online') {
-            try {
-                $meetService = new \App\Services\GoogleMeetService();
-                $meeting_link = $meetService->createMeeting(
-                    'Consultation with Dr. ' . $doctor->user->name,
-                    $booking['date'] . ' ' . $booking['time']
-                );
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Google Meet Error: ' . $e->getMessage());
-                $meeting_link = null;
-            }
+            // Generate Jitsi Meet link — no credentials needed!
+            $videoService = new \App\Services\VideoCallService();
+            $meeting_link = $videoService->createMeeting(
+                $doctor->user->name,
+                $booking['date'],
+                $booking['time']
+            );
         } elseif ($booking['type'] === 'offline') {
             // Generate Token Number
             $count = Appointment::where('doctor_id', $booking['doctor_id'])
@@ -226,7 +201,7 @@ class BookingController extends Controller
         // Clear session
         session()->forget('booking_details');
 
-        // Build flash data with optional warning for failed Meet link
+        // Build flash data
         $flashData = [
             'meeting_link' => $meeting_link,
             'token_number' => $token_number,
@@ -235,10 +210,6 @@ class BookingController extends Controller
             'date' => $booking['date'],
             'time' => $booking['time'],
         ];
-
-        if ($booking['type'] === 'online' && !$meeting_link) {
-            $flashData['warning'] = 'Your appointment is booked, but the video meeting link could not be generated. The doctor will share the link with you.';
-        }
 
         return redirect()->route('booking.success')->with($flashData);
     }

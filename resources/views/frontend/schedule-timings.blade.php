@@ -22,6 +22,24 @@
 
                 <div class="col-md-7 col-lg-8 col-xl-9">
 
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="card">
@@ -250,6 +268,7 @@
         </div>
     </div>
 
+    @push('modals')
     <!-- Add Time Slot Modal -->
     <div class="modal fade custom-modal" id="add_time_slot">
         <div class="modal-dialog modal-dialog-centered">
@@ -415,6 +434,7 @@
         </div>
     </div>
     <!-- /Edit Time Slot Modal -->
+    @endpush
 @endsection
 
 @push('scripts')
@@ -426,6 +446,11 @@
     <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
 
     <script>
+        $(document).ready(function() {
+            // Fix Bootstrap modal z-index issues by moving modals directly to the body
+            $('#add_time_slot, #edit_time_slot').appendTo('body');
+        });
+
         function setDay(day) {
             document.getElementById('selected_day').value = day;
         }

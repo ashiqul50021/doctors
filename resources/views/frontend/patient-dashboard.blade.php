@@ -37,7 +37,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="{{ route('favourites') }}">
+                                        <a href="{{ route('patient.favourites') }}">
                                             <i class="fas fa-bookmark"></i>
                                             <span>Favourites</span>
                                         </a>
@@ -50,13 +50,13 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="{{ route('profile.settings') }}">
+                                        <a href="{{ route('patient.profile.settings') }}">
                                             <i class="fas fa-user-cog"></i>
                                             <span>Profile Settings</span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="{{ route('change.password') }}">
+                                        <a href="{{ route('patient.change.password') }}">
                                             <i class="fas fa-lock"></i>
                                             <span>Change Password</span>
                                         </a>
@@ -179,35 +179,36 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        @forelse($prescriptions ?? [] as $prescription)
                                                         <tr>
-                                                            <td>14 Nov 2019</td>
-                                                            <td>Prescription 1</td>
+                                                            <td>{{ $prescription->created_at->format('d M Y') }}</td>
+                                                            <td>Prescription {{ $prescription->id }}</td>
                                                             <td>
                                                                 <h2 class="table-avatar">
-                                                                    <a href="{{ route('doctors.profile', 1) }}"
+                                                                    <a href="{{ route('doctors.profile', $prescription->doctor_id) }}"
                                                                         class="avatar avatar-sm me-2">
                                                                         <img class="avatar-img rounded-circle"
-                                                                            src="{{ asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
+                                                                            src="{{ optional($prescription->doctor)->profile_image ? asset('storage/' . $prescription->doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
                                                                             alt="User Image">
                                                                     </a>
-                                                                    <a href="{{ route('doctors.profile', 1) }}">Dr. Ruby
-                                                                        Perrin
-                                                                        <span>Dental</span></a>
+                                                                    <a href="{{ route('doctors.profile', $prescription->doctor_id) }}">Dr. {{ optional(optional($prescription->doctor)->user)->name ?? 'Unknown' }}
+                                                                        <span>{{ optional($prescription->doctor)->specialization }}</span></a>
                                                                 </h2>
                                                             </td>
                                                             <td class="text-end">
                                                                 <div class="table-action">
-                                                                    <a href="javascript:void(0);"
-                                                                        class="btn btn-sm bg-primary-light">
-                                                                        <i class="fas fa-print"></i> Print
-                                                                    </a>
-                                                                    <a href="javascript:void(0);"
+                                                                    <a href="{{ route('patient.prescription.view', $prescription->id) }}"
                                                                         class="btn btn-sm bg-info-light">
                                                                         <i class="far fa-eye"></i> View
                                                                     </a>
                                                                 </div>
                                                             </td>
                                                         </tr>
+                                                        @empty
+                                                        <tr>
+                                                            <td colspan="4" class="text-center">No prescriptions found</td>
+                                                        </tr>
+                                                        @endforelse
                                                     </tbody>
                                                 </table>
                                             </div>

@@ -54,6 +54,7 @@
                                 </div>
                                 <!-- /Personal Information -->
 
+                                @if($booking['type'] === 'online')
                                 <div class="payment-widget">
                                     <h4 class="card-title">Payment Method</h4>
 
@@ -119,6 +120,20 @@
                                     <!-- /Submit Section -->
 
                                 </div>
+                                @else
+                                <div class="payment-widget">
+                                    <div class="terms-accept">
+                                        <div class="custom-checkbox">
+                                            <input type="checkbox" id="terms_accept" required>
+                                            <label for="terms_accept">I have read and accept <a href="#">Terms &amp;
+                                                    Conditions</a></label>
+                                        </div>
+                                    </div>
+                                    <div class="submit-section mt-4">
+                                        <button type="submit" class="btn btn-primary submit-btn">Confirm Booking</button>
+                                    </div>
+                                </div>
+                                @endif
                             </form>
                             <!-- /Checkout Form -->
 

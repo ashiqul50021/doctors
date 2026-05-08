@@ -52,6 +52,9 @@
     </div>
     <!-- /Main Wrapper -->
 
+    <!-- Modals Stack -->
+    @stack('modals')
+
     <!-- jQuery -->
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 

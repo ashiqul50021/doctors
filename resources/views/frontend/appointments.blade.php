@@ -39,6 +39,19 @@
                             <a href="#" class="btn btn-sm bg-info-light" data-bs-toggle="modal" data-bs-target="#appt_details_{{ $appointment->id }}">
                                 <i class="far fa-eye"></i> View
                             </a>
+
+                            @if(in_array($appointment->status, ['confirmed', 'completed']))
+                                <a href="{{ route('doctors.add.prescription', $appointment->id) }}" class="btn btn-sm bg-primary-light">
+                                    <i class="fas fa-prescription"></i> Prescription
+                                </a>
+                            @endif
+
+                            @if($appointment->type === 'online' && $appointment->meeting_link && in_array($appointment->status, ['pending', 'confirmed']))
+                                <a href="{{ $appointment->meeting_link }}" target="_blank" class="btn btn-sm bg-success-light">
+                                    <i class="fas fa-video"></i> Join Call
+                                </a>
+                            @endif
+
                             @if($appointment->status == 'pending')
                                 <form action="{{ route('appointment.accept', $appointment->id) }}" method="POST" class="d-inline">
                                     @csrf
