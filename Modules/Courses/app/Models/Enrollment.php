@@ -24,4 +24,9 @@ class Enrollment extends Model
     {
         return $this->belongsTo(\App\Models\User::class);
     }
+
+    public function agent()
+    {
+        return $this->belongsTo(\Modules\Agents\Models\Agent::class);
+    }
 }

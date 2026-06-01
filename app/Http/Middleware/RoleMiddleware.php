@@ -25,6 +25,10 @@ class RoleMiddleware
                 return redirect()->route('doctor.login');
             }
 
+            if ($role === 'agent') {
+                return redirect()->route('agent.login');
+            }
+
             return redirect()->route('patient.login');
         }
 
@@ -35,6 +39,8 @@ class RoleMiddleware
                 return redirect()->route('admin.dashboard');
             } elseif ($user->role === 'doctor') {
                 return redirect()->route('doctors.dashboard');
+            } elseif ($user->role === 'agent') {
+                return redirect()->route('agent.dashboard');
             }
             return redirect()->route('patient.dashboard');
         }

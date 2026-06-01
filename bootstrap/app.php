@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             \App\Http\Middleware\UpdateLastSeen::class,
+            \Modules\Agents\Http\Middleware\ReferralTracker::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [
@@ -35,6 +36,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
             if ($request->is('doctor') || $request->is('doctor/*')) {
                 return route('doctor.login');
+            }
+
+            if ($request->is('agent') || $request->is('agent/*')) {
+                return route('agent.login');
             }
 
             return route('patient.login');

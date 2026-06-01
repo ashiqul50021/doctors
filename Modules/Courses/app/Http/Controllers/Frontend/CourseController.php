@@ -53,11 +53,38 @@ class CourseController extends Controller
             return redirect()->back()->with('info', 'You are already enrolled in this course.');
         }
 
-        Enrollment::create([
+        // Check for agent referral
+        $refCode = session('ref_code') ?? request()->cookie('ref_code');
+        $agent = null;
+        if ($refCode) {
+            $agent = \Modules\Agents\Models\Agent::where('referral_code', $refCode)->where('status', 'active')->first();
+        }
+
+        $enrollment = Enrollment::create([
             'course_id' => $id,
             'user_id' => auth()->id(),
+            'agent_id' => $agent?->id,
             'status' => 'active',
         ]);
+
+        // Credit commission if referred
+        if ($agent && $agent->can_sell_courses) {
+            $price = $course->sale_price ?? $course->price;
+            $commission = $price * ($agent->course_commission_rate / 100);
+
+            if ($commission > 0) {
+                $agent->increment('wallet_balance', $commission);
+
+                \Modules\Agents\Models\AgentTransaction::create([
+                    'agent_id' => $agent->id,
+                    'type' => 'commission_course',
+                    'amount' => $commission,
+                    'description' => 'Commission of ৳' . number_format($commission, 2) . ' credited for Course: ' . $course->title . ' (Student: ' . auth()->user()->name . ')',
+                    'reference_id' => $enrollment->id,
+                    'status' => 'completed',
+                ]);
+            }
+        }
 
         return redirect()->route('courses.my-courses')->with('success', 'Successfully enrolled!');
     }

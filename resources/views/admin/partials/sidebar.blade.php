@@ -73,6 +73,16 @@
                 </li>
 
                 <li class="menu-title">
+                    <span>Agents</span>
+                </li>
+                <li class="{{ request()->routeIs('admin.agents.*') && !request()->routeIs('admin.agents.payouts') ? 'active' : '' }}">
+                    <a href="{{ route('admin.agents.index') }}"><i class="fe fe-users"></i> <span>Agents List</span></a>
+                </li>
+                <li class="{{ request()->routeIs('admin.agents.payouts') ? 'active' : '' }}">
+                    <a href="{{ route('admin.agents.payouts') }}"><i class="fe fe-activity"></i> <span>Payout Requests</span></a>
+                </li>
+
+                <li class="menu-title">
                     <span>Settings</span>
                 </li>
                 <li class="{{ request()->routeIs('admin.site-settings.*') ? 'active' : '' }}">

@@ -485,15 +485,48 @@ class ProductController extends Controller
         }
 
         $total = $this->calculateCartTotal($cart);
-        $patient = $this->resolvePatientFromUser($request);
+        
+        // Resolve patient (User might be guest, agent, or logged-in patient)
+        $patient = null;
+        if (auth()->check() && auth()->user()->role === 'patient') {
+            $patient = auth()->user()->patient;
+        } else {
+            $customerUser = \App\Models\User::where('email', $request->email)->first();
+            if (!$customerUser) {
+                $customerUser = \App\Models\User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(12)),
+                    'role' => 'patient',
+                ]);
+            }
+            $patient = Patient::where('user_id', $customerUser->id)->first();
+            if (!$patient) {
+                $patient = Patient::create([
+                    'user_id' => $customerUser->id,
+                    'phone' => $request->phone,
+                    'address' => $request->address,
+                ]);
+            }
+        }
+
+        // Check for agent context (either direct order or referral link)
+        $refCode = session('ref_code') ?? request()->cookie('ref_code');
+        $agent = null;
+        if (auth()->check() && auth()->user()->role === 'agent') {
+            $agent = auth()->user()->agent;
+        } elseif ($refCode) {
+            $agent = \Modules\Agents\Models\Agent::where('referral_code', $refCode)->where('status', 'active')->first();
+        }
 
         try {
-            $order = DB::transaction(function () use ($cart, $request, $total, $patient) {
+            $order = DB::transaction(function () use ($cart, $request, $total, $patient, $agent) {
                 $this->stockService->reserveCart($cart);
 
                 $order = Order::create([
                     'order_number' => 'ORD-' . strtoupper(uniqid()),
                     'patient_id' => $patient?->id,
+                    'agent_id' => $agent?->id,
                     'customer_name' => $request->name,
                     'customer_email' => $request->email,
                     'customer_phone' => $request->phone,
@@ -521,11 +554,31 @@ class ProductController extends Controller
 
                 return $order;
             });
+
+            // Credit Agent Wallet if applicable
+            if ($agent && $agent->can_sell_products) {
+                $commission = $total * ($agent->product_commission_rate / 100);
+                $agent->increment('wallet_balance', $commission);
+
+                \Modules\Agents\Models\AgentTransaction::create([
+                    'agent_id' => $agent->id,
+                    'type' => 'commission_product',
+                    'amount' => $commission,
+                    'description' => 'Commission of ৳' . number_format($commission, 2) . ' credited for Order #' . $order->order_number . ' (Customer: ' . $request->name . ')',
+                    'reference_id' => $order->order_number,
+                    'status' => 'completed',
+                ]);
+            }
         } catch (ValidationException $exception) {
             return $this->handleInventoryException($request, $exception);
         }
 
         session()->forget('cart');
+
+        // Redirect back to agent dashboard if logged in as agent
+        if (auth()->check() && auth()->user()->role === 'agent') {
+            return redirect()->route('agent.dashboard')->with('success', 'Order #' . $order->order_number . ' placed successfully! Commission has been credited to your wallet.');
+        }
 
         return redirect()->route('ecommerce.order.success', ['order' => $order->id]);
     }

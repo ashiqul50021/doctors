@@ -66,4 +66,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(Doctor::class);
     }
+
+    public function agent()
+    {
+        return $this->hasOne(\Modules\Agents\Models\Agent::class);
+    }
+
+    public function isAgent(): bool
+    {
+        return $this->role === 'agent';
+    }
 }

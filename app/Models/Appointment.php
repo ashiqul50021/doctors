@@ -30,4 +30,9 @@ class Appointment extends Model
     {
         return $this->hasOne(Review::class);
     }
+
+    public function agent()
+    {
+        return $this->belongsTo(\Modules\Agents\Models\Agent::class);
+    }
 }

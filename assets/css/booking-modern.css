@@ -3,8 +3,8 @@
    ===================================== */
 
 :root {
-    --primary-color: #0E82FD;
-    --primary-dark: #0b65c2;
+    --primary-color: #345cce;
+    --primary-dark: #2a4aaa;
     --secondary-color: #2E3842;
     --text-color: #6B7280;
     --bg-light: #F9FAFB;
@@ -280,7 +280,7 @@
     background: var(--primary-color);
     color: var(--white);
     border-color: var(--primary-color);
-    box-shadow: 0 4px 10px rgba(14, 130, 253, 0.3);
+    box-shadow: 0 4px 10px rgba(52, 92, 206, 0.3);
 }
 
 .timing.disabled {

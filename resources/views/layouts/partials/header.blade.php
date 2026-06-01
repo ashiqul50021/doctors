@@ -242,13 +242,16 @@
                                 </div>
                                 <div class="user-text">
                                     <h6>{{ Auth::user()->name }}</h6>
-                                    <p class="text-muted mb-0">Doctor</p>
+                                    <p class="text-muted mb-0">{{ ucfirst(Auth::user()->role) }}</p>
                                 </div>
                             </div>
-                            @if(Auth::user()->role === 'doctor' || Auth::user()->is_doctor)
-                                <!-- Assuming role check or similar -->
+                            @if(Auth::user()->role === 'doctor')
                                 <a class="dropdown-item" href="{{ route('doctors.dashboard') }}">Dashboard</a>
                                 <a class="dropdown-item" href="{{ route('doctors.profile.settings') }}">Profile Settings</a>
+                            @elseif(Auth::user()->role === 'agent')
+                                <a class="dropdown-item" href="{{ route('agent.dashboard') }}">Dashboard</a>
+                            @elseif(Auth::user()->role === 'admin')
+                                <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard</a>
                             @else
                                 <a class="dropdown-item" href="{{ route('patient.dashboard') }}">Dashboard</a>
                                 <a class="dropdown-item" href="{{ route('patient.profile.settings') }}">Profile Settings</a>
