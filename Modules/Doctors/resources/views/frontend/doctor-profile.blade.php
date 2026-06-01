@@ -106,18 +106,22 @@
     .doctor-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
         margin-top: 16px;
     }
 
     .doctor-actions .btn {
-        border-radius: 10px;
-        font-weight: 700;
-        padding: 7px 12px;
+        border-radius: 50px !important;
+        font-weight: 600;
+        padding: 8px 16px;
         font-size: 14px;
         line-height: 1.2;
-        min-height: 40px;
+        min-height: 42px;
         box-shadow: none !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
     }
 
     .doctor-content {
@@ -283,7 +287,7 @@
     $languages = $parseList($doctor->languages ?? null);
     $isOnline = optional($doctor->user)->isOnline();
     $lastSeen = optional($doctor->user?->last_seen_at)->diffForHumans();
-    $locationText = trim(($doctor->clinic_address ?? '') . ', ' . ($doctor->area->name ?? '') . ', ' . ($doctor->district->name ?? ''), ', ');
+    $locationText = $doctor->clinic_address ?? trim(($doctor->area->name ?? '') . ', ' . ($doctor->district->name ?? ''), ', ');
 @endphp
 
 <div class="doctor-page">
@@ -295,7 +299,7 @@
                         <img src="{{ $profileImage }}" alt="{{ $doctor->user->name }}" class="doctor-avatar">
                     </div>
                     <div class="col-lg-6 col-md-8">
-                        <h1 class="doctor-name">Dr. {{ $doctor->user->name }}</h1>
+                        <h1 class="doctor-name">{{ $doctor->user->name }}</h1>
                         <p class="doctor-subtitle">{{ $doctor->qualification ?? $doctor->qualifications ?? 'Medical Specialist' }}</p>
                         <div class="doctor-chip-row">
                             <span class="doctor-chip">
@@ -322,16 +326,16 @@
                         </div>
                         <div class="doctor-actions">
                             <a href="{{ route('booking', $doctor->id) }}" class="btn btn-primary">
-                                <i class="fas fa-calendar-check me-1"></i> Book Appointment
+                                <i class="fas fa-calendar-check"></i> Book Appointment
                             </a>
                             <a href="{{ route('chat') }}" class="btn btn-outline-primary">
-                                <i class="far fa-comment-dots me-1"></i> Chat
+                                <i class="far fa-comment-dots"></i> Chat
                             </a>
                             <a href="{{ route('voice.call') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-phone-alt me-1"></i> Voice Call
+                                <i class="fas fa-phone-alt"></i> Voice Call
                             </a>
                             <a href="{{ route('video.call') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-video me-1"></i> Video Call
+                                <i class="fas fa-video"></i> Video Call
                             </a>
                         </div>
                     </div>

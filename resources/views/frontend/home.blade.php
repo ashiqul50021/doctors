@@ -207,7 +207,7 @@
             <div class="video-wrapper">
                 <div class="video-container">
                     <!-- Replace VIDEO_ID with your YouTube video ID -->
-                    <iframe src="https://www.youtube.com/embed/8-8A8E-G4Co?rel=0" title="Platform Introduction Video"
+                    <iframe src="https://www.youtube.com/embed/P6nNYsE0uXQ?rel=0" title="Platform Introduction Video"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen>
@@ -307,13 +307,12 @@
                             @endphp
                             <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-grid-item">
                                 <div class="product-card-modern">
-                                    <!-- Stock Badge -->
-                                    <div class="stock-badge {{ $availableStock > 0 ? 'in-stock' : 'out-of-stock' }}">
-                                        {{ $availableStock > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
-                                    </div>
-
                                     <!-- Product Image -->
                                     <div class="product-image-container">
+                                        <!-- Stock Badge -->
+                                        <div class="stock-badge {{ $availableStock > 0 ? 'in-stock' : 'out-of-stock' }}">
+                                            {{ $availableStock > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
+                                        </div>
                                         <a href="{{ route('ecommerce.products.show', $product->id) }}" class="product-image-link">
                                             @php
                                                 $image = $product->image;
@@ -450,14 +449,13 @@
                                         </a>
                                         <div class="doctor-fee-badge">
                                             <span>৳
-                                                {{ $doctor->pricing === 'free' ? 'Free' : number_format($doctor->custom_price, 0) }}</span>
+                                                {{ $doctor->pricing === 'free' ? 'Free' : number_format($doctor->custom_price ?: ($doctor->consultation_fee ?: 500), 0) }}</span>
                                         </div>
                                     </div>
                                     <div class="doctor-info">
                                         <span class="doctor-speciality">{{ $doctor->speciality->name ?? 'General' }}</span>
                                         <h4 class="doctor-name">
-                                            <a href="{{ route('doctors.profile', $doctor->id) }}">Dr.
-                                                {{ $doctor->user->name }}</a>
+                                            <a href="{{ route('doctors.profile', $doctor->id) }}">{{ $doctor->user->name }}</a>
                                             <i class="fas fa-check-circle verified-badge" title="Verified"></i>
                                         </h4>
                                         <div class="doctor-rating">
@@ -689,8 +687,8 @@
                 <div class="col-lg-6">
                     <div class="video-promo-box">
                         <img src="{{ asset('assets/img/features/feature.png') }}" alt="Video Thumbnail"
-                            class="img-fluid rounded-lg shadow-lg">
-                        <a href="https://www.youtube.com/watch?v=Nu6Z42pKLri" data-fancybox class="video-play-btn">
+                            class="img-fluid" style="background: transparent;">
+                        <a href="https://www.youtube.com/watch?v=P6nNYsE0uXQ" data-fancybox class="video-play-btn">
                             <i class="fas fa-play"></i>
                             <span class="video-ripple ripple-1"></span>
                             <span class="video-ripple ripple-2"></span>
@@ -782,7 +780,7 @@
                     <div class="blog-grid">
                         <div class="blog-grid-img">
                             <a href="#">
-                                <img src="{{ asset('assets/img/blog/blog-01.jpg') }}" class="img-fluid" alt="Blog Image">
+                                <img src="{{ asset('assets/img/img-01.jpg') }}" class="img-fluid" alt="Blog Image" style="width: 100%; height: 200px; object-fit: cover;">
                             </a>
                         </div>
                         <div class="blog-grid-info">
@@ -797,7 +795,7 @@
                     <div class="blog-grid">
                         <div class="blog-grid-img">
                             <a href="#">
-                                <img src="{{ asset('assets/img/blog/blog-02.jpg') }}" class="img-fluid" alt="Blog Image">
+                                <img src="{{ asset('assets/img/img-02.jpg') }}" class="img-fluid" alt="Blog Image" style="width: 100%; height: 200px; object-fit: cover;">
                             </a>
                         </div>
                         <div class="blog-grid-info">
@@ -812,7 +810,7 @@
                     <div class="blog-grid">
                         <div class="blog-grid-img">
                             <a href="#">
-                                <img src="{{ asset('assets/img/blog/blog-03.jpg') }}" class="img-fluid" alt="Blog Image">
+                                <img src="{{ asset('assets/img/img-03.jpg') }}" class="img-fluid" alt="Blog Image" style="width: 100%; height: 200px; object-fit: cover;">
                             </a>
                         </div>
                         <div class="blog-grid-info">
@@ -827,7 +825,7 @@
                     <div class="blog-grid">
                         <div class="blog-grid-img">
                             <a href="#">
-                                <img src="{{ asset('assets/img/blog/blog-04.jpg') }}" class="img-fluid" alt="Blog Image">
+                                <img src="{{ asset('assets/img/img-04.jpg') }}" class="img-fluid" alt="Blog Image" style="width: 100%; height: 200px; object-fit: cover;">
                             </a>
                         </div>
                         <div class="blog-grid-info">
@@ -2680,15 +2678,15 @@
         }
 
         .doctor-speciality {
-            font-size: 11px;
+            font-size: 13px;
             color: #1D4ED8;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             margin-bottom: 8px;
             font-weight: 600;
             display: inline-block;
             background: #e8f4ff;
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
             width: fit-content;
         }

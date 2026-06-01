@@ -207,8 +207,8 @@
                 </li>
                 @guest
                     <li class="nav-item dropdown doctor-entry">
-                        <a class="nav-link btn-for-doctors dropdown-toggle" href="#" id="doctorMenuDropdown"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link btn btn-outline-primary rounded-pill dropdown-toggle d-inline-flex align-items-center gap-2 px-3 py-2 ms-2" href="#" id="doctorMenuDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false" style="border: 1px solid #2563eb; color: #2563eb !important;">
                             <i class="fas fa-stethoscope"></i> For Doctors
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="doctorMenuDropdown">
@@ -221,10 +221,10 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn-signup" href="{{ route('register') }}">Sign Up</a>
+                        <a class="nav-link btn btn-primary rounded-pill px-4 py-2 text-white ms-2" href="{{ route('register') }}" style="background: #2563eb; border: none;">Sign Up</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link header-login" href="{{ route('login') }}">Login</a>
+                        <a class="nav-link btn btn-outline-primary rounded-pill px-4 py-2 ms-2" href="{{ route('login') }}" style="border: 1px solid #2563eb; color: #2563eb !important;">Login</a>
                     </li>
                 @else
                     <li class="nav-item dropdown has-arrow logged-item">

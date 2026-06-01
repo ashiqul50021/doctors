@@ -17,7 +17,7 @@
                             class="doc-img" alt="User Image">
                     </div>
                     <div class="col-md-6">
-                        <h4 class="doc-name">Dr. {{ $doctor->user->name }}</h4>
+                        <h4 class="doc-name">{{ $doctor->user->name }}</h4>
                         <p class="doc-speciality">{{ $doctor->qualifications }}</p>
                         <p class="doc-department">
                             @if($doctor->speciality && $doctor->speciality->image)
@@ -66,7 +66,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="d-flex flex-column h-100 justify-content-center">
-                            <div class="action-buttons mb-3">
+                            <div class="action-buttons mb-3 flex-wrap">
                                 <a href="javascript:void(0)" class="action-btn" title="Detailed Profile"><i
                                         class="far fa-user"></i> Profile</a>
                                 <a href="javascript:void(0)" class="action-btn" title="Voice Call" data-bs-toggle="modal"
@@ -147,11 +147,11 @@
                                                     {{ $location['name'] ?? 'Main Clinic' }}
                                                 </h4>
                                                 <p class="mb-2"><i class="fas fa-map-marker-alt text-danger me-2"></i>
-                                                    {{ $location['address'] ?? 'Address not available' }}{{ $doctor->clinic_city ? ', ' . $doctor->clinic_city : '' }}</p>
+                                                    {{ $location['address'] ?? 'Address not available' }}</p>
                                             @empty
                                                 <h4 class="clinic-name text-primary font-weight-bold mb-2">Main Clinic</h4>
                                                 <p class="mb-2"><i class="fas fa-map-marker-alt text-danger me-2"></i>
-                                                    {{ $doctor->primary_clinic_address ?? 'Address not available' }}{{ $doctor->clinic_city ? ', ' . $doctor->clinic_city : '' }}</p>
+                                                    {{ $doctor->primary_clinic_address ?? 'Address not available' }}</p>
                                             @endforelse
                                             <p class="mb-0 text-primary" style="cursor: pointer;"><i
                                                     class="fas fa-directions me-2"></i> Get Directions</p>

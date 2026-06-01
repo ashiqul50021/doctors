@@ -16,8 +16,11 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 // Booking routes are handled by Modules/Doctors/routes/web.php
 
 // Chat & Calls
-Route::view('/chat', 'frontend.chat')->name('chat');
-Route::view('/chat-doctor', 'frontend.chat-doctor')->name('chat.doctor');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat');
+    Route::get('/chat-doctor', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat.doctor');
+    Route::post('/chat/send', [\App\Http\Controllers\ChatController::class, 'sendMessage'])->name('chat.send');
+});
 Route::view('/voice-call', 'frontend.voice-call')->name('voice.call');
 Route::view('/video-call', 'frontend.video-call')->name('video.call');
 

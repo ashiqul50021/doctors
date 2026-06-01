@@ -29,168 +29,21 @@
                         </form>
                         <div class="chat-users-list">
                             <div class="chat-scroll">
-                                <a href="javascript:void(0);" class="media">
+                                @foreach($contacts as $contact)
+                                <a href="{{ route('chat', ['user_id' => $contact->id]) }}" class="media {{ $activeContact && $activeContact->id == $contact->id ? 'active read-chat' : '' }}">
                                     <div class="media-img-wrap">
-                                        <div class="avatar avatar-away">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-01.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
+                                        <div class="avatar {{ $contact->is_online ? 'avatar-online' : 'avatar-offline' }}">
+                                            <img src="{{ $contact->doctor && $contact->doctor->profile_image ? asset($contact->doctor->profile_image) : ($contact->patient && $contact->patient->profile_image ? asset($contact->patient->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg')) }}" alt="User Image" class="avatar-img rounded-circle">
                                         </div>
                                     </div>
                                     <div class="media-body">
                                         <div>
-                                            <div class="user-name">Dr. Ruby Perrin</div>
-                                            <div class="user-last-chat">Hey, How are you?</div>
-                                        </div>
-                                        <div>
-                                            <div class="last-chat-time block">2 min</div>
-                                            <div class="badge badge-success badge-pill">15</div>
+                                            <div class="user-name">{{ $contact->name }}</div>
+                                            <div class="user-last-chat">Click to view messages</div>
                                         </div>
                                     </div>
                                 </a>
-                                <a href="javascript:void(0);" class="media read-chat active">
-                                    <div class="media-img-wrap">
-                                        <div class="avatar avatar-online">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        <div>
-                                            <div class="user-name">Dr. Darren Elder</div>
-                                            <div class="user-last-chat">I'll call you later </div>
-                                        </div>
-                                        <div>
-                                            <div class="last-chat-time block">8:01 PM</div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="javascript:void(0);" class="media">
-                                    <div class="media-img-wrap">
-                                        <div class="avatar avatar-away">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-03.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        <div>
-                                            <div class="user-name">Dr. Deborah Angel</div>
-                                            <div class="user-last-chat">Give me a full explanation about our project</div>
-                                        </div>
-                                        <div>
-                                            <div class="last-chat-time block">7:30 PM</div>
-                                            <div class="badge badge-success badge-pill">3</div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="javascript:void(0);" class="media read-chat">
-                                    <div class="media-img-wrap">
-                                        <div class="avatar avatar-online">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-04.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        <div>
-                                            <div class="user-name">Dr. Sofia Brient</div>
-                                            <div class="user-last-chat">That's very good UI design</div>
-                                        </div>
-                                        <div>
-                                            <div class="last-chat-time block">6:59 PM</div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="javascript:void(0);" class="media read-chat">
-                                    <div class="media-img-wrap">
-                                        <div class="avatar avatar-offline">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-05.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        <div>
-                                            <div class="user-name">Dr. Marvin Campbell</div>
-                                            <div class="user-last-chat">Yesterday i completed the task</div>
-                                        </div>
-                                        <div>
-                                            <div class="last-chat-time block">11:21 AM</div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="javascript:void(0);" class="media read-chat">
-                                    <div class="media-img-wrap">
-                                        <div class="avatar avatar-online">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-06.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        <div>
-                                            <div class="user-name">Dr. Katharine Berthold</div>
-                                            <div class="user-last-chat">What is the major functionality?</div>
-                                        </div>
-                                        <div>
-                                            <div class="last-chat-time block">10:05 AM</div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="javascript:void(0);" class="media read-chat">
-                                    <div class="media-img-wrap">
-                                        <div class="avatar avatar-away">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-07.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        <div>
-                                            <div class="user-name">Dr. Linda Tobin</div>
-                                            <div class="user-last-chat">This has allowed me to showcase not only my technical skills</div>
-                                        </div>
-                                        <div>
-                                            <div class="last-chat-time block">Yesterday</div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="javascript:void(0);" class="media read-chat">
-                                    <div class="media-img-wrap">
-                                        <div class="avatar avatar-offline">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-08.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        <div>
-                                            <div class="user-name">Dr. Paul Richard</div>
-                                            <div class="user-last-chat">Let's talk briefly in the evening. </div>
-                                        </div>
-                                        <div>
-                                            <div class="last-chat-time block">Sunday</div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="javascript:void(0);" class="media read-chat">
-                                    <div class="media-img-wrap">
-                                        <div class="avatar avatar-online">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-09.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        <div>
-                                            <div class="user-name">Dr. John Gibbs </div>
-                                            <div class="user-last-chat">Do you have any collections? If so, what of?</div>
-                                        </div>
-                                        <div>
-                                            <div class="last-chat-time block">Saturday</div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="javascript:void(0);" class="media read-chat">
-                                    <div class="media-img-wrap">
-                                        <div class="avatar avatar-away">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-10.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        <div>
-                                            <div class="user-name">Dr. Olga Barlow</div>
-                                            <div class="user-last-chat">Connect the two modules with in 1 day.</div>
-                                        </div>
-                                        <div>
-                                            <div class="last-chat-time block">Friday</div>
-                                        </div>
-                                    </div>
-                                </a>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -202,17 +55,19 @@
                             <a id="back_user_list" href="javascript:void(0)" class="back-user-list">
                                 <i class="material-icons">chevron_left</i>
                             </a>
+                            @if($activeContact)
                             <div class="media">
                                 <div class="media-img-wrap">
-                                    <div class="avatar avatar-online">
-                                        <img src="{{ asset('assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
+                                    <div class="avatar {{ $activeContact->is_online ? 'avatar-online' : 'avatar-offline' }}">
+                                        <img src="{{ $activeContact->doctor && $activeContact->doctor->profile_image ? asset($activeContact->doctor->profile_image) : ($activeContact->patient && $activeContact->patient->profile_image ? asset($activeContact->patient->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg')) }}" alt="User Image" class="avatar-img rounded-circle">
                                     </div>
                                 </div>
                                 <div class="media-body">
-                                    <div class="user-name">Dr. Darren Elder</div>
-                                    <div class="user-status">online</div>
+                                    <div class="user-name">{{ $activeContact->name }}</div>
+                                    <div class="user-status">{{ $activeContact->is_online ? 'online' : 'offline' }}</div>
                                 </div>
                             </div>
+                            @endif
                             <div class="chat-options">
                                 <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#voice_call">
                                     <i class="material-icons">local_phone</i>
@@ -228,15 +83,17 @@
                         <div class="chat-body">
                             <div class="chat-scroll">
                                 <ul class="list-unstyled">
+                                @foreach($messages as $msg)
+                                    @if($msg->sender_id == auth()->id())
                                     <li class="media sent">
                                         <div class="media-body">
                                             <div class="msg-box">
                                                 <div>
-                                                    <p>Hello. What can I do for you?</p>
+                                                    <p>{{ $msg->message }}</p>
                                                     <ul class="chat-msg-info">
                                                         <li>
                                                             <div class="chat-time">
-                                                                <span>8:30 AM</span>
+                                                                <span>{{ $msg->created_at->format('g:i A') }}</span>
                                                             </div>
                                                         </li>
                                                     </ul>
@@ -244,58 +101,19 @@
                                             </div>
                                         </div>
                                     </li>
+                                    @else
                                     <li class="media received">
                                         <div class="avatar">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
+                                            <img src="{{ $activeContact->doctor && $activeContact->doctor->profile_image ? asset($activeContact->doctor->profile_image) : ($activeContact->patient && $activeContact->patient->profile_image ? asset($activeContact->patient->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg')) }}" alt="User Image" class="avatar-img rounded-circle">
                                         </div>
                                         <div class="media-body">
                                             <div class="msg-box">
                                                 <div>
-                                                    <p>I'm just looking around.</p>
-                                                    <p>Will you tell me something about yourself?</p>
+                                                    <p>{{ $msg->message }}</p>
                                                     <ul class="chat-msg-info">
                                                         <li>
                                                             <div class="chat-time">
-                                                                <span>8:35 AM</span>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="msg-box">
-                                                <div>
-                                                    <p>Are you there? That time!</p>
-                                                    <ul class="chat-msg-info">
-                                                        <li>
-                                                            <div class="chat-time">
-                                                                <span>8:40 AM</span>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="msg-box">
-                                                <div>
-                                                    <div class="chat-msg-attachments">
-                                                        <div class="chat-attachment">
-                                                            <img src="{{ asset('assets/img/img-02.jpg') }}" alt="Attachment">
-                                                            <div class="chat-attach-caption">placeholder.jpg</div>
-                                                            <a href="#" class="chat-attach-download">
-                                                                <i class="fas fa-download"></i>
-                                                            </a>
-                                                        </div>
-                                                        <div class="chat-attachment">
-                                                            <img src="{{ asset('assets/img/img-03.jpg') }}" alt="Attachment">
-                                                            <div class="chat-attach-caption">placeholder.jpg</div>
-                                                            <a href="#" class="chat-attach-download">
-                                                                <i class="fas fa-download"></i>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <ul class="chat-msg-info">
-                                                        <li>
-                                                            <div class="chat-time">
-                                                                <span>8:41 AM</span>
+                                                                <span>{{ $msg->created_at->format('g:i A') }}</span>
                                                             </div>
                                                         </li>
                                                     </ul>
@@ -303,153 +121,27 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <li class="media sent">
-                                        <div class="media-body">
-                                            <div class="msg-box">
-                                                <div>
-                                                    <p>Where?</p>
-                                                    <ul class="chat-msg-info">
-                                                        <li>
-                                                            <div class="chat-time">
-                                                                <span>8:42 AM</span>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="msg-box">
-                                                <div>
-                                                    <p>OK, my name is Limingqiang. I like singing, playing basketballand so on.</p>
-                                                    <ul class="chat-msg-info">
-                                                        <li>
-                                                            <div class="chat-time">
-                                                                <span>8:42 AM</span>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="msg-box">
-                                                <div>
-                                                    <div class="chat-msg-attachments">
-                                                        <div class="chat-attachment">
-                                                            <img src="{{ asset('assets/img/img-04.jpg') }}" alt="Attachment">
-                                                            <div class="chat-attach-caption">placeholder.jpg</div>
-                                                            <a href="#" class="chat-attach-download">
-                                                                <i class="fas fa-download"></i>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <ul class="chat-msg-info">
-                                                        <li>
-                                                            <div class="chat-time">
-                                                                <span>8:50 AM</span>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="media received">
-                                        <div class="avatar">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                        <div class="media-body">
-                                            <div class="msg-box">
-                                                <div>
-                                                    <p>You wait for notice.</p>
-                                                    <p>Consectetuorem ipsum dolor sit?</p>
-                                                    <p>Ok?</p>
-                                                    <ul class="chat-msg-info">
-                                                        <li>
-                                                            <div class="chat-time">
-                                                                <span>8:55 PM</span>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="chat-date">Today</li>
-                                    <li class="media received">
-                                        <div class="avatar">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                        <div class="media-body">
-                                            <div class="msg-box">
-                                                <div>
-                                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
-                                                    <ul class="chat-msg-info">
-                                                        <li>
-                                                            <div class="chat-time">
-                                                                <span>10:17 AM</span>
-                                                            </div>
-                                                        </li>
-                                                        <li><a href="#">Edit</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="media sent">
-                                        <div class="media-body">
-                                            <div class="msg-box">
-                                                <div>
-                                                    <p>Lorem ipsum dollar sit</p>
-                                                    <div class="chat-msg-actions dropdown">
-                                                        <a href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                            <i class="fe fe-elipsis-v"></i>
-                                                        </a>
-                                                        <div class="dropdown-menu dropdown-menu-right">
-                                                            <a class="dropdown-item" href="#">Delete</a>
-                                                        </div>
-                                                    </div>
-                                                    <ul class="chat-msg-info">
-                                                        <li>
-                                                            <div class="chat-time">
-                                                                <span>10:19 AM</span>
-                                                            </div>
-                                                        </li>
-                                                        <li><a href="#">Edit</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="media received">
-                                        <div class="avatar">
-                                            <img src="{{ asset('assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image" class="avatar-img rounded-circle">
-                                        </div>
-                                        <div class="media-body">
-                                            <div class="msg-box">
-                                                <div>
-                                                    <div class="msg-typing">
-                                                        <span></span>
-                                                        <span></span>
-                                                        <span></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
+                                    @endif
+                                @endforeach
                                 </ul>
                             </div>
                         </div>
                         <div class="chat-footer">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <div class="btn-file btn">
-                                        <i class="fa fa-paperclip"></i>
-                                        <input type="file">
+                            <form id="chat-form" onsubmit="return false;">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="btn-file btn">
+                                            <i class="fa fa-paperclip"></i>
+                                            <input type="file" id="chat-attachment" name="attachment">
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="receiver_id" value="{{ $activeContact ? $activeContact->id : '' }}">
+                                    <input type="text" id="message-input" class="input-msg-send form-control" placeholder="Type something" {{ !$activeContact ? 'disabled' : '' }}>
+                                    <div class="input-group-append">
+                                        <button type="button" id="send-btn" class="btn msg-send-btn" {{ !$activeContact ? 'disabled' : '' }}><i class="fab fa-telegram-plane"></i></button>
                                     </div>
                                 </div>
-                                <input type="text" class="input-msg-send form-control" placeholder="Type something">
-                                <div class="input-group-append">
-                                    <button type="button" class="btn msg-send-btn"><i class="fab fa-telegram-plane"></i></button>
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                     <!-- /Chat Right -->
@@ -522,4 +214,65 @@
     </div>
 </div>
 <!-- Video Call Modal -->
+<!-- Video Call Modal -->
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        // Scroll to bottom
+        var chatScroll = $('.chat-scroll');
+        if (chatScroll.length) {
+            chatScroll.scrollTop(chatScroll[0].scrollHeight);
+        }
+
+        function sendMessage() {
+            var message = $('#message-input').val();
+            var receiverId = $('#receiver_id').val();
+
+            if (message.trim() == '' || !receiverId) {
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('chat.send') }}",
+                type: 'POST',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    receiver_id: receiverId,
+                    message: message
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        var html = '<li class="media sent">' +
+                            '<div class="media-body">' +
+                            '<div class="msg-box">' +
+                            '<div>' +
+                            '<p>' + response.data.message + '</p>' +
+                            '<ul class="chat-msg-info">' +
+                            '<li><div class="chat-time"><span>' + response.data.time + '</span></div></li>' +
+                            '</ul>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</li>';
+                        $('.chat-body .list-unstyled').append(html);
+                        $('#message-input').val('');
+                        
+                        var chatScroll = $('.chat-body .chat-scroll');
+                        chatScroll.scrollTop(chatScroll[0].scrollHeight);
+                    }
+                }
+            });
+        }
+
+        $('#send-btn').click(sendMessage);
+        $('#message-input').keypress(function(e) {
+            if (e.which == 13) {
+                sendMessage();
+            }
+        });
+    });
+</script>
+@endpush
+
 @endsection
