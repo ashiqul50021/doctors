@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Doctor Dashboard - ' . ($siteSettings['site_name'] ?? 'Doccure'))
+@section('title', 'Doctor Dashboard - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
 
 @section('content')
 

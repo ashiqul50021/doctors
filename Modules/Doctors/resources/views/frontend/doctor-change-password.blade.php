@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Change Password - Doccure')
+@section('title', 'Change Password - abcsheba')
 
 @section('content')
 

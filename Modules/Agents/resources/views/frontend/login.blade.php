@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Agent Login - ' . ($siteSettings['site_name'] ?? 'Doccure'))
+@section('title', 'Agent Login - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
 
 @section('body_class', 'account-page')
 

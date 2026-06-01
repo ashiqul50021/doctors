@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Patients List - ' . ($siteSettings['site_name'] ?? 'Doccure Admin'))
+@section('title', 'Patients List - ' . ($siteSettings['site_name'] ?? 'abcsheba Admin'))
 
 @section('content')
     <div class="page-header">

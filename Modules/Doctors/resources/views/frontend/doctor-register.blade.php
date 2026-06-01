@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Doctor Register - Doccure')
+@section('title', 'Doctor Register - abcsheba')
 
 @section('content')
 <!-- Page Content -->

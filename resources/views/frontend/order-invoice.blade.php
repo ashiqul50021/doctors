@@ -34,9 +34,9 @@
                                     <div class="invoice-info">
                                         <strong class="customer-text">Invoice From</strong>
                                         <p class="invoice-details invoice-details-two">
-                                            {{ $siteSettings['site_name'] ?? 'Doccure' }} <br>
+                                            {{ $siteSettings['site_name'] ?? 'abcsheba' }} <br>
                                             {{ $siteSettings['address'] ?? 'Dhaka, Bangladesh' }} <br>
-                                            {{ $siteSettings['email'] ?? 'info@doccure.com' }} <br>
+                                            {{ $siteSettings['email'] ?? 'info@abcsheba.com' }} <br>
                                         </p>
                                     </div>
                                 </div>

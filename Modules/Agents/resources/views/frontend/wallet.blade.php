@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Wallet & Payouts - ' . ($siteSettings['site_name'] ?? 'Doccure'))
+@section('title', 'Wallet & Payouts - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
 
 @section('content')
     <!-- Breadcrumb -->

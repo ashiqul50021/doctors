@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Search Doctors - Doccure')
+@section('title', 'Search Doctors - abcsheba')
 
 @push('styles')
 <!-- Datetimepicker CSS -->

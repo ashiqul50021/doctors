@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Calendar - Doccure')
+@section('title', 'Calendar - abcsheba')
 
 @push('styles')
 <!-- Full Calander CSS -->

@@ -23,7 +23,7 @@ class GoogleMeetService
         $this->tokenPath = storage_path('app/google-calendar/token.json');
 
         $this->client = new Client();
-        $this->client->setApplicationName(config('app.name', 'Doccure'));
+        $this->client->setApplicationName(config('app.name', 'abcsheba'));
         $this->client->setScopes([Calendar::CALENDAR_EVENTS]);
         $this->client->setAccessType('offline');
         $this->client->setPrompt('select_account consent');

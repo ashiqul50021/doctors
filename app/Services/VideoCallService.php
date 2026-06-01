@@ -35,7 +35,7 @@ class VideoCallService
         $timeSlug = str_replace(':', '', $time);
         $uniqueId = $appointmentId ?? Str::random(6);
 
-        $roomName = "doccure-{$doctorSlug}-{$dateSlug}-{$timeSlug}-{$uniqueId}";
+        $roomName = "abcsheba-{$doctorSlug}-{$dateSlug}-{$timeSlug}-{$uniqueId}";
 
         return $this->baseUrl . '/' . $roomName;
     }

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Agent Dashboard - ' . ($siteSettings['site_name'] ?? 'Doccure'))
+@section('title', 'Agent Dashboard - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
 
 @push('styles')
 <style>

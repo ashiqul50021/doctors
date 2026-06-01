@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', ($lesson->title ?? 'Lesson') . ' - Doccure')
+@section('title', ($lesson->title ?? 'Lesson') . ' - abcsheba')
 
 @section('content')
     <div class="content">

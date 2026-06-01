@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Register - ' . ($siteSettings['site_name'] ?? 'Doccure'))
+@section('title', 'Register - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
 
 @section('content')
     <!-- Page Content -->
@@ -15,7 +15,7 @@
                         <div class="row align-items-center justify-content-center">
                             <div class="col-md-7 col-lg-6 login-left">
                                 <img src="{{ asset('assets/img/login-banner.png') }}" class="img-fluid"
-                                    alt="Doccure Register">
+                                    alt="abcsheba Register">
                             </div>
                             <div class="col-md-12 col-lg-6 login-right">
                                 <div class="login-header">

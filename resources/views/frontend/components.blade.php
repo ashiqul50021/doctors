@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Components - Doccure')
+@section('title', 'Components - abcsheba')
 @section('content')
 
 			<!-- Page Content -->

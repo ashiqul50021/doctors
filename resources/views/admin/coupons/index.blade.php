@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Coupons - Doccure Admin')
+@section('title', 'Coupons - abcsheba Admin')
 
 @section('content')
     <div class="page-header">

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Select Slot & Book - ' . ($siteSettings['site_name'] ?? 'Doccure'))
+@section('title', 'Select Slot & Book - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
 
 @section('content')
     <!-- Custom Premium Booking Styles -->

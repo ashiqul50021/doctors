@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Invoice - Doccure Admin')
+@section('title', 'Invoice - abcsheba Admin')
 
 @section('content')
 <!-- Page Wrapper -->
@@ -26,7 +26,7 @@
             <div class="row">
                 <div class="col-sm-12 m-b-20">
                     <ul class="list-unstyled mb-0">
-                        <li>Doccure Hospital</li>
+                        <li>abcsheba Hospital</li>
                         <li>3864 Quiet Valley Lane,</li>
                         <li>Sherman Oaks, CA, 91403</li>
                         <li>GST No:</li>

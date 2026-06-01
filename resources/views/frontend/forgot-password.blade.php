@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Forgot Password - Doccure')
+@section('title', 'Forgot Password - abcsheba')
 
 @section('body_class', 'account-page')
 

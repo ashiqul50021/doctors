@@ -2,7 +2,7 @@
 
 @include('ecommerce::backend.products.partials.image-manager-styles')
 
-@section('title', 'Edit Product - Doccure Admin')
+@section('title', 'Edit Product - abcsheba Admin')
 
 @section('content')
 <div class="page-header">

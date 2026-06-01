@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Register - Doccure Admin')
+@section('title', 'Register - abcsheba Admin')
 
 @section('content')
 <div class="main-wrapper login-body">

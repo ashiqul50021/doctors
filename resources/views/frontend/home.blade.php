@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', ($siteSettings['site_name'] ?? 'Doccure') . ' - ' . ($siteSettings['site_tagline'] ?? 'Doctor Appointment Booking'))
+@section('title', ($siteSettings['site_name'] ?? 'abcsheba') . ' - ' . ($siteSettings['site_tagline'] ?? 'Doctor Appointment Booking'))
 
 @section('content')
     <!-- Home Banner - DocTime Inspired -->
@@ -671,7 +671,7 @@
                     <div class="video-promo-content">
                         <span class="badge badge-soft-blue mb-3">Health First</span>
                         <h2 class="mb-4">We Are Always Here For Your Health</h2>
-                        <p class="mb-4 text-muted">Doccure provides progressive, and affordable healthcare, accessible on
+                        <p class="mb-4 text-muted">abcsheba provides progressive, and affordable healthcare, accessible on
                             mobile and online for everyone. To us, it's not just work. We take pride in the solutions we
                             deliver</p>
 
@@ -974,7 +974,7 @@
                                 <i class="fas fa-star text-warning"></i>
                             </div>
                             <p class="card-text text-muted">"Excellent service! The doctor was very professional and the
-                                booking process was seamless. Highly recommend Doccure to everyone."</p>
+                                booking process was seamless. Highly recommend abcsheba to everyone."</p>
                             <div class="d-flex align-items-center mt-4">
                                 <img src="{{ asset('assets/img/patients/patient1.jpg') }}" class="rounded-circle me-3"
                                     alt="Patient" style="width: 50px; height: 50px; object-fit: cover;">
@@ -996,7 +996,7 @@
                                 <i class="fas fa-star text-warning"></i>
                                 <i class="fas fa-star text-warning"></i>
                             </div>
-                            <p class="card-text text-muted">"Found the best dentist through Doccure. The platform is easy to
+                            <p class="card-text text-muted">"Found the best dentist through abcsheba. The platform is easy to
                                 use and the doctor profiles are very detailed. Great experience!"</p>
                             <div class="d-flex align-items-center mt-4">
                                 <img src="{{ asset('assets/img/patients/patient2.jpg') }}" class="rounded-circle me-3"
@@ -1047,7 +1047,7 @@
         </div>
         <div class="container text-center position-relative z-index-1">
             <h2 class="display-5 font-weight-bold mb-3 text-white">Ready to Book Your Appointment?</h2>
-            <p class="lead mb-5 text-white-50">Join thousands of patients who trust Doccure for their healthcare needs.</p>
+            <p class="lead mb-5 text-white-50">Join thousands of patients who trust abcsheba for their healthcare needs.</p>
             <a href="{{ route('doctors.search') }}" class="btn btn-light cta-btn">
                 <i class="fas fa-calendar-check me-2"></i> Find a Doctor Now
             </a>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Chat Function - Doccure')
+@section('title', 'Chat Function - abcsheba')
 
 @section('content')
 @include('frontend.includes.chat-page-assets')

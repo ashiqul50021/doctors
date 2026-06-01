@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Privacy Policy - Doccure')
+@section('title', 'Privacy Policy - abcsheba')
 
 @section('content')
 

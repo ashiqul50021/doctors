@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Schedule Timings - Doccure')
+@section('title', 'Schedule Timings - abcsheba')
 
 @push('styles')
     <!-- Select2 CSS -->

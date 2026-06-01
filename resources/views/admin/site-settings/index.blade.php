@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Site Settings - ' . ($siteSettings['site_name'] ?? 'Doccure Admin'))
+@section('title', 'Site Settings - ' . ($siteSettings['site_name'] ?? 'abcsheba Admin'))
 
 @section('content')
     <div class="page-header">
@@ -34,7 +34,7 @@
                         <div class="mb-3">
                             <label>Website Name</label>
                             <input type="text" class="form-control" name="site_name"
-                                value="{{ $generalSettings['site_name'] ?? 'Doccure' }}">
+                                value="{{ $generalSettings['site_name'] ?? 'abcsheba' }}">
                         </div>
 
                         <div class="mb-3">

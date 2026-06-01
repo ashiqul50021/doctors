@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Voice Call - Doccure')
+@section('title', 'Voice Call - abcsheba')
 
 @section('body_class', 'call-page')
 

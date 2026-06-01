@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'My Patients - ' . ($siteSettings['site_name'] ?? 'Doccure'))
+@section('title', 'My Patients - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
 
 @section('content')
 <div class="content">
