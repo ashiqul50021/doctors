@@ -362,7 +362,7 @@
                                                                             <a href="{{ route('patient.profile', $appt->patient->id ?? '') }}"
                                                                                 class="avatar avatar-sm me-2"><img
                                                                                     class="avatar-img rounded-circle"
-                                                                                    src="{{ optional($appt->patient)->profile_image ? asset('storage/' . $appt->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}"
+                                                                                    src="{{ optional($appt->patient)->profile_image ? asset($appt->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}"
                                                                                     alt="Patient Image"></a>
                                                                             <a href="{{ route('patient.profile', $appt->patient->id ?? '') }}">{{ optional(optional($appt->patient)->user)->name ?? 'Unknown' }} <span>#PT{{ sprintf('%04d', $appt->patient_id) }}</span></a>
                                                                         </h2>
@@ -459,7 +459,7 @@
                                                                             <a href="{{ route('patient.profile', $appt->patient->id ?? '') }}"
                                                                                 class="avatar avatar-sm me-2"><img
                                                                                     class="avatar-img rounded-circle"
-                                                                                    src="{{ optional($appt->patient)->profile_image ? asset('storage/' . $appt->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}"
+                                                                                    src="{{ optional($appt->patient)->profile_image ? asset($appt->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}"
                                                                                     alt="Patient Image"></a>
                                                                             <a href="{{ route('patient.profile', $appt->patient->id ?? '') }}">{{ optional(optional($appt->patient)->user)->name ?? 'Unknown' }} <span>#PT{{ sprintf('%04d', $appt->patient_id) }}</span></a>
                                                                         </h2>

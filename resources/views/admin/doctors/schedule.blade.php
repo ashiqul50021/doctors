@@ -9,7 +9,7 @@
                 <h3 class="page-title">Manage Schedule: {{ $doctor->user->name }}</h3>
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.doctors.index') }}">Doctors</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('doctors.admin.doctors.index') }}">Doctors</a></li>
                     <li class="breadcrumb-item active">Schedule</li>
                 </ul>
             </div>

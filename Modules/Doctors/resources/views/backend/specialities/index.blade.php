@@ -13,7 +13,7 @@
             </ul>
         </div>
         <div class="col-sm-5 col">
-            <a href="{{ route('admin.specialities.create') }}" class="btn btn-primary float-right mt-2">Add</a>
+            <a href="{{ route('doctors.admin.specialities.create') }}" class="btn btn-primary float-right mt-2">Add</a>
         </div>
     </div>
 </div>
@@ -41,18 +41,18 @@
                                 <td>#SP{{ $speciality->id }}</td>
                                 <td>
                                     <h2 class="table-avatar">
-                                        <a href="#" class="avatar avatar-sm mr-2">
-                                            <img class="avatar-img" src="{{ $speciality->image ? asset('storage/'.$speciality->image) : asset('assets/img/specialities/specialities-01.png') }}" alt="Speciality">
+                                        <a href="#" class="avatar avatar-sm me-2">
+                                            <img class="avatar-img" src="{{ $speciality->image ? asset($speciality->image) : asset('assets/img/specialities/specialities-01.png') }}" alt="Speciality">
                                         </a>
                                         <a href="#">{{ $speciality->name }}</a>
                                     </h2>
                                 </td>
                                 <td class="text-right">
                                     <div class="actions">
-                                        <a class="btn btn-sm bg-success-light" href="{{ route('admin.specialities.edit', $speciality->id) }}">
+                                        <a class="btn btn-sm bg-success-light" href="{{ route('doctors.admin.specialities.edit', $speciality->id) }}">
                                             <i class="fe fe-pencil"></i> Edit
                                         </a>
-                                        <form action="{{ route('admin.specialities.destroy', $speciality->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
+                                        <form action="{{ route('doctors.admin.specialities.destroy', $speciality->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm bg-danger-light">

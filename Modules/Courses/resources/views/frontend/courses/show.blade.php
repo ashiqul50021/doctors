@@ -130,7 +130,7 @@
                     <div class="course-description-box">
                         <h3>Instructor</h3>
                         <div class="d-flex align-items-start">
-                            <img src="{{ $course->instructor && $course->instructor->profile ? asset('storage/' . $course->instructor->profile) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
+                            <img src="{{ $course->instructor && $course->instructor->profile ? asset($course->instructor->profile) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
                                 class="rounded-circle mr-4" width="80" height="80" alt="Instructor">
                             <div>
                                 <h5 class="mb-1"><a href="#">Dr. {{ $course->instructor->name ?? 'Sarah Wilson' }}</a></h5>
@@ -149,11 +149,7 @@
 
                         <!-- Video Widget -->
                         <div class="video-card">
-                            @if(Str::startsWith($course->image, 'assets'))
-                                <img src="{{ asset($course->image) }}" alt="{{ $course->title }}">
-                            @else
-                                <img src="{{ asset('storage/' . $course->image) }}" alt="{{ $course->title }}">
-                            @endif
+                            <img src="{{ asset($course->image) }}" alt="{{ $course->title }}">
                             <div class="video-play-btn">
                                 <i class="fas fa-play"></i>
                             </div>

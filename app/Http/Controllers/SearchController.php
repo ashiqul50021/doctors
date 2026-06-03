@@ -32,7 +32,12 @@ class SearchController extends Controller
         // Location search (legacy)
         if ($request->has('location') && $request->location != '') {
             $query->where(function ($q) use ($request) {
-                $q->where('clinic_city', 'like', '%' . $request->location . '%')
+                $q->whereHas('district', function ($dq) use ($request) {
+                    $dq->where('name', 'like', '%' . $request->location . '%');
+                })
+                    ->orWhereHas('area', function ($aq) use ($request) {
+                        $aq->where('name', 'like', '%' . $request->location . '%');
+                    })
                     ->orWhere('clinic_address', 'like', '%' . $request->location . '%');
             });
         }

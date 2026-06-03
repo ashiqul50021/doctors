@@ -13,7 +13,7 @@
                 </ul>
             </div>
             <div class="col-sm-5 col">
-                <a href="{{ route('admin.specialities.create') }}" class="btn btn-primary float-end mt-2">Add</a>
+                <a href="{{ route('doctors.admin.specialities.create') }}" class="btn btn-primary float-end mt-2">Add</a>
             </div>
         </div>
     </div>
@@ -52,10 +52,10 @@
                                         <td class="text-end">
                                             <div class="actions">
                                                 <a class="btn btn-sm bg-success-light"
-                                                    href="{{ route('admin.specialities.edit', $speciality->id) }}">
+                                                    href="{{ route('doctors.admin.specialities.edit', $speciality->id) }}">
                                                     <i class="fe fe-pencil"></i> Edit
                                                 </a>
-                                                <form action="{{ route('admin.specialities.destroy', $speciality->id) }}"
+                                                <form action="{{ route('doctors.admin.specialities.destroy', $speciality->id) }}"
                                                     method="POST" style="display:inline-block;"
                                                     onsubmit="return confirm('Are you sure?');">
                                                     @csrf

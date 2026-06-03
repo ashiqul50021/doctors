@@ -41,9 +41,9 @@
                                         <td>
                                             <h2 class="table-avatar">
                                                 <a href="{{ route('courses.show', $course->id) }}"
-                                                    class="avatar avatar-sm mr-2">
+                                                    class="avatar avatar-sm me-2">
                                                     <img class="avatar-img rounded"
-                                                        src="{{ $course->image ? asset('storage/' . $course->image) : asset('assets/img/features/feature-01.jpg') }}"
+                                                        src="{{ $course->image ? asset($course->image) : asset('assets/img/features/feature-01.jpg') }}"
                                                         alt="Course Image">
                                                 </a>
                                                 <a
@@ -60,9 +60,9 @@
                                         </td>
                                         <td>
                                             <h2 class="table-avatar">
-                                                <a href="#" class="avatar avatar-sm mr-2">
+                                                <a href="#" class="avatar avatar-sm me-2">
                                                     <img class="avatar-img rounded-circle"
-                                                        src="{{ $course->instructor && $course->instructor->profile ? asset('storage/' . $course->instructor->profile) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
+                                                        src="{{ $course->instructor && $course->instructor->profile ? asset($course->instructor->profile) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
                                                         alt="Instructor">
                                                 </a>
                                                 <a href="#">{{ $course->instructor->name ?? 'Admin' }}</a>

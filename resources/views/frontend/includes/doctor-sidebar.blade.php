@@ -111,7 +111,7 @@
     @php
         $doctorImage = asset('assets/img/doctors/doctor-thumb-02.jpg');
         if (!empty($doctor->profile_image)) {
-            $doctorImage = str_starts_with($doctor->profile_image, 'uploads/')
+            $doctorImage = (str_starts_with($doctor->profile_image, 'uploads/') || str_starts_with($doctor->profile_image, 'assets/'))
                 ? asset($doctor->profile_image)
                 : asset('storage/' . $doctor->profile_image);
         }

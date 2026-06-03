@@ -9,7 +9,7 @@
             <h3 class="page-title">Edit Doctor</h3>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.doctors.index') }}">Doctors</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('doctors.admin.doctors.index') }}">Doctors</a></li>
                 <li class="breadcrumb-item active">Edit Doctor</li>
             </ul>
         </div>
@@ -20,7 +20,7 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('admin.doctors.update', $doctor->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('doctors.admin.doctors.update', $doctor->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="row form-row">
@@ -28,7 +28,7 @@
                             <div class="form-group">
                                 <div class="change-avatar">
                                     <div class="profile-img">
-                                        <img src="{{ $doctor->profile_image ? asset('storage/'.$doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}" alt="User Image">
+                                        <img src="{{ $doctor->profile_image ? asset($doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}" alt="User Image">
                                     </div>
                                     <div class="upload-img">
                                         <div class="change-photo-btn">

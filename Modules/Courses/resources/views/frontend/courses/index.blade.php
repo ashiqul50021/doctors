@@ -70,12 +70,7 @@
                                 <div class="course-card">
                                     <div class="course-thumbnail">
                                         <a href="{{ route('courses.show', $course->id) }}">
-                                            @if(Str::startsWith($course->image, 'assets'))
-                                                <img src="{{ asset($course->image) }}" class="img-fluid" alt="{{ $course->title }}">
-                                            @else
-                                                <img src="{{ asset('storage/' . $course->image) }}" class="img-fluid"
-                                                    alt="{{ $course->title }}">
-                                            @endif
+                                            <img src="{{ asset($course->image) }}" class="img-fluid" alt="{{ $course->title }}">
                                         </a>
                                         <div class="play-overlay">
                                             <a href="{{ route('courses.show', $course->id) }}">
@@ -100,7 +95,7 @@
                                         </p>
                                         <div class="course-footer">
                                             <div class="course-instructor">
-                                                <img src="{{ $course->instructor && $course->instructor->profile ? asset('storage/' . $course->instructor->profile) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
+                                                <img src="{{ $course->instructor && $course->instructor->profile ? asset($course->instructor->profile) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
                                                     alt="Instructor">
                                                 <span>Dr. {{ $course->instructor->name ?? 'Instructor' }}</span>
                                             </div>

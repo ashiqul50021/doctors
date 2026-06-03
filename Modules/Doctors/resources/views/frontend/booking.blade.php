@@ -15,7 +15,7 @@
                     <div class="card-body">
                         <div class="booking-doc-info">
                             <a href="{{ route('doctors.profile', $doctor->id) }}" class="booking-doc-img">
-                                <img src="{{ $doctor->profile_image ? asset('storage/'.$doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image">
+                                <img src="{{ $doctor->profile_image ? asset($doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image">
                             </a>
                             <div class="booking-info">
                                 <h4><a href="{{ route('doctors.profile', $doctor->id) }}">Dr. {{ $doctor->user->name }}</a></h4>

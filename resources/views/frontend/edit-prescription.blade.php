@@ -17,7 +17,7 @@
                         <div class="pro-widget-content">
                             <div class="profile-info-widget">
                                 <a href="#" class="booking-doc-img">
-                                    <img src="{{ optional($prescription->patient)->profile_image ? asset('storage/' . $prescription->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}" alt="User Image">
+                                    <img src="{{ optional($prescription->patient)->profile_image ? asset($prescription->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}" alt="User Image">
                                 </a>
                                 <div class="profile-det-info">
                                     <h3><a href="{{ route('patient.profile', $prescription->patient_id) }}">{{ optional(optional($prescription->patient)->user)->name ?? 'Unknown' }}</a></h3>

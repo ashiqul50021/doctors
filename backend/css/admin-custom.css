@@ -171,3 +171,8 @@
 .status-toggle .check:checked+.checktoggle {
     background-color: var(--primary-blue) !important;
 }
+
+/* Remove default link underlines for a cleaner look */
+a {
+    text-decoration: none !important;
+}

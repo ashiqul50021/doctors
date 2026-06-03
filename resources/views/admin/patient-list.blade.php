@@ -34,40 +34,25 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>#PT001</td>
-                                    <td>
-                                        <h2 class="table-avatar">
-                                            <a href="profile.html" class="avatar avatar-sm me-2"><img
-                                                    class="avatar-img rounded-circle"
-                                                    src="{{ asset('backend/img/patients/patient1.jpg') }}"
-                                                    alt="User Image"></a>
-                                            <a href="profile.html">Charlene Reed </a>
-                                        </h2>
-                                    </td>
-                                    <td>29</td>
-                                    <td>4417 Goosetown Drive, Taylorsville, NC, 28681</td>
-                                    <td>8286329170</td>
-                                    <td>20 Oct 2019</td>
-                                    <td class="text-end">$100.00</td>
-                                </tr>
-                                <tr>
-                                    <td>#PT002</td>
-                                    <td>
-                                        <h2 class="table-avatar">
-                                            <a href="profile.html" class="avatar avatar-sm me-2"><img
-                                                    class="avatar-img rounded-circle"
-                                                    src="{{ asset('backend/img/patients/patient2.jpg') }}"
-                                                    alt="User Image"></a>
-                                            <a href="profile.html">Travis Trimble </a>
-                                        </h2>
-                                    </td>
-                                    <td>23</td>
-                                    <td>4026 Dodge Street, Prescott, AZ, 86301</td>
-                                    <td>9283440479</td>
-                                    <td>22 Oct 2019</td>
-                                    <td class="text-end">$200.00</td>
-                                </tr>
+                                @foreach($patients as $patient)
+                                    <tr>
+                                        <td>#PT{{ str_pad($patient->id, 3, '0', STR_PAD_LEFT) }}</td>
+                                        <td>
+                                            <h2 class="table-avatar">
+                                                <a href="#" class="avatar avatar-sm me-2"><img
+                                                        class="avatar-img rounded-circle"
+                                                        src="{{ asset('assets/img/patients/patient.jpg') }}"
+                                                        alt="User Image"></a>
+                                                <a href="#">{{ $patient->user->name ?? 'N/A' }} </a>
+                                            </h2>
+                                        </td>
+                                        <td>{{ $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)->age : 'N/A' }}</td>
+                                        <td>{{ $patient->address ?? 'N/A' }}</td>
+                                        <td>{{ $patient->phone ?? 'N/A' }}</td>
+                                        <td>{{ $patient->appointments->isNotEmpty() ? $patient->appointments->max('appointment_date')->format('d M Y') : 'N/A' }}</td>
+                                        <td class="text-end">৳{{ number_format($patient->appointments->sum('fee') ?? 0, 2) }}</td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

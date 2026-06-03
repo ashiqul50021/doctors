@@ -68,11 +68,11 @@
                                             }
                                         @endphp
                                         @if($productImage)
-                                            <a href="#" class="avatar avatar-sm mr-2">
+                                            <a href="#" class="avatar avatar-sm me-2">
                                                 <img class="avatar-img" src="{{ \Illuminate\Support\Str::startsWith($productImage, ['http://', 'https://']) ? $productImage : asset($productImage) }}" alt="Product">
                                             </a>
                                         @else
-                                            <span class="avatar avatar-sm mr-2 d-inline-flex align-items-center justify-content-center bg-light text-muted border"
+                                            <span class="avatar avatar-sm me-2 d-inline-flex align-items-center justify-content-center bg-light text-muted border"
                                                 style="font-size: 9px; font-weight: 600;">
                                                 No Image
                                             </span>

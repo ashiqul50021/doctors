@@ -205,13 +205,20 @@
                 <p class="sub-title">See our platform in action and learn how easy it is to book appointments</p>
             </div>
             <div class="video-wrapper">
-                <div class="video-container">
-                    <!-- Replace VIDEO_ID with your YouTube video ID -->
-                    <iframe src="https://www.youtube.com/embed/P6nNYsE0uXQ?rel=0" title="Platform Introduction Video"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                    </iframe>
+                <div class="video-container" id="telemedicineVideoContainer">
+                    <div class="video-cover-wrapper" style="background-image: url('{{ asset('uploads/settings/video_cover.png') }}');" onclick="playTelemedicineVideo()">
+                        <div class="video-cover-overlay"></div>
+                        <div class="video-play-btn-modern">
+                            <i class="fas fa-play"></i>
+                            <div class="video-ripple-modern"></div>
+                            <div class="video-ripple-modern video-ripple-modern-2"></div>
+                            <div class="video-ripple-modern video-ripple-modern-3"></div>
+                        </div>
+                        <div class="video-info-overlay">
+                            <h4>How abcsheba Works</h4>
+                            <p>Watch this 2-minute video to learn about our telemedicine features.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -688,7 +695,7 @@
                     <div class="video-promo-box">
                         <img src="{{ asset('assets/img/features/feature.png') }}" alt="Video Thumbnail"
                             class="img-fluid" style="background: transparent;">
-                        <a href="https://www.youtube.com/watch?v=P6nNYsE0uXQ" data-fancybox class="video-play-btn">
+                        <a href="https://www.youtube.com/watch?v=zNHq9gD2uqc" data-fancybox class="video-play-btn">
                             <i class="fas fa-play"></i>
                             <span class="video-ripple ripple-1"></span>
                             <span class="video-ripple ripple-2"></span>
@@ -1648,6 +1655,123 @@
             width: 100%;
             height: 100%;
             border-radius: 20px;
+        }
+
+        .video-cover-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+        }
+
+        .video-cover-wrapper:hover {
+            transform: scale(1.02);
+        }
+
+        .video-cover-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(36, 105, 237, 0.2);
+            transition: background 0.3s ease;
+        }
+
+        .video-cover-wrapper:hover .video-cover-overlay {
+            background: rgba(36, 105, 237, 0.3);
+        }
+
+        /* Pulsing Play Button */
+        .video-play-btn-modern {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            background: #2469ed;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 26px;
+            box-shadow: 0 10px 30px rgba(36, 105, 237, 0.5);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .video-cover-wrapper:hover .video-play-btn-modern {
+            transform: scale(1.1);
+            background: #1052d1;
+            box-shadow: 0 10px 35px rgba(16, 82, 209, 0.6);
+        }
+
+        .video-play-btn-modern i {
+            margin-left: 5px; /* offset play icon slightly to align visually */
+        }
+
+        /* Ripple Animations */
+        .video-ripple-modern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(36, 105, 237, 0.6);
+            border-radius: 50%;
+            animation: play-ripple 2s infinite ease-out;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .video-ripple-modern-2 {
+            animation-delay: 0.6s;
+        }
+
+        .video-ripple-modern-3 {
+            animation-delay: 1.2s;
+        }
+
+        @keyframes play-ripple {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2.2);
+                opacity: 0;
+            }
+        }
+
+        /* Info overlay */
+        .video-info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
+            color: #fff;
+            text-align: left;
+            z-index: 2;
+        }
+
+        .video-info-overlay h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 5px 0;
+            color: #fff;
+        }
+
+        .video-info-overlay p {
+            font-size: 14px;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         /* Product Filter Card */
@@ -2944,5 +3068,16 @@
                 }
             });
         });
+
+        function playTelemedicineVideo() {
+            const container = document.getElementById('telemedicineVideoContainer');
+            container.innerHTML = `
+                <iframe src="https://www.youtube.com/embed/zNHq9gD2uqc?autoplay=1&rel=0" title="Platform Introduction Video"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            `;
+        }
     </script>
 @endpush

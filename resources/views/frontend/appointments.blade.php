@@ -17,7 +17,7 @@
                     <div class="appointment-list">
                         <div class="profile-info-widget">
                             <a href="#" class="booking-doc-img">
-                                <img src="{{ optional($appointment->patient)->profile_image ? asset('storage/' . $appointment->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}" alt="Patient Image">
+                                <img src="{{ optional($appointment->patient)->profile_image ? asset($appointment->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}" alt="Patient Image">
                             </a>
                             <div class="profile-det-info">
                                 <h3><a href="#">{{ optional(optional($appointment->patient)->user)->name ?? 'Unknown Patient' }}</a></h3>

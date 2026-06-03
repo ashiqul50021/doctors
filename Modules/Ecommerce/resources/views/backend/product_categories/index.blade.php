@@ -42,11 +42,11 @@
                                 <td>
                                     <h2 class="table-avatar">
                                         @if($category->image)
-                                            <a href="#" class="avatar avatar-sm mr-2">
+                                            <a href="#" class="avatar avatar-sm me-2">
                                                 <img class="avatar-img" src="{{ asset($category->image) }}" alt="Category">
                                             </a>
                                         @else
-                                            <span class="avatar avatar-sm mr-2 d-inline-flex align-items-center justify-content-center bg-light text-muted border"
+                                            <span class="avatar avatar-sm me-2 d-inline-flex align-items-center justify-content-center bg-light text-muted border"
                                                 style="font-size: 9px; font-weight: 600;">
                                                 No Image
                                             </span>

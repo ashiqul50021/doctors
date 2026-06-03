@@ -164,15 +164,8 @@ class AdminAgentController extends Controller
             return back()->with('error', 'This payout request has already been processed.');
         }
 
-        if ($agent->wallet_balance < $payoutRequest->amount) {
-            return back()->with('error', 'Agent has insufficient wallet balance.');
-        }
-
         DB::beginTransaction();
         try {
-            // Deduct from agent wallet
-            $agent->decrement('wallet_balance', $payoutRequest->amount);
-
             // Update original request to completed
             $payoutRequest->update(['status' => 'completed']);
 
@@ -197,6 +190,7 @@ class AdminAgentController extends Controller
     public function payoutsReject(Request $request, $id)
     {
         $payoutRequest = AgentTransaction::findOrFail($id);
+        $agent = $payoutRequest->agent;
 
         if ($payoutRequest->status !== 'pending') {
             return back()->with('error', 'This payout request has already been processed.');
@@ -204,6 +198,9 @@ class AdminAgentController extends Controller
 
         DB::beginTransaction();
         try {
+            // Refund the agent's wallet balance
+            $agent->increment('wallet_balance', $payoutRequest->amount);
+
             $payoutRequest->update(['status' => 'rejected']);
 
             // Log rejection

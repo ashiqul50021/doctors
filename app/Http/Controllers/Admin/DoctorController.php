@@ -73,7 +73,7 @@ class DoctorController extends Controller
             'is_featured' => $request->has('is_featured'),
         ]);
 
-        return redirect()->route('admin.doctors.index')->with('success', 'Doctor created successfully.');
+        return redirect()->route('doctors.admin.doctors.index')->with('success', 'Doctor created successfully.');
     }
 
     /**
@@ -132,7 +132,7 @@ class DoctorController extends Controller
 
         $doctor->update($data);
 
-        return redirect()->route('admin.doctors.index')->with('success', 'Doctor updated successfully.');
+        return redirect()->route('doctors.admin.doctors.index')->with('success', 'Doctor updated successfully.');
     }
 
     /**
@@ -147,6 +147,6 @@ class DoctorController extends Controller
         // or $doctor->delete(); if user should remain. But usually user is deleted.
         // Migration has onDelete cascade on user_id, but here I'm deleting user.
 
-        return redirect()->route('admin.doctors.index')->with('success', 'Doctor deleted successfully.');
+        return redirect()->route('doctors.admin.doctors.index')->with('success', 'Doctor deleted successfully.');
     }
 }

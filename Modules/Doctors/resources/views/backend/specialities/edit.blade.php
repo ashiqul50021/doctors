@@ -9,7 +9,7 @@
             <h3 class="page-title">Edit Speciality</h3>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.specialities.index') }}">Specialities</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('doctors.admin.specialities.index') }}">Specialities</a></li>
                 <li class="breadcrumb-item active">Edit Speciality</li>
             </ul>
         </div>
@@ -20,7 +20,7 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('admin.specialities.update', $speciality->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('doctors.admin.specialities.update', $speciality->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="row form-row">
@@ -35,7 +35,7 @@
                                 <label>Image</label>
                                 <input type="file" name="image" class="form-control">
                                 @if($speciality->image)
-                                    <img src="{{ asset('storage/'.$speciality->image) }}" alt="" width="50" class="mt-2">
+                                    <img src="{{ asset($speciality->image) }}" alt="" width="50" class="mt-2">
                                 @endif
                             </div>
                         </div>

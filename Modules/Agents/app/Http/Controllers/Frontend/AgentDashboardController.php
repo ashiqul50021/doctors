@@ -81,14 +81,19 @@ class AgentDashboardController extends Controller
             return back()->with('error', 'You do not have enough wallet balance to request this payout.');
         }
 
-        // Create transaction of type payout_request (pending)
-        AgentTransaction::create([
-            'agent_id' => $agent->id,
-            'type' => 'payout_request',
-            'amount' => $amount,
-            'description' => 'Payout request via ' . $request->payment_method . ' to ' . $request->account_number,
-            'status' => 'pending',
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($agent, $amount, $request) {
+            // Deduct immediately (lock balance)
+            $agent->decrement('wallet_balance', $amount);
+
+            // Create transaction of type payout_request (pending)
+            AgentTransaction::create([
+                'agent_id' => $agent->id,
+                'type' => 'payout_request',
+                'amount' => $amount,
+                'description' => 'Payout request via ' . $request->payment_method . ' to ' . $request->account_number,
+                'status' => 'pending',
+            ]);
+        });
 
         return back()->with('success', 'Payout request submitted successfully. Please wait for admin approval.');
     }

@@ -188,7 +188,7 @@
                                                                     <a href="{{ route('doctors.profile', $prescription->doctor_id) }}"
                                                                         class="avatar avatar-sm me-2">
                                                                         <img class="avatar-img rounded-circle"
-                                                                            src="{{ optional($prescription->doctor)->profile_image ? asset('storage/' . $prescription->doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
+                                                                            src="{{ optional($prescription->doctor)->profile_image ? asset($prescription->doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
                                                                             alt="User Image">
                                                                     </a>
                                                                     <a href="{{ route('doctors.profile', $prescription->doctor_id) }}">Dr. {{ optional(optional($prescription->doctor)->user)->name ?? 'Unknown' }}

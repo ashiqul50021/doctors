@@ -284,7 +284,7 @@
                 </div>
                 <!-- /Contact Details -->
 
-                <!-- Pricing -->
+                 <!-- Pricing -->
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Pricing</h4>
@@ -292,20 +292,20 @@
                         <div class="form-group mb-0">
                             <div id="pricing_select">
                                 <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" id="price_free" name="rating_option" class="custom-control-input" value="price_free" checked>
+                                    <input type="radio" id="price_free" name="rating_option" class="custom-control-input" value="price_free" {{ ($doctor->pricing ?? 'custom') === 'free' ? 'checked' : '' }}>
                                     <label class="custom-control-label" for="price_free">Free</label>
                                 </div>
                                 <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" id="price_custom" name="rating_option" value="custom_price" class="custom-control-input">
+                                    <input type="radio" id="price_custom" name="rating_option" value="custom_price" class="custom-control-input" {{ ($doctor->pricing ?? 'custom') === 'custom' ? 'checked' : '' }}>
                                     <label class="custom-control-label" for="price_custom">Custom Price (per hour)</label>
                                 </div>
                             </div>
 
                         </div>
 
-                        <div class="row custom_price_cont" id="custom_price_cont" style="display: none;">
+                        <div class="row custom_price_cont" id="custom_price_cont" style="display: {{ ($doctor->pricing ?? 'custom') === 'custom' ? 'block' : 'none' }};">
                             <div class="col-md-4">
-                                <input type="text" class="form-control" id="custom_rating_input" name="custom_rating_count" value="" placeholder="20">
+                                <input type="text" class="form-control" id="custom_rating_input" name="custom_rating_count" value="{{ $doctor->custom_price }}" placeholder="20">
                                 <small class="form-text text-muted">Custom price you can add</small>
                             </div>
                         </div>

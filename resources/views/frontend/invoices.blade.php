@@ -31,7 +31,7 @@
                                             <h2 class="table-avatar">
                                                 <a href="#" class="avatar avatar-sm me-2">
                                                     <img class="avatar-img rounded-circle"
-                                                        src="{{ optional($invoice->patient)->profile_image ? asset('storage/' . $invoice->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}"
+                                                        src="{{ optional($invoice->patient)->profile_image ? asset($invoice->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}"
                                                         alt="Patient Image">
                                                 </a>
                                                 <a href="#">{{ optional(optional($invoice->patient)->user)->name ?? 'Unknown' }}</a>

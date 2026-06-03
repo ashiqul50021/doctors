@@ -13,7 +13,7 @@
             </ul>
         </div>
         <div class="col-sm-5 col">
-            <a href="{{ route('admin.doctors.create') }}" class="btn btn-primary float-right mt-2">Add Doctor</a>
+            <a href="{{ route('doctors.admin.doctors.create') }}" class="btn btn-primary float-right mt-2">Add Doctor</a>
         </div>
     </div>
 </div>
@@ -42,8 +42,8 @@
                             <tr>
                                 <td>
                                     <h2 class="table-avatar">
-                                        <a href="#" class="avatar avatar-sm mr-2">
-                                            <img class="avatar-img rounded-circle" src="{{ $doctor->profile_image ? asset('storage/'.$doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}" alt="User Image">
+                                        <a href="#" class="avatar avatar-sm me-2">
+                                            <img class="avatar-img rounded-circle" src="{{ $doctor->profile_image ? asset($doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}" alt="User Image">
                                         </a>
                                         <a href="#">{{ $doctor->user->name }}</a>
                                     </h2>
@@ -55,10 +55,13 @@
                                 </td>
                                 <td>
                                     <div class="actions">
-                                        <a class="btn btn-sm bg-success-light" href="{{ route('admin.doctors.edit', $doctor->id) }}">
+                                        <a class="btn btn-sm bg-success-light" href="{{ route('doctors.admin.doctors.edit', $doctor->id) }}">
                                             <i class="fe fe-pencil"></i> Edit
                                         </a>
-                                        <form action="{{ route('admin.doctors.destroy', $doctor->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
+                                        <a class="btn btn-sm bg-info-light" href="{{ route('admin.doctors.schedule', $doctor->id) }}">
+                                            <i class="fe fe-clock"></i> Schedule
+                                        </a>
+                                        <form action="{{ route('doctors.admin.doctors.destroy', $doctor->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm bg-danger-light">

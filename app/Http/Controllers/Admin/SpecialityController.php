@@ -51,7 +51,7 @@ class SpecialityController extends Controller
             'is_active' => true,
         ]);
 
-        return redirect()->route('admin.specialities.index')->with('success', 'Speciality created successfully.');
+        return redirect()->route('doctors.admin.specialities.index')->with('success', 'Speciality created successfully.');
     }
 
     /**
@@ -98,7 +98,7 @@ class SpecialityController extends Controller
 
         $speciality->update($data);
 
-        return redirect()->route('admin.specialities.index')->with('success', 'Speciality updated successfully.');
+        return redirect()->route('doctors.admin.specialities.index')->with('success', 'Speciality updated successfully.');
     }
 
     /**
@@ -111,6 +111,6 @@ class SpecialityController extends Controller
         }
         $speciality->delete();
 
-        return redirect()->route('admin.specialities.index')->with('success', 'Speciality deleted successfully.');
+        return redirect()->route('doctors.admin.specialities.index')->with('success', 'Speciality deleted successfully.');
     }
 }

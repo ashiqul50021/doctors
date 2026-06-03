@@ -16,7 +16,7 @@
                         <li>
                             <div class="comment">
                                 <img class="avatar rounded-circle" alt="User Image"
-                                    src="{{ optional($review->patient)->profile_image ? asset('storage/' . $review->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}">
+                                    src="{{ optional($review->patient)->profile_image ? asset($review->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}">
                                 <div class="comment-body">
                                     <div class="meta-data">
                                         <span class="comment-author">{{ optional(optional($review->patient)->user)->name ?? 'Anonymous' }}</span>
