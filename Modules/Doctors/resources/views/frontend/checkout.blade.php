@@ -19,32 +19,32 @@
                             <!-- Personal Information -->
                             <div class="info-widget">
                                 <h4 class="card-title">Personal Information</h4>
-                                <div class="row">
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="form-group card-label">
-                                            <label>First Name</label>
-                                            <input class="form-control" type="text" name="first_name" value="{{ Auth::user()->name ?? '' }}">
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-12">
+                                            <div class="form-group card-label">
+                                                <label>First Name</label>
+                                                <input class="form-control" type="text" name="first_name" value="{{ old('first_name', Auth::check() ? (explode(' ', Auth::user()->name, 2)[0] ?? '') : '') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12">
+                                            <div class="form-group card-label">
+                                                <label>Last Name</label>
+                                                <input class="form-control" type="text" name="last_name" value="{{ old('last_name', Auth::check() ? (explode(' ', Auth::user()->name, 2)[1] ?? '') : '') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12">
+                                            <div class="form-group card-label">
+                                                <label>Email</label>
+                                                <input class="form-control" type="email" name="email" value="{{ old('email', Auth::user()->email ?? '') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12">
+                                            <div class="form-group card-label">
+                                                <label>Phone</label>
+                                                <input class="form-control" type="text" name="phone" value="{{ old('phone', Auth::check() && Auth::user()->patient ? Auth::user()->patient->phone : '') }}">
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="form-group card-label">
-                                            <label>Last Name</label>
-                                            <input class="form-control" type="text" name="last_name">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="form-group card-label">
-                                            <label>Email</label>
-                                            <input class="form-control" type="email" name="email" value="{{ Auth::user()->email ?? '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="form-group card-label">
-                                            <label>Phone</label>
-                                            <input class="form-control" type="text" name="phone">
-                                        </div>
-                                    </div>
-                                </div>
                                 @guest
                                 <div class="exist-customer">Existing Customer? <a href="{{ route('login') }}">Click here to login</a></div>
                                 @endguest
@@ -108,7 +108,7 @@
                                 <img src="{{ $doctor->profile_image ? asset($doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image">
                             </a>
                             <div class="booking-info">
-                                <h4><a href="{{ route('doctors.profile', $doctor->id) }}">Dr. {{ $doctor->user->name }}</a></h4>
+                                <h4><a href="{{ route('doctors.profile', $doctor->id) }}">{{ str_starts_with(strtolower($doctor->user->name), 'dr.') ? $doctor->user->name : 'Dr. ' . $doctor->user->name }}</a></h4>
                                 <div class="rating">
                                     @for($i = 1; $i <= 5; $i++)
                                         <i class="fas fa-star {{ $i <= $doctor->average_rating ? 'filled' : '' }}"></i>
@@ -116,7 +116,7 @@
                                     <span class="d-inline-block average-rating">{{ $doctor->review_count }}</span>
                                 </div>
                                 <div class="clinic-details">
-                                    <p class="doc-location"><i class="fas fa-map-marker-alt"></i> {{ $doctor->clinic_city }}, {{ $doctor->clinic_address }}</p>
+                                    <p class="doc-location"><i class="fas fa-map-marker-alt"></i> {{ $doctor->clinic_city ? $doctor->clinic_city . ', ' : '' }}{{ $doctor->clinic_address }}</p>
                                 </div>
                             </div>
                         </div>
@@ -127,15 +127,15 @@
                                 <ul class="booking-date">
                                     <li>Date <span>{{ \Carbon\Carbon::parse($booking['date'])->format('d M Y') }}</span></li>
                                     <li>Time <span>{{ \Carbon\Carbon::parse($booking['time'])->format('h:i A') }}</span></li>
-                                </div>
+                                </ul>
                                 <ul class="booking-fee">
-                                    <li>Consulting Fee <span>${{ $booking['fee'] }}</span></li>
+                                    <li>Consulting Fee <span>৳{{ $booking['fee'] }}</span></li>
                                 </ul>
                                 <div class="booking-total">
                                     <ul class="booking-total-list">
                                         <li>
                                             <span>Total</span>
-                                            <span class="total-cost">${{ $booking['fee'] }}</span>
+                                            <span class="total-cost">৳{{ $booking['fee'] }}</span>
                                         </li>
                                     </ul>
                                 </div>

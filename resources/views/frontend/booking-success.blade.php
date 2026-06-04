@@ -39,7 +39,14 @@
                                     </div>
                                 @endif
 
-                                <a href="{{ route('home') }}" class="btn btn-primary view-inv-btn">Go to Home</a>
+                                <div class="d-flex justify-content-center gap-2 mt-4">
+                                    <a href="{{ route('home') }}" class="btn btn-outline-secondary view-inv-btn">Go to Home</a>
+                                    @if(session('doctor_user_id'))
+                                        <a href="{{ route('chat', ['user_id' => session('doctor_user_id')]) }}" class="btn btn-primary view-inv-btn">
+                                            <i class="far fa-comment-dots me-1"></i> Chat with Doctor
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>

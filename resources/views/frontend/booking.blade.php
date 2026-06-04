@@ -34,8 +34,7 @@
                                         alt="User Image">
                                 </a>
                                 <div class="booking-info">
-                                    <h4><a href="{{ route('doctors.profile', $doctor->id) }}">Dr.
-                                            {{ $doctor->user->name }}</a></h4>
+                                    <h4><a href="{{ route('doctors.profile', $doctor->id) }}" style="text-decoration: none;">{{ str_starts_with(strtolower($doctor->user->name), 'dr.') ? $doctor->user->name : 'Dr. ' . $doctor->user->name }}</a></h4>
                                     <div class="rating">
                                         @for($i = 1; $i <= 5; $i++)
                                             <i class="fas fa-star {{ $i <= $doctor->average_rating ? 'filled' : '' }}"></i>
@@ -43,7 +42,7 @@
                                         <span class="d-inline-block average-rating">({{ $doctor->review_count }})</span>
                                     </div>
                                     <p class="text-muted mb-0"><i class="fas fa-map-marker-alt"></i>
-                                        {{ $doctor->clinic_city }}, {{ $doctor->primary_clinic_address }}</p>
+                                        {{ $doctor->clinic_city ? $doctor->clinic_city . ', ' : '' }}{{ $doctor->primary_clinic_address }}</p>
                                 </div>
                             </div>
                         </div>
@@ -150,10 +149,34 @@
 
                         <!-- Submit Section -->
                         <div class="submit-section proceed-btn text-end">
-                            <button type="submit" class="btn btn-primary submit-btn">Proceed to Pay <i
-                                    class="fas fa-chevron-right ms-2"></i></button>
+                            <button type="submit" class="btn btn-primary submit-btn">
+                                <span id="submit-btn-text">Proceed to Confirm Appointment</span>
+                                <i class="fas fa-chevron-right ms-2"></i>
+                            </button>
                         </div>
                         <!-- /Submit Section -->
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                const btnText = document.getElementById('submit-btn-text');
+                                const typeOffline = document.getElementById('type_offline');
+                                const typeOnline = document.getElementById('type_online');
+
+                                function updateBtn() {
+                                    if (typeOffline && typeOffline.checked) {
+                                        btnText.textContent = 'Proceed to Confirm Appointment';
+                                    } else if (typeOnline && typeOnline.checked) {
+                                        btnText.textContent = 'Proceed to Pay';
+                                    }
+                                }
+
+                                if (typeOffline && typeOnline) {
+                                    typeOffline.addEventListener('change', updateBtn);
+                                    typeOnline.addEventListener('change', updateBtn);
+                                    updateBtn();
+                                }
+                            });
+                        </script>
                         @else
                         <!-- No Available Dates -->
                         <div class="card">

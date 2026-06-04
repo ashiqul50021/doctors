@@ -123,7 +123,14 @@ Route::middleware(['auth', 'role:patient'])->name('patient.')->group(function ()
     Route::get('/patient-dashboard', [\App\Http\Controllers\Patient\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/prescription/{id}', [\App\Http\Controllers\Doctor\PrescriptionController::class, 'show'])->name('prescription.view');
     Route::view('/patient-profile', 'frontend.patient-profile')->name('profile');
-    Route::view('/profile-settings', 'frontend.profile-settings')->name('profile.settings');
-    Route::view('/change-password', 'frontend.change-password')->name('change.password');
-    Route::view('/favourites', 'frontend.favourites')->name('favourites');
+    Route::get('/profile-settings', [\App\Http\Controllers\Patient\DashboardController::class, 'profileSettings'])->name('profile.settings');
+    Route::post('/profile-settings', [\App\Http\Controllers\Patient\DashboardController::class, 'updateProfileSettings'])->name('profile.settings.update');
+    Route::get('/change-password', [\App\Http\Controllers\Patient\DashboardController::class, 'changePassword'])->name('change.password');
+    Route::post('/change-password', [\App\Http\Controllers\Patient\DashboardController::class, 'updatePassword'])->name('change.password.update');
+    Route::get('/favourites', [\App\Http\Controllers\Patient\DashboardController::class, 'favourites'])->name('favourites');
+    Route::post('/favourite/toggle/{doctor_id}', [\App\Http\Controllers\Patient\DashboardController::class, 'toggleFavourite'])->name('favourite.toggle');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/invoice-view/{id}', [\App\Http\Controllers\Patient\DashboardController::class, 'viewInvoice'])->name('invoice.view');
 });

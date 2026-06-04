@@ -9,7 +9,7 @@ Your appointment with **Dr. {{ $appointment->doctor->user->name }}** has been su
 - **Date:** {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}
 - **Time:** {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}
 - **Type:** <span style="text-transform: uppercase">{{ $appointment->type }}</span>
-- **Consulting Fee:** ${{ $appointment->fee }}
+- **Consulting Fee:** ৳{{ $appointment->fee }}
 
 @if($appointment->type === 'online')
 **Video Call Link:**

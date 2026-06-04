@@ -25,7 +25,7 @@
                                     @endfor
                                     <span class="d-inline-block average-rating">{{ $doctor->review_count }}</span>
                                 </div>
-                                <p class="text-muted mb-0"><i class="fas fa-map-marker-alt"></i> {{ $doctor->clinic_city }}, {{ $doctor->clinic_address }}</p>
+                                <p class="text-muted mb-0"><i class="fas fa-map-marker-alt"></i> {{ $doctor->clinic_city ? $doctor->clinic_city . ', ' : '' }}{{ $doctor->clinic_address }}</p>
                             </div>
                         </div>
                     </div>

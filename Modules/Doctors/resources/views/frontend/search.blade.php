@@ -219,6 +219,11 @@
 
 @section('content')
 @php
+    $favDoctorIds = [];
+    if (auth()->check() && auth()->user()->role === 'patient' && auth()->user()->patient) {
+        $favDoctorIds = auth()->user()->patient->favouriteDoctors()->pluck('doctors.id')->toArray();
+    }
+
     $selectedSpecialities = collect(request()->input('select_specialist', []))->map(fn ($id) => (int) $id)->all();
     $activeFilters = [];
 
@@ -342,6 +347,8 @@
 
                 @forelse($doctors as $doctor)
                     @include('components.search-doctor-card', [
+                        'id' => $doctor->id,
+                        'isFavourite' => in_array($doctor->id, $favDoctorIds),
                         'image' => $doctor->profile_image ? asset($doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg'),
                         'name' => 'Dr. ' . $doctor->user->name,
                         'speciality' => $doctor->speciality->name ?? 'General',

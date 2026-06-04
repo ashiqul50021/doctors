@@ -370,9 +370,15 @@
                                                                     <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }} <span class="d-block text-info">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span></td>
                                                                     <td>{{ $appt->reason ?? 'General' }}</td>
                                                                     <td>{{ ucfirst($appt->type ?? 'offline') }}</td>
-                                                                    <td class="text-center">${{ number_format($appt->fee, 2) }}</td>
+                                                                    <td class="text-center">৳{{ number_format($appt->fee, 2) }}</td>
                                                                     <td class="text-end">
                                                                         <div class="table-action">
+                                                                            @if(optional(optional($appt->patient)->user)->id)
+                                                                                <a href="{{ route('chat', ['user_id' => $appt->patient->user->id]) }}"
+                                                                                    class="btn btn-sm bg-success-light">
+                                                                                    <i class="far fa-comment-dots"></i> Chat
+                                                                                </a>
+                                                                            @endif
                                                                             <a href="javascript:void(0);"
                                                                                 class="btn btn-sm bg-info-light">
                                                                                 <i class="far fa-eye"></i> View
@@ -467,9 +473,15 @@
                                                                     <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }} <span class="d-block text-info">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span></td>
                                                                     <td>{{ $appt->reason ?? 'General' }}</td>
                                                                     <td>{{ ucfirst($appt->type ?? 'offline') }}</td>
-                                                                    <td class="text-center">${{ number_format($appt->fee, 2) }}</td>
+                                                                    <td class="text-center">৳{{ number_format($appt->fee, 2) }}</td>
                                                                     <td class="text-end">
                                                                         <div class="table-action">
+                                                                            @if(optional(optional($appt->patient)->user)->id)
+                                                                                <a href="{{ route('chat', ['user_id' => $appt->patient->user->id]) }}"
+                                                                                    class="btn btn-sm bg-success-light">
+                                                                                    <i class="far fa-comment-dots"></i> Chat
+                                                                                </a>
+                                                                            @endif
                                                                             <a href="javascript:void(0);"
                                                                                 class="btn btn-sm bg-info-light">
                                                                                 <i class="far fa-eye"></i> View

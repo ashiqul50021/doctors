@@ -168,6 +168,60 @@
                     }
                 });
             });
+
+            // Global Bookmark / Favourite Toggle handler
+            $(document).on('click', '.fav-btn', function (e) {
+                e.preventDefault();
+                var $btn = $(this);
+                var doctorId = $btn.data('id');
+                if (!doctorId) return;
+
+                @auth
+                    @if(auth()->user()->role === 'patient')
+                        $.ajax({
+                            url: '/patient/favourite/toggle/' + doctorId,
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (response) {
+                                if (response.status === 'success') {
+                                    toastr.success(response.message);
+                                    if (response.action === 'added') {
+                                        $btn.addClass('active');
+                                        $btn.find('i').removeClass('far').addClass('fas');
+                                    } else {
+                                        $btn.removeClass('active');
+                                        $btn.find('i').removeClass('fas').addClass('far');
+                                        // If we are on the favourites page, remove the card from the UI
+                                        if (window.location.pathname.indexOf('/favourites') !== -1) {
+                                            $btn.closest('.doctor-grid-item').fadeOut(400, function () {
+                                                $(this).remove();
+                                                if ($('.doctor-grid-item').length === 0) {
+                                                    $('.row-grid').html('<div class="col-12 text-center py-5"><div class="text-muted">No favourite doctors found.</div></div>');
+                                                }
+                                            });
+                                        }
+                                    }
+                                } else {
+                                    toastr.error(response.message || 'Something went wrong!');
+                                }
+                            },
+                            error: function (xhr) {
+                                if (xhr.status === 401) {
+                                    toastr.error('Please login to bookmark a doctor.');
+                                } else {
+                                    toastr.error('Failed to update bookmark.');
+                                }
+                            }
+                        });
+                    @else
+                        toastr.warning('Only patients can bookmark doctors.');
+                    @endif
+                @else
+                    toastr.warning('Please login as a patient to bookmark doctors.');
+                @endauth
+            });
         });
     </script>
 

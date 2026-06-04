@@ -1,3 +1,10 @@
+@php
+    $favDoctorIds = [];
+    if (auth()->check() && auth()->user()->role === 'patient' && auth()->user()->patient) {
+        $favDoctorIds = auth()->user()->patient->favouriteDoctors()->pluck('doctors.id')->toArray();
+    }
+@endphp
+
 <div class="sort-bar">
     <div class="results-count">
         <strong>{{ $doctors->total() }}</strong> doctors found
@@ -22,6 +29,8 @@
     @endphp
 
     @include('components.search-doctor-card', [
+        'id' => $doctor->id,
+        'isFavourite' => in_array($doctor->id, $favDoctorIds),
         'image' => $doctor->profile_image ? (filter_var($doctor->profile_image, FILTER_VALIDATE_URL) ? $doctor->profile_image : asset($doctor->profile_image)) : asset('assets/img/doctors/doctor-thumb-01.jpg'),
         'name' => $doctor->user->name,
         'speciality' => $doctor->speciality->name ?? 'General',

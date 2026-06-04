@@ -1,5 +1,10 @@
 <div class="card doctor-search-card"
-    style="border: none; border-radius: 16px; box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1); margin-bottom: 24px; transition: all 0.3s ease; overflow: hidden; background: #fff;">
+    style="position: relative; border: none; border-radius: 16px; box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1); margin-bottom: 24px; transition: all 0.3s ease; overflow: hidden; background: #fff;">
+    @if(isset($id))
+        <a href="javascript:void(0)" class="fav-btn {{ !empty($isFavourite) ? 'active' : '' }}" data-id="{{ $id }}">
+            <i class="{{ !empty($isFavourite) ? 'fas' : 'far' }} fa-bookmark"></i>
+        </a>
+    @endif
     <div class="card-body p-4">
         <div class="row align-items-center">
             <!-- Left: Doctor Image -->

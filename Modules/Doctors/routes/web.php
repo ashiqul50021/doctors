@@ -46,6 +46,7 @@ Route::name('doctors.')->group(function () {
 
             // Appointments
             Route::get('/appointments', [\App\Http\Controllers\Doctor\DashboardController::class, 'appointments'])->name('appointments');
+            Route::get('/appointments/print', [\App\Http\Controllers\Doctor\DashboardController::class, 'printAppointments'])->name('appointments.print');
 
             // My Patients
             Route::get('/my-patients', [\App\Http\Controllers\Doctor\DashboardController::class, 'myPatients'])->name('my.patients');

@@ -24,26 +24,28 @@
                                             <div class="mb-3 card-label">
                                                 <label>First Name</label>
                                                 <input class="form-control" type="text" name="first_name"
-                                                    value="{{ Auth::user()->name ?? '' }}">
+                                                    value="{{ old('first_name', Auth::check() ? (explode(' ', Auth::user()->name, 2)[0] ?? '') : '') }}">
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-sm-12">
                                             <div class="mb-3 card-label">
                                                 <label>Last Name</label>
-                                                <input class="form-control" type="text" name="last_name">
+                                                <input class="form-control" type="text" name="last_name"
+                                                    value="{{ old('last_name', Auth::check() ? (explode(' ', Auth::user()->name, 2)[1] ?? '') : '') }}">
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-sm-12">
                                             <div class="mb-3 card-label">
                                                 <label>Email</label>
                                                 <input class="form-control" type="email" name="email"
-                                                    value="{{ Auth::user()->email ?? '' }}">
+                                                    value="{{ old('email', Auth::user()->email ?? '') }}">
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-sm-12">
                                             <div class="mb-3 card-label">
                                                 <label>Phone</label>
-                                                <input class="form-control" type="text" name="phone">
+                                                <input class="form-control" type="text" name="phone"
+                                                    value="{{ old('phone', Auth::check() && Auth::user()->patient ? Auth::user()->patient->phone : '') }}">
                                             </div>
                                         </div>
                                     </div>
@@ -100,7 +102,7 @@
                                         </div>
                                     </div>
                                     <div class="submit-section mt-4">
-                                        <button type="submit" class="btn btn-primary submit-btn">Confirm Booking</button>
+                                        <button type="submit" class="btn btn-primary submit-btn">Confirm Appointment</button>
                                     </div>
                                 </div>
                                 @endif
@@ -128,8 +130,7 @@
                                         alt="User Image">
                                 </a>
                                 <div class="booking-info">
-                                    <h4><a href="{{ route('doctors.profile', $doctor->id) }}">Dr.
-                                            {{ $doctor->user->name }}</a></h4>
+                                    <h4><a href="{{ route('doctors.profile', $doctor->id) }}" style="text-decoration: none;">{{ str_starts_with(strtolower($doctor->user->name), 'dr.') ? $doctor->user->name : 'Dr. ' . $doctor->user->name }}</a></h4>
                                     <div class="rating">
                                         @for($i = 1; $i <= 5; $i++)
                                             <i class="fas fa-star {{ $i <= $doctor->average_rating ? 'filled' : '' }}"></i>
@@ -138,7 +139,7 @@
                                     </div>
                                     <div class="clinic-details">
                                         <p class="doc-location"><i class="fas fa-map-marker-alt"></i>
-                                            {{ $doctor->clinic_city }}, {{ $doctor->primary_clinic_address }}</p>
+                                            {{ $doctor->clinic_city ? $doctor->clinic_city . ', ' : '' }}{{ $doctor->primary_clinic_address }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -154,13 +155,13 @@
                                         <li>Type <span class="text-uppercase">{{ $booking['type'] }}</span></li>
                                     </ul>
                                     <ul class="booking-fee">
-                                        <li>Consulting Fee <span>${{ $booking['fee'] }}</span></li>
+                                        <li>Consulting Fee <span>৳{{ $booking['fee'] }}</span></li>
                                     </ul>
                                     <div class="booking-total">
                                         <ul class="booking-total-list">
                                             <li>
                                                 <span>Total</span>
-                                                <span class="total-cost">${{ $booking['fee'] }}</span>
+                                                <span class="total-cost">৳{{ $booking['fee'] }}</span>
                                             </li>
                                         </ul>
                                     </div>

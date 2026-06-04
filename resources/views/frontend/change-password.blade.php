@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Change Password - abcsheba')
+@section('title', 'Change Password - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
 
 @section('content')
 
@@ -9,70 +9,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
-
-                <!-- Profile Sidebar -->
-                <div class="profile-sidebar">
-                    <div class="widget-profile pro-widget-content">
-                        <div class="profile-info-widget">
-                            <a href="#" class="booking-doc-img">
-                                <img src="{{ asset('assets/img/patients/patient.jpg') }}" alt="User Image">
-                            </a>
-                            <div class="profile-det-info">
-                                <h3>Richard Wilson</h3>
-                                <div class="patient-details">
-                                    <h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5>
-                                    <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, USA</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-widget">
-                        <nav class="dashboard-menu">
-                            <ul>
-                                <li>
-                                    <a href="{{ route('patient.dashboard') }}">
-                                        <i class="fas fa-columns"></i>
-                                        <span>Dashboard</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('patient.favourites') }}">
-                                        <i class="fas fa-bookmark"></i>
-                                        <span>Favourites</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('chat') }}">
-                                        <i class="fas fa-comments"></i>
-                                        <span>Message</span>
-                                        <small class="unread-msg">23</small>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('patient.profile.settings') }}">
-                                        <i class="fas fa-user-cog"></i>
-                                        <span>Profile Settings</span>
-                                    </a>
-                                </li>
-                                <li class="active">
-                                    <a href="{{ route('patient.change.password') }}">
-                                        <i class="fas fa-lock"></i>
-                                        <span>Change Password</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('login') }}">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                        <span>Logout</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-
-                </div>
-                <!-- /Profile Sidebar -->
-
+                @include('frontend.includes.patient-sidebar')
             </div>
 
             <div class="col-md-7 col-lg-8 col-xl-9">
@@ -82,18 +19,32 @@
                             <div class="col-md-12 col-lg-6">
 
                                 <!-- Change Password Form -->
-                                <form>
+                                @if(session('success'))
+                                    <div class="alert alert-success">{{ session('success') }}</div>
+                                @endif
+                                @if($errors->any())
+                                    <div class="alert alert-danger">
+                                        <ul class="mb-0">
+                                            @foreach($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
+                                <form action="{{ route('patient.change.password.update') }}" method="POST">
+                                    @csrf
                                     <div class="mb-3">
-                                        <label>Old Password</label>
-                                        <input type="password" class="form-control">
+                                        <label>Old Password <span class="text-danger">*</span></label>
+                                        <input type="password" name="current_password" class="form-control" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label>New Password</label>
-                                        <input type="password" class="form-control">
+                                        <label>New Password <span class="text-danger">*</span></label>
+                                        <input type="password" name="new_password" class="form-control" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label>Confirm Password</label>
-                                        <input type="password" class="form-control">
+                                        <label>Confirm Password <span class="text-danger">*</span></label>
+                                        <input type="password" name="new_password_confirmation" class="form-control" required>
                                     </div>
                                     <div class="submit-section">
                                         <button type="submit" class="btn btn-primary submit-btn">Save Changes</button>

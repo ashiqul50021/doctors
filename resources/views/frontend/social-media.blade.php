@@ -18,7 +18,7 @@
                         <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
 
-                        <form action="{{ route('social.media.update') }}" method="POST">
+                        <form action="{{ route('doctors.social.media.update') }}" method="POST">
                             @csrf
                             <div class="form-group mb-3">
                                 <label>Website URL</label>

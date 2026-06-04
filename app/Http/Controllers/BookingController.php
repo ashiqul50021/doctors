@@ -207,6 +207,7 @@ class BookingController extends Controller
             'token_number' => $token_number,
             'type' => $booking['type'],
             'doctor_name' => $doctor->user->name,
+            'doctor_user_id' => $doctor->user_id,
             'date' => $booking['date'],
             'time' => $booking['time'],
         ];

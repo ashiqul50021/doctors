@@ -69,19 +69,65 @@ class DashboardController extends Controller
     }
 
     /**
-     * Appointments page
+     * Appointments page — online & offline separated, with date filter
      */
-    public function appointments()
+    public function appointments(Request $request)
     {
         $doctor = $this->getDoctor();
 
-        $appointments = Appointment::with(['patient.user'])
-            ->where('doctor_id', $doctor->id)
-            ->orderBy('appointment_date', 'desc')
-            ->orderBy('appointment_time', 'desc')
-            ->paginate(10);
+        $filterDate = $request->get('filter_date');
 
-        return view('frontend.appointments', compact('doctor', 'appointments'));
+        $baseQuery = Appointment::with(['patient.user'])
+            ->where('doctor_id', $doctor->id);
+
+        if ($filterDate) {
+            $baseQuery->whereDate('appointment_date', $filterDate);
+        }
+
+        $onlineAppointments = (clone $baseQuery)
+            ->where('type', 'online')
+            ->orderBy('appointment_date', 'desc')
+            ->orderBy('appointment_time', 'asc')
+            ->paginate(10, ['*'], 'online_page');
+
+        $offlineAppointments = (clone $baseQuery)
+            ->where('type', 'offline')
+            ->orderBy('appointment_date', 'desc')
+            ->orderBy('appointment_time', 'asc')
+            ->paginate(10, ['*'], 'offline_page');
+
+        return view('frontend.appointments', compact(
+            'doctor', 'onlineAppointments', 'offlineAppointments', 'filterDate'
+        ));
+    }
+
+    /**
+     * Print appointments by date with serial numbers
+     */
+    public function printAppointments(Request $request)
+    {
+        $request->validate([
+            'print_date' => 'required|date',
+            'print_type' => 'nullable|in:online,offline,all',
+        ]);
+
+        $doctor = $this->getDoctor();
+        $printDate = $request->get('print_date');
+        $printType = $request->get('print_type', 'all');
+
+        $query = Appointment::with(['patient.user', 'patient'])
+            ->where('doctor_id', $doctor->id)
+            ->whereDate('appointment_date', $printDate);
+
+        if ($printType !== 'all') {
+            $query->where('type', $printType);
+        }
+
+        $appointments = $query->orderBy('appointment_time', 'asc')->get();
+
+        return view('frontend.print-appointments', compact(
+            'doctor', 'appointments', 'printDate', 'printType'
+        ));
     }
 
     /**

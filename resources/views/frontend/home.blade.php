@@ -1,5 +1,12 @@
 @extends('layouts.app')
 
+@php
+    $favDoctorIds = [];
+    if (auth()->check() && auth()->user()->role === 'patient' && auth()->user()->patient) {
+        $favDoctorIds = auth()->user()->patient->favouriteDoctors()->pluck('doctors.id')->toArray();
+    }
+@endphp
+
 @section('title', ($siteSettings['site_name'] ?? 'abcsheba') . ' - ' . ($siteSettings['site_tagline'] ?? 'Doctor Appointment Booking'))
 
 @section('content')
@@ -458,6 +465,9 @@
                                             <span>৳
                                                 {{ $doctor->pricing === 'free' ? 'Free' : number_format($doctor->custom_price ?: ($doctor->consultation_fee ?: 500), 0) }}</span>
                                         </div>
+                                        <a href="javascript:void(0)" class="fav-btn {{ in_array($doctor->id, $favDoctorIds) ? 'active' : '' }}" data-id="{{ $doctor->id }}">
+                                            <i class="{{ in_array($doctor->id, $favDoctorIds) ? 'fas' : 'far' }} fa-bookmark"></i>
+                                        </a>
                                     </div>
                                     <div class="doctor-info">
                                         <span class="doctor-speciality">{{ $doctor->speciality->name ?? 'General' }}</span>
@@ -1068,6 +1078,7 @@
 @push('scripts')
     <script>
         $(document).ready(function () {
+            var favDoctorIds = {!! json_encode($favDoctorIds) !!};
             // Counter Animation for Statistics Section
             const counters = document.querySelectorAll('.counter-number');
             let hasAnimated = false;
@@ -1412,6 +1423,9 @@
                 doctors.forEach(function (doctor) {
                     var imageSrc = doctor.profile_image || '/assets/img/doctors/doctor-thumb-01.jpg';
                     var fee = doctor.pricing === 'free' ? 'Free' : '৳ ' + numberFormat(doctor.custom_price || 0);
+                    var isFav = favDoctorIds.includes(doctor.id);
+                    var favClass = isFav ? 'active' : '';
+                    var favIconClass = isFav ? 'fas' : 'far';
 
                     var html = `
                                                                                                                 <div class="col-lg-4 col-md-6 col-sm-6 mb-4 doctor-grid-item">
@@ -1423,6 +1437,9 @@
                                                                                                                             <div class="doctor-fee-badge">
                                                                                                                                 <span>${fee}</span>
                                                                                                                             </div>
+                                                                                                                            <a href="javascript:void(0)" class="fav-btn ${favClass}" data-id="${doctor.id}">
+                                                                                                                                <i class="${favIconClass} fa-bookmark"></i>
+                                                                                                                            </a>
                                                                                                                         </div>
                                                                                                                         <div class="doctor-info">
                                                                                                                             <span class="doctor-speciality">${doctor.speciality}</span>

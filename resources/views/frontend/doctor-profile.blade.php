@@ -3,6 +3,21 @@
 @section('title', 'Doctor Profile - abcsheba')
 
 @section('content')
+    @php
+        $canChat = false;
+        if (auth()->check()) {
+            if (auth()->user()->role === 'patient') {
+                $patient = auth()->user()->patient;
+                if ($patient) {
+                    $canChat = \App\Models\Appointment::where('patient_id', $patient->id)
+                        ->where('doctor_id', $doctor->id)
+                        ->exists();
+                }
+            }
+        } else {
+            $canChat = true;
+        }
+    @endphp
     <!-- Custom Premium Styles -->
     <link rel="stylesheet" href="{{ asset('assets/css/doctor-profile-modern.css') }}">
 
@@ -60,7 +75,7 @@
                             </div>
                             <div class="doctor-stat-item">
                                 <i class="far fa-money-bill-alt"></i>
-                                {{ $doctor->pricing === 'free' ? 'Free' : ($doctor->pricing === 'custom_price' ? '$' . $doctor->custom_price : 'N/A') }}
+                                {{ $doctor->pricing === 'free' ? 'Free' : ($doctor->pricing === 'custom_price' ? '৳' . $doctor->custom_price : 'N/A') }}
                             </div>
                         </div>
                     </div>
@@ -73,8 +88,13 @@
                                     data-bs-target="#voice_call"><i class="fas fa-phone-alt"></i> Call</a>
                                 <a href="javascript:void(0)" class="action-btn" title="Video Call" data-bs-toggle="modal"
                                     data-bs-target="#video_call"><i class="fas fa-video"></i> Video</a>
-                                <a href="{{ route('chat') }}" class="action-btn" title="Chat"><i
-                                        class="far fa-comment-dots"></i> Chat</a>
+                                @if($canChat)
+                                    <a href="{{ route('chat', ['user_id' => $doctor->user_id]) }}" class="action-btn" title="Chat"><i
+                                            class="far fa-comment-dots"></i> Chat</a>
+                                @else
+                                    <a href="javascript:void(0)" class="action-btn text-muted" title="Chat" onclick="toastr.warning('এই ডাক্তারের সাথে চ্যাট করতে প্রথমে একটি অ্যাপয়েন্টমেন্ট বুক করুন।')"><i
+                                            class="far fa-comment-dots"></i> Chat</a>
+                                @endif
                             </div>
                             <a href="{{ route('booking', $doctor->id) }}" class="booking-btn">
                                 Book Appointment <i class="fas fa-arrow-right"></i>
@@ -163,7 +183,7 @@
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="text-muted">Consultation Fee</span>
                                             <span
-                                                class="font-weight-bold text-dark">{{ $doctor->pricing === 'free' ? 'Free' : ($doctor->pricing === 'custom_price' ? '$' . $doctor->custom_price : 'N/A') }}</span>
+                                                class="font-weight-bold text-dark">{{ $doctor->pricing === 'free' ? 'Free' : ($doctor->pricing === 'custom_price' ? '৳' . $doctor->custom_price : 'N/A') }}</span>
                                         </div>
                                         <div class="consult-price">
 

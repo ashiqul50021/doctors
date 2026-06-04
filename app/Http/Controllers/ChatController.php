@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Message;
+use App\Models\Appointment;
+use App\Models\Patient;
+use App\Models\Doctor;
 use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
@@ -32,6 +35,33 @@ class ChatController extends Controller
 
         if ($activeContactId) {
             $activeContact = User::find($activeContactId);
+            
+            // Check booking constraint
+            if ($activeContact) {
+                $allowed = true;
+                if ($user->role === 'patient' && $activeContact->role === 'doctor') {
+                    $patient = $user->patient;
+                    $doctor = $activeContact->doctor;
+                    if (!$patient || !$doctor || !Appointment::where('patient_id', $patient->id)->where('doctor_id', $doctor->id)->exists()) {
+                        $allowed = false;
+                    }
+                } elseif ($user->role === 'doctor' && $activeContact->role === 'patient') {
+                    $doctor = $user->doctor;
+                    $patient = $activeContact->patient;
+                    if (!$doctor || !$patient || !Appointment::where('patient_id', $patient->id)->where('doctor_id', $doctor->id)->exists()) {
+                        $allowed = false;
+                    }
+                }
+
+                if (!$allowed) {
+                    $redirectRoute = ($user->role === 'doctor') ? 'doctors.dashboard' : 'patient.dashboard';
+                    if (url()->previous() && url()->previous() !== url()->current()) {
+                        return redirect()->back()->with('error', 'এই ডাক্তারের সাথে চ্যাট করতে প্রথমে একটি অ্যাপয়েন্টমেন্ট বুক করুন।');
+                    }
+                    return redirect()->route($redirectRoute)->with('error', 'এই ডাক্তারের সাথে চ্যাট করতে প্রথমে একটি অ্যাপয়েন্টমেন্ট বুক করুন।');
+                }
+            }
+
             if ($activeContact && !$contacts->contains('id', $activeContact->id)) {
                 $contacts->push($activeContact);
             }
@@ -59,6 +89,14 @@ class ChatController extends Controller
                 ->get();
         }
 
+        // Mark incoming messages from active contact as read
+        if ($activeContact) {
+            Message::where('sender_id', $activeContact->id)
+                ->where('receiver_id', $user->id)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        }
+
         $view = ($user->role === 'doctor') ? 'frontend.chat-doctor' : 'frontend.chat';
         if (!view()->exists($view)) {
             $view = 'frontend.chat';
@@ -73,6 +111,33 @@ class ChatController extends Controller
             'receiver_id' => 'required|exists:users,id',
             'message' => 'required|string',
         ]);
+
+        $user = Auth::user();
+        $receiver = User::find($request->receiver_id);
+
+        if ($receiver) {
+            $allowed = true;
+            if ($user->role === 'patient' && $receiver->role === 'doctor') {
+                $patient = $user->patient;
+                $doctor = $receiver->doctor;
+                if (!$patient || !$doctor || !Appointment::where('patient_id', $patient->id)->where('doctor_id', $doctor->id)->exists()) {
+                    $allowed = false;
+                }
+            } elseif ($user->role === 'doctor' && $receiver->role === 'patient') {
+                $doctor = $user->doctor;
+                $patient = $receiver->patient;
+                if (!$doctor || !$patient || !Appointment::where('patient_id', $patient->id)->where('doctor_id', $doctor->id)->exists()) {
+                    $allowed = false;
+                }
+            }
+
+            if (!$allowed) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'এই ডাক্তারের সাথে চ্যাট করতে প্রথমে একটি অ্যাপয়েন্টমেন্ট বুক করুন।',
+                ], 403);
+            }
+        }
 
         $message = Message::create([
             'sender_id' => Auth::id(),

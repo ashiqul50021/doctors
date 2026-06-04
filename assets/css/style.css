@@ -4272,6 +4272,8 @@ html.menu-opened body {
 	font-weight: 500;
 	margin: 6px auto auto 8px;
 	padding: 0 7px;
+	position: relative;
+	z-index: 1;
 }
 
 .card-label>input {

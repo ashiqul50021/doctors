@@ -288,6 +288,20 @@
     $isOnline = optional($doctor->user)->isOnline();
     $lastSeen = optional($doctor->user?->last_seen_at)->diffForHumans();
     $locationText = $doctor->clinic_address ?? trim(($doctor->area->name ?? '') . ', ' . ($doctor->district->name ?? ''), ', ');
+
+    $canChat = false;
+    if (auth()->check()) {
+        if (auth()->user()->role === 'patient') {
+            $patient = auth()->user()->patient;
+            if ($patient) {
+                $canChat = \App\Models\Appointment::where('patient_id', $patient->id)
+                    ->where('doctor_id', $doctor->id)
+                    ->exists();
+            }
+        }
+    } else {
+        $canChat = true;
+    }
 @endphp
 
 <div class="doctor-page">
@@ -328,9 +342,15 @@
                             <a href="{{ route('booking', $doctor->id) }}" class="btn btn-primary">
                                 <i class="fas fa-calendar-check"></i> Book Appointment
                             </a>
-                            <a href="{{ route('chat') }}" class="btn btn-outline-primary">
-                                <i class="far fa-comment-dots"></i> Chat
-                            </a>
+                            @if($canChat)
+                                <a href="{{ route('chat', ['user_id' => $doctor->user_id]) }}" class="btn btn-outline-primary">
+                                    <i class="far fa-comment-dots"></i> Chat
+                                </a>
+                            @else
+                                <a href="javascript:void(0);" class="btn btn-outline-secondary" onclick="toastr.warning('এই ডাক্তারের সাথে চ্যাট করতে প্রথমে একটি অ্যাপয়েন্টমেন্ট বুক করুন।')">
+                                    <i class="far fa-comment-dots"></i> Chat
+                                </a>
+                            @endif
                             <a href="{{ route('voice.call') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-phone-alt"></i> Voice Call
                             </a>

@@ -35,4 +35,9 @@ class Patient extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function favouriteDoctors()
+    {
+        return $this->belongsToMany(Doctor::class, 'favourites', 'patient_id', 'doctor_id')->withTimestamps();
+    }
 }

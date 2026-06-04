@@ -40,6 +40,7 @@ class SslCommerzPaymentController extends Controller
                 'token_number' => $appointment->token_number,
                 'type' => $appointment->type,
                 'doctor_name' => $doctor->user->name ?? 'Doctor',
+                'doctor_user_id' => $doctor ? $doctor->user_id : null,
                 'date' => $appointment->appointment_date,
                 'time' => $appointment->appointment_time,
             ];
@@ -53,6 +54,7 @@ class SslCommerzPaymentController extends Controller
                 'token_number' => $appointment->token_number,
                 'type' => $appointment->type,
                 'doctor_name' => $doctor->user->name ?? 'Doctor',
+                'doctor_user_id' => $doctor ? $doctor->user_id : null,
                 'date' => $appointment->appointment_date,
                 'time' => $appointment->appointment_time,
             ];

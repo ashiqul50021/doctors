@@ -1,8 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Profile Settings - abcsheba')
+@section('title', 'Profile Settings - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
 
 @section('content')
+
+@php
+    $fullName = Auth::user()->name ?? '';
+    $nameParts = explode(' ', $fullName, 2);
+    $firstName = $nameParts[0] ?? '';
+    $lastName = $nameParts[1] ?? '';
+@endphp
 
 <!-- Page Content -->
 <div class="content">
@@ -11,66 +18,7 @@
 
             <!-- Profile Sidebar -->
             <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
-                <div class="profile-sidebar">
-                    <div class="widget-profile pro-widget-content">
-                        <div class="profile-info-widget">
-                            <a href="#" class="booking-doc-img">
-                                <img src="{{ asset('assets/img/patients/patient.jpg') }}" alt="User Image">
-                            </a>
-                            <div class="profile-det-info">
-                                <h3>Richard Wilson</h3>
-                                <div class="patient-details">
-                                    <h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5>
-                                    <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, USA</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-widget">
-                        <nav class="dashboard-menu">
-                            <ul>
-                                <li>
-                                    <a href="{{ route('patient.dashboard') }}">
-                                        <i class="fas fa-columns"></i>
-                                        <span>Dashboard</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('patient.favourites') }}">
-                                        <i class="fas fa-bookmark"></i>
-                                        <span>Favourites</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('chat') }}">
-                                        <i class="fas fa-comments"></i>
-                                        <span>Message</span>
-                                        <small class="unread-msg">23</small>
-                                    </a>
-                                </li>
-                                <li class="active">
-                                    <a href="{{ route('patient.profile.settings') }}">
-                                        <i class="fas fa-user-cog"></i>
-                                        <span>Profile Settings</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('patient.change.password') }}">
-                                        <i class="fas fa-lock"></i>
-                                        <span>Change Password</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('login') }}">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                        <span>Logout</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-
-                </div>
+                @include('frontend.includes.patient-sidebar')
             </div>
             <!-- /Profile Sidebar -->
 
@@ -79,18 +27,35 @@
                     <div class="card-body">
 
                         <!-- Profile Settings Form -->
-                        <form>
+                        @if(session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+                        @if(session('warning'))
+                            <div class="alert alert-warning">{{ session('warning') }}</div>
+                        @endif
+                        @if($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <form action="{{ route('patient.profile.settings.update') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
                             <div class="row form-row">
                                 <div class="col-12 col-md-12">
                                     <div class="mb-3">
                                         <div class="change-avatar">
                                             <div class="profile-img">
-                                                <img src="{{ asset('assets/img/patients/patient.jpg') }}" alt="User Image">
+                                                <img src="{{ $patient->profile_image ? asset($patient->profile_image) : asset('assets/img/patients/patient.jpg') }}" alt="User Image">
                                             </div>
                                             <div class="upload-img">
                                                 <div class="change-photo-btn">
                                                     <span><i class="fa fa-upload"></i> Upload Photo</span>
-                                                    <input type="file" class="upload">
+                                                    <input type="file" class="upload" name="profile_image">
                                                 </div>
                                                 <small class="form-text text-muted">Allowed JPG, GIF or PNG. Max size of 2MB</small>
                                             </div>
@@ -99,79 +64,75 @@
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
-                                        <label>First Name</label>
-                                        <input type="text" class="form-control" value="Richard">
+                                        <label>First Name <span class="text-danger">*</span></label>
+                                        <input type="text" name="first_name" class="form-control" value="{{ old('first_name', $firstName) }}" required>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
                                         <label>Last Name</label>
-                                        <input type="text" class="form-control" value="Wilson">
+                                        <input type="text" name="last_name" class="form-control" value="{{ old('last_name', $lastName) }}">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
                                         <label>Date of Birth</label>
                                         <div class="cal-icon">
-                                            <input type="text" class="form-control datetimepicker" value="24-07-1983">
+                                            <input type="date" name="date_of_birth" class="form-control" value="{{ old('date_of_birth', $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)->format('Y-m-d') : '') }}">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
                                         <label>Blood Group</label>
-                                        <select class="form-control select">
-                                            <option>A-</option>
-                                            <option>A+</option>
-                                            <option>B-</option>
-                                            <option>B+</option>
-                                            <option>AB-</option>
-                                            <option>AB+</option>
-                                            <option>O-</option>
-                                            <option>O+</option>
+                                        <select name="blood_group" class="form-control select">
+                                            <option value="">Select Blood Group</option>
+                                            @foreach(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as $bg)
+                                                <option value="{{ $bg }}" {{ old('blood_group', $patient->blood_group) == $bg ? 'selected' : '' }}>{{ $bg }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
-                                        <label>Email ID</label>
-                                        <input type="email" class="form-control" value="richard@example.com">
+                                        <label>Email ID <span class="text-danger">*</span></label>
+                                        <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
                                         <label>Mobile</label>
-                                        <input type="text" value="+1 202-555-0125" class="form-control">
+                                        <input type="text" name="phone" value="{{ old('phone', $patient->phone) }}" class="form-control">
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="mb-3">
                                     <label>Address</label>
-                                        <input type="text" class="form-control" value="806 Twin Willow Lane">
+                                        <input type="text" name="address" class="form-control" value="{{ old('address', $patient->address) }}">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
                                         <label>City</label>
-                                        <input type="text" class="form-control" value="Old Forge">
+                                        <input type="text" name="city" class="form-control" value="{{ old('city', $patient->city) }}">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
                                         <label>State</label>
-                                        <input type="text" class="form-control" value="Newyork">
+                                        <input type="text" name="state" class="form-control" value="{{ old('state', $patient->state) }}">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
                                         <label>Zip Code</label>
-                                        <input type="text" class="form-control" value="13420">
+                                        <input type="text" name="zip_code" class="form-control" value="{{ old('zip_code', $patient->zip_code) }}">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
                                         <label>Country</label>
-                                        <input type="text" class="form-control" value="United States">
+                                        <input type="text" name="country" class="form-control" value="{{ old('country', $patient->country) }}">
                                     </div>
                                 </div>
                             </div>

@@ -6,9 +6,17 @@
 @include('frontend.includes.chat-page-assets')
 <!-- Page Content -->
 <div class="content chat-page-shell">
-    <div class="container-fluid">
+    <div class="container">
         <div class="row">
-            <div class="col-xl-12">
+            <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
+                @if(auth()->user()->role === 'patient')
+                    @include('frontend.includes.patient-sidebar')
+                @elseif(auth()->user()->role === 'doctor')
+                    @include('frontend.includes.doctor-sidebar')
+                @endif
+            </div>
+
+            <div class="col-md-7 col-lg-8 col-xl-9">
                 <div class="chat-window">
 
                     <!-- Chat Left -->
@@ -217,6 +225,8 @@
 <!-- Video Call Modal -->
 
 @push('scripts')
+<script src="{{ asset('assets/plugins/theia-sticky-sidebar/ResizeSensor.js') }}"></script>
+<script src="{{ asset('assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}"></script>
 <script>
     $(document).ready(function() {
         // Scroll to bottom

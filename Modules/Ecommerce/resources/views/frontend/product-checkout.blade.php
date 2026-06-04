@@ -30,25 +30,25 @@
                                 <div class="col-md-12">
                                     <div class="form-group mb-3">
                                         <label class="form-label">Full Name <span class="text-danger">*</span></label>
-                                        <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                                        <input type="text" name="name" class="form-control" value="{{ old('name', Auth::user()->name ?? '') }}" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label class="form-label">Email Address <span class="text-danger">*</span></label>
-                                        <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+                                        <input type="email" name="email" class="form-control" value="{{ old('email', Auth::user()->email ?? '') }}" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label class="form-label">Phone Number <span class="text-danger">*</span></label>
-                                        <input type="text" name="phone" class="form-control" value="{{ old('phone') }}" required>
+                                        <input type="text" name="phone" class="form-control" value="{{ old('phone', Auth::user()->patient->phone ?? '') }}" required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group mb-3">
                                         <label class="form-label">Shipping Address <span class="text-danger">*</span></label>
-                                        <textarea name="address" class="form-control" rows="3" required>{{ old('address') }}</textarea>
+                                        <textarea name="address" class="form-control" rows="3" required>{{ old('address', Auth::user()->patient->address ?? '') }}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-12">

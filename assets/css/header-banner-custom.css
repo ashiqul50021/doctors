@@ -4355,3 +4355,36 @@ body {
         justify-content: flex-start !important;
     }
 }
+
+/* Custom Favourite/Bookmark Button for Doctor Cards */
+.doctor-card-new .fav-btn,
+.doctor-search-card .fav-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #b2b2b2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.doctor-card-new .fav-btn.active,
+.doctor-search-card .fav-btn.active {
+    color: #e84a5f;
+}
+
+.doctor-card-new .fav-btn:hover,
+.doctor-search-card .fav-btn:hover {
+    transform: scale(1.1);
+    color: #e84a5f;
+    background: #ffffff;
+}

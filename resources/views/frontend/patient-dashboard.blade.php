@@ -12,66 +12,7 @@
 
                 <!-- Profile Sidebar -->
                 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
-                    <div class="profile-sidebar">
-                        <div class="widget-profile pro-widget-content">
-                            <div class="profile-info-widget">
-                                <a href="#" class="booking-doc-img">
-                                    <img src="{{ asset('assets/img/patients/patient.jpg') }}" alt="User Image">
-                                </a>
-                                <div class="profile-det-info">
-                                    <h3>Richard Wilson</h3>
-                                    <div class="patient-details">
-                                        <h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5>
-                                        <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, USA</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="dashboard-widget">
-                            <nav class="dashboard-menu">
-                                <ul>
-                                    <li class="active">
-                                        <a href="{{ route('patient.dashboard') }}">
-                                            <i class="fas fa-columns"></i>
-                                            <span>Dashboard</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('patient.favourites') }}">
-                                            <i class="fas fa-bookmark"></i>
-                                            <span>Favourites</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('chat') }}">
-                                            <i class="fas fa-comments"></i>
-                                            <span>Message</span>
-                                            <small class="unread-msg">23</small>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('patient.profile.settings') }}">
-                                            <i class="fas fa-user-cog"></i>
-                                            <span>Profile Settings</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('patient.change.password') }}">
-                                            <i class="fas fa-lock"></i>
-                                            <span>Change Password</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('login') }}">
-                                            <i class="fas fa-sign-out-alt"></i>
-                                            <span>Logout</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-
-                    </div>
+                    @include('frontend.includes.patient-sidebar')
                 </div>
                 <!-- / Profile Sidebar -->
 
@@ -121,41 +62,71 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        @forelse($appointments ?? [] as $appt)
                                                         <tr>
                                                             <td>
                                                                 <h2 class="table-avatar">
-                                                                    <a href="{{ route('doctors.profile', 1) }}"
+                                                                    <a href="{{ route('doctors.profile', $appt->doctor->id) }}"
                                                                         class="avatar avatar-sm me-2">
                                                                         <img class="avatar-img rounded-circle"
-                                                                            src="{{ asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
+                                                                            src="{{ $appt->doctor->profile_image ? asset($appt->doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
                                                                             alt="User Image">
                                                                     </a>
-                                                                    <a href="{{ route('doctors.profile', 1) }}">Dr. Ruby
-                                                                        Perrin
-                                                                        <span>Dental</span></a>
+                                                                    <a href="{{ route('doctors.profile', $appt->doctor->id) }}" style="text-decoration: none;">
+                                                                        {{ str_starts_with(strtolower($appt->doctor->user->name), 'dr.') ? $appt->doctor->user->name : 'Dr. ' . $appt->doctor->user->name }}
+                                                                        <span>{{ $appt->doctor->speciality->name ?? 'General' }}</span>
+                                                                    </a>
                                                                 </h2>
                                                             </td>
-                                                            <td>14 Nov 2019 <span class="d-block text-info">10.00 AM</span>
+                                                            <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }} <span class="d-block text-info">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span>
                                                             </td>
-                                                            <td>12 Nov 2019</td>
-                                                            <td>$160</td>
-                                                            <td>16 Nov 2019</td>
-                                                            <td><span
-                                                                    class="badge badge-pill bg-success-light">Confirm</span>
+                                                            <td>{{ $appt->created_at->format('d M Y') }}</td>
+                                                            <td>৳{{ $appt->fee }}</td>
+                                                            <td>
+                                                                @if($appt->status === 'completed')
+                                                                    {{ \Carbon\Carbon::parse($appt->appointment_date)->addDays(7)->format('d M Y') }}
+                                                                @else
+                                                                    -
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                @if($appt->status === 'confirmed')
+                                                                    <span class="badge badge-pill bg-success-light">Confirm</span>
+                                                                @elseif($appt->status === 'pending')
+                                                                    <span class="badge badge-pill bg-warning-light">Pending</span>
+                                                                @elseif($appt->status === 'completed')
+                                                                    <span class="badge badge-pill bg-info-light">Completed</span>
+                                                                @else
+                                                                    <span class="badge badge-pill bg-danger-light">{{ ucfirst($appt->status) }}</span>
+                                                                @endif
                                                             </td>
                                                             <td class="text-end">
                                                                 <div class="table-action">
-                                                                    <a href="javascript:void(0);"
-                                                                        class="btn btn-sm bg-primary-light">
-                                                                        <i class="fas fa-print"></i> Print
+                                                                    @if($appt->type === 'online' && $appt->meeting_link && in_array($appt->status, ['pending', 'confirmed']))
+                                                                        <a href="{{ $appt->meeting_link }}" target="_blank" class="btn btn-sm bg-success-light">
+                                                                            <i class="fas fa-video"></i> Join Call
+                                                                        </a>
+                                                                    @endif
+                                                                    <a href="{{ route('chat', ['user_id' => $appt->doctor->user_id]) }}"
+                                                                        class="btn btn-sm bg-success-light">
+                                                                        <i class="far fa-comment-dots"></i> Chat
                                                                     </a>
-                                                                    <a href="javascript:void(0);"
+                                                                    <a href="{{ route('invoice.view', $appt->id) }}"
                                                                         class="btn btn-sm bg-info-light">
                                                                         <i class="far fa-eye"></i> View
+                                                                    </a>
+                                                                    <a href="{{ route('invoice.view', $appt->id) }}?print=1" target="_blank"
+                                                                        class="btn btn-sm bg-primary-light">
+                                                                        <i class="fas fa-print"></i> Print
                                                                     </a>
                                                                 </div>
                                                             </td>
                                                         </tr>
+                                                        @empty
+                                                        <tr>
+                                                            <td colspan="7" class="text-center">No appointments found.</td>
+                                                        </tr>
+                                                        @endforelse
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -191,8 +162,10 @@
                                                                             src="{{ optional($prescription->doctor)->profile_image ? asset($prescription->doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
                                                                             alt="User Image">
                                                                     </a>
-                                                                    <a href="{{ route('doctors.profile', $prescription->doctor_id) }}">Dr. {{ optional(optional($prescription->doctor)->user)->name ?? 'Unknown' }}
-                                                                        <span>{{ optional($prescription->doctor)->specialization }}</span></a>
+                                                                    <a href="{{ route('doctors.profile', $prescription->doctor_id) }}" style="text-decoration: none;">
+                                                                        {{ str_starts_with(strtolower(optional(optional($prescription->doctor)->user)->name ?? ''), 'dr.') ? optional(optional($prescription->doctor)->user)->name : 'Dr. ' . (optional(optional($prescription->doctor)->user)->name ?? 'Unknown') }}
+                                                                        <span>{{ optional($prescription->doctor)->speciality->name ?? 'General' }}</span>
+                                                                    </a>
                                                                 </h2>
                                                             </td>
                                                             <td class="text-end">
@@ -235,35 +208,7 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td><a href="javascript:void(0);">#MR-0010</a></td>
-                                                            <td>14 Nov 2019</td>
-                                                            <td>Dental Filling</td>
-                                                            <td><a href="#">dental-test.pdf</a></td>
-                                                            <td>
-                                                                <h2 class="table-avatar">
-                                                                    <a href="{{ route('doctors.profile', 1) }}"
-                                                                        class="avatar avatar-sm me-2">
-                                                                        <img class="avatar-img rounded-circle"
-                                                                            src="{{ asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
-                                                                            alt="User Image">
-                                                                    </a>
-                                                                    <a href="{{ route('doctors.profile', 1) }}">Dr. Ruby
-                                                                        Perrin
-                                                                        <span>Dental</span></a>
-                                                                </h2>
-                                                            </td>
-                                                            <td class="text-end">
-                                                                <div class="table-action">
-                                                                    <a href="javascript:void(0);"
-                                                                        class="btn btn-sm bg-info-light">
-                                                                        <i class="far fa-eye"></i> View
-                                                                    </a>
-                                                                    <a href="javascript:void(0);"
-                                                                        class="btn btn-sm bg-primary-light">
-                                                                        <i class="fas fa-print"></i> Print
-                                                                    </a>
-                                                                </div>
-                                                            </td>
+                                                            <td colspan="6" class="text-center">No medical records found.</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -289,38 +234,45 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        @forelse($appointments ?? [] as $appt)
                                                         <tr>
                                                             <td>
-                                                                <a href="invoice-view.html">#INV-0010</a>
+                                                                <a href="{{ route('invoice.view', $appt->id) }}">#INV-{{ sprintf('%04d', $appt->id) }}</a>
                                                             </td>
                                                             <td>
                                                                 <h2 class="table-avatar">
-                                                                    <a href="{{ route('doctors.profile', 1) }}"
+                                                                    <a href="{{ route('doctors.profile', $appt->doctor->id) }}"
                                                                         class="avatar avatar-sm me-2">
                                                                         <img class="avatar-img rounded-circle"
-                                                                            src="{{ asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
+                                                                            src="{{ $appt->doctor->profile_image ? asset($appt->doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
                                                                             alt="User Image">
                                                                     </a>
-                                                                    <a href="{{ route('doctors.profile', 1) }}">Dr. Ruby
-                                                                        Perrin
-                                                                        <span>Dental</span></a>
+                                                                    <a href="{{ route('doctors.profile', $appt->doctor->id) }}" style="text-decoration: none;">
+                                                                        {{ str_starts_with(strtolower($appt->doctor->user->name), 'dr.') ? $appt->doctor->user->name : 'Dr. ' . $appt->doctor->user->name }}
+                                                                        <span>{{ $appt->doctor->speciality->name ?? 'General' }}</span>
+                                                                    </a>
                                                                 </h2>
                                                             </td>
-                                                            <td>$450</td>
-                                                            <td>14 Nov 2019</td>
+                                                            <td>৳{{ number_format($appt->fee, 2) }}</td>
+                                                            <td>{{ $appt->created_at->format('d M Y') }}</td>
                                                             <td class="text-end">
                                                                 <div class="table-action">
-                                                                    <a href="javascript:void(0);"
+                                                                    <a href="{{ route('invoice.view', $appt->id) }}"
                                                                         class="btn btn-sm bg-info-light">
                                                                         <i class="far fa-eye"></i> View
                                                                     </a>
-                                                                    <a href="javascript:void(0);"
+                                                                    <a href="{{ route('invoice.view', $appt->id) }}?print=1" target="_blank"
                                                                         class="btn btn-sm bg-primary-light">
                                                                         <i class="fas fa-print"></i> Print
                                                                     </a>
                                                                 </div>
                                                             </td>
                                                         </tr>
+                                                        @empty
+                                                        <tr>
+                                                            <td colspan="5" class="text-center">No billing records found.</td>
+                                                        </tr>
+                                                        @endforelse
                                                     </tbody>
                                                 </table>
                                             </div>

@@ -2,273 +2,255 @@
 
 @section('title', 'Favourites - abcsheba')
 
+@push('styles')
+<style>
+    .doctor-card-new {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        transition: all 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #f0f0f0;
+    }
+
+    .doctor-card-new:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 50px rgba(0, 102, 255, 0.15);
+        border-color: #1D4ED8;
+    }
+
+    .doctor-img-wrapper {
+        position: relative;
+        height: 240px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #e8f4ff 0%, #f0f8ff 100%);
+    }
+
+    .doctor-img-wrapper .doctor-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+        transition: transform 0.3s;
+    }
+
+    .doctor-card-new:hover .doctor-img {
+        transform: scale(1.05);
+    }
+
+    .doctor-fee-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #1D4ED8, #60A5FA);
+        color: #fff;
+        padding: 8px 15px;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 14px;
+        box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
+    }
+
+    .doctor-info {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .doctor-speciality {
+        font-size: 13px;
+        color: #1D4ED8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        font-weight: 600;
+        display: inline-block;
+        background: #e8f4ff;
+        padding: 5px 12px;
+        border-radius: 20px;
+        width: fit-content;
+    }
+
+    .doctor-name {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        line-height: 1.4;
+        min-height: 25px;
+    }
+
+    .doctor-name a {
+        color: #272b41;
+        text-decoration: none;
+    }
+
+    .doctor-name a:hover {
+        color: #1D4ED8;
+    }
+
+    .verified-badge {
+        color: #09e5ab;
+        font-size: 14px;
+        margin-left: 5px;
+    }
+
+    .doctor-rating {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .doctor-rating i {
+        color: #ffc107;
+    }
+
+    .doctor-rating .rating-count {
+        color: #888;
+        font-size: 12px;
+    }
+
+    .doctor-location {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .doctor-location i {
+        color: #1D4ED8;
+    }
+
+    /* Doctor Buttons Container */
+    .doctor-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: auto;
+    }
+
+    .btn-view-details {
+        flex: 1;
+        padding: 10px 8px;
+        background: transparent;
+        border: 2px solid #1D4ED8;
+        border-radius: 8px;
+        color: #1D4ED8;
+        font-weight: 600;
+        font-size: 12px;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-view-details:hover {
+        background: #1D4ED8;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .btn-view-details i {
+        margin-right: 4px;
+    }
+
+    .btn-book-appointment {
+        flex: 1;
+        padding: 10px 8px;
+        background: linear-gradient(135deg, #1D4ED8, #60A5FA);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-weight: 600;
+        font-size: 12px;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-book-appointment:hover {
+        background: linear-gradient(135deg, #1E40AF, #3B82F6);
+        transform: translateY(-2px);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .btn-book-appointment i {
+        margin-right: 4px;
+    }
+</style>
+@endpush
+
 @section('content')
 
 <!-- Page Content -->
 <div class="content">
-    <div class="container-fluid">
+    <div class="container">
         <div class="row">
             <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
-                <div class="profile-sidebar">
-                    <div class="widget-profile pro-widget-content">
-                        <div class="profile-info-widget">
-                            <a href="#" class="booking-doc-img">
-                                <img src="{{ asset('assets/img/patients/patient.jpg') }}" alt="User Image">
-                            </a>
-                            <div class="profile-det-info">
-                                <h3>Richard Wilson</h3>
-                                <div class="patient-details">
-                                    <h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5>
-                                    <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, USA</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-widget">
-                        <nav class="dashboard-menu">
-                            <ul>
-                                <li>
-                                    <a href="{{ route('patient.dashboard') }}">
-                                        <i class="fas fa-columns"></i>
-                                        <span>Dashboard</span>
-                                    </a>
-                                </li>
-                                <li class="active">
-                                    <a href="{{ route('patient.favourites') }}">
-                                        <i class="fas fa-bookmark"></i>
-                                        <span>Favourites</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('chat') }}">
-                                        <i class="fas fa-comments"></i>
-                                        <span>Message</span>
-                                        <small class="unread-msg">23</small>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('patient.profile.settings') }}">
-                                        <i class="fas fa-user-cog"></i>
-                                        <span>Profile Settings</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('patient.change.password') }}">
-                                        <i class="fas fa-lock"></i>
-                                        <span>Change Password</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('login') }}">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                        <span>Logout</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-
-                </div>
+                @include('frontend.includes.patient-sidebar')
             </div>
 
             <div class="col-md-7 col-lg-8 col-xl-9">
                 <div class="row row-grid">
 
+                    @forelse($doctors ?? [] as $doctor)
                     <!-- Doctor Widget -->
-                    <div class="col-md-6 col-lg-4 col-xl-3">
-                        <div class="profile-widget">
-                            <div class="doc-img">
-                                <a href="{{ route('doctor.profile') }}">
-                                    <img class="img-fluid" alt="User Image" src="{{ asset('assets/img/doctors/doctor-01.jpg') }}">
+                    <div class="col-xl-4 col-md-6 col-sm-6 mb-4 doctor-grid-item">
+                        <div class="doctor-card-new">
+                            <div class="doctor-img-wrapper">
+                                <a href="{{ route('doctors.profile', $doctor->id) }}">
+                                    <img src="{{ $doctor->profile_image ? asset($doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
+                                        class="doctor-img" alt="{{ $doctor->user->name }}">
                                 </a>
-                                <a href="javascript:void(0)" class="fav-btn">
-                                    <i class="far fa-bookmark"></i>
+                                <div class="doctor-fee-badge">
+                                    <span>৳{{ $doctor->pricing === 'free' ? 'Free' : number_format($doctor->custom_price ?: ($doctor->consultation_fee ?: 500), 0) }}</span>
+                                </div>
+                                <a href="javascript:void(0)" class="fav-btn active" data-id="{{ $doctor->id }}">
+                                    <i class="fas fa-bookmark"></i>
                                 </a>
                             </div>
-                            <div class="pro-content">
-                                <h3 class="title">
-                                    <a href="{{ route('doctor.profile') }}">Ruby Perrin</a>
-                                    <i class="fas fa-check-circle verified"></i>
-                                </h3>
-                                <p class="speciality">MDS - Periodontology and Oral Implantology, BDS</p>
-                                <div class="rating">
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <span class="d-inline-block average-rating">(17)</span>
+                            <div class="doctor-info">
+                                <span class="doctor-speciality">{{ $doctor->speciality->name ?? 'General' }}</span>
+                                <h4 class="doctor-name">
+                                    <a href="{{ route('doctors.profile', $doctor->id) }}">{{ str_starts_with(strtolower($doctor->user->name), 'dr.') ? $doctor->user->name : 'Dr. ' . $doctor->user->name }}</a>
+                                    @if($doctor->is_verified)
+                                        <i class="fas fa-check-circle verified-badge" title="Verified" style="color: #09e5ab;"></i>
+                                    @endif
+                                </h4>
+                                <div class="doctor-rating">
+                                    <i class="fas fa-star" style="color: #f39c12; margin-right: 4px;"></i>
+                                    <span>{{ number_format($doctor->average_rating, 1) }}</span>
+                                    <span class="rating-count">({{ $doctor->review_count }} reviews)</span>
                                 </div>
-                                <ul class="available-info">
-                                    <li>
-                                        <i class="fas fa-map-marker-alt"></i> Florida, USA
-                                    </li>
-                                    <li>
-                                        <i class="far fa-clock"></i> Available on Fri, 22 Mar
-                                    </li>
-                                    <li>
-                                        <i class="far fa-money-bill-alt"></i> $300 - $1000 <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="Lorem Ipsum"></i>
-                                    </li>
-                                </ul>
-                                <div class="row row-sm">
-                                    <div class="col-6">
-                                        <a href="{{ route('doctor.profile') }}" class="btn view-btn">View Profile</a>
-                                    </div>
-                                    <div class="col-6">
-                                        <a href="{{ route('booking') }}" class="btn book-btn">Book Now</a>
-                                    </div>
+                                <div class="doctor-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ $doctor->clinic_name ?? ($doctor->area->name ?? 'Dhaka') }}</span>
+                                </div>
+                                <div class="doctor-buttons">
+                                    <a href="{{ route('doctors.profile', $doctor->id) }}" class="btn-view-details">
+                                        <i class="fas fa-user"></i> Details
+                                    </a>
+                                    <a href="{{ route('booking', $doctor->id) }}" class="btn-book-appointment">
+                                        <i class="fas fa-calendar-check"></i> Appointment
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- /Doctor Widget -->
-
-                    <!-- Doctor Widget -->
-                    <div class="col-md-6 col-lg-4 col-xl-3">
-                        <div class="profile-widget">
-                            <div class="doc-img">
-                                <a href="{{ route('doctor.profile') }}">
-                                    <img class="img-fluid" alt="User Image" src="{{ asset('assets/img/doctors/doctor-02.jpg') }}">
-                                </a>
-                                <a href="javascript:void(0)" class="fav-btn">
-                                    <i class="far fa-bookmark"></i>
-                                </a>
-                            </div>
-                            <div class="pro-content">
-                                <h3 class="title">
-                                    <a href="{{ route('doctor.profile') }}">Darren Elder</a>
-                                    <i class="fas fa-check-circle verified"></i>
-                                </h3>
-                                <p class="speciality">BDS, MDS - Oral & Maxillofacial Surgery</p>
-                                <div class="rating">
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star"></i>
-                                    <span class="d-inline-block average-rating">(35)</span>
-                                </div>
-                                <ul class="available-info">
-                                    <li>
-                                        <i class="fas fa-map-marker-alt"></i> Newyork, USA
-                                    </li>
-                                    <li>
-                                        <i class="far fa-clock"></i> Available on Fri, 22 Mar
-                                    </li>
-                                    <li>
-                                        <i class="far fa-money-bill-alt"></i> $50 - $300 <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="Lorem Ipsum"></i>
-                                    </li>
-                                </ul>
-                                <div class="row row-sm">
-                                    <div class="col-6">
-                                        <a href="{{ route('doctor.profile') }}" class="btn view-btn">View Profile</a>
-                                    </div>
-                                    <div class="col-6">
-                                        <a href="{{ route('booking') }}" class="btn book-btn">Book Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    @empty
+                    <div class="col-12 text-center py-5">
+                        <div class="text-muted">No favourite doctors found.</div>
                     </div>
-                    <!-- /Doctor Widget -->
-
-                    <!-- Doctor Widget -->
-                    <div class="col-md-6 col-lg-4 col-xl-3">
-                        <div class="profile-widget">
-                            <div class="doc-img">
-                                <a href="{{ route('doctor.profile') }}">
-                                    <img class="img-fluid" alt="User Image" src="{{ asset('assets/img/doctors/doctor-03.jpg') }}">
-                                </a>
-                                <a href="javascript:void(0)" class="fav-btn">
-                                    <i class="far fa-bookmark"></i>
-                                </a>
-                            </div>
-                            <div class="pro-content">
-                                <h3 class="title">
-                                    <a href="{{ route('doctor.profile') }}">Deborah Angel</a>
-                                    <i class="fas fa-check-circle verified"></i>
-                                </h3>
-                                <p class="speciality">MBBS, MD - General Medicine, DNB - Cardiology</p>
-                                <div class="rating">
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star"></i>
-                                    <span class="d-inline-block average-rating">(27)</span>
-                                </div>
-                                <ul class="available-info">
-                                    <li>
-                                        <i class="fas fa-map-marker-alt"></i> Georgia, USA
-                                    </li>
-                                    <li>
-                                        <i class="far fa-clock"></i> Available on Fri, 22 Mar
-                                    </li>
-                                    <li>
-                                        <i class="far fa-money-bill-alt"></i> $100 - $400 <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="Lorem Ipsum"></i>
-                                    </li>
-                                </ul>
-                                <div class="row row-sm">
-                                    <div class="col-6">
-                                        <a href="{{ route('doctor.profile') }}" class="btn view-btn">View Profile</a>
-                                    </div>
-                                    <div class="col-6">
-                                        <a href="{{ route('booking') }}" class="btn book-btn">Book Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /Doctor Widget -->
-
-                    <!-- Doctor Widget -->
-                    <div class="col-md-6 col-lg-4 col-xl-3">
-                        <div class="profile-widget">
-                            <div class="doc-img">
-                                <a href="{{ route('doctor.profile') }}">
-                                    <img class="img-fluid" alt="User Image" src="{{ asset('assets/img/doctors/doctor-04.jpg') }}">
-                                </a>
-                                <a href="javascript:void(0)" class="fav-btn">
-                                    <i class="far fa-bookmark"></i>
-                                </a>
-                            </div>
-                            <div class="pro-content">
-                                <h3 class="title">
-                                    <a href="{{ route('doctor.profile') }}">Sofia Brient</a>
-                                    <i class="fas fa-check-circle verified"></i>
-                                </h3>
-                                <p class="speciality">MBBS, MS - General Surgery, MCh - Urology</p>
-                                <div class="rating">
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star"></i>
-                                    <span class="d-inline-block average-rating">(4)</span>
-                                </div>
-                                <ul class="available-info">
-                                    <li>
-                                        <i class="fas fa-map-marker-alt"></i> Louisiana, USA
-                                    </li>
-                                    <li>
-                                        <i class="far fa-clock"></i> Available on Fri, 22 Mar
-                                    </li>
-                                    <li>
-                                        <i class="far fa-money-bill-alt"></i> $150 - $250 <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="Lorem Ipsum"></i>
-                                    </li>
-                                </ul>
-                                <div class="row row-sm">
-                                    <div class="col-6">
-                                        <a href="{{ route('doctor.profile') }}" class="btn view-btn">View Profile</a>
-                                    </div>
-                                    <div class="col-6">
-                                        <a href="{{ route('booking') }}" class="btn book-btn">Book Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /Doctor Widget -->
+                    @endforelse
 
                 </div>
             </div>
