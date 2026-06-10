@@ -16,6 +16,11 @@ class Coupon extends Model
         'status' => 'boolean',
     ];
 
+    public function agent()
+    {
+        return $this->belongsTo(\Modules\Agents\Models\Agent::class);
+    }
+
     public function isValid()
     {
         if (!$this->status) {

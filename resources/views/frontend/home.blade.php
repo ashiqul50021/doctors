@@ -98,8 +98,31 @@
 
             <!-- Search Section -->
             <div class="hero-search-section">
-                <!-- Main Search Bar -->
-                <div class="hero-search-bar">
+                <!-- Search Tabs -->
+                <div class="search-tab-headers">
+                    <button class="search-tab-btn active" data-target="normal-search-form">
+                        <i class="fas fa-search"></i> Search by Doctor Name/Code
+                    </button>
+                    <button class="search-tab-btn" data-target="filter-search-form">
+                        <i class="fas fa-map-marker-alt"></i> Search by Location & Speciality
+                    </button>
+                </div>
+
+                <!-- Normal Search Bar (Doctor Name/Code) -->
+                <div class="hero-search-bar" id="normal-search-form">
+                    <form action="{{ route('doctors.search') }}" class="hero-search-form" id="normalSearchForm">
+                        <div class="search-field search-keyword-full">
+                            <i class="fas fa-user-md"></i>
+                            <input type="text" name="keywords" placeholder="Search by doctor name/code" class="form-control">
+                        </div>
+                        <button type="submit" class="btn-hero-search">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Filter Search Bar (Location & Speciality) -->
+                <div class="hero-search-bar d-none" id="filter-search-form">
                     <form action="{{ route('doctors.search') }}" class="hero-search-form" id="filterSearchForm">
                         <!-- District - Custom Searchable Dropdown -->
                         <div class="search-field search-select">
@@ -140,7 +163,7 @@
                         </div>
 
                         <!-- Speciality - Custom Searchable Dropdown -->
-                        <div class="search-field search-select">
+                        <div class="search-field search-select" style="border-right: none;">
                             <i class="fas fa-stethoscope"></i>
                             <div class="custom-dropdown" id="specialityDropdown">
                                 <input type="hidden" name="speciality_id" id="speciality_value">
@@ -159,13 +182,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Keyword Input (Search by doctor) -->
-                        <div class="search-field search-keyword">
-                            <i class="fas fa-search"></i>
-                            <input type="text" name="keywords" placeholder="Search by doctor name/code"
-                                class="form-control">
                         </div>
 
                         <button type="submit" class="btn-hero-search">
@@ -1078,6 +1094,15 @@
 @push('scripts')
     <script>
         $(document).ready(function () {
+            // Tab Switcher for Homepage Search
+            $('.search-tab-btn').on('click', function () {
+                var target = $(this).data('target');
+                $('.search-tab-btn').removeClass('active');
+                $(this).addClass('active');
+                $('.hero-search-bar').addClass('d-none');
+                $('#' + target).removeClass('d-none');
+            });
+
             var favDoctorIds = {!! json_encode($favDoctorIds) !!};
             // Counter Animation for Statistics Section
             const counters = document.querySelectorAll('.counter-number');
@@ -1490,6 +1515,72 @@
 
 @push('styles')
     <style>
+        /* Search Tab styles */
+        .search-tab-headers {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            justify-content: flex-start;
+        }
+
+        .search-tab-btn {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            outline: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-tab-btn:hover {
+            background: #ffffff;
+            color: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        .search-tab-btn.active {
+            background: #1d4ed8;
+            color: #ffffff;
+            border-color: #1d4ed8;
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+        }
+
+        .search-tab-btn i {
+            font-size: 13px;
+        }
+
+        .hero-search-bar.d-none {
+            display: none !important;
+        }
+
+        /* Responsive styling for normal search keywords input to look modern */
+        .search-field.search-keyword-full {
+            flex: 1;
+            border-right: none !important;
+        }
+
+        @media (max-width: 991px) {
+            .search-tab-headers {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-bottom: 12px;
+            }
+            .search-tab-btn {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+
         /* Header For Doctors Button */
         .btn-for-doctors {
             border: 2px solid #28a745 !important;

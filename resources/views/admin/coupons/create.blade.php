@@ -65,6 +65,17 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Link to Agent (Optional)</label>
+                                    <select name="agent_id" class="form-select">
+                                        <option value="">-- No Agent (Global Coupon) --</option>
+                                        @foreach($agents as $agent)
+                                            <option value="{{ $agent->id }}">{{ $agent->user->name }} ({{ $agent->referral_code }})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary btn-block">Create Coupon</button>
                     </form>

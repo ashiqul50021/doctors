@@ -24,6 +24,7 @@ Route::name('ecommerce.')->group(function () {
     Route::get('/cart', [ProductController::class, 'cart'])->name('cart');
     Route::post('/cart/remove', [ProductController::class, 'removeFromCart'])->name('cart.remove');
     Route::post('/cart/update', [ProductController::class, 'updateCart'])->name('cart.update');
+    Route::post('/cart/coupon', [ProductController::class, 'applyCoupon'])->name('cart.coupon');
     Route::get('/product-checkout', [ProductController::class, 'checkout'])->name('checkout');
     Route::post('/place-order', [ProductController::class, 'placeOrder'])->name('order.place');
     Route::get('/order-success', [ProductController::class, 'orderSuccess'])->name('order.success');

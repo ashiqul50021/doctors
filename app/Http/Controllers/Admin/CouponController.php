@@ -10,13 +10,14 @@ class CouponController extends Controller
 {
     public function index()
     {
-        $coupons = Coupon::latest()->paginate(10);
+        $coupons = Coupon::with('agent.user')->latest()->paginate(10);
         return view('admin.coupons.index', compact('coupons'));
     }
 
     public function create()
     {
-        return view('admin.coupons.create');
+        $agents = \Modules\Agents\Models\Agent::active()->with('user')->get();
+        return view('admin.coupons.create', compact('agents'));
     }
 
     public function store(Request $request)
@@ -27,6 +28,7 @@ class CouponController extends Controller
             'amount' => 'required|numeric',
             'expiry_date' => 'nullable|date',
             'usage_limit' => 'nullable|integer',
+            'agent_id' => 'nullable|exists:agents,id',
         ]);
 
         Coupon::create($request->all());
@@ -37,7 +39,8 @@ class CouponController extends Controller
     public function edit($id)
     {
         $coupon = Coupon::findOrFail($id);
-        return view('admin.coupons.edit', compact('coupon'));
+        $agents = \Modules\Agents\Models\Agent::active()->with('user')->get();
+        return view('admin.coupons.edit', compact('coupon', 'agents'));
     }
 
     public function update(Request $request, $id)
@@ -50,6 +53,7 @@ class CouponController extends Controller
             'amount' => 'required|numeric',
             'expiry_date' => 'nullable|date',
             'usage_limit' => 'nullable|integer',
+            'agent_id' => 'nullable|exists:agents,id',
         ]);
 
         $coupon->update($request->all());

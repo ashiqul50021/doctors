@@ -14,6 +14,7 @@ use Modules\Ecommerce\Models\ProductCategory;
 use Modules\Ecommerce\Models\Order;
 use Modules\Ecommerce\Models\OrderItem;
 use Modules\Ecommerce\Models\ProductReview;
+use App\Models\Coupon;
 
 class ProductController extends Controller
 {
@@ -466,7 +467,31 @@ class ProductController extends Controller
 
         $total = $this->calculateCartTotal($cart);
 
-        return view('ecommerce::frontend.product-checkout', compact('cart', 'total'));
+        // Resolve agent from session/cookie or logged in agent
+        $refCode = session('ref_code') ?? request()->cookie('ref_code');
+        $agent = null;
+        if (auth()->check() && auth()->user()->role === 'agent') {
+            $agent = auth()->user()->agent;
+        } elseif ($refCode) {
+            $agent = \Modules\Agents\Models\Agent::where('referral_code', $refCode)->where('status', 'active')->first();
+        }
+
+        $autoCoupon = null;
+        $discount = 0;
+        if ($agent) {
+            $autoCoupon = Coupon::where('agent_id', $agent->id)->where('status', true)->first();
+            if ($autoCoupon && $autoCoupon->isValid()) {
+                if ($autoCoupon->type == 'fixed') {
+                    $discount = $autoCoupon->amount;
+                } else {
+                    $discount = ($total * $autoCoupon->amount) / 100;
+                }
+            } else {
+                $autoCoupon = null;
+            }
+        }
+
+        return view('ecommerce::frontend.product-checkout', compact('cart', 'total', 'autoCoupon', 'discount'));
     }
 
     public function placeOrder(Request $request)
@@ -476,6 +501,7 @@ class ProductController extends Controller
             'email' => 'required|email',
             'phone' => 'required|string|max:20',
             'address' => 'required|string',
+            'coupon_code' => 'nullable|string',
         ]);
 
         $cart = $this->getNormalizedCart();
@@ -510,18 +536,42 @@ class ProductController extends Controller
             }
         }
 
-        // Check for agent context (either direct order or referral link)
+        // Coupon Logic
+        $discount = 0;
+        $couponCode = null;
+        $coupon = null;
+        if ($request->filled('coupon_code')) {
+            $coupon = Coupon::where('code', $request->coupon_code)->first();
+            if ($coupon && $coupon->isValid()) {
+                if ($coupon->type == 'fixed') {
+                    $discount = $coupon->amount;
+                } else {
+                    $discount = ($total * $coupon->amount) / 100;
+                }
+                $couponCode = $coupon->code;
+            }
+        }
+
+        // Check for agent context (either coupon, direct order, or referral link)
         $refCode = session('ref_code') ?? request()->cookie('ref_code');
         $agent = null;
-        if (auth()->check() && auth()->user()->role === 'agent') {
+        if ($coupon && $coupon->agent_id) {
+            $agent = $coupon->agent;
+        } elseif (auth()->check() && auth()->user()->role === 'agent') {
             $agent = auth()->user()->agent;
         } elseif ($refCode) {
             $agent = \Modules\Agents\Models\Agent::where('referral_code', $refCode)->where('status', 'active')->first();
         }
 
+        $grandTotal = max(0, $total - $discount);
+
         try {
-            $order = DB::transaction(function () use ($cart, $request, $total, $patient, $agent) {
+            $order = DB::transaction(function () use ($cart, $request, $total, $discount, $couponCode, $grandTotal, $patient, $agent, $coupon) {
                 $this->stockService->reserveCart($cart);
+
+                if ($coupon) {
+                    $coupon->increment('used_count');
+                }
 
                 $order = Order::create([
                     'order_number' => 'ORD-' . strtoupper(uniqid()),
@@ -534,8 +584,10 @@ class ProductController extends Controller
                     'shipping_city' => $request->city ?? 'Dhaka',
                     'shipping_phone' => $request->phone,
                     'subtotal' => $total,
+                    'discount' => $discount,
+                    'coupon_code' => $couponCode,
                     'shipping' => 0,
-                    'total' => $total,
+                    'total' => $grandTotal,
                     'status' => 'pending',
                     'notes' => $request->notes,
                 ]);
@@ -557,17 +609,21 @@ class ProductController extends Controller
 
             // Credit Agent Wallet if applicable
             if ($agent && $agent->can_sell_products) {
-                $commission = $total * ($agent->product_commission_rate / 100);
-                $agent->increment('wallet_balance', $commission);
+                $commissionBase = max(0, $total - $discount);
+                $commission = $commissionBase * ($agent->product_commission_rate / 100);
+                
+                if ($commission > 0) {
+                    $agent->increment('wallet_balance', $commission);
 
-                \Modules\Agents\Models\AgentTransaction::create([
-                    'agent_id' => $agent->id,
-                    'type' => 'commission_product',
-                    'amount' => $commission,
-                    'description' => 'Commission of ৳' . number_format($commission, 2) . ' credited for Order #' . $order->order_number . ' (Customer: ' . $request->name . ')',
-                    'reference_id' => $order->order_number,
-                    'status' => 'completed',
-                ]);
+                    \Modules\Agents\Models\AgentTransaction::create([
+                        'agent_id' => $agent->id,
+                        'type' => 'commission_product',
+                        'amount' => $commission,
+                        'description' => 'Commission of ৳' . number_format($commission, 2) . ' credited for Order #' . $order->order_number . ' (Customer: ' . $request->name . ')',
+                        'reference_id' => $order->order_number,
+                        'status' => 'completed',
+                    ]);
+                }
             }
         } catch (ValidationException $exception) {
             return $this->handleInventoryException($request, $exception);
@@ -581,6 +637,43 @@ class ProductController extends Controller
         }
 
         return redirect()->route('ecommerce.order.success', ['order' => $order->id]);
+    }
+
+    public function applyCoupon(Request $request)
+    {
+        $request->validate([
+            'coupon_code' => 'required|string'
+        ]);
+
+        $coupon = Coupon::where('code', $request->coupon_code)->first();
+
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'Invalid coupon code.']);
+        }
+
+        if (!$coupon->isValid()) {
+            return response()->json(['success' => false, 'message' => 'Coupon is expired or usage limit reached.']);
+        }
+
+        // Calculate discount
+        $cart = $this->getNormalizedCart();
+        $total = $this->calculateCartTotal($cart);
+
+        $discount = 0;
+        if ($coupon->type == 'fixed') {
+            $discount = $coupon->amount;
+        } else {
+            $discount = ($total * $coupon->amount) / 100;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon applied successfully!',
+            'discount' => $discount,
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'amount' => $coupon->amount
+        ]);
     }
 
     public function orderSuccess(Request $request)

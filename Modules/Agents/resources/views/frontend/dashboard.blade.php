@@ -175,6 +175,21 @@
                                     </div>
                                 </div>
                             @endif
+
+                            @php
+                                $linkedCoupon = $agent->coupons()->where('status', true)->first();
+                            @endphp
+                            @if ($linkedCoupon)
+                                <div class="mt-4 pt-3 border-top">
+                                    <label class="form-label font-weight-bold text-muted small">Your Personal Discount Coupon Code</label>
+                                    <p class="text-muted mb-2 small">Customers can use this coupon at checkout to get a discount. You will still receive the referral commission!</p>
+                                    <div class="input-group" style="max-width: 450px;">
+                                        <span class="input-group-text bg-light font-weight-bold text-primary">{{ $linkedCoupon->type == 'percent' ? $linkedCoupon->amount . '%' : '৳' . number_format($linkedCoupon->amount, 0) }} OFF</span>
+                                        <input type="text" class="form-control font-weight-bold text-center bg-white" value="{{ $linkedCoupon->code }}" id="coupon_code_field" readonly style="letter-spacing: 1px;">
+                                        <button class="btn btn-outline-primary" type="button" onclick="copyLink('coupon_code_field')">Copy Coupon</button>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
 

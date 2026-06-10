@@ -32,6 +32,7 @@
                                     <th>Code</th>
                                     <th>Type</th>
                                     <th>Amount</th>
+                                    <th>Agent Link</th>
                                     <th>Expiry Date</th>
                                     <th>Usage</th>
                                     <th>Status</th>
@@ -43,7 +44,13 @@
                                     <tr>
                                         <td><strong>{{ $coupon->code }}</strong></td>
                                         <td>{{ ucfirst($coupon->type) }}</td>
-                                        <td>{{ $coupon->type == 'fixed' ? '৳' . number_format($coupon->amount, 2) : $coupon->amount . '%' }}
+                                        <td>{{ $coupon->type == 'fixed' ? '৳' . number_format($coupon->amount, 2) : $coupon->amount . '%' }}</td>
+                                        <td>
+                                            @if($coupon->agent)
+                                                <span class="badge bg-info-light">{{ $coupon->agent->user->name }}</span>
+                                            @else
+                                                <span class="badge bg-secondary-light">Global</span>
+                                            @endif
                                         </td>
                                         <td>
                                             @if($coupon->expiry_date)

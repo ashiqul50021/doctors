@@ -121,12 +121,32 @@
                                 <span class="text-success">Free</span>
                             </div>
 
+                            <div class="d-flex justify-content-between mb-2" id="discount_wrapper" @if(!$autoCoupon) style="display: none !important;" @endif>
+                                <span>Discount <small class="text-muted" id="coupon_info">@if($autoCoupon) ({{ $autoCoupon->code }}) @endif</small></span>
+                                <span class="text-danger">-৳<span id="discount_display">{{ number_format($discount, 2) }}</span></span>
+                            </div>
+
+                            <div class="coupon-box mt-3 mb-3 p-3 bg-white rounded border" style="border-style: dashed !important; border-color: #dee2e6 !important;">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0 ps-3"><i class="fas fa-tag text-muted"></i></span>
+                                    <input type="text" class="form-control border-start-0 ps-0 shadow-none" id="coupon_code" placeholder="Enter Coupon Code" style="background: transparent;" @if($autoCoupon) value="{{ $autoCoupon->code }}" @endif>
+                                    <button class="btn btn-dark px-4" type="button" onclick="applyCoupon()">Apply</button>
+                                </div>
+                                @if($autoCoupon)
+                                    <div class="text-success small mt-1" id="auto_coupon_msg">
+                                        <i class="fas fa-check-circle me-1"></i>Referral discount automatically applied!
+                                    </div>
+                                @endif
+                            </div>
+
                             <hr>
 
                             <div class="d-flex justify-content-between mb-4">
                                 <span class="h5 mb-0">Total</span>
-                                <span class="h5 mb-0 text-primary fw-bold">৳{{ number_format($total, 2) }}</span>
+                                <span class="h5 mb-0 text-primary fw-bold" id="grand_total">৳{{ number_format($total - $discount, 2) }}</span>
                             </div>
+
+                            <input type="hidden" name="coupon_code" id="coupon_code_input" @if($autoCoupon) value="{{ $autoCoupon->code }}" @endif>
 
                             <button type="submit" class="btn btn-primary w-100 btn-lg">
                                 <i class="fas fa-check-circle me-2"></i>Place Order
@@ -299,4 +319,60 @@
         }
     }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+    const subtotal = {{ $total }};
+    let currentDiscount = {{ $discount }};
+
+    function formatCurrency(amount) {
+        return parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+
+    function applyCoupon() {
+        const code = document.getElementById('coupon_code').value;
+        if (!code) {
+            Swal.fire('Error', 'Please enter a coupon code', 'error');
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route("ecommerce.cart.coupon") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                coupon_code: code
+            },
+            success: function (response) {
+                if (response.success) {
+                    currentDiscount = parseFloat(response.discount);
+                    document.getElementById('discount_wrapper').style.setProperty('display', 'flex', 'important');
+                    document.getElementById('discount_display').innerText = formatCurrency(currentDiscount);
+                    document.getElementById('coupon_info').innerText = '(' + response.code + ')';
+                    document.getElementById('coupon_code_input').value = response.code;
+
+                    const msgEl = document.getElementById('auto_coupon_msg');
+                    if (msgEl) {
+                        msgEl.style.setProperty('display', 'none', 'important');
+                    }
+
+                    const grandTotal = Math.max(0, subtotal - currentDiscount);
+                    document.getElementById('grand_total').innerText = '৳' + formatCurrency(grandTotal);
+
+                    Swal.fire('Success', response.message, 'success');
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function (xhr) {
+                let msg = 'Failed to apply coupon';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                Swal.fire('Error', msg, 'error');
+            }
+        });
+    }
+</script>
 @endpush
