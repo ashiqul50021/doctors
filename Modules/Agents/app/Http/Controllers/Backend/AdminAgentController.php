@@ -160,6 +160,10 @@ class AdminAgentController extends Controller
         $payoutRequest = AgentTransaction::findOrFail($id);
         $agent = $payoutRequest->agent;
 
+        if (!$agent) {
+            return back()->with('error', 'Agent not found for this payout request.');
+        }
+
         if ($payoutRequest->status !== 'pending') {
             return back()->with('error', 'This payout request has already been processed.');
         }
@@ -171,10 +175,10 @@ class AdminAgentController extends Controller
 
             // Create log for payout approval
             AgentTransaction::create([
-                'agent_id' => $agent->id,
+                'agent_id' => $payoutRequest->agent_id,
                 'type' => 'payout_approved',
                 'amount' => $payoutRequest->amount,
-                'description' => 'Payout of ৳' . number_format($payoutRequest->amount, 2) . ' approved by Admin.',
+                'description' => 'Payout of TK ' . number_format($payoutRequest->amount, 2) . ' approved by Admin.',
                 'reference_id' => $payoutRequest->id,
                 'status' => 'completed',
             ]);
@@ -183,6 +187,10 @@ class AdminAgentController extends Controller
             return back()->with('success', 'Payout request approved successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Payout approval failed: ' . $e->getMessage(), [
+                'exception' => $e,
+                'payout_request_id' => $id
+            ]);
             return back()->with('error', 'Failed to approve payout: ' . $e->getMessage());
         }
     }
@@ -191,6 +199,10 @@ class AdminAgentController extends Controller
     {
         $payoutRequest = AgentTransaction::findOrFail($id);
         $agent = $payoutRequest->agent;
+
+        if (!$agent) {
+            return back()->with('error', 'Agent not found for this payout request.');
+        }
 
         if ($payoutRequest->status !== 'pending') {
             return back()->with('error', 'This payout request has already been processed.');
@@ -217,6 +229,10 @@ class AdminAgentController extends Controller
             return back()->with('success', 'Payout request rejected successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Payout rejection failed: ' . $e->getMessage(), [
+                'exception' => $e,
+                'payout_request_id' => $id
+            ]);
             return back()->with('error', 'Failed to reject payout: ' . $e->getMessage());
         }
     }
