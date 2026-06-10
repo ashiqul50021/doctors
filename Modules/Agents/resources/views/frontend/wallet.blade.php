@@ -123,7 +123,19 @@
                                                     </span>
                                                 </td>
                                                 <td>{{ $tx->reference_id ?? '-' }}</td>
-                                                <td>{{ $tx->description }}</td>
+                                                <td>
+                                                    @if (in_array($tx->type, ['payout_request', 'payout_approved', 'payout_rejected']))
+                                                        @php
+                                                            $desc = htmlspecialchars($tx->description);
+                                                            if (preg_match('/Payout request via (.*) to (.*)/i', $tx->description, $matches)) {
+                                                                $desc = '<span class="badge bg-info-light">' . htmlspecialchars($matches[1]) . '</span> to <code class="text-dark">' . htmlspecialchars($matches[2]) . '</code>';
+                                                            }
+                                                        @endphp
+                                                        {!! $desc !!}
+                                                    @else
+                                                        {{ $tx->description }}
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     <span class="font-weight-bold text-{{ in_array($tx->type, ['commission_booking', 'commission_product', 'commission_course']) ? 'success' : 'danger' }}">
                                                         {{ in_array($tx->type, ['commission_booking', 'commission_product', 'commission_course']) ? '+' : '-' }}৳{{ number_format($tx->amount, 2) }}

@@ -168,18 +168,35 @@ class AdminAgentController extends Controller
             return back()->with('error', 'This payout request has already been processed.');
         }
 
+        $request->validate([
+            'transaction_number' => ['required', 'string', 'max:255'],
+            'notes' => ['nullable', 'string'],
+        ]);
+
         DB::beginTransaction();
         try {
-            // Update original request to completed
-            $payoutRequest->update(['status' => 'completed']);
+            $txnNumber = $request->transaction_number;
+            $notes = $request->notes;
+
+            // Update original request to completed and store transaction number
+            $payoutRequest->update([
+                'status' => 'completed',
+                'reference_id' => $txnNumber
+            ]);
+
+            // Create description log for payout approval
+            $description = 'Payout of TK ' . number_format($payoutRequest->amount, 2) . ' approved by Admin. Txn ID: ' . $txnNumber;
+            if ($notes) {
+                $description .= '. Note: ' . $notes;
+            }
 
             // Create log for payout approval
             AgentTransaction::create([
                 'agent_id' => $payoutRequest->agent_id,
                 'type' => 'payout_approved',
                 'amount' => $payoutRequest->amount,
-                'description' => 'Payout of TK ' . number_format($payoutRequest->amount, 2) . ' approved by Admin.',
-                'reference_id' => $payoutRequest->id,
+                'description' => $description,
+                'reference_id' => $txnNumber,
                 'status' => 'completed',
             ]);
 
