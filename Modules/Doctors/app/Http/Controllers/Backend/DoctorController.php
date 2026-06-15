@@ -34,7 +34,7 @@ class DoctorController extends Controller
             'qualification' => 'required|string',
             'consultation_fee' => 'nullable|numeric',
             'experience_years' => 'nullable|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
         ]);
 
         $user = User::create([
@@ -45,7 +45,7 @@ class DoctorController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = ImageService::upload($request->file('image'), 'doctors');
+            $imagePath = ImageService::upload($request->file('image'), 'doctors', 80, 400);
         }
 
         Doctor::create([
@@ -84,7 +84,7 @@ class DoctorController extends Controller
             'qualification' => 'required|string',
             'consultation_fee' => 'nullable|numeric',
             'experience_years' => 'nullable|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
         ]);
 
         $doctor->user->update([
@@ -105,7 +105,7 @@ class DoctorController extends Controller
 
         if ($request->hasFile('image')) {
             ImageService::delete($doctor->profile_image);
-            $data['profile_image'] = ImageService::upload($request->file('image'), 'doctors');
+            $data['profile_image'] = ImageService::upload($request->file('image'), 'doctors', 80, 400);
         }
 
         $doctor->update($data);

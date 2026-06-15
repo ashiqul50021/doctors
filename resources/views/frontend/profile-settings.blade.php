@@ -57,7 +57,7 @@
                                                     <span><i class="fa fa-upload"></i> Upload Photo</span>
                                                     <input type="file" class="upload" name="profile_image">
                                                 </div>
-                                                <small class="form-text text-muted">Allowed JPG, GIF or PNG. Max size of 2MB</small>
+                                                <small class="form-text text-muted">Allowed JPG, PNG, GIF or WebP. Auto compressed.</small>
                                             </div>
                                         </div>
                                     </div>

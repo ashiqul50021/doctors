@@ -264,7 +264,7 @@ class DashboardController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
             'date_of_birth' => ['nullable', 'date'],
-            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif', 'max:2048'],
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
             'qualification' => ['nullable', 'string', 'max:255'],
             'speciality_id' => ['nullable', 'exists:specialities,id'],
             'registration_number' => ['nullable', 'string', 'max:255'],
@@ -309,7 +309,7 @@ class DashboardController extends Controller
             if ($doctor->profile_image) {
                 ImageService::delete($doctor->profile_image);
             }
-            $validated['profile_image'] = ImageService::upload($request->file('profile_image'), 'doctors');
+            $validated['profile_image'] = ImageService::upload($request->file('profile_image'), 'doctors', 80, 400);
         }
 
         [$clinicNames, $clinicAddresses] = $this->toJsonClinicPairs(

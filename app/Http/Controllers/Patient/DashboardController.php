@@ -75,7 +75,7 @@ class DashboardController extends Controller
             'state' => ['nullable', 'string', 'max:100'],
             'zip_code' => ['nullable', 'string', 'max:20'],
             'country' => ['nullable', 'string', 'max:100'],
-            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif', 'max:2048'],
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
         ]);
 
         $fullName = trim($request->first_name . ' ' . ($request->last_name ?? ''));
@@ -89,7 +89,7 @@ class DashboardController extends Controller
             if ($patient->profile_image) {
                 ImageService::delete($patient->profile_image);
             }
-            $profileImagePath = ImageService::upload($request->file('profile_image'), 'patients');
+            $profileImagePath = ImageService::upload($request->file('profile_image'), 'patients', 80, 400);
         }
 
         $patient->update([

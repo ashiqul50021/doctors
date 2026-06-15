@@ -76,4 +76,28 @@ class User extends Authenticatable
     {
         return $this->role === 'agent';
     }
+
+    public function getProfileImageUrlAttribute(): string
+    {
+        if ($this->role === 'doctor') {
+            if ($this->doctor && $this->doctor->profile_image) {
+                return asset($this->doctor->profile_image);
+            }
+            return asset('assets/img/doctors/doctor-thumb-02.jpg');
+        }
+        if ($this->role === 'agent') {
+            if ($this->agent && $this->agent->profile_image) {
+                return asset($this->agent->profile_image);
+            }
+            return asset('assets/img/patients/patient.jpg');
+        }
+        if ($this->role === 'patient') {
+            if ($this->patient && $this->patient->profile_image) {
+                return asset($this->patient->profile_image);
+            }
+            return asset('assets/img/patients/patient.jpg');
+        }
+        
+        return asset('assets/img/patients/patient.jpg');
+    }
 }

@@ -21,6 +21,7 @@
         display: inline-block;
         margin-bottom: 15px;
         position: relative;
+        cursor: pointer;
     }
 
     .profile-sidebar .booking-doc-img img {
@@ -30,6 +31,41 @@
         border: 4px solid #fff;
         box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         object-fit: cover;
+        transition: all 0.3s ease;
+    }
+
+    .profile-sidebar .change-photo-btn {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        background: #345cce;
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        border: 2px solid #fff;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+
+    .profile-sidebar .booking-doc-img:hover img {
+        opacity: 0.85;
+    }
+
+    .profile-sidebar .booking-doc-img:hover .change-photo-btn {
+        background: #2563eb;
+        transform: scale(1.1);
+    }
+
+    .profile-sidebar .change-photo-btn i {
+        font-size: 13px !important;
+        margin: 0 !important;
+        color: #fff !important;
+        width: auto !important;
     }
 
     .profile-sidebar .profile-det-info h3 {
@@ -95,9 +131,13 @@
 <div class="profile-sidebar">
     <div class="widget-profile pro-widget-content">
         <div class="profile-info-widget">
-            <a href="#" class="booking-doc-img">
-                <img src="{{ asset('assets/img/patients/patient.jpg') }}" alt="Agent Photo">
-            </a>
+            <div class="booking-doc-img">
+                <img src="{{ Auth::user()->profile_image_url }}" alt="Agent Photo" class="agent-avatar-img">
+                <div class="change-photo-btn" title="Change Profile Image">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <input type="file" id="agent-avatar-input" accept="image/*" style="display: none;">
+            </div>
             <div class="profile-det-info">
                 <h3>{{ Auth::user()->name }}</h3>
                 <div class="patient-details">
@@ -148,3 +188,78 @@
         </nav>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    $(document).ready(function () {
+        // Trigger file input click when avatar container is clicked
+        $(document).on('click', '.booking-doc-img', function (e) {
+            e.preventDefault();
+            $('#agent-avatar-input').click();
+        });
+
+        // Prevent click bubbling on file input
+        $(document).on('click', '#agent-avatar-input', function (e) {
+            e.stopPropagation();
+        });
+
+        // Handle file select
+        $(document).on('change', '#agent-avatar-input', function () {
+            var file = this.files[0];
+            if (!file) return;
+
+            // Client-side type validation
+            if (!file.type.match('image.*')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid File',
+                    text: 'Please select a valid image file.'
+                });
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('profile_image', file);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            // Show loading state
+            $('.agent-avatar-img').css('opacity', '0.5');
+
+            $.ajax({
+                url: '{{ route("agent.profile-image.upload") }}',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $('.agent-avatar-img').css('opacity', '1');
+                    if (response.success) {
+                        // Update avatar image source
+                        $('.agent-avatar-img').attr('src', response.image_url);
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Profile image updated successfully!',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    $('.agent-avatar-img').css('opacity', '1');
+                    var errorMsg = 'Failed to upload image. Please try again.';
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMsg = xhr.responseJSON.error;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Upload Failed',
+                        text: errorMsg
+                    });
+                }
+            });
+        });
+    });
+</script>
+@endpush

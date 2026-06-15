@@ -29,6 +29,7 @@ Route::middleware(['web', 'auth', 'role:agent'])->prefix('agent')->name('agent.'
     Route::get('/dashboard', [AgentDashboardController::class, 'index'])->name('dashboard');
     Route::get('/wallet', [AgentDashboardController::class, 'wallet'])->name('wallet');
     Route::post('/payout-request', [AgentDashboardController::class, 'payoutRequest'])->name('payout.request');
+    Route::post('/profile-image/upload', [AgentDashboardController::class, 'uploadProfileImage'])->name('profile-image.upload');
 
     // Appointment Booking on behalf of patients
     Route::get('/book-appointment', [AgentBookingController::class, 'index'])->name('book-appointment');

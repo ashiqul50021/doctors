@@ -230,14 +230,14 @@
                     <li class="nav-item dropdown has-arrow logged-item">
                         <a href="#" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
                             <span class="user-img">
-                                <img class="rounded-circle" src="{{ asset('assets/img/doctors/doctor-thumb-02.jpg') }}"
-                                    width="31" alt="Darren Elder">
+                                <img class="rounded-circle" src="{{ Auth::user()->profile_image_url }}"
+                                    width="31" alt="{{ Auth::user()->name }}">
                             </span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end">
                             <div class="user-header">
                                 <div class="avatar avatar-sm">
-                                    <img src="{{ asset('assets/img/doctors/doctor-thumb-02.jpg') }}" alt="User Image"
+                                    <img src="{{ Auth::user()->profile_image_url }}" alt="User Image"
                                         class="avatar-img rounded-circle">
                                 </div>
                                 <div class="user-text">

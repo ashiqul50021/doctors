@@ -13,6 +13,7 @@ class Agent extends Model
     protected $fillable = [
         'user_id',
         'phone',
+        'profile_image',
         'referral_code',
         'can_book_appointments',
         'can_sell_products',

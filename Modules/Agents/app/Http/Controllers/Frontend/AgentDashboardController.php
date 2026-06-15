@@ -97,4 +97,101 @@ class AgentDashboardController extends Controller
 
         return back()->with('success', 'Payout request submitted successfully. Please wait for admin approval.');
     }
+
+    public function uploadProfileImage(Request $request)
+    {
+        $request->validate([
+            'profile_image' => ['required', 'image', 'max:10240'], // max 10MB
+        ]);
+
+        $agent = auth()->user()->agent;
+        $file = $request->file('profile_image');
+
+        try {
+            // Load image using GD
+            $imageInfo = getimagesize($file);
+            $mime = $imageInfo['mime'];
+
+            switch ($mime) {
+                case 'image/jpeg':
+                case 'image/jpg':
+                    $image = imagecreatefromjpeg($file);
+                    break;
+                case 'image/png':
+                    $image = imagecreatefrompng($file);
+                    imagepalettetotruecolor($image);
+                    break;
+                case 'image/gif':
+                    $image = imagecreatefromgif($file);
+                    imagepalettetotruecolor($image);
+                    break;
+                case 'image/webp':
+                    $image = imagecreatefromwebp($file);
+                    break;
+                default:
+                    $image = imagecreatefromstring(file_get_contents($file));
+            }
+
+            if (!$image) {
+                return response()->json(['error' => 'Invalid image file.'], 400);
+            }
+
+            // Get original dimensions
+            $width = imagesx($image);
+            $height = imagesy($image);
+            $maxDim = 400; // max dimension for profile photos
+
+            if ($width > $maxDim || $height > $maxDim) {
+                $ratio = $width / $height;
+                if ($ratio > 1) {
+                    $newWidth = $maxDim;
+                    $newHeight = (int) round($maxDim / $ratio);
+                } else {
+                    $newHeight = $maxDim;
+                    $newWidth = (int) round($maxDim * $ratio);
+                }
+
+                $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+                
+                // Preserve transparency for PNGs
+                imagealphablending($resizedImage, false);
+                imagesavealpha($resizedImage, true);
+
+                imagecopyresampled($resizedImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                imagedestroy($image);
+                $image = $resizedImage;
+            }
+
+            // Create directory if not exists
+            $destinationPath = public_path('uploads/agents');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+
+            $filename = 'agent_' . $agent->id . '_' . time() . '.webp';
+            $filePath = $destinationPath . '/' . $filename;
+
+            // Compress and save as WebP (quality 80)
+            imagewebp($image, $filePath, 80);
+            imagedestroy($image);
+
+            // Delete old image if exists
+            if ($agent->profile_image && file_exists(public_path($agent->profile_image))) {
+                @unlink(public_path($agent->profile_image));
+            }
+
+            // Update database
+            $dbPath = 'uploads/agents/' . $filename;
+            $agent->update([
+                'profile_image' => $dbPath
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'image_url' => asset($dbPath)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to process image: ' . $e->getMessage()], 500);
+        }
+    }
 }
