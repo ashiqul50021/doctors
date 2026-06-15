@@ -259,76 +259,7 @@
 <div class="content doctor-search-layout">
     <div class="container">
         <div class="row">
-            <div class="col-md-12 col-lg-4 col-xl-3 theiaStickySidebar">
-                <div class="card filter-panel">
-                    <div class="filter-panel-header">
-                        <div>
-                            <h4>Filters</h4>
-                            <p>Refine doctor search instantly</p>
-                        </div>
-                        <span class="badge bg-light text-primary">{{ $doctors->total() }} Results</span>
-                    </div>
-
-                    <div class="filter-panel-body">
-                        <form method="GET" action="{{ route('doctors.search') }}" id="doctorFilterForm">
-                            <div class="filter-block">
-                                <div class="filter-title">Search</div>
-                                <input type="text" name="keywords" value="{{ request('keywords') }}" class="form-control filter-input" placeholder="Doctor name / speciality">
-                            </div>
-
-                            <div class="filter-block">
-                                <div class="filter-title">Location</div>
-                                <input type="text" name="location" value="{{ request('location') }}" class="form-control filter-input mb-2" placeholder="Clinic city or address">
-                                <select name="district_id" id="districtSelect" class="form-select filter-select mb-2">
-                                    <option value="">All Districts</option>
-                                    @foreach($districts as $district)
-                                        <option value="{{ $district->id }}" {{ (string) request('district_id') === (string) $district->id ? 'selected' : '' }}>
-                                            {{ $district->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                <select name="area_id" id="areaSelect" class="form-select filter-select" {{ request('district_id') ? '' : 'disabled' }}>
-                                    <option value="">All Areas</option>
-                                    @foreach($areas as $area)
-                                        <option value="{{ $area->id }}" {{ (string) request('area_id') === (string) $area->id ? 'selected' : '' }}>
-                                            {{ $area->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="filter-block">
-                                <div class="filter-title">Speciality</div>
-                                <div class="speciality-search-box">
-                                    <input type="text" id="specialitySearchInput" class="form-control filter-input" placeholder="Search speciality">
-                                </div>
-
-                                <div class="speciality-list" id="specialityList">
-                                    @foreach($specialities as $speciality)
-                                        <label class="filter-check speciality-item {{ $loop->index >= 8 ? 'extra-speciality d-none' : '' }}" data-speciality-name="{{ strtolower($speciality->name) }}">
-                                            <input
-                                                type="checkbox"
-                                                name="select_specialist[]"
-                                                value="{{ $speciality->id }}"
-                                                {{ in_array((int) $speciality->id, $selectedSpecialities, true) ? 'checked' : '' }}
-                                            >
-                                            <span>{{ $speciality->name }}</span>
-                                        </label>
-                                    @endforeach
-                                </div>
-
-                                @if($specialities->count() > 8)
-                                    <button type="button" id="toggleSpecialityBtn" class="toggle-speciality-btn">Show more</button>
-                                @endif
-                            </div>
-
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-12 col-lg-8 col-xl-9">
+            <div class="col-md-12">
                 <div class="result-toolbar">
                     <div class="result-count">
                         <h5>{{ $doctors->total() }} Doctors Found</h5>
