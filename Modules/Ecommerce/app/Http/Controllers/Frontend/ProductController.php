@@ -607,21 +607,19 @@ class ProductController extends Controller
                 return $order;
             });
 
-            // Credit Agent Wallet if applicable
+            // Create pending Agent Transaction if applicable
             if ($agent && $agent->can_sell_products) {
                 $commissionBase = max(0, $total - $discount);
                 $commission = $commissionBase * ($agent->product_commission_rate / 100);
                 
                 if ($commission > 0) {
-                    $agent->increment('wallet_balance', $commission);
-
                     \Modules\Agents\Models\AgentTransaction::create([
                         'agent_id' => $agent->id,
                         'type' => 'commission_product',
                         'amount' => $commission,
-                        'description' => 'Commission of ৳' . number_format($commission, 2) . ' credited for Order #' . $order->order_number . ' (Customer: ' . $request->name . ')',
+                        'description' => 'Commission of ৳' . number_format($commission, 2) . ' pending for Order #' . $order->order_number . ' (Customer: ' . $request->name . ')',
                         'reference_id' => $order->order_number,
-                        'status' => 'completed',
+                        'status' => 'pending',
                     ]);
                 }
             }
@@ -633,7 +631,7 @@ class ProductController extends Controller
 
         // Redirect back to agent dashboard if logged in as agent
         if (auth()->check() && auth()->user()->role === 'agent') {
-            return redirect()->route('agent.dashboard')->with('success', 'Order #' . $order->order_number . ' placed successfully! Commission has been credited to your wallet.');
+            return redirect()->route('agent.dashboard')->with('success', 'Order #' . $order->order_number . ' placed successfully! Commission will be credited to your wallet upon delivery.');
         }
 
         return redirect()->route('ecommerce.order.success', ['order' => $order->id]);
