@@ -44,7 +44,7 @@
     .doctor-fee-badge {
         position: absolute;
         top: 15px;
-        right: 15px;
+        left: 15px;
         background: linear-gradient(135deg, #1D4ED8, #60A5FA);
         color: #fff;
         padding: 8px 15px;

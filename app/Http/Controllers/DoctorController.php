@@ -9,7 +9,10 @@ class DoctorController extends Controller
 {
     public function show($id)
     {
-        $doctor = Doctor::with(['user', 'speciality', 'reviews.patient.user', 'schedules'])->findOrFail($id);
+        $doctor = Doctor::with(['user', 'speciality', 'reviews.patient.user', 'schedules'])
+            ->where('id', $id)
+            ->orWhere('slug', $id)
+            ->firstOrFail();
 
         return view('frontend.doctor-profile', compact('doctor'));
     }

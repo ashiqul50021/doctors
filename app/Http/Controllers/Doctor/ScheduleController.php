@@ -18,10 +18,14 @@ class ScheduleController extends Controller
         $doctor->load(['user', 'speciality']);
 
         $schedules = Schedule::where('doctor_id', $doctor->id)->get();
-        $groupedSchedules = [];
+        $groupedSchedules = [
+            'offline' => [],
+            'online' => [],
+        ];
 
         foreach ($schedules as $schedule) {
-            $groupedSchedules[$schedule->day][] = $schedule;
+            $type = $schedule->type ?? 'offline';
+            $groupedSchedules[$type][$schedule->day][] = $schedule;
         }
 
         // Load upcoming off days (today onwards)
@@ -40,6 +44,7 @@ class ScheduleController extends Controller
             'start_time' => 'required', // Format check can be added
             'end_time' => 'required',
             'slot_duration' => 'nullable|integer',
+            'type' => 'required|in:online,offline',
         ]);
 
         $doctor = Auth::user()->doctor;
@@ -60,6 +65,7 @@ class ScheduleController extends Controller
             'start_time' => $startTime,
             'end_time' => $endTime,
             'slot_duration' => $request->slot_duration ?? 30,
+            'type' => $request->type,
         ]);
 
         return back()->with('success', 'Schedule added successfully!');

@@ -15,10 +15,14 @@ class DoctorScheduleController extends Controller
     public function edit(Doctor $doctor)
     {
         $schedules = Schedule::where('doctor_id', $doctor->id)->get();
-        $groupedSchedules = [];
+        $groupedSchedules = [
+            'offline' => [],
+            'online' => [],
+        ];
 
         foreach ($schedules as $schedule) {
-            $groupedSchedules[$schedule->day][] = $schedule;
+            $type = $schedule->type ?? 'offline';
+            $groupedSchedules[$type][$schedule->day][] = $schedule;
         }
 
         return view('admin.doctors.schedule', compact('doctor', 'groupedSchedules'));
@@ -34,6 +38,7 @@ class DoctorScheduleController extends Controller
             'start_time' => 'required',
             'end_time' => 'required',
             'slot_duration' => 'nullable|integer',
+            'type' => 'required|in:online,offline',
         ]);
 
         // Parse 12-hour format to 24-hour if sent formatted, or assume H:i from time input
@@ -50,6 +55,7 @@ class DoctorScheduleController extends Controller
             'start_time' => $startTime,
             'end_time' => $endTime,
             'slot_duration' => $request->slot_duration ?? 30,
+            'type' => $request->type,
         ]);
 
         return back()->with('success', 'Schedule added successfully!');

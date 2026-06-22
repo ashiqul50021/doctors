@@ -119,27 +119,77 @@
                                             </ul>
                                         </div>
                                     </div>
-                                    <div class="schedule-cont">
+                                    <!-- Chamber (Offline) Schedule Content -->
+                                    <div class="schedule-cont" id="offline-schedule-container">
                                         <div class="time-slot">
                                             <ul class="clearfix">
                                                 @foreach($dates as $date)
                                                     <li>
                                                         @php
                                                             $dayName = strtolower($date->format('l'));
-                                                            $daySchedule = $doctor->schedules->where('day', $dayName)->first();
+                                                            $daySchedules = $doctor->schedules->where('day', $dayName)->where('type', 'offline');
+                                                            $dateKey = $date->format('Y-m-d');
                                                         @endphp
 
-                                                        @if($daySchedule)
-                                                            @php
-                                                                $startTime = \Carbon\Carbon::parse($daySchedule->start_time)->format('g:i A');
-                                                                $endTime = \Carbon\Carbon::parse($daySchedule->end_time)->format('g:i A');
-                                                                $dateKey = $date->format('Y-m-d');
-                                                            @endphp
-
-                                                            <a class="timing" href="javascript:void(0)"
-                                                               onclick="selectSlot(this, '{{ $date->format('Y-m-d') }}', '{{ $daySchedule->start_time }}')">
-                                                                <span>{{ $startTime }} - {{ $endTime }}</span>
+                                                        @if($daySchedules->count() > 0)
+                                                            @foreach($daySchedules as $daySchedule)
+                                                                @php
+                                                                    $startTime = \Carbon\Carbon::parse($daySchedule->start_time)->format('g:i A');
+                                                                    $endTime = \Carbon\Carbon::parse($daySchedule->end_time)->format('g:i A');
+                                                                    $isBooked = isset($bookedSlotsOffline[$dateKey]) && in_array($daySchedule->start_time, $bookedSlotsOffline[$dateKey]);
+                                                                @endphp
+                                                                @if($isBooked)
+                                                                    <a class="timing disabled" href="javascript:void(0)" title="Already Booked">
+                                                                        <span>{{ $startTime }} - {{ $endTime }} (Booked)</span>
+                                                                    </a>
+                                                                @else
+                                                                    <a class="timing" href="javascript:void(0)"
+                                                                       onclick="selectSlot(this, '{{ $dateKey }}', '{{ $daySchedule->start_time }}')">
+                                                                        <span>{{ $startTime }} - {{ $endTime }}</span>
+                                                                    </a>
+                                                                @endif
+                                                            @endforeach
+                                                        @else
+                                                            <a class="timing disabled" href="javascript:void(0)">
+                                                                <span>Closed</span>
                                                             </a>
+                                                        @endif
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- Video (Online) Schedule Content -->
+                                    <div class="schedule-cont" id="online-schedule-container" style="display: none;">
+                                        <div class="time-slot">
+                                            <ul class="clearfix">
+                                                @foreach($dates as $date)
+                                                    <li>
+                                                        @php
+                                                            $dayName = strtolower($date->format('l'));
+                                                            $daySchedules = $doctor->schedules->where('day', $dayName)->where('type', 'online');
+                                                            $dateKey = $date->format('Y-m-d');
+                                                        @endphp
+
+                                                        @if($daySchedules->count() > 0)
+                                                            @foreach($daySchedules as $daySchedule)
+                                                                @php
+                                                                    $startTime = \Carbon\Carbon::parse($daySchedule->start_time)->format('g:i A');
+                                                                    $endTime = \Carbon\Carbon::parse($daySchedule->end_time)->format('g:i A');
+                                                                    $isBooked = isset($bookedSlotsOnline[$dateKey]) && in_array($daySchedule->start_time, $bookedSlotsOnline[$dateKey]);
+                                                                @endphp
+                                                                @if($isBooked)
+                                                                    <a class="timing disabled" href="javascript:void(0)" title="Already Booked">
+                                                                        <span>{{ $startTime }} - {{ $endTime }} (Booked)</span>
+                                                                    </a>
+                                                                @else
+                                                                    <a class="timing" href="javascript:void(0)"
+                                                                       onclick="selectSlot(this, '{{ $dateKey }}', '{{ $daySchedule->start_time }}')">
+                                                                        <span>{{ $startTime }} - {{ $endTime }}</span>
+                                                                    </a>
+                                                                @endif
+                                                            @endforeach
                                                         @else
                                                             <a class="timing disabled" href="javascript:void(0)">
                                                                 <span>Closed</span>
@@ -203,4 +253,36 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const typeOffline = document.getElementById('type_offline');
+            const typeOnline = document.getElementById('type_online');
+            const offlineContainer = document.getElementById('offline-schedule-container');
+            const onlineContainer = document.getElementById('online-schedule-container');
+
+            function updateSlotsVisibility() {
+                if (typeOffline && typeOffline.checked) {
+                    if (offlineContainer) offlineContainer.style.display = 'block';
+                    if (onlineContainer) onlineContainer.style.display = 'none';
+                } else if (typeOnline && typeOnline.checked) {
+                    if (offlineContainer) offlineContainer.style.display = 'none';
+                    if (onlineContainer) onlineContainer.style.display = 'block';
+                }
+                
+                // Clear active selections and hidden inputs on type switch
+                document.querySelectorAll('.timing').forEach(el => el.classList.remove('selected'));
+                const dateInput = document.getElementById('appointment_date');
+                const timeInput = document.getElementById('appointment_time');
+                if (dateInput) dateInput.value = '';
+                if (timeInput) timeInput.value = '';
+            }
+
+            if (typeOffline && typeOnline) {
+                typeOffline.addEventListener('change', updateSlotsVisibility);
+                typeOnline.addEventListener('change', updateSlotsVisibility);
+                updateSlotsVisibility();
+            }
+        });
+    </script>
 @endsection

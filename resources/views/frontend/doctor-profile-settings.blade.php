@@ -90,7 +90,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label>Username</label>
-                                        <input type="text" class="form-control" readonly value="{{ $doctor->user->name }}">
+                                        <input type="text" class="form-control" readonly value="{{ $doctor->slug }}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">

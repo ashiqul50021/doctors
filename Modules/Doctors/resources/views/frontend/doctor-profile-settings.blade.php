@@ -139,7 +139,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Username <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" readonly>
+                                    <input type="text" class="form-control" readonly value="{{ $doctor->slug }}">
                                 </div>
                             </div>
                             <div class="col-md-6">

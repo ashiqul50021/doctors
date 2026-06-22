@@ -53,11 +53,11 @@
                         @elseif($banner->type == 'image_only')
                             <!-- Image Only Slide -->
                             <div class="hero-slide-item">
-                                <div class="hero-full-image"
-                                    style="background-image: url('{{ asset($banner->image) }}'); height: 460px; background-size: cover; background-position: center; border-radius: 20px; position: relative;">
+                                <div class="hero-full-image-wrapper">
+                                    <img src="{{ asset($banner->image) }}" alt="Banner Image" class="hero-full-image-img">
                                     @if($banner->button_link)
                                         <a href="{{ $banner->button_link }}"
-                                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></a>
+                                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"></a>
                                     @endif
                                 </div>
                             </div>
@@ -198,8 +198,7 @@
                     </div>
                     <div class="doctor-cta-text">
                         <h3>Are you a Doctor?</h3>
-                        <p>Join thousands of doctors on our platform and grow your practice. Get more patients and manage
-                            your appointments easily.</p>
+                        <p>Join our platform to grow your practice and manage appointments easily.</p>
                     </div>
                 </div>
                 <div class="doctor-cta-action">
@@ -215,10 +214,6 @@
     <!-- Video Section -->
     <section class="section-video">
         <div class="container">
-            <div class="section-header text-center">
-                <h2>Watch How We Help You</h2>
-                <p class="sub-title">See our platform in action and learn how easy it is to book appointments</p>
-            </div>
             <div class="video-wrapper">
                 <div class="video-container" id="telemedicineVideoContainer">
                     <div class="video-cover-wrapper" style="background-image: url('{{ asset('uploads/settings/video_cover.png') }}');" onclick="playTelemedicineVideo()">
@@ -228,10 +223,6 @@
                             <div class="video-ripple-modern"></div>
                             <div class="video-ripple-modern video-ripple-modern-2"></div>
                             <div class="video-ripple-modern video-ripple-modern-3"></div>
-                        </div>
-                        <div class="video-info-overlay">
-                            <h4>How abcsheba Works</h4>
-                            <p>Watch this 2-minute video to learn about our telemedicine features.</p>
                         </div>
                     </div>
                 </div>
@@ -278,7 +269,7 @@
     <section class="section section-products" style="background-color: #f8f9fa;">
         <div class="container">
             <div class="section-header text-center">
-                <h2>Featured Medical Products</h2>
+                <h2>Our Products</h2>
                 <p class="sub-title">Order medicines and health products from our trusted pharmacy store.</p>
             </div>
 
@@ -327,7 +318,7 @@
                                 $productReviewCount = (int) ($product->reviews_count ?? 0);
                                 $productRating = $productReviewCount > 0 ? (float) ($product->rating ?? 0) : 0;
                             @endphp
-                            <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-grid-item">
+                            <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-4 product-grid-item">
                                 <div class="product-card-modern">
                                     <!-- Product Image -->
                                     <div class="product-image-container">
@@ -441,17 +432,13 @@
                         <!-- Specialities -->
                         <div class="filter-section">
                             <h5 class="filter-title"><i class="fas fa-stethoscope"></i> Speciality</h5>
-                            <div class="category-list speciality-list">
-                                <label class="category-item">
-                                    <input type="radio" name="doctor_speciality" value="all" checked>
-                                    <span class="category-name">All Doctors</span>
-                                </label>
-                                @foreach($searchSpecialities as $speciality)
-                                    <label class="category-item">
-                                        <input type="radio" name="doctor_speciality" value="{{ $speciality->id }}">
-                                        <span class="category-name">{{ $speciality->name }}</span>
-                                    </label>
-                                @endforeach
+                            <div class="select-wrapper">
+                                <select name="doctor_speciality" id="doctorSpecialitySelect" class="form-control form-select select-modern">
+                                    <option value="all">All Doctors</option>
+                                    @foreach($searchSpecialities as $speciality)
+                                        <option value="{{ $speciality->id }}">{{ $speciality->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -1355,7 +1342,7 @@
                             </form>`;
 
                     var html = `
-                                                                                                                <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-grid-item">
+                                                                                                                <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-4 product-grid-item">
                                                                                                                     <div class="product-card-modern">
                                                                                                                         <div class="stock-badge ${stockClass}">${stockText}</div>
                                                                                                                         <div class="product-image-container">
@@ -1405,7 +1392,7 @@
             var doctorSearchTimeout;
 
             function filterDoctors() {
-                var speciality = $('input[name="doctor_speciality"]:checked').val();
+                var speciality = $('#doctorSpecialitySelect').val();
                 var search = $('#doctorSearchInput').val();
 
                 $.ajax({
@@ -1483,7 +1470,7 @@
             }
 
             // Doctor speciality filter change
-            $('input[name="doctor_speciality"]').on('change', function () {
+            $('#doctorSpecialitySelect').on('change', function () {
                 filterDoctors();
             });
 
@@ -1500,6 +1487,34 @@
 
 @push('styles')
     <style>
+        /* Modern styled dropdown select */
+        .select-modern {
+            width: 100%;
+            height: 46px;
+            padding: 0 15px;
+            font-size: 14px;
+            color: #333;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231D4ED8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .select-modern:focus {
+            border-color: #1D4ED8;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+            background-color: #fff;
+        }
+
         /* Stacked Search Bar styles */
         .hero-search-bar {
             margin-bottom: 12px;
@@ -1509,21 +1524,21 @@
         }
 
         .search-box-title {
-            font-size: 14px;
+            font-size: 18px;
             font-weight: 700;
             color: #1e293b;
-            margin-bottom: 8px;
-            margin-top: 16px;
+            margin-bottom: 10px;
+            margin-top: 20px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
         .search-box-title:first-of-type {
             margin-top: 0;
         }
         .search-box-title i {
             color: #2563eb;
-            font-size: 14px;
+            font-size: 18px;
         }
 
         /* Responsive styling for normal search keywords input to look modern */
@@ -1666,17 +1681,77 @@
         }
 
         @media (max-width: 768px) {
+            .section-doctor-cta {
+                padding: 15px 10px !important;
+                margin: 15px 15px !important;
+                border-radius: 12px !important;
+            }
+
             .doctor-cta-wrapper {
                 flex-direction: column;
                 text-align: center;
+                gap: 12px !important;
             }
 
             .doctor-cta-content {
                 flex-direction: column;
+                gap: 10px !important;
+            }
+
+            .doctor-cta-icon {
+                width: 44px !important;
+                height: 44px !important;
+            }
+
+            .doctor-cta-icon i {
+                font-size: 20px !important;
+            }
+
+            .doctor-cta-text h3 {
+                font-size: 18px !important;
+                margin-bottom: 4px !important;
             }
 
             .doctor-cta-text p {
+                font-size: 12px !important;
                 max-width: 100%;
+                line-height: 1.4 !important;
+            }
+
+            .btn-doctor-register {
+                padding: 10px 22px !important;
+                font-size: 13px !important;
+            }
+
+            .btn-doctor-register i {
+                font-size: 14px !important;
+            }
+
+            /* Reduce section spacing on mobile */
+            .section, 
+            .section-products, 
+            .section-health-packages, 
+            .section-courses, 
+            .section-video, 
+            .section-services {
+                padding: 30px 0 !important;
+            }
+
+            .section-video {
+                margin: 10px 0 !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .doctor-cta-text h3 {
+                font-size: 16px !important;
+            }
+            .doctor-cta-text p {
+                font-size: 11px !important;
+            }
+            .btn-doctor-register {
+                padding: 8px 18px !important;
+                font-size: 12px !important;
             }
         }
 
@@ -2850,7 +2925,7 @@
         .doctor-fee-badge {
             position: absolute;
             top: 15px;
-            right: 15px;
+            left: 15px;
             background: linear-gradient(135deg, #1D4ED8, #60A5FA);
             color: #fff;
             padding: 8px 15px;
@@ -3037,18 +3112,72 @@
             object-fit: contain;
         }
 
+        /* Responsive image-only banner style */
+        .hero-full-image-wrapper {
+            width: 100%;
+            height: 460px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hero-full-image-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 20px;
+            display: block;
+        }
+
         /* Mobile Dropdown Popup Style */
         @media (max-width: 991px) {
             .section-hero-doctime {
-                padding: 20px 0 30px 0;
+                padding: 20px 0 10px 0 !important;
             }
 
             .hero-main-wrapper {
-                min-height: 400px;
+                flex-direction: row !important;
+                text-align: left;
+                min-height: 280px;
+                gap: 20px;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 15px;
+            }
+
+            .hero-content-left {
+                max-width: 55%;
+                flex: 1.2;
+            }
+
+            .hero-content-right {
+                max-width: 45%;
+                flex: 0.8;
+                text-align: right;
             }
 
             .hero-doctors-img {
-                max-height: 360px;
+                max-height: 280px;
+                width: 100%;
+                object-fit: contain;
+            }
+
+            .hero-main-title {
+                font-size: 28px !important;
+                margin-bottom: 12px !important;
+            }
+
+            .hero-full-image-wrapper {
+                height: auto;
+                border-radius: 15px;
+            }
+
+            .hero-full-image-img {
+                height: auto;
+                max-height: 400px;
+                object-fit: cover;
+                border-radius: 15px;
             }
 
             .hero-search-section {
@@ -3056,8 +3185,242 @@
                 left: auto;
                 right: auto;
                 bottom: auto;
-                margin-top: -22px;
+                margin-top: 15px;
             }
+
+            .hero-search-bar {
+                padding: 6px 10px !important;
+                border-radius: 14px !important;
+            }
+
+            /* Doctor Search Form - Keep compact on one row */
+            #normalSearchForm {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                width: 100% !important;
+                gap: 10px !important;
+            }
+
+            #normalSearchForm .search-field {
+                flex: 1 !important;
+                width: auto !important;
+                border-right: none !important;
+                border-bottom: none !important;
+                padding: 6px 5px !important;
+            }
+
+            #normalSearchForm .search-field .form-control {
+                font-size: 13px !important;
+            }
+
+            #normalSearchForm .search-field i {
+                font-size: 13px !important;
+            }
+
+            #normalSearchForm .btn-hero-search {
+                width: 38px !important;
+                height: 38px !important;
+                margin-top: 0 !important;
+                flex-shrink: 0 !important;
+                border-radius: 8px !important;
+                font-size: 14px !important;
+            }
+
+            /* Speciality Search Form - Stacked layout */
+            #filterSearchForm {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 0 !important;
+            }
+
+            #filterSearchForm .search-field {
+                flex: 1 1 100% !important;
+                width: 100% !important;
+                border-right: none !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                padding: 10px 5px !important;
+            }
+
+            #filterSearchForm .search-field input,
+            #filterSearchForm .search-field .dropdown-search {
+                font-size: 13px !important;
+            }
+
+            #filterSearchForm .search-field i {
+                font-size: 13px !important;
+            }
+
+            #filterSearchForm .search-field:last-of-type {
+                border-bottom: none !important;
+            }
+
+            #filterSearchForm .btn-hero-search {
+                width: 100% !important;
+                margin-top: 10px !important;
+                height: 38px !important;
+                border-radius: 8px !important;
+                font-size: 14px !important;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .hero-main-wrapper {
+                min-height: 200px;
+                gap: 15px;
+            }
+            .hero-doctors-img {
+                max-height: 180px;
+            }
+            .hero-main-title {
+                font-size: 18px !important;
+                margin-bottom: 8px !important;
+                line-height: 1.3 !important;
+            }
+            .hero-content-left p {
+                font-size: 12px !important;
+                margin-bottom: 10px !important;
+                line-height: 1.4 !important;
+            }
+            .btn-hero-cta {
+                padding: 8px 16px !important;
+                font-size: 12px !important;
+                border-radius: 6px !important;
+            }
+            .hero-trust-badge {
+                padding: 6px 12px !important;
+                font-size: 11px !important;
+                margin-bottom: 10px !important;
+            }
+            .hero-full-image-img {
+                max-height: 350px;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .hero-main-wrapper {
+                min-height: 160px;
+                gap: 10px;
+                padding: 0 10px;
+            }
+            .hero-doctors-img {
+                max-height: 140px;
+            }
+            .hero-main-title {
+                font-size: 14px !important;
+                line-height: 1.2 !important;
+                margin-bottom: 6px !important;
+            }
+            .hero-content-left p {
+                font-size: 10px !important;
+                margin-bottom: 8px !important;
+                line-height: 1.3 !important;
+            }
+            .btn-hero-cta {
+                padding: 6px 12px !important;
+                font-size: 10px !important;
+            }
+            .hero-trust-badge {
+                padding: 4px 8px !important;
+                font-size: 10px !important;
+                margin-bottom: 6px !important;
+            }
+            .hero-full-image-img {
+                max-height: 300px;
+            }
+
+            /* Product Card Mobile 2-Column Responsive Styling */
+            .product-card-modern .product-image-container {
+                height: 130px !important;
+            }
+            .product-card-modern .product-image-link {
+                padding: 8px !important;
+            }
+            .product-card-modern .product-details {
+                padding: 10px !important;
+            }
+            .product-card-modern .stock-badge {
+                top: 8px !important;
+                left: 8px !important;
+                padding: 2px 6px !important;
+                font-size: 8px !important;
+            }
+            .product-card-modern .product-rating {
+                font-size: 11px !important;
+                margin-bottom: 4px !important;
+            }
+            .product-card-modern .product-brand {
+                font-size: 10px !important;
+                margin-bottom: 4px !important;
+            }
+            .product-card-modern .product-name {
+                font-size: 12px !important;
+                margin-bottom: 8px !important;
+                min-height: 34px !important;
+                -webkit-line-clamp: 2 !important;
+            }
+            .product-card-modern .product-footer {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 8px !important;
+            }
+            .product-card-modern .product-price-tag {
+                flex-direction: row !important;
+                align-items: baseline !important;
+                gap: 6px !important;
+            }
+            .product-card-modern .price-current {
+                font-size: 15px !important;
+            }
+            .product-card-modern .price-original {
+                font-size: 11px !important;
+            }
+            .product-card-modern .btn-group-modern {
+                width: 100% !important;
+            }
+            .product-card-modern .btn-buy-modern {
+                padding: 0 10px !important;
+                height: 32px !important;
+                font-size: 12px !important;
+                flex: 1 !important;
+            }
+            .product-card-modern .btn-cart-modern {
+                width: 32px !important;
+                height: 32px !important;
+                border-radius: 6px !important;
+            }
+            .product-card-modern .btn-cart-modern i {
+                font-size: 12px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-main-wrapper {
+                min-height: 130px;
+            }
+            .hero-doctors-img {
+                max-height: 110px;
+            }
+            .hero-main-title {
+                font-size: 13px !important;
+                line-height: 1.2 !important;
+                margin-bottom: 4px !important;
+            }
+            .hero-content-left p {
+                display: none !important;
+            }
+            .hero-trust-badge {
+                display: none !important;
+            }
+            .btn-hero-cta {
+                padding: 4px 10px !important;
+                font-size: 9px !important;
+            }
+            .hero-full-image-img {
+                max-height: 250px;
+            }
+        }
 
             .custom-dropdown .dropdown-menu {
                 position: fixed !important;

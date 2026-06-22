@@ -64,95 +64,139 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <div class="card schedule-widget mb-0">
+                                                <!-- Primary Tab Nav -->
+                                                <ul class="nav nav-tabs nav-tabs-solid nav-justified mb-4" id="consultation_type_tabs" style="border-bottom: 2px solid #f3f4f6;">
+                                                    <li class="nav-item">
+                                                        <a class="nav-link active" data-bs-toggle="tab" href="#chamber_consultation" style="font-weight: 700; padding: 15px 20px; font-size: 15px;"><i class="fas fa-building me-2"></i>Chamber / Physical Consultation</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" data-bs-toggle="tab" href="#video_consultation" style="font-weight: 700; padding: 15px 20px; font-size: 15px;"><i class="fas fa-video me-2"></i>Online / Video Consultation</a>
+                                                    </li>
+                                                </ul>
 
-                                                    <!-- Schedule Header -->
-                                                    <div class="schedule-header">
-
-                                                        <!-- Schedule Nav -->
-                                                        <div class="schedule-nav">
-                                                            <ul class="nav nav-tabs nav-justified">
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link" data-bs-toggle="tab"
-                                                                        href="#slot_sunday">Sunday</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link active" data-bs-toggle="tab"
-                                                                        href="#slot_monday">Monday</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link" data-bs-toggle="tab"
-                                                                        href="#slot_tuesday">Tuesday</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link" data-bs-toggle="tab"
-                                                                        href="#slot_wednesday">Wednesday</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link" data-bs-toggle="tab"
-                                                                        href="#slot_thursday">Thursday</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link" data-bs-toggle="tab"
-                                                                        href="#slot_friday">Friday</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link" data-bs-toggle="tab"
-                                                                        href="#slot_saturday">Saturday</a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                        <!-- /Schedule Nav -->
-
-                                                    </div>
-                                                    <!-- /Schedule Header -->
-
-                                                    <!-- Schedule Content -->
-                                                    <div class="tab-content schedule-cont">
-                                                        @php
-                                                            $days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-                                                        @endphp
-
-                                                        @foreach($days as $day)
-                                                            <div id="slot_{{ $day }}"
-                                                                class="tab-pane fade {{ $loop->first ? 'show active' : '' }}">
-                                                                <h4 class="card-title d-flex justify-content-between">
-                                                                    <span>Time Slots</span>
-                                                                    <a class="edit-link" data-bs-toggle="modal"
-                                                                        href="#add_time_slot" onclick="setDay('{{ $day }}')">
-                                                                        <i class="fa fa-plus-circle"></i> Add Slot
-                                                                    </a>
-                                                                </h4>
-
-                                                                @if(isset($groupedSchedules[$day]) && count($groupedSchedules[$day]) > 0)
-                                                                    <div class="doc-times">
-                                                                        @foreach($groupedSchedules[$day] as $schedule)
-                                                                            <div class="doc-slot-list">
-                                                                                {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i a') }}
-                                                                                -
-                                                                                {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i a') }}
-                                                                                <form
-                                                                                    action="{{ route('doctors.schedule.destroy', $schedule->id) }}"
-                                                                                    method="POST" style="display:inline;">
-                                                                                    @csrf
-                                                                                    @method('DELETE')
-                                                                                    <button type="submit" class="delete_schedule"
-                                                                                        style="border:none; background:none;">
-                                                                                        <i class="fa fa-times"></i>
-                                                                                    </button>
-                                                                                </form>
-                                                                            </div>
+                                                <!-- Primary Tab Content -->
+                                                <div class="tab-content">
+                                                    <!-- Chamber / Physical Consultation -->
+                                                    <div class="tab-pane fade show active" id="chamber_consultation">
+                                                        <div class="card schedule-widget mb-0">
+                                                            <!-- Schedule Header -->
+                                                            <div class="schedule-header">
+                                                                <!-- Schedule Nav -->
+                                                                <div class="schedule-nav">
+                                                                    <ul class="nav nav-tabs nav-justified">
+                                                                        @foreach(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as $day)
+                                                                            <li class="nav-item">
+                                                                                <a class="nav-link {{ $day === 'monday' ? 'active' : '' }}" data-bs-toggle="tab"
+                                                                                    href="#offline_slot_{{ $day }}">{{ ucfirst($day) }}</a>
+                                                                            </li>
                                                                         @endforeach
-                                                                    </div>
-                                                                @else
-                                                                    <p class="text-muted mb-0">Not Available</p>
-                                                                @endif
+                                                                    </ul>
+                                                                </div>
                                                             </div>
-                                                        @endforeach
+                                                            <!-- /Schedule Header -->
 
+                                                            <!-- Schedule Content -->
+                                                            <div class="tab-content schedule-cont">
+                                                                @foreach(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as $day)
+                                                                    <div id="offline_slot_{{ $day }}"
+                                                                        class="tab-pane fade {{ $day === 'monday' ? 'show active' : '' }}">
+                                                                        <h4 class="card-title d-flex justify-content-between">
+                                                                            <span>Chamber Time Slots</span>
+                                                                            <a class="edit-link" data-bs-toggle="modal"
+                                                                                href="#add_time_slot" onclick="setDay('{{ $day }}', 'offline')">
+                                                                                <i class="fa fa-plus-circle"></i> Add Slot
+                                                                            </a>
+                                                                        </h4>
+
+                                                                        @if(isset($groupedSchedules['offline'][$day]) && count($groupedSchedules['offline'][$day]) > 0)
+                                                                            <div class="doc-times">
+                                                                                @foreach($groupedSchedules['offline'][$day] as $schedule)
+                                                                                    <div class="doc-slot-list">
+                                                                                        {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i a') }}
+                                                                                        -
+                                                                                        {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i a') }}
+                                                                                        <form
+                                                                                            action="{{ route('doctors.schedule.destroy', $schedule->id) }}"
+                                                                                            method="POST" style="display:inline;">
+                                                                                            @csrf
+                                                                                            @method('DELETE')
+                                                                                            <button type="submit" class="delete_schedule"
+                                                                                                style="border:none; background:none;">
+                                                                                                <i class="fa fa-times"></i>
+                                                                                            </button>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                @endforeach
+                                                                            </div>
+                                                                        @else
+                                                                            <p class="text-muted mb-0">Not Available</p>
+                                                                        @endif
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <!-- /Schedule Content -->
 
+                                                    <!-- Online / Video Consultation -->
+                                                    <div class="tab-pane fade" id="video_consultation">
+                                                        <div class="card schedule-widget mb-0">
+                                                            <!-- Schedule Header -->
+                                                            <div class="schedule-header">
+                                                                <!-- Schedule Nav -->
+                                                                <div class="schedule-nav">
+                                                                    <ul class="nav nav-tabs nav-justified">
+                                                                        @foreach(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as $day)
+                                                                            <li class="nav-item">
+                                                                                <a class="nav-link {{ $day === 'monday' ? 'active' : '' }}" data-bs-toggle="tab"
+                                                                                    href="#online_slot_{{ $day }}">{{ ucfirst($day) }}</a>
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <!-- /Schedule Header -->
+
+                                                            <!-- Schedule Content -->
+                                                            <div class="tab-content schedule-cont">
+                                                                @foreach(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as $day)
+                                                                    <div id="online_slot_{{ $day }}"
+                                                                        class="tab-pane fade {{ $day === 'monday' ? 'show active' : '' }}">
+                                                                        <h4 class="card-title d-flex justify-content-between">
+                                                                            <span>Video Time Slots</span>
+                                                                            <a class="edit-link" data-bs-toggle="modal"
+                                                                                href="#add_time_slot" onclick="setDay('{{ $day }}', 'online')">
+                                                                                <i class="fa fa-plus-circle"></i> Add Slot
+                                                                            </a>
+                                                                        </h4>
+
+                                                                        @if(isset($groupedSchedules['online'][$day]) && count($groupedSchedules['online'][$day]) > 0)
+                                                                            <div class="doc-times">
+                                                                                @foreach($groupedSchedules['online'][$day] as $schedule)
+                                                                                    <div class="doc-slot-list">
+                                                                                        {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i a') }}
+                                                                                        -
+                                                                                        {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i a') }}
+                                                                                        <form
+                                                                                            action="{{ route('doctors.schedule.destroy', $schedule->id) }}"
+                                                                                            method="POST" style="display:inline;">
+                                                                                            @csrf
+                                                                                            @method('DELETE')
+                                                                                            <button type="submit" class="delete_schedule"
+                                                                                                style="border:none; background:none;">
+                                                                                                <i class="fa fa-times"></i>
+                                                                                            </button>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                @endforeach
+                                                                            </div>
+                                                                        @else
+                                                                            <p class="text-muted mb-0">Not Available</p>
+                                                                        @endif
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -281,6 +325,7 @@
                     <form action="{{ route('doctors.schedule.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="day" id="selected_day">
+                        <input type="hidden" name="type" id="selected_type">
                         <div class="hours-info">
                             <div class="row form-row hours-cont">
                                 <div class="col-12 col-md-10">
@@ -451,8 +496,9 @@
             $('#add_time_slot, #edit_time_slot').appendTo('body');
         });
 
-        function setDay(day) {
+        function setDay(day, type) {
             document.getElementById('selected_day').value = day;
+            document.getElementById('selected_type').value = type;
         }
     </script>
 @endpush

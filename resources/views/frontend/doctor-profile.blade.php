@@ -241,17 +241,43 @@
                         <!-- Business Hours -->
                         <div class="sidebar-widget">
                             <h4 class="sidebar-title">Business Hours</h4>
-                            <ul class="hours-list">
-                                @forelse($doctor->schedules as $schedule)
-                                    <li>
-                                        <span class="day">{{ ucfirst($schedule->day) }}</span>
-                                        <span class="time">{{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} -
-                                            {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}</span>
-                                    </li>
-                                @empty
+                            
+                            @php
+                                $offlineSchedules = $doctor->schedules->where('type', 'offline');
+                                $onlineSchedules = $doctor->schedules->where('type', 'online');
+                            @endphp
+
+                            @if($offlineSchedules->count() || $onlineSchedules->count())
+                                @if($offlineSchedules->count())
+                                    <h5 class="fw-bold mt-3 mb-2" style="font-size: 14px; color: var(--primary-color);"><i class="fas fa-building me-1"></i> Chamber Consultation</h5>
+                                    <ul class="hours-list">
+                                        @foreach($offlineSchedules as $schedule)
+                                            <li>
+                                                <span class="day">{{ ucfirst($schedule->day) }}</span>
+                                                <span class="time">{{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} -
+                                                    {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+
+                                @if($onlineSchedules->count())
+                                    <h5 class="fw-bold mt-3 mb-2" style="font-size: 14px; color: var(--primary-color);"><i class="fas fa-video me-1"></i> Video Consultation</h5>
+                                    <ul class="hours-list">
+                                        @foreach($onlineSchedules as $schedule)
+                                            <li>
+                                                <span class="day">{{ ucfirst($schedule->day) }}</span>
+                                                <span class="time">{{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} -
+                                                    {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            @else
+                                <ul class="hours-list">
                                     <li><span class="text-muted">No schedules available</span></li>
-                                @endforelse
-                            </ul>
+                                </ul>
+                            @endif
                         </div>
 
                         <!-- Services -->

@@ -14,6 +14,29 @@ class Doctor extends Model
 
     protected $guarded = [];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($doctor) {
+            if (empty($doctor->slug)) {
+                $user = User::find($doctor->user_id);
+                $name = $user ? $user->name : 'doctor';
+                $slug = \Illuminate\Support\Str::slug($name);
+                if (empty($slug)) {
+                    $slug = 'doctor';
+                }
+                $originalSlug = $slug;
+                $count = 2;
+                while (static::where('slug', $slug)->exists()) {
+                    $slug = $originalSlug . '-' . $count;
+                    $count++;
+                }
+                $doctor->slug = $slug;
+            }
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -3716,21 +3716,30 @@ body {
 
 @media (max-width: 991px) {
     .hero-main-wrapper {
-        flex-direction: column;
-        text-align: center;
-        min-height: 400px;
+        flex-direction: row !important;
+        text-align: left;
+        min-height: 280px;
+        gap: 20px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 15px;
     }
 
     .hero-content-left {
-        max-width: 100%;
+        max-width: 55%;
+        flex: 1.2;
     }
 
     .hero-content-right {
-        text-align: center;
+        max-width: 45%;
+        flex: 0.8;
+        text-align: right;
     }
 
     .hero-content-right .hero-doctors-img {
-        max-height: 360px;
+        max-height: 280px;
+        width: 100%;
+        object-fit: contain;
     }
 
     .hero-search-section {
@@ -3739,26 +3748,87 @@ body {
         right: auto;
         bottom: auto;
         transform: none;
-        margin-top: -22px;
+        margin-top: 15px;
+    }
+
+    .hero-search-bar {
+        padding: 6px 10px !important;
+        border-radius: 14px !important;
     }
 
     .hero-search-form {
         flex-wrap: wrap;
     }
 
-    .search-field {
-        flex: 1 1 45%;
-        border-bottom: 1px solid #e5e7eb;
+    /* Doctor Search Form - Keep compact on one row */
+    #normalSearchForm {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        width: 100% !important;
+        gap: 10px !important;
     }
 
-    .search-field.search-keyword {
-        flex: 1 1 100%;
+    #normalSearchForm .search-field {
+        flex: 1 !important;
+        width: auto !important;
+        border-right: none !important;
+        border-bottom: none !important;
+        padding: 6px 5px !important;
     }
 
-    .btn-hero-search {
-        width: 100%;
-        margin-top: 10px;
-        height: 45px;
+    #normalSearchForm .search-field .form-control {
+        font-size: 13px !important;
+    }
+
+    #normalSearchForm .search-field i {
+        font-size: 13px !important;
+    }
+
+    #normalSearchForm .btn-hero-search {
+        width: 38px !important;
+        height: 38px !important;
+        margin-top: 0 !important;
+        flex-shrink: 0 !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+    }
+
+    /* Speciality Search Form - Stacked layout */
+    #filterSearchForm {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0 !important;
+    }
+
+    #filterSearchForm .search-field {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        border-right: none !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        padding: 10px 5px !important;
+    }
+
+    #filterSearchForm .search-field input,
+    #filterSearchForm .search-field .dropdown-search {
+        font-size: 13px !important;
+    }
+
+    #filterSearchForm .search-field i {
+        font-size: 13px !important;
+    }
+
+    #filterSearchForm .search-field:last-of-type {
+        border-bottom: none !important;
+    }
+
+    #filterSearchForm .btn-hero-search {
+        width: 100% !important;
+        margin-top: 10px !important;
+        height: 38px !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
     }
 }
 
@@ -3768,8 +3838,37 @@ body {
         min-height: auto;
     }
 
+    .hero-main-wrapper {
+        min-height: 200px;
+        gap: 15px;
+    }
+
+    .hero-content-right .hero-doctors-img {
+        max-height: 180px;
+    }
+
     .hero-main-title {
-        font-size: 28px;
+        font-size: 18px !important;
+        margin-bottom: 8px !important;
+        line-height: 1.3 !important;
+    }
+
+    .hero-slide-item p {
+        font-size: 12px !important;
+        margin-bottom: 10px !important;
+        line-height: 1.4 !important;
+    }
+
+    .btn-hero-cta {
+        padding: 8px 16px !important;
+        font-size: 12px !important;
+        border-radius: 6px !important;
+    }
+
+    .hero-trust-badge {
+        padding: 6px 12px !important;
+        font-size: 11px !important;
+        margin-bottom: 10px !important;
     }
 
     .hero-service-cards {
@@ -3787,6 +3886,70 @@ body {
 
     .service-card p {
         display: none;
+    }
+}
+
+@media (max-width: 575px) {
+    .hero-main-wrapper {
+        min-height: 160px;
+        gap: 10px;
+        padding: 0 10px;
+    }
+
+    .hero-content-right .hero-doctors-img {
+        max-height: 140px;
+    }
+
+    .hero-main-title {
+        font-size: 14px !important;
+        line-height: 1.2 !important;
+        margin-bottom: 6px !important;
+    }
+
+    .hero-slide-item p {
+        font-size: 10px !important;
+        margin-bottom: 8px !important;
+        line-height: 1.3 !important;
+    }
+
+    .btn-hero-cta {
+        padding: 6px 12px !important;
+        font-size: 10px !important;
+    }
+
+    .hero-trust-badge {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+        margin-bottom: 6px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-main-wrapper {
+        min-height: 130px;
+    }
+
+    .hero-content-right .hero-doctors-img {
+        max-height: 110px;
+    }
+
+    .hero-main-title {
+        font-size: 13px !important;
+        line-height: 1.2 !important;
+        margin-bottom: 4px !important;
+    }
+
+    .hero-slide-item p {
+        display: none !important;
+    }
+
+    .hero-trust-badge {
+        display: none !important;
+    }
+
+    .btn-hero-cta {
+        padding: 4px 10px !important;
+        font-size: 9px !important;
     }
 }
 
@@ -3810,6 +3973,55 @@ body {
     width: 100%;
     border-radius: 15px;
     /* Match search bar radius */
+}
+
+.hero-full-image-wrapper {
+    width: 100%;
+    height: 460px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+}
+
+.hero-full-image-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 20px;
+    display: block;
+}
+
+@media (max-width: 991px) {
+    .hero-full-image-wrapper {
+        height: auto;
+        border-radius: 15px;
+    }
+
+    .hero-full-image-img {
+        height: auto;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 15px;
+    }
+}
+
+@media (max-width: 767px) {
+    .hero-full-image-img {
+        max-height: 350px;
+    }
+}
+
+@media (max-width: 575px) {
+    .hero-full-image-img {
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-full-image-img {
+        max-height: 250px;
+    }
 }
 
 .hero-slide-item {

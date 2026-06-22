@@ -439,15 +439,35 @@
 
                 <div class="doctor-section">
                     <h5>Business Hours</h5>
-                    @if($doctor->schedules->count())
-                        <div class="schedule-list">
-                            @foreach($doctor->schedules as $schedule)
-                                <div class="schedule-row">
-                                    <span class="day">{{ $schedule->day }}</span>
-                                    <span>{{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}</span>
-                                </div>
-                            @endforeach
-                        </div>
+                    @php
+                        $offlineSchedules = $doctor->schedules->where('type', 'offline');
+                        $onlineSchedules = $doctor->schedules->where('type', 'online');
+                    @endphp
+
+                    @if($offlineSchedules->count() || $onlineSchedules->count())
+                        @if($offlineSchedules->count())
+                            <h6 class="fw-bold text-primary mt-2 mb-2"><i class="fas fa-building me-1"></i> Chamber Consultation</h6>
+                            <div class="schedule-list mb-3">
+                                @foreach($offlineSchedules as $schedule)
+                                    <div class="schedule-row">
+                                        <span class="day">{{ $schedule->day }}</span>
+                                        <span>{{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if($onlineSchedules->count())
+                            <h6 class="fw-bold text-primary mt-3 mb-2"><i class="fas fa-video me-1"></i> Video Consultation</h6>
+                            <div class="schedule-list">
+                                @foreach($onlineSchedules as $schedule)
+                                    <div class="schedule-row">
+                                        <span class="day">{{ $schedule->day }}</span>
+                                        <span>{{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     @else
                         <p class="text-muted mb-0">No schedules available.</p>
                     @endif

@@ -89,14 +89,22 @@ class AgentBookingController extends Controller
         $bookedAppointments = Appointment::where('doctor_id', $doctorId)
             ->whereIn('appointment_date', $dateStrings)
             ->whereIn('status', ['pending', 'confirmed'])
-            ->get(['appointment_date', 'appointment_time']);
+            ->get(['appointment_date', 'appointment_time', 'type']);
 
-        $bookedSlots = [];
+        // Separate booked slots by type so offline does NOT block online and vice versa
+        $bookedSlotsOffline = [];
+        $bookedSlotsOnline  = [];
         foreach ($bookedAppointments as $appt) {
-            $bookedSlots[$appt->appointment_date->format('Y-m-d')][] = $appt->appointment_time->format('H:i:s');
+            $dateKey = $appt->appointment_date->format('Y-m-d');
+            $timeVal = $appt->appointment_time->format('H:i:s');
+            if ($appt->type === 'online') {
+                $bookedSlotsOnline[$dateKey][] = $timeVal;
+            } else {
+                $bookedSlotsOffline[$dateKey][] = $timeVal;
+            }
         }
 
-        return view('agents::frontend.booking.slots', compact('doctor', 'dates', 'bookedSlots'));
+        return view('agents::frontend.booking.slots', compact('doctor', 'dates', 'bookedSlotsOffline', 'bookedSlotsOnline'));
     }
 
     public function submit(Request $request, $doctorId)
@@ -119,10 +127,11 @@ class AgentBookingController extends Controller
 
         $doctor = Doctor::findOrFail($doctorId);
 
-        // Check double booking
+        // Check double booking (type-aware: offline and online are independent)
         $alreadyBooked = Appointment::where('doctor_id', $doctorId)
             ->where('appointment_date', $request->appointment_date)
             ->where('appointment_time', $request->appointment_time)
+            ->where('type', $request->type)
             ->whereIn('status', ['pending', 'confirmed'])
             ->exists();
 
