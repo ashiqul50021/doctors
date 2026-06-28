@@ -214,47 +214,30 @@
                 return;
             }
 
-            fileInput.addEventListener('change', async function (event) {
+            fileInput.addEventListener('change', function (event) {
                 const file = event.target.files[0];
 
                 if (!file) {
+                    preview.src = '#';
+                    previewContainer.style.display = 'none';
                     helper.textContent = emptyMessage;
                     return;
                 }
 
                 if (!file.type.startsWith('image/')) {
                     helper.textContent = 'Please select a valid image file.';
+                    event.target.value = '';
+                    preview.src = '#';
+                    previewContainer.style.display = 'none';
                     return;
                 }
 
-                helper.innerHTML = '<span class="text-warning">Processing image...</span>';
-
-                try {
-                    const processedFile = await compressImage(file, {
-                        quality: 0.7,
-                        maxWidth: 800,
-                        maxHeight: 800,
-                        type: 'image/jpeg'
-                    });
-
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(processedFile);
-                    event.target.files = dataTransfer.files;
-
-                    updatePreview(preview, previewContainer, processedFile);
-
-                    const originalSize = (file.size / 1024).toFixed(2);
-                    const compressedSize = (processedFile.size / 1024).toFixed(2);
-                    helper.innerHTML = `<span class="text-success">Preview updated. Compressed ${originalSize} KB to ${compressedSize} KB.</span>`;
-                } catch (error) {
-                    console.error(error);
-                    helper.innerHTML = '<span class="text-danger">Image processing failed. Original file will be uploaded.</span>';
-                    updatePreview(preview, previewContainer, file);
-                }
+                updatePreview(preview, previewContainer, file);
+                helper.innerHTML = `<span class="text-success">Image selected. Size: ${(file.size / 1024).toFixed(2)} KB.</span>`;
             });
         }
 
-        async function initializeProductGalleryUpload({ inputId, previewContainerId, previewGridId, helperId, emptyMessage }) {
+        function initializeProductGalleryUpload({ inputId, previewContainerId, previewGridId, helperId, emptyMessage }) {
             const fileInput = document.getElementById(inputId);
             const previewContainer = document.getElementById(previewContainerId);
             const previewGrid = document.getElementById(previewGridId);
@@ -264,7 +247,7 @@
                 return;
             }
 
-            fileInput.addEventListener('change', async function (event) {
+            fileInput.addEventListener('change', function (event) {
                 const files = Array.from(event.target.files || []);
 
                 if (!files.length) {
@@ -274,37 +257,27 @@
                     return;
                 }
 
-                helper.innerHTML = '<span class="text-warning">Processing gallery images...</span>';
+                const validFiles = files.filter(file => file.type.startsWith('image/'));
 
-                try {
-                    const result = await compressFiles(files, {
-                        quality: 0.7,
-                        maxWidth: 1200,
-                        maxHeight: 1200,
-                        type: 'image/jpeg'
-                    });
-
-                    if (!result.files.length) {
-                        previewGrid.innerHTML = '';
-                        previewContainer.style.display = 'none';
-                        helper.innerHTML = '<span class="text-danger">Please select valid image files.</span>';
-                        event.target.value = '';
-                        return;
-                    }
-
-                    const dataTransfer = new DataTransfer();
-                    result.files.forEach((file) => dataTransfer.items.add(file));
-                    event.target.files = dataTransfer.files;
-
-                    renderGalleryPreview(previewGrid, result.files);
-                    previewContainer.style.display = 'block';
-                    helper.innerHTML = `<span class="text-success">${result.files.length} image(s) ready. Compressed ${result.originalSize} KB to ${result.compressedSize} KB.</span>`;
-                } catch (error) {
-                    console.error(error);
-                    helper.innerHTML = '<span class="text-danger">Gallery image processing failed. Original files will be uploaded.</span>';
-                    renderGalleryPreview(previewGrid, files);
-                    previewContainer.style.display = 'block';
+                if (!validFiles.length) {
+                    previewGrid.innerHTML = '';
+                    previewContainer.style.display = 'none';
+                    helper.innerHTML = '<span class="text-danger">Please select valid image files.</span>';
+                    event.target.value = '';
+                    return;
                 }
+
+                if (validFiles.length !== files.length) {
+                    const dataTransfer = new DataTransfer();
+                    validFiles.forEach((file) => dataTransfer.items.add(file));
+                    event.target.files = dataTransfer.files;
+                }
+
+                renderGalleryPreview(previewGrid, validFiles);
+                previewContainer.style.display = 'block';
+
+                let totalSize = validFiles.reduce((sum, f) => sum + f.size, 0);
+                helper.innerHTML = `<span class="text-success">${validFiles.length} image(s) ready for upload. Total size: ${(totalSize / 1024).toFixed(2)} KB.</span>`;
             });
         }
 
@@ -377,83 +350,6 @@
 
                 previewGrid.appendChild(card);
             });
-        }
-
-        function compressImage(file, options) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > height && width > options.maxWidth) {
-                            height *= options.maxWidth / width;
-                            width = options.maxWidth;
-                        } else if (height >= width && height > options.maxHeight) {
-                            width *= options.maxHeight / height;
-                            height = options.maxHeight;
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        canvas.toBlob((blob) => {
-                            if (!blob) {
-                                reject(new Error('Canvas is empty'));
-                                return;
-                            }
-
-                            resolve(new File([blob], file.name, {
-                                type: options.type || file.type,
-                                lastModified: Date.now()
-                            }));
-                        }, options.type || 'image/jpeg', options.quality || 0.7);
-                    };
-
-                    img.onerror = (error) => reject(error);
-                };
-
-                reader.onerror = (error) => reject(error);
-            });
-        }
-
-        async function compressFiles(files, options) {
-            const processedFiles = [];
-            let originalBytes = 0;
-            let compressedBytes = 0;
-
-            for (const file of files) {
-                if (!file.type.startsWith('image/')) {
-                    continue;
-                }
-
-                originalBytes += file.size;
-
-                try {
-                    const processedFile = await compressImage(file, options);
-                    processedFiles.push(processedFile);
-                    compressedBytes += processedFile.size;
-                } catch (error) {
-                    processedFiles.push(file);
-                    compressedBytes += file.size;
-                }
-            }
-
-            return {
-                files: processedFiles,
-                originalSize: (originalBytes / 1024).toFixed(2),
-                compressedSize: (compressedBytes / 1024).toFixed(2),
-            };
         }
 
         function initializeVariantManager() {

@@ -119,29 +119,7 @@
                             </div>
                         @endif
 
-                        <div class="detail-trust-grid">
-                            <div class="detail-trust-card">
-                                <i class="fas fa-check-circle"></i>
-                                <div>
-                                    <strong>Clear product details</strong>
-                                    <span>Category, stock, and pricing are shown up front.</span>
-                                </div>
-                            </div>
-                            <div class="detail-trust-card">
-                                <i class="fas fa-truck"></i>
-                                <div>
-                                    <strong>{{ $stockQty > 0 ? ($hasVariants ? 'Variant ready to order' : 'Ready to order') : 'Currently unavailable' }}</strong>
-                                    <span>{{ $hasVariants ? 'Choose the right option below to confirm exact price and stock.' : ($stockQty > 0 ? 'Add to cart or buy now directly from this page.' : 'You can revisit later when stock is updated.') }}</span>
-                                </div>
-                            </div>
-                            <div class="detail-trust-card">
-                                <i class="fas fa-shield-alt"></i>
-                                <div>
-                                    <strong>Secure checkout</strong>
-                                    <span>Simple checkout flow with order support when needed.</span>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 

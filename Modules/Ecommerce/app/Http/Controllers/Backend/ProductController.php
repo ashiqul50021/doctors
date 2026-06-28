@@ -37,9 +37,9 @@ class ProductController extends Controller
             'product_category_id' => 'required|exists:product_categories,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'nullable|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'gallery' => 'nullable|array|max:12',
-            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'gallery' => 'nullable|array|max:30',
+            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
         ]);
 
         $variants = $this->extractVariantPayloads($request);
@@ -95,9 +95,9 @@ class ProductController extends Controller
             'product_category_id' => 'required|exists:product_categories,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'nullable|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'gallery' => 'nullable|array|max:12',
-            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'gallery' => 'nullable|array|max:30',
+            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'removed_gallery' => 'nullable|array',
             'removed_gallery.*' => 'nullable|string',
         ]);
