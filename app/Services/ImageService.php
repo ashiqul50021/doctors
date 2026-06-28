@@ -68,6 +68,23 @@ class ImageService
             return self::moveOriginal($file, $uploadPath, $folder);
         }
 
+        // Auto-rotate JPEG image based on EXIF Orientation metadata
+        if (in_array($mimeType, ['image/jpeg', 'image/jpg']) && function_exists('exif_read_data')) {
+            $exif = @exif_read_data($file->getPathname());
+            if (!empty($exif['Orientation'])) {
+                $rotated = match ($exif['Orientation']) {
+                    3 => imagerotate($sourceImage, 180, 0),
+                    6 => imagerotate($sourceImage, 270, 0),
+                    8 => imagerotate($sourceImage, 90, 0),
+                    default => null,
+                };
+                if ($rotated !== false && $rotated !== null) {
+                    imagedestroy($sourceImage);
+                    $sourceImage = $rotated;
+                }
+            }
+        }
+
         // Get original dimensions
         $origWidth = imagesx($sourceImage);
         $origHeight = imagesy($sourceImage);
