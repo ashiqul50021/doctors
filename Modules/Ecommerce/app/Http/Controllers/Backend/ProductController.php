@@ -26,7 +26,13 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = ProductCategory::where('is_active', true)->get();
+        $categories = ProductCategory::with(['children' => function($query) {
+                $query->where('is_active', true)->orderBy('name');
+            }])
+            ->whereNull('parent_id')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
         return view('ecommerce::backend.products.create', compact('categories'));
     }
 
@@ -84,7 +90,13 @@ class ProductController extends Controller
         $product->load([
             'variants' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')->orderBy('id'),
         ]);
-        $categories = ProductCategory::where('is_active', true)->get();
+        $categories = ProductCategory::with(['children' => function($query) {
+                $query->where('is_active', true)->orderBy('name');
+            }])
+            ->whereNull('parent_id')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
         return view('ecommerce::backend.products.edit', compact('product', 'categories'));
     }
 

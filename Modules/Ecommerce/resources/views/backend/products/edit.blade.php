@@ -64,8 +64,14 @@
                             <div class="form-group">
                                 <label>Category</label>
                                 <select name="product_category_id" class="form-control" required>
+                                    <option value="">Select Category</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}" {{ old('product_category_id', $product->product_category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                        @foreach($category->children as $child)
+                                            <option value="{{ $child->id }}" {{ old('product_category_id', $product->product_category_id) == $child->id ? 'selected' : '' }}>
+                                                &nbsp;&nbsp;&mdash;&nbsp;{{ $child->name }}
+                                            </option>
+                                        @endforeach
                                     @endforeach
                                 </select>
                             </div>

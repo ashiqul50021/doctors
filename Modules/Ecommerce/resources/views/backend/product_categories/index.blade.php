@@ -51,7 +51,7 @@
                                                 No Image
                                             </span>
                                         @endif
-                                        <a href="#" style="text-decoration: none; color: #333;">{{ $category->name }}</a>
+                                        <a href="#" style="text-decoration: none; color: #333;">{{ $category->parent ? $category->parent->name . ' ➔ ' : '' }}{{ $category->name }}</a>
                                     </h2>
                                 </td>
                                 <td class="text-right">

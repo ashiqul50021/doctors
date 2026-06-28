@@ -12,19 +12,21 @@ class ProductCategoryController extends Controller
 {
     public function index()
     {
-        $categories = ProductCategory::latest()->get();
+        $categories = ProductCategory::with('parent')->latest()->get();
         return view('ecommerce::backend.product_categories.index', compact('categories'));
     }
 
     public function create()
     {
-        return view('ecommerce::backend.product_categories.create');
+        $parentCategories = ProductCategory::whereNull('parent_id')->orderBy('name')->get();
+        return view('ecommerce::backend.product_categories.create', compact('parentCategories'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'parent_id' => 'nullable|exists:product_categories,id',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -36,6 +38,7 @@ class ProductCategoryController extends Controller
 
         ProductCategory::create([
             'name' => $request->name,
+            'parent_id' => $request->parent_id,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
             'image' => $imagePath,
@@ -47,13 +50,18 @@ class ProductCategoryController extends Controller
 
     public function edit(ProductCategory $productCategory)
     {
-        return view('ecommerce::backend.product_categories.edit', compact('productCategory'));
+        $parentCategories = ProductCategory::whereNull('parent_id')
+            ->where('id', '!=', $productCategory->id)
+            ->orderBy('name')
+            ->get();
+        return view('ecommerce::backend.product_categories.edit', compact('productCategory', 'parentCategories'));
     }
 
     public function update(Request $request, ProductCategory $productCategory)
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'parent_id' => 'nullable|exists:product_categories,id|not_in:' . $productCategory->id,
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean',
@@ -61,6 +69,7 @@ class ProductCategoryController extends Controller
 
         $data = [
             'name' => $request->name,
+            'parent_id' => $request->parent_id,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
             'is_active' => $request->has('is_active'),

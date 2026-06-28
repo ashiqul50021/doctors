@@ -41,6 +41,17 @@
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
+                                <label>Parent Category (Optional)</label>
+                                <select name="parent_id" class="form-control">
+                                    <option value="">None (Top-Level Category)</option>
+                                    @foreach($parentCategories as $parent)
+                                        <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>{{ $parent->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
                                 <label for="categoryImageInput">Image</label>
                                 <input type="file" name="image" class="form-control" id="categoryImageInput" accept="image/*">
                                 <small id="categoryImageHelper" class="form-text text-muted">Select an image to preview. Large files will be compressed automatically before upload.</small>
