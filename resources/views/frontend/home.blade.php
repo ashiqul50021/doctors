@@ -3089,16 +3089,17 @@
         }
 
         .section-hero-doctime {
-            padding-bottom: 190px !important;
+            padding-bottom: 280px !important;
         }
 
         .hero-search-section {
-            position: absolute;
-            left: 12px;
-            right: 12px;
-            bottom: -110px;
-            margin: 0;
-            z-index: 5;
+            position: absolute !important;
+            left: 12px !important;
+            right: 12px !important;
+            bottom: -220px !important;
+            transform: none !important;
+            margin: 0 !important;
+            z-index: 500 !important;
         }
 
         .hero-search-bar {
