@@ -77,9 +77,33 @@
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
                                         <label>Date of Birth</label>
-                                        <div class="cal-icon">
-                                            <input type="date" name="date_of_birth" class="form-control" value="{{ old('date_of_birth', $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)->format('Y-m-d') : '') }}">
+                                        <div class="row gx-2">
+                                            <div class="col-4">
+                                                <select id="dob_day" class="form-control">
+                                                    <option value="">Day</option>
+                                                    @for ($d = 1; $d <= 31; $d++)
+                                                        <option value="{{ sprintf('%02d', $d) }}">{{ $d }}</option>
+                                                    @endfor
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <select id="dob_month" class="form-control">
+                                                    <option value="">Month</option>
+                                                    @foreach(['01' => 'Jan', '02' => 'Feb', '03' => 'Mar', '04' => 'Apr', '05' => 'May', '06' => 'Jun', '07' => 'Jul', '08' => 'Aug', '09' => 'Sep', '10' => 'Oct', '11' => 'Nov', '12' => 'Dec'] as $val => $mName)
+                                                        <option value="{{ $val }}">{{ $mName }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <select id="dob_year" class="form-control">
+                                                    <option value="">Year</option>
+                                                    @for ($y = date('Y'); $y >= date('Y') - 100; $y--)
+                                                        <option value="{{ $y }}">{{ $y }}</option>
+                                                    @endfor
+                                                </select>
+                                            </div>
                                         </div>
+                                        <input type="hidden" name="date_of_birth" id="date_of_birth" value="{{ old('date_of_birth', $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)->format('Y-m-d') : '') }}">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
@@ -155,4 +179,42 @@
 @push('scripts')
 <script src="{{ asset('assets/plugins/theia-sticky-sidebar/ResizeSensor.js') }}"></script>
 <script src="{{ asset('assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Date of Birth Synchronization
+        const dobInput = document.getElementById('date_of_birth');
+        const dobDay = document.getElementById('dob_day');
+        const dobMonth = document.getElementById('dob_month');
+        const dobYear = document.getElementById('dob_year');
+
+        if (dobInput && dobDay && dobMonth && dobYear) {
+            function updateDOB() {
+                const day = dobDay.value;
+                const month = dobMonth.value;
+                const year = dobYear.value;
+                if (day && month && year) {
+                    dobInput.value = `${year}-${month}-${day}`;
+                } else {
+                    dobInput.value = '';
+                }
+            }
+
+            // Initialize selects from existing date value
+            const initialDate = dobInput.value;
+            if (initialDate) {
+                const parts = initialDate.split('-');
+                if (parts.length === 3) {
+                    dobYear.value = parts[0];
+                    dobMonth.value = parts[1];
+                    dobDay.value = parts[2];
+                }
+            }
+
+            // Listen for change events on selects
+            dobDay.addEventListener('change', updateDOB);
+            dobMonth.addEventListener('change', updateDOB);
+            dobYear.addEventListener('change', updateDOB);
+        }
+    });
+</script>
 @endpush
