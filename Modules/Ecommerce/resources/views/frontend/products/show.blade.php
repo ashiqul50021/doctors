@@ -361,7 +361,7 @@
             @foreach($badges as $badge)
                 <div class="col-6 col-md-3">
                     <div class="landing-badge-card">
-                        <i class="{{ $badge['icon'] }} text-primary d-block mb-2 fs-3"></i>
+                        <i class="{{ $badge['icon'] }} d-block mb-2 fs-3" style="color: var(--primary-blue) !important;"></i>
                         <h5 class="fw-bold mb-1">{{ $badge['title'] }}</h5>
                         <p class="text-muted small mb-0">{{ $badge['desc'] }}</p>
                     </div>
@@ -417,12 +417,12 @@
         <!-- Why Choose Us / কেন আমাদের থেকে অর্ডার করবেন? -->
         <section class="landing-trust-section mb-4">
             <div class="info-card p-4 text-center rounded-3" style="background: #f0f7ff; border: 1px solid #dbeafe;">
-                <h3 class="text-primary mb-4 fw-bold">{{ $trustTitle }}</h3>
+                <h3 class="mb-4 fw-bold" style="color: var(--primary-blue) !important;">{{ $trustTitle }}</h3>
                 <div class="row g-4 text-start">
                     @foreach($trustFeatures as $feature)
                         <div class="col-md-6">
                             <div class="d-flex align-items-start gap-2 mb-2">
-                                <span class="text-primary fs-5"><i class="fas fa-check-circle"></i></span>
+                                <span class="fs-5" style="color: var(--primary-blue) !important;"><i class="fas fa-check-circle"></i></span>
                                 <div>
                                     <strong class="text-dark d-block mb-1">{{ $feature['title'] }}</strong>
                                     <span class="text-muted small">{{ $feature['desc'] }}</span>
