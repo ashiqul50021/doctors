@@ -82,6 +82,33 @@
             <span>{{ $product->name }}</span>
         </nav>
 
+        <!-- Urgency Countdown & Pricing Banner -->
+        <div class="landing-urgency-banner mb-4">
+            <div class="row align-items-center g-3">
+                <div class="col-md-7 text-center text-md-start">
+                    <span class="offer-badge-pill">সীমিত সময়ের অফার! (Limited Time Offer)</span>
+                    <h3 class="mb-1 text-white fw-bold">আজকের বিশেষ ছাড় অফার!</h3>
+                    <p class="text-white-50 mb-0">অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:</p>
+                </div>
+                <div class="col-md-5 d-flex justify-content-center justify-content-md-end">
+                    <div class="countdown-timer-wrapper" id="landingCountdown">
+                        <div class="time-block">
+                            <span class="time-val" id="timer-hours">02</span>
+                            <span class="time-lbl">Hours</span>
+                        </div>
+                        <div class="time-block">
+                            <span class="time-val" id="timer-minutes">45</span>
+                            <span class="time-lbl">Min</span>
+                        </div>
+                        <div class="time-block">
+                            <span class="time-val" id="timer-seconds">30</span>
+                            <span class="time-lbl">Sec</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <section class="product-hero-card">
             <div class="row g-4 align-items-start">
                 <div class="col-lg-7">
@@ -251,6 +278,14 @@
                                     </button>
                                 </div>
                             </div>
+                            
+                            @if($stockQty > 0)
+                                <div class="mt-3">
+                                    <a href="#direct-checkout-section" class="btn btn-landing-cta btn-landing-cta-pulsing w-100 text-center text-white d-block py-3 text-decoration-none">
+                                        <i class="fas fa-shopping-bag me-2"></i> সরাসরি অর্ডার করতে এখানে ক্লিক করুন
+                                    </a>
+                                </div>
+                            @endif
                         </form>
 
                         <a href="{{ route('ecommerce.cart') }}" class="detail-view-cart">
@@ -276,6 +311,46 @@
                 </div>
             </div>
         </section>
+
+        <!-- Trust Highlights Grid -->
+        <div class="row g-3 mb-4 mt-2">
+            <div class="col-6 col-md-3">
+                <div class="landing-badge-card">
+                    <i class="fas fa-undo-alt text-primary d-block mb-2 fs-3"></i>
+                    <h5 class="fw-bold mb-1">৭ দিনের রিটার্ন</h5>
+                    <p class="text-muted small mb-0">সহজ এক্সচেঞ্জ সুবিধা</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="landing-badge-card">
+                    <i class="fas fa-hand-holding-usd text-primary d-block mb-2 fs-3"></i>
+                    <h5 class="fw-bold mb-1">হাতে পেয়ে পেমেন্ট</h5>
+                    <p class="text-muted small mb-0">ক্যাশ অন ডেলিভারি</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="landing-badge-card">
+                    <i class="fas fa-headset text-primary d-block mb-2 fs-3"></i>
+                    <h5 class="fw-bold mb-1">অনলাইন সাপোর্ট</h5>
+                    <p class="text-muted small mb-0">২৪/৭ কাস্টমার কেয়ার</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="landing-badge-card">
+                    <i class="fas fa-shipping-fast text-primary d-block mb-2 fs-3"></i>
+                    <h5 class="fw-bold mb-1">সারাদেশে ডেলিভারি</h5>
+                    <p class="text-muted small mb-0">দ্রুত ও নিরাপদ ডেলিভারি</p>
+                </div>
+            </div>
+        </div>
+
+        @if($stockQty > 0)
+            <div class="text-center my-4">
+                <a href="#direct-checkout-section" class="btn btn-landing-cta px-5 py-3 fs-5 text-decoration-none">
+                    <i class="fas fa-shopping-cart me-2"></i> ঝটপট অর্ডার করতে এখানে ক্লিক করুন
+                </a>
+            </div>
+        @endif
 
         <section class="product-detail-sections">
             <div class="row g-4">
@@ -313,6 +388,78 @@
                 </div>
             </div>
         </section>
+
+        <!-- Why Choose Us / কেন আমাদের থেকে অর্ডার করবেন? -->
+        <section class="landing-trust-section mb-4">
+            <div class="info-card p-4 text-center rounded-3" style="background: #f0f7ff; border: 1px solid #dbeafe;">
+                <h3 class="text-primary mb-4 fw-bold">আমাদের থেকে কেন সংগ্রহ করবেন?</h3>
+                <div class="row g-4 text-start">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start gap-2 mb-2">
+                            <span class="text-primary fs-5"><i class="fas fa-check-circle"></i></span>
+                            <div>
+                                <strong class="text-dark d-block mb-1">১০০% আসল প্রোডাক্ট (100% Original)</strong>
+                                <span class="text-muted small">আমরা কোনো নকল পণ্য বিক্রি করি না। সরাসরি ভেরিফাইড ব্র্যান্ড ও ইমপোর্টার থেকে পণ্য সংগ্রহ করি।</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start gap-2 mb-2">
+                            <span class="text-primary fs-5"><i class="fas fa-check-circle"></i></span>
+                            <div>
+                                <strong class="text-dark d-block mb-1">নিরাপদ প্যাকেজিং ও ডেলিভারি (Secure Shipping)</strong>
+                                <span class="text-muted small">আপনার পণ্যটি যাতে অক্ষত অবস্থায় পৌঁছায়, সেজন্য আমাদের রয়েছে নিখুঁত বাবল-র‍্যাপড প্যাকেজিং ব্যবস্থা।</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start gap-2 mb-2">
+                            <span class="text-primary fs-5"><i class="fas fa-check-circle"></i></span>
+                            <div>
+                                <strong class="text-dark d-block mb-1">সহজ রিটার্ন পলিসি (Easy Returns)</strong>
+                                <span class="text-muted small">পণ্য গ্রহণের পর কোনো ত্রুটি পেলে ৭ দিনের মধ্যে আমাদের সাথে যোগাযোগ করে রিফান্ড বা এক্সচেঞ্জ করতে পারবেন।</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start gap-2 mb-2">
+                            <span class="text-primary fs-5"><i class="fas fa-check-circle"></i></span>
+                            <div>
+                                <strong class="text-dark d-block mb-1">২৪/৭ কাস্টমার সাপোর্ট (Dedicated Hotline)</strong>
+                                <span class="text-muted small">অর্ডার করার আগে বা পরে যেকোনো গাইডলাইনের জন্য আমাদের কাস্টমার কেয়ার হেল্পলাইন সর্বদা উন্মুক্ত।</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Product Real Gallery showcase -->
+        @if($galleryImages->isNotEmpty())
+            <section class="landing-gallery-section my-5">
+                <div class="section-heading text-center mb-4">
+                    <span class="section-tag">Showcase</span>
+                    <h3 class="fw-bold">পণ্যটির কিছু বাস্তব ছবি (Real Gallery)</h3>
+                </div>
+                <div class="row g-3 justify-content-center">
+                    @foreach($galleryImages as $image)
+                        <div class="col-md-6 col-lg-4">
+                            <div class="gallery-image-wrapper card border-0 shadow-sm overflow-hidden p-2 bg-white">
+                                <img src="{{ $image }}" class="img-fluid rounded" alt="{{ $product->name }} gallery {{ $loop->iteration }}" style="height: 250px; object-fit: contain; background: #f8fafc;">
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        @if($stockQty > 0)
+            <div class="text-center my-4">
+                <a href="#direct-checkout-section" class="btn btn-landing-cta px-5 py-3 fs-5 text-decoration-none">
+                    <i class="fas fa-shopping-cart me-2"></i> সরাসরি অর্ডার করতে এখানে ক্লিক করুন
+                </a>
+            </div>
+        @endif
 
         <section class="product-reviews-section">
             <div class="row g-4">
@@ -534,12 +681,367 @@
                 </div>
             </section>
         @endif
+
+        @if($stockQty > 0)
+            <!-- Embedded Direct Checkout Form -->
+            <section id="direct-checkout-section" class="direct-checkout-section my-5">
+                <div class="card checkout-card border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+                    <div class="checkout-card-header text-white py-3 px-4" style="background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--primary-blue) 100%) !important;">
+                        <h4 class="mb-0 text-white fw-bold"><i class="fas fa-shopping-cart me-2"></i> সরাসরি অর্ডার করতে নিচের ফর্মটি পূরণ করুন</h4>
+                    </div>
+                    <div class="checkout-card-body p-4">
+                        <form action="{{ route('ecommerce.order.place') }}" method="POST" id="landingDirectCheckoutForm">
+                            @csrf
+                            <input type="hidden" name="direct_order" value="1">
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" name="variant_id" id="directFormVariantId" value="{{ $selectedVariant?->id }}">
+                            <input type="hidden" name="quantity" id="directFormQuantity" value="1">
+                            <input type="hidden" name="shipping_charge" id="directFormShippingCharge" value="80">
+
+                            <div class="row g-4">
+                                <!-- Shipping Info Form (Left) -->
+                                <div class="col-lg-7">
+                                    <h4 class="mb-3 border-bottom pb-2 fw-bold" style="color: var(--primary-blue) !important; border-bottom-color: #dbeafe !important;">শিপিংয়ের তথ্য (Billing/Shipping)</h4>
+                                    
+                                    <div class="form-group mb-3 text-start">
+                                        <label class="form-label fw-bold">আপনার নাম (Full Name) <span class="text-danger">*</span></label>
+                                        <input type="text" name="name" class="form-control form-control-lg shadow-none" placeholder="এখানে আপনার নাম লিখুন" required value="{{ old('name', Auth::user()->name ?? '') }}">
+                                    </div>
+
+                                    <div class="form-group mb-3 text-start">
+                                        <label class="form-label fw-bold">মোবাইল নাম্বার (Phone Number) <span class="text-danger">*</span></label>
+                                        <input type="text" name="phone" id="directFormPhone" class="form-control form-control-lg shadow-none" placeholder="১১ ডিজিটের সচল মোবাইল নাম্বার" required value="{{ old('phone', Auth::user()->patient->phone ?? '') }}">
+                                    </div>
+
+                                    <div class="form-group mb-3 text-start">
+                                        <label class="form-label fw-bold">ইমেইল এড্রেস (Email Address) <span class="text-muted">(ঐচ্ছিক - Optional)</span></label>
+                                        <input type="email" name="email" id="directFormEmail" class="form-control form-control-lg shadow-none" placeholder="যেমন: name@domain.com" value="{{ old('email', Auth::user()->email ?? '') }}">
+                                    </div>
+
+                                    <div class="form-group mb-3 text-start">
+                                        <label class="form-label fw-bold">সম্পূর্ণ ঠিকানা (Full Shipping Address) <span class="text-danger">*</span></label>
+                                        <textarea name="address" class="form-control form-control-lg shadow-none" rows="3" placeholder="জেলা, থানা, গ্রাম/রোড এবং বাসা নাম্বার উল্লেখ করুন" required>{{ old('address', Auth::user()->patient->address ?? '') }}</textarea>
+                                    </div>
+
+                                    <div class="form-group mb-3 text-start">
+                                        <label class="form-label fw-bold d-block">ডেলিভারি এরিয়া নির্বাচন করুন (Delivery Area) <span class="text-danger">*</span></label>
+                                        <div class="delivery-options-grid mt-2">
+                                            <label class="delivery-radio-card active">
+                                                <input type="radio" name="delivery_area" value="inside" checked>
+                                                <div class="delivery-radio-content">
+                                                    <span class="delivery-title">ঢাকার ভিতরে (Inside Dhaka)</span>
+                                                    <span class="delivery-price">৳৮০</span>
+                                                </div>
+                                            </label>
+                                            <label class="delivery-radio-card">
+                                                <input type="radio" name="delivery_area" value="outside">
+                                                <div class="delivery-radio-content">
+                                                    <span class="delivery-title">ঢাকার বাইরে (Outside Dhaka)</span>
+                                                    <span class="delivery-price">৳১৫০</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group mb-3 text-start">
+                                        <label class="form-label fw-bold">অর্ডার নোট (Order Notes - Optional)</label>
+                                        <textarea name="notes" class="form-control shadow-none" rows="2" placeholder="অর্ডার সংক্রান্ত কোনো নির্দেশনা থাকলে লিখতে পারেন"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Order Summary (Right) -->
+                                <div class="col-lg-5">
+                                    <div class="summary-wrapper p-4 rounded-3 bg-light border border-2 text-start" style="border-color: #dbeafe !important;">
+                                        <h4 class="mb-3 border-bottom pb-2 fw-bold" style="color: var(--primary-blue) !important; border-bottom-color: #dbeafe !important;">আপনার অর্ডার (Your Order)</h4>
+                                        
+                                        <!-- Product Row -->
+                                        <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom">
+                                            <div class="direct-checkout-thumb rounded border overflow-hidden">
+                                                <img id="directFormProductThumb" src="{{ $mainImage }}" alt="{{ $product->name }}" class="img-fluid">
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1 fw-bold text-dark" style="font-size: 15px;">{{ $product->name }}</h6>
+                                                @if($hasVariants)
+                                                    <span class="badge bg-secondary mb-1" id="directFormVariantLabel" style="font-size: 11px;">{{ $selectedVariant?->display_label }}</span>
+                                                @endif
+                                                
+                                                <div class="qty-changer-widget d-flex align-items-center gap-2 mt-1">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 fw-bold" id="directQtyDec">-</button>
+                                                    <span class="fw-bold" id="directQtyDisplay">1</span>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 fw-bold" id="directQtyInc">+</button>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <strong class="fs-5" id="directFormPriceDisplay" style="color: var(--primary-blue) !important;">৳{{ number_format($displayPrice, 0) }}</strong>
+                                            </div>
+                                        </div>
+
+                                        <!-- Live Calculations -->
+                                        <div class="calculation-rows">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span class="text-muted">সাবটোটাল (Subtotal)</span>
+                                                <strong id="directSubtotal" class="text-dark">৳{{ number_format($displayPrice, 0) }}</strong>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span class="text-muted">ডেলিভারি চার্জ (Delivery)</span>
+                                                <strong id="directShipping" class="text-dark">৳৮০</strong>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2 text-danger" id="directDiscountRow" style="display: none !important;">
+                                                <span class="text-muted">ডিসকাউন্ট (Discount) <small class="text-muted" id="directCouponCodeDisplay"></small></span>
+                                                <strong class="text-danger">-৳<span id="directDiscount">0</span></strong>
+                                            </div>
+                                            <hr>
+                                            <div class="d-flex justify-content-between mb-4">
+                                                <span class="fs-5 fw-bold text-dark">সর্বমোট (Total)</span>
+                                                <strong class="fs-4 fw-bold" id="directTotal" style="color: var(--primary-blue) !important;">৳{{ number_format($displayPrice + 80, 0) }}</strong>
+                                            </div>
+                                        </div>
+
+                                        <!-- Coupon Code -->
+                                        <div class="coupon-widget mb-3">
+                                            <div class="input-group input-group-sm">
+                                                <input type="text" class="form-control shadow-none" id="directCouponInput" placeholder="কুপন কোড লিখুন (Coupon)">
+                                                <button class="btn btn-dark" type="button" id="applyDirectCouponBtn">Apply</button>
+                                            </div>
+                                            <div id="directCouponMessage" class="small mt-1" style="display: none;"></div>
+                                            <input type="hidden" name="coupon_code" id="directAppliedCouponCode" value="">
+                                        </div>
+
+                                        <!-- Payment Assurance -->
+                                        <div class="payment-method-badge p-3 bg-white border rounded-3 mb-4 text-center">
+                                            <i class="fas fa-truck text-success fs-4 mb-2"></i>
+                                            <h6 class="mb-1 fw-bold text-success" style="font-size: 15px;">ক্যাশ অন ডেলিভারি (Cash on Delivery)</h6>
+                                            <p class="small text-muted mb-0" style="font-size: 12px;">পণ্য হাতে পেয়ে টাকা পরিশোধ করুন। কোনো অগ্রিম পেমেন্ট লাগবেনা।</p>
+                                        </div>
+
+                                        <!-- Place Order Button -->
+                                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold py-3 fs-5 text-white shadow-sm hover-grow" id="directSubmitBtn" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 100%); border: none;">
+                                            <i class="fas fa-check-circle me-2"></i> অর্ডার কনফার্ম করুন (Confirm Order)
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        @else
+            <div class="alert alert-warning text-center py-4 my-5 rounded-3 shadow-sm border-0">
+                <i class="fas fa-exclamation-triangle me-2 fs-4 text-warning"></i>
+                <span class="fw-bold fs-5 text-dark">দুঃখিত! এই পণ্যটি বর্তমানে স্টক আউট আছে। স্টক আসলে আপনাকে জানানো হবে।</span>
+            </div>
+        @endif
     </div>
 </div>
 @endsection
 
 @push('styles')
 <style>
+    /* Landing Page Elements */
+    .landing-urgency-banner {
+        background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--primary-blue) 100%);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(29, 78, 216, 0.15);
+    }
+
+    .countdown-timer-wrapper {
+        display: flex;
+        gap: 12px;
+    }
+
+    .countdown-timer-wrapper .time-block {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border-radius: 12px;
+        padding: 10px 14px;
+        text-align: center;
+        min-width: 70px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .countdown-timer-wrapper .time-val {
+        display: block;
+        font-size: 24px;
+        font-weight: 800;
+        line-height: 1;
+        color: #ffffff;
+    }
+
+    .countdown-timer-wrapper .time-lbl {
+        display: block;
+        font-size: 10px;
+        text-transform: uppercase;
+        margin-top: 4px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .offer-badge-pill {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    .landing-badge-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px 14px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .landing-badge-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1);
+    }
+
+    .landing-badge-card i {
+        font-size: 28px;
+        margin-bottom: 12px;
+    }
+
+    .landing-badge-card h5 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .landing-badge-card p {
+        font-size: 11px;
+        color: #64748b;
+        margin-bottom: 0;
+    }
+
+    /* Primary CTA Pulsing Button */
+    .btn-landing-cta {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 100%) !important;
+        color: #fff !important;
+        border: none !important;
+        box-shadow: 0 8px 24px rgba(29, 78, 216, 0.25) !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        animation: landing-pulse 2s infinite;
+        padding: 14px 28px !important;
+        border-radius: 12px !important;
+    }
+
+    .btn-landing-cta:hover {
+        background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--primary-blue) 100%) !important;
+        box-shadow: 0 12px 30px rgba(29, 78, 216, 0.45) !important;
+        transform: translateY(-2px) !important;
+    }
+
+    @keyframes landing-pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.03);
+            box-shadow: 0 12px 30px rgba(29, 78, 216, 0.45);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Delivery Options Radio Grid */
+    .delivery-options-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .delivery-radio-card {
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #fff;
+        transition: all 0.2s ease;
+        margin-bottom: 0;
+    }
+
+    .delivery-radio-card input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #1d4ed8;
+    }
+
+    .delivery-radio-card.active {
+        border-color: #1d4ed8;
+        background: #eff6ff;
+    }
+
+    .delivery-radio-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .delivery-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .delivery-price {
+        font-size: 15px;
+        font-weight: 800;
+        color: #1d4ed8;
+    }
+
+    .direct-checkout-thumb {
+        width: 64px;
+        height: 64px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        padding: 4px;
+    }
+
+    .direct-checkout-thumb img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .qty-changer-widget {
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 2px 6px;
+        width: fit-content;
+    }
+
+    .qty-changer-widget button {
+        font-weight: 800;
+        font-size: 14px;
+    }
+
+    .hover-grow {
+        transition: all 0.2s ease;
+    }
+
+    .hover-grow:hover {
+        transform: translateY(-2px);
+    }
+
     .product-single-page {
         background: linear-gradient(180deg, #f6faff 0%, #ffffff 42%, #f8fbff 100%);
         padding: 26px 0 70px;
@@ -1596,6 +2098,300 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Direct Checkout Logic
+        const directFormVariantId = document.getElementById('directFormVariantId');
+        const directFormQuantity = document.getElementById('directFormQuantity');
+        const directFormShippingCharge = document.getElementById('directFormShippingCharge');
+        const directFormVariantLabel = document.getElementById('directFormVariantLabel');
+        const directQtyDisplay = document.getElementById('directQtyDisplay');
+        const directSubtotal = document.getElementById('directSubtotal');
+        const directShipping = document.getElementById('directShipping');
+        const directDiscountRow = document.getElementById('directDiscountRow');
+        const directDiscountVal = document.getElementById('directDiscount');
+        const directTotal = document.getElementById('directTotal');
+        const directAppliedCouponCode = document.getElementById('directAppliedCouponCode');
+        const directCouponInput = document.getElementById('directCouponInput');
+        const applyDirectCouponBtn = document.getElementById('applyDirectCouponBtn');
+        const directCouponMessage = document.getElementById('directCouponMessage');
+        const directFormPhone = document.getElementById('directFormPhone');
+        const directFormEmail = document.getElementById('directFormEmail');
+
+        let directQuantity = 1;
+        let directPrice = {{ (float) $displayPrice }};
+        let directShippingCharge = 80;
+        let directDiscount = 0;
+        let directCouponType = null;
+        let directCouponAmount = 0;
+
+        // Smooth scroll for landing CTA buttons
+        document.querySelectorAll('.btn-landing-cta').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.getElementById('direct-checkout-section');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // 3-hour looping countdown timer
+        function startLandingCountdown() {
+            const timerKey = 'landing_countdown_target_time';
+            let targetTime = localStorage.getItem(timerKey);
+            const now = new Date().getTime();
+
+            if (!targetTime || now > Number(targetTime)) {
+                // 2 hours, 45 minutes, 30 seconds
+                targetTime = now + (2 * 60 * 60 * 1000) + (45 * 60 * 1000) + (30 * 1000);
+                localStorage.setItem(timerKey, targetTime);
+            } else {
+                targetTime = Number(targetTime);
+            }
+
+            const hrsEl = document.getElementById('timer-hours');
+            const minsEl = document.getElementById('timer-minutes');
+            const secsEl = document.getElementById('timer-seconds');
+
+            function updateTime() {
+                const currentTime = new Date().getTime();
+                const diff = targetTime - currentTime;
+
+                if (diff <= 0) {
+                    const newTarget = currentTime + (2 * 60 * 60 * 1000) + (45 * 60 * 1000) + (30 * 1000);
+                    localStorage.setItem(timerKey, newTarget);
+                    targetTime = newTarget;
+                    return;
+                }
+
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                if (hrsEl) hrsEl.textContent = String(hours).padStart(2, '0');
+                if (minsEl) minsEl.textContent = String(minutes).padStart(2, '0');
+                if (secsEl) secsEl.textContent = String(seconds).padStart(2, '0');
+            }
+
+            updateTime();
+            setInterval(updateTime, 1000);
+        }
+        startLandingCountdown();
+
+        // Calculate totals dynamically
+        function recalculateDirectOrder() {
+            // Subtotal
+            const subtotal = directPrice * directQuantity;
+            if (directSubtotal) {
+                directSubtotal.textContent = formatMoney(subtotal);
+            }
+
+            // Coupon Discount
+            if (directCouponType === 'fixed') {
+                directDiscount = directCouponAmount;
+            } else if (directCouponType === 'percentage') {
+                directDiscount = (subtotal * directCouponAmount) / 100;
+            } else {
+                directDiscount = 0;
+            }
+
+            if (directDiscount > 0) {
+                if (directDiscountRow) directDiscountRow.style.setProperty('display', 'flex', 'important');
+                if (directDiscountVal) directDiscountVal.textContent = Math.round(directDiscount);
+            } else {
+                if (directDiscountRow) directDiscountRow.style.setProperty('display', 'none', 'important');
+                if (directDiscountVal) directDiscountVal.textContent = '0';
+            }
+
+            // Shipping
+            if (directShipping) {
+                directShipping.textContent = formatMoney(directShippingCharge);
+            }
+            if (directFormShippingCharge) {
+                directFormShippingCharge.value = directShippingCharge;
+            }
+
+            // Grand Total
+            const total = Math.max(0, subtotal - directDiscount + directShippingCharge);
+            if (directTotal) {
+                directTotal.textContent = formatMoney(total);
+            }
+        }
+
+        // Delivery Area Selection
+        const deliveryRadios = document.querySelectorAll('input[name="delivery_area"]');
+        const deliveryRadioCards = document.querySelectorAll('.delivery-radio-card');
+
+        deliveryRadios.forEach(radio => {
+            radio.addEventListener('change', function () {
+                deliveryRadioCards.forEach(card => card.classList.remove('active'));
+                
+                const card = this.closest('.delivery-radio-card');
+                if (card) {
+                    card.classList.add('active');
+                }
+
+                if (this.value === 'inside') {
+                    directShippingCharge = 80;
+                } else {
+                    directShippingCharge = 150;
+                }
+
+                recalculateDirectOrder();
+            });
+        });
+
+        // Quantity Increment / Decrement
+        const directQtyDisplayVal = document.getElementById('directQtyDisplay');
+        const directQtyDecBtn = document.getElementById('directQtyDec');
+        const directQtyIncBtn = document.getElementById('directQtyInc');
+
+        function updateDirectQuantity(qty) {
+            const stockMax = quantityInput ? Number(quantityInput.max || 999) : 999;
+            directQuantity = Math.max(1, Math.min(stockMax, qty));
+
+            if (directQtyDisplayVal) {
+                directQtyDisplayVal.textContent = directQuantity;
+            }
+            if (directFormQuantity) {
+                directFormQuantity.value = directQuantity;
+            }
+
+            // Sync with upper quantity field if it exists
+            if (quantityInput) {
+                quantityInput.value = directQuantity;
+            }
+
+            recalculateDirectOrder();
+        }
+
+        if (directQtyDecBtn) {
+            directQtyDecBtn.addEventListener('click', function () {
+                updateDirectQuantity(directQuantity - 1);
+            });
+        }
+
+        if (directQtyIncBtn) {
+            directQtyIncBtn.addEventListener('click', function () {
+                updateDirectQuantity(directQuantity + 1);
+            });
+        }
+
+        // Sync with top quantity changes
+        if (quantityInput) {
+            quantityInput.addEventListener('input', function () {
+                updateDirectQuantity(Number(this.value || 1));
+            });
+            quantityInput.addEventListener('change', function () {
+                updateDirectQuantity(Number(this.value || 1));
+            });
+        }
+
+        // Sync with variant changes
+        function syncLandingVariantDetails() {
+            if (!variantSelect) return;
+            const selectedOption = variantSelect.options[variantSelect.selectedIndex];
+            if (!selectedOption) return;
+
+            const price = Number(selectedOption.dataset.price || 0);
+            const variantId = selectedOption.value;
+            const label = selectedOption.dataset.label || '';
+
+            directPrice = price;
+            
+            if (directFormVariantId) {
+                directFormVariantId.value = variantId;
+            }
+            if (directFormVariantLabel) {
+                directFormVariantLabel.textContent = label;
+                directFormVariantLabel.style.display = label ? '' : 'none';
+            }
+            
+            const directFormPriceDisplay = document.getElementById('directFormPriceDisplay');
+            if (directFormPriceDisplay) {
+                directFormPriceDisplay.textContent = formatMoney(price);
+            }
+
+            // Update quantity max limit based on variant stock
+            const stock = Number(selectedOption.dataset.stock || 0);
+            if (quantityInput) {
+                quantityInput.max = Math.max(1, stock);
+            }
+
+            updateDirectQuantity(directQuantity);
+        }
+
+        if (variantSelect) {
+            // Also call sync on original select change
+            variantSelect.addEventListener('change', syncLandingVariantDetails);
+            syncLandingVariantDetails();
+        }
+
+        // Coupon AJAX for Direct Checkout
+        if (applyDirectCouponBtn) {
+            applyDirectCouponBtn.addEventListener('click', function () {
+                const code = directCouponInput.value.trim();
+                if (!code) {
+                    showCouponMessage('Please enter a coupon code.', 'danger');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route("ecommerce.cart.coupon") }}',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        coupon_code: code
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            directCouponType = response.type;
+                            directCouponAmount = parseFloat(response.amount);
+                            
+                            if (directAppliedCouponCode) {
+                                directAppliedCouponCode.value = response.code;
+                            }
+                            
+                            const dispCodeEl = document.getElementById('directCouponCodeDisplay');
+                            if (dispCodeEl) {
+                                dispCodeEl.textContent = '(' + response.code + ')';
+                            }
+
+                            showCouponMessage(response.message, 'success');
+                            recalculateDirectOrder();
+                        } else {
+                            showCouponMessage(response.message, 'danger');
+                        }
+                    },
+                    error: function (xhr) {
+                        let msg = 'Failed to apply coupon';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        showCouponMessage(msg, 'danger');
+                    }
+                });
+            });
+        }
+
+        function showCouponMessage(msg, type) {
+            if (!directCouponMessage) return;
+            directCouponMessage.style.setProperty('display', 'block', 'important');
+            directCouponMessage.className = 'small mt-1 text-' + (type === 'success' ? 'success' : 'danger');
+            directCouponMessage.innerHTML = (type === 'success' ? '<i class="fas fa-check-circle me-1"></i>' : '<i class="fas fa-exclamation-circle me-1"></i>') + msg;
+        }
+
+        // Form Submit Handler to auto-populate dummy email if blank
+        const landingDirectCheckoutForm = document.getElementById('landingDirectCheckoutForm');
+        if (landingDirectCheckoutForm) {
+            landingDirectCheckoutForm.addEventListener('submit', function (e) {
+                if (directFormEmail && !directFormEmail.value) {
+                    // Generate a dummy email to pass validation if email is omitted
+                    const phoneVal = directFormPhone ? directFormPhone.value.trim() : 'guest';
+                    directFormEmail.value = 'guest_' + phoneVal.replace(/[^0-9a-zA-Z]/g, '') + '@abcsheba.com';
+                }
+            });
+        }
+
         const activeImage = document.getElementById('activeProductImage');
         const zoomFrame = document.querySelector('.product-zoom-frame');
         const thumbs = document.querySelectorAll('.product-thumb');

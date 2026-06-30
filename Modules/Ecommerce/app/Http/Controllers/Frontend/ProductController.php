@@ -502,7 +502,38 @@ class ProductController extends Controller
             'phone' => 'required|string|max:20',
             'address' => 'required|string',
             'coupon_code' => 'nullable|string',
+            'shipping_charge' => 'nullable|numeric|min:0',
         ]);
+
+        if ($request->has('direct_order') && $request->filled('product_id')) {
+            $productId = (int) $request->product_id;
+            $variantId = $request->filled('variant_id') ? (int) $request->variant_id : null;
+            $quantity = max(1, (int) ($request->quantity ?? 1));
+
+            try {
+                $inventory = $this->stockService->ensureRequestedQuantityIsAvailable($productId, $quantity, $variantId);
+            } catch (ValidationException $exception) {
+                return $this->handleInventoryException($request, $exception);
+            }
+
+            $product = $inventory['product'];
+            $variant = $inventory['variant'];
+            $cartKey = $this->buildCartKey($productId, $variantId);
+
+            $cart = [
+                $cartKey => [
+                    'product_id' => $productId,
+                    'variant_id' => $variant?->id,
+                    'variant_label' => $variant?->display_label,
+                    'name' => $product->name,
+                    'price' => $variant ? $variant->currentPrice() : ($product->sale_price ?? $product->price),
+                    'image' => $product->image,
+                    'quantity' => $quantity,
+                ]
+            ];
+
+            session()->put('cart', $cart);
+        }
 
         $cart = $this->getNormalizedCart();
 
@@ -563,10 +594,11 @@ class ProductController extends Controller
             $agent = \Modules\Agents\Models\Agent::where('referral_code', $refCode)->where('status', 'active')->first();
         }
 
-        $grandTotal = max(0, $total - $discount);
+        $shipping = $request->has('shipping_charge') ? (float) $request->shipping_charge : 0;
+        $grandTotal = max(0, $total - $discount + $shipping);
 
         try {
-            $order = DB::transaction(function () use ($cart, $request, $total, $discount, $couponCode, $grandTotal, $patient, $agent, $coupon) {
+            $order = DB::transaction(function () use ($cart, $request, $total, $discount, $couponCode, $grandTotal, $patient, $agent, $coupon, $shipping) {
                 $this->stockService->reserveCart($cart);
 
                 if ($coupon) {
@@ -586,7 +618,7 @@ class ProductController extends Controller
                     'subtotal' => $total,
                     'discount' => $discount,
                     'coupon_code' => $couponCode,
-                    'shipping' => 0,
+                    'shipping' => $shipping,
                     'total' => $grandTotal,
                     'status' => 'pending',
                     'notes' => $request->notes,
