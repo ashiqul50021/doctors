@@ -16,6 +16,7 @@ class Product extends Model
         'gallery' => 'array',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'landing_settings' => 'array',
     ];
 
     public function category()

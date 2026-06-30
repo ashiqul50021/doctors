@@ -46,6 +46,7 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'gallery' => 'nullable|array|max:30',
             'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'landing_settings' => 'nullable|array',
         ]);
 
         $variants = $this->extractVariantPayloads($request);
@@ -73,6 +74,7 @@ class ProductController extends Controller
                     'gallery' => $galleryPaths,
                     'is_active' => true,
                     'is_featured' => $request->has('is_featured'),
+                    'landing_settings' => $request->landing_settings,
                 ]);
 
                 $this->syncVariants($product, $variants);
@@ -112,6 +114,7 @@ class ProductController extends Controller
             'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'removed_gallery' => 'nullable|array',
             'removed_gallery.*' => 'nullable|string',
+            'landing_settings' => 'nullable|array',
         ]);
 
         $variants = $this->extractVariantPayloads($request);
@@ -148,6 +151,7 @@ class ProductController extends Controller
             'gallery' => $galleryPaths,
             'is_active' => $request->has('is_active'),
             'is_featured' => $request->has('is_featured'),
+            'landing_settings' => $request->landing_settings,
         ];
 
         if ($request->hasFile('image')) {

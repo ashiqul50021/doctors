@@ -48,6 +48,50 @@
         $stockQty > 0 ? 'Available stock: ' . $stockQty . ' units' : 'This item is currently out of stock',
         $displayPrice < $regularPrice ? 'Current sale price is active' : 'Standard listed price',
     ])->filter()->values();
+
+    // Landing settings fallbacks
+    $landingSettings = $product->landing_settings ?? [];
+    $countdownTitle = $landingSettings['countdown_title'] ?? 'আজকের বিশেষ ছাড় অফার!';
+    $countdownSubtitle = $landingSettings['countdown_subtitle'] ?? 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:';
+    $countdownHours = (int) ($landingSettings['countdown_hours'] ?? 3);
+
+    $trustTitle = $landingSettings['trust_title'] ?? 'আমাদের থেকে কেন সংগ্রহ করবেন?';
+
+    // 4 Badges
+    $badges = [];
+    for ($i = 1; $i <= 4; $i++) {
+        $defaultIcons = [1 => 'fas fa-undo-alt', 2 => 'fas fa-hand-holding-usd', 3 => 'fas fa-headset', 4 => 'fas fa-shipping-fast'];
+        $defaultTitles = [1 => '৭ দিনের রিটার্ন', 2 => 'হাতে পেয়ে পেমেন্ট', 3 => 'অনলাইন সাপোর্ট', 4 => 'সারাদেশে ডেলিভারি'];
+        $defaultDescs = [1 => 'সহজ এক্সচেঞ্জ সুবিধা', 2 => 'ক্যাশ অন ডেলিভারি', 3 => '২৪/৭ কাস্টমার কেয়ার', 4 => 'দ্রুত ও নিরাপদ ডেলিভারি'];
+
+        $badges[$i] = [
+            'icon' => $landingSettings["badge_{$i}_icon"] ?? $defaultIcons[$i],
+            'title' => $landingSettings["badge_{$i}_title"] ?? $defaultTitles[$i],
+            'desc' => $landingSettings["badge_{$i}_desc"] ?? $defaultDescs[$i],
+        ];
+    }
+
+    // 4 Trust Features
+    $trustFeatures = [];
+    for ($i = 1; $i <= 4; $i++) {
+        $defaultFeatureTitles = [
+            1 => '১০০% আসল প্রোডাক্ট (100% Original)',
+            2 => 'নিরাপদ প্যাকেজিং ও ডেলিভারি (Secure Shipping)',
+            3 => 'সহজ রিটার্ন পলিসি (Easy Returns)',
+            4 => '২৪/৭ কাস্টমার সাপোর্ট (Dedicated Hotline)'
+        ];
+        $defaultFeatureDescs = [
+            1 => 'আমরা কোনো নকল পণ্য বিক্রি করি না। সরাসরি ভেরিফাইড ব্র্যান্ড ও ইমপোর্টার থেকে পণ্য সংগ্রহ করি।',
+            2 => 'আপনার পণ্যটি যাতে অক্ষত অবস্থায় পৌঁছায়, সেজন্য আমাদের রয়েছে নিখুঁত বাবল-র‍্যাপড প্যাকেজিং ব্যবস্থা।',
+            3 => 'পণ্য গ্রহণের পর কোনো ত্রুটি পেলে ৭ দিনের মধ্যে আমাদের সাথে যোগাযোগ করে রিফান্ড বা এক্সচেঞ্জ করতে পারবেন।',
+            4 => 'অর্ডার করার আগে বা পরে যেকোনো গাইডলাইনের জন্য আমাদের কাস্টমার কেয়ার হেল্পলাইন সর্বদা উন্মুক্ত।'
+        ];
+
+        $trustFeatures[$i] = [
+            'title' => $landingSettings["feature_{$i}_title"] ?? $defaultFeatureTitles[$i],
+            'desc' => $landingSettings["feature_{$i}_desc"] ?? $defaultFeatureDescs[$i],
+        ];
+    }
 @endphp
 
 <div class="content product-single-page">
@@ -87,8 +131,8 @@
             <div class="row align-items-center g-3">
                 <div class="col-md-7 text-center text-md-start">
                     <span class="offer-badge-pill">সীমিত সময়ের অফার! (Limited Time Offer)</span>
-                    <h3 class="mb-1 text-white fw-bold">আজকের বিশেষ ছাড় অফার!</h3>
-                    <p class="text-white-50 mb-0">অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:</p>
+                    <h3 class="mb-1 text-white fw-bold">{{ $countdownTitle }}</h3>
+                    <p class="text-white-50 mb-0">{{ $countdownSubtitle }}</p>
                 </div>
                 <div class="col-md-5 d-flex justify-content-center justify-content-md-end">
                     <div class="countdown-timer-wrapper" id="landingCountdown">
@@ -314,34 +358,15 @@
 
         <!-- Trust Highlights Grid -->
         <div class="row g-3 mb-4 mt-2">
-            <div class="col-6 col-md-3">
-                <div class="landing-badge-card">
-                    <i class="fas fa-undo-alt text-primary d-block mb-2 fs-3"></i>
-                    <h5 class="fw-bold mb-1">৭ দিনের রিটার্ন</h5>
-                    <p class="text-muted small mb-0">সহজ এক্সচেঞ্জ সুবিধা</p>
+            @foreach($badges as $badge)
+                <div class="col-6 col-md-3">
+                    <div class="landing-badge-card">
+                        <i class="{{ $badge['icon'] }} text-primary d-block mb-2 fs-3"></i>
+                        <h5 class="fw-bold mb-1">{{ $badge['title'] }}</h5>
+                        <p class="text-muted small mb-0">{{ $badge['desc'] }}</p>
+                    </div>
                 </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="landing-badge-card">
-                    <i class="fas fa-hand-holding-usd text-primary d-block mb-2 fs-3"></i>
-                    <h5 class="fw-bold mb-1">হাতে পেয়ে পেমেন্ট</h5>
-                    <p class="text-muted small mb-0">ক্যাশ অন ডেলিভারি</p>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="landing-badge-card">
-                    <i class="fas fa-headset text-primary d-block mb-2 fs-3"></i>
-                    <h5 class="fw-bold mb-1">অনলাইন সাপোর্ট</h5>
-                    <p class="text-muted small mb-0">২৪/৭ কাস্টমার কেয়ার</p>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="landing-badge-card">
-                    <i class="fas fa-shipping-fast text-primary d-block mb-2 fs-3"></i>
-                    <h5 class="fw-bold mb-1">সারাদেশে ডেলিভারি</h5>
-                    <p class="text-muted small mb-0">দ্রুত ও নিরাপদ ডেলিভারি</p>
-                </div>
-            </div>
+            @endforeach
         </div>
 
         @if($stockQty > 0)
@@ -392,44 +417,19 @@
         <!-- Why Choose Us / কেন আমাদের থেকে অর্ডার করবেন? -->
         <section class="landing-trust-section mb-4">
             <div class="info-card p-4 text-center rounded-3" style="background: #f0f7ff; border: 1px solid #dbeafe;">
-                <h3 class="text-primary mb-4 fw-bold">আমাদের থেকে কেন সংগ্রহ করবেন?</h3>
+                <h3 class="text-primary mb-4 fw-bold">{{ $trustTitle }}</h3>
                 <div class="row g-4 text-start">
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start gap-2 mb-2">
-                            <span class="text-primary fs-5"><i class="fas fa-check-circle"></i></span>
-                            <div>
-                                <strong class="text-dark d-block mb-1">১০০% আসল প্রোডাক্ট (100% Original)</strong>
-                                <span class="text-muted small">আমরা কোনো নকল পণ্য বিক্রি করি না। সরাসরি ভেরিফাইড ব্র্যান্ড ও ইমপোর্টার থেকে পণ্য সংগ্রহ করি।</span>
+                    @foreach($trustFeatures as $feature)
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start gap-2 mb-2">
+                                <span class="text-primary fs-5"><i class="fas fa-check-circle"></i></span>
+                                <div>
+                                    <strong class="text-dark d-block mb-1">{{ $feature['title'] }}</strong>
+                                    <span class="text-muted small">{{ $feature['desc'] }}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start gap-2 mb-2">
-                            <span class="text-primary fs-5"><i class="fas fa-check-circle"></i></span>
-                            <div>
-                                <strong class="text-dark d-block mb-1">নিরাপদ প্যাকেজিং ও ডেলিভারি (Secure Shipping)</strong>
-                                <span class="text-muted small">আপনার পণ্যটি যাতে অক্ষত অবস্থায় পৌঁছায়, সেজন্য আমাদের রয়েছে নিখুঁত বাবল-র‍্যাপড প্যাকেজিং ব্যবস্থা।</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start gap-2 mb-2">
-                            <span class="text-primary fs-5"><i class="fas fa-check-circle"></i></span>
-                            <div>
-                                <strong class="text-dark d-block mb-1">সহজ রিটার্ন পলিসি (Easy Returns)</strong>
-                                <span class="text-muted small">পণ্য গ্রহণের পর কোনো ত্রুটি পেলে ৭ দিনের মধ্যে আমাদের সাথে যোগাযোগ করে রিফান্ড বা এক্সচেঞ্জ করতে পারবেন।</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start gap-2 mb-2">
-                            <span class="text-primary fs-5"><i class="fas fa-check-circle"></i></span>
-                            <div>
-                                <strong class="text-dark d-block mb-1">২৪/৭ কাস্টমার সাপোর্ট (Dedicated Hotline)</strong>
-                                <span class="text-muted small">অর্ডার করার আগে বা পরে যেকোনো গাইডলাইনের জন্য আমাদের কাস্টমার কেয়ার হেল্পলাইন সর্বদা উন্মুক্ত।</span>
-                            </div>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </section>
@@ -2134,15 +2134,15 @@
             });
         });
 
-        // 3-hour looping countdown timer
+        // Looping countdown timer
         function startLandingCountdown() {
-            const timerKey = 'landing_countdown_target_time';
+            const timerKey = 'landing_countdown_target_time_product_{{ $product->id }}';
             let targetTime = localStorage.getItem(timerKey);
             const now = new Date().getTime();
+            const durationMs = {{ $countdownHours }} * 60 * 60 * 1000;
 
             if (!targetTime || now > Number(targetTime)) {
-                // 2 hours, 45 minutes, 30 seconds
-                targetTime = now + (2 * 60 * 60 * 1000) + (45 * 60 * 1000) + (30 * 1000);
+                targetTime = now + durationMs;
                 localStorage.setItem(timerKey, targetTime);
             } else {
                 targetTime = Number(targetTime);
@@ -2157,7 +2157,7 @@
                 const diff = targetTime - currentTime;
 
                 if (diff <= 0) {
-                    const newTarget = currentTime + (2 * 60 * 60 * 1000) + (45 * 60 * 1000) + (30 * 1000);
+                    const newTarget = currentTime + durationMs;
                     localStorage.setItem(timerKey, newTarget);
                     targetTime = newTarget;
                     return;

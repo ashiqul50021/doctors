@@ -127,7 +127,110 @@
                                     <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" {{ old('is_featured') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="is_featured">
                                         Featured Product
-                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-4 mb-4">
+                            <div class="card border-primary shadow-sm" style="border-radius: 12px; overflow: hidden; border-left: 5px solid #007bff;">
+                                <div class="card-header bg-light d-flex align-items-center justify-content-between py-3">
+                                    <h4 class="card-title mb-0 text-primary fw-bold" style="font-size: 18px;">
+                                        <i class="fas fa-magic me-2"></i> Landing Page Customization (সীমিত সময়ের অফার ও ট্রাস্ট ইনফো)
+                                    </h4>
+                                    <span class="badge bg-primary text-white">Dynamic Content</span>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Countdown Banner -->
+                                    <h5 class="fw-bold mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-clock text-danger me-1"></i> ১. জরুরী অফার কাউন্টডাউন (Urgency Countdown Banner)</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group">
+                                                <label class="fw-bold">অফার টাইটেল (Countdown Title)</label>
+                                                <input type="text" name="landing_settings[countdown_title]" class="form-control" value="{{ old('landing_settings.countdown_title', 'আজকের বিশেষ ছাড় অফার!') }}" placeholder="আজকের বিশেষ ছাড় অফার!">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group">
+                                                <label class="fw-bold">অফার সাবটাইটেল (Countdown Subtitle)</label>
+                                                <input type="text" name="landing_settings[countdown_subtitle]" class="form-control" value="{{ old('landing_settings.countdown_subtitle', 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:') }}" placeholder="অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-12">
+                                            <div class="form-group">
+                                                <label class="fw-bold">অফার সময় - ঘণ্টায় (Countdown Hours)</label>
+                                                <input type="number" name="landing_settings[countdown_hours]" class="form-control" value="{{ old('landing_settings.countdown_hours', 3) }}" placeholder="3">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 4 Trust Highlights Badges -->
+                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-award text-warning me-1"></i> ২. পণ্যের পাশের ৪টি ট্রাস্ট ব্যাজ (Trust Highlights Grid)</h5>
+                                    <div class="row">
+                                        @for ($i = 1; $i <= 4; $i++)
+                                            @php
+                                                $defaultIcons = [1 => 'fas fa-undo-alt', 2 => 'fas fa-hand-holding-usd', 3 => 'fas fa-headset', 4 => 'fas fa-shipping-fast'];
+                                                $defaultTitles = [1 => '৭ দিনের রিটার্ন', 2 => 'হাতে পেয়ে পেমেন্ট', 3 => 'অনলাইন সাপোর্ট', 4 => 'সারাদেশে ডেলিভারি'];
+                                                $defaultDescs = [1 => 'সহজ এক্সচেঞ্জ সুবিধা', 2 => 'ক্যাশ অন ডেলিভারি', 3 => '২৪/৭ কাস্টমার কেয়ার', 4 => 'দ্রুত ও নিরাপদ ডেলিভারি'];
+                                            @endphp
+                                            <div class="col-md-6 col-12 mb-3">
+                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
+                                                    <span class="badge bg-secondary mb-2">ব্যাজ {{ $i }}</span>
+                                                    <div class="form-group mb-2">
+                                                        <label class="small fw-bold">ফন্ট-অসাম আইকন ক্লাস (FontAwesome Icon Class)</label>
+                                                        <input type="text" name="landing_settings[badge_{{ $i }}_icon]" class="form-control form-control-sm" value="{{ old('landing_settings.badge_' . $i . '_icon', $defaultIcons[$i]) }}">
+                                                    </div>
+                                                    <div class="form-group mb-2">
+                                                        <label class="small fw-bold">টাইটেল (Title)</label>
+                                                        <input type="text" name="landing_settings[badge_{{ $i }}_title]" class="form-control form-control-sm" value="{{ old('landing_settings.badge_' . $i . '_title', $defaultTitles[$i]) }}">
+                                                    </div>
+                                                    <div class="form-group mb-0">
+                                                        <label class="small fw-bold">বর্ণনা (Subtitle/Desc)</label>
+                                                        <input type="text" name="landing_settings[badge_{{ $i }}_desc]" class="form-control form-control-sm" value="{{ old('landing_settings.badge_' . $i . '_desc', $defaultDescs[$i]) }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endfor
+                                    </div>
+
+                                    <!-- Why Choose Us Features -->
+                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-check-circle text-success me-1"></i> ৩. আমাদের থেকে কেন সংগ্রহ করবেন? (Why Choose Us Section)</h5>
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <div class="form-group">
+                                                <label class="fw-bold">সেকশন টাইটেল (Trust Section Title)</label>
+                                                <input type="text" name="landing_settings[trust_title]" class="form-control" value="{{ old('landing_settings.trust_title', 'আমাদের থেকে কেন সংগ্রহ করবেন?') }}" placeholder="আমাদের থেকে কেন সংগ্রহ করবেন?">
+                                            </div>
+                                        </div>
+                                        @for ($i = 1; $i <= 4; $i++)
+                                            @php
+                                                $defaultFeatureTitles = [
+                                                    1 => '১০০% আসল প্রোডাক্ট (100% Original)',
+                                                    2 => 'নিরাপদ প্যাকেজিং ও ডেলিভারি (Secure Shipping)',
+                                                    3 => 'সহজ রিটার্ন পলিসি (Easy Returns)',
+                                                    4 => '২৪/৭ কাস্টমার সাপোর্ট (Dedicated Hotline)'
+                                                ];
+                                                $defaultFeatureDescs = [
+                                                    1 => 'আমরা কোনো নকল পণ্য বিক্রি করি না। সরাসরি ভেরিফাইড ব্র্যান্ড ও ইমপোর্টার থেকে পণ্য সংগ্রহ করি।',
+                                                    2 => 'আপনার পণ্যটি যাতে অক্ষত অবস্থায় পৌঁছায়, সেজন্য আমাদের রয়েছে নিখুঁত বাবল-র‍্যাপড প্যাকেজিং ব্যবস্থা।',
+                                                    3 => 'পণ্য গ্রহণের পর কোনো ত্রুটি পেলে ৭ দিনের মধ্যে আমাদের সাথে যোগাযোগ করে রিফান্ড বা এক্সচেঞ্জ করতে পারবেন।',
+                                                    4 => 'অর্ডার করার আগে বা পরে যেকোনো গাইডলাইনের জন্য আমাদের কাস্টমার কেয়ার হেল্পলাইন সর্বদা উন্মুক্ত।'
+                                                ];
+                                            @endphp
+                                            <div class="col-md-6 col-12 mb-3">
+                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
+                                                    <span class="badge bg-info text-white mb-2">ফিচার {{ $i }}</span>
+                                                    <div class="form-group mb-2">
+                                                        <label class="small fw-bold">টাইটেল (Feature Title)</label>
+                                                        <input type="text" name="landing_settings[feature_{{ $i }}_title]" class="form-control form-control-sm" value="{{ old('landing_settings.feature_' . $i . '_title', $defaultFeatureTitles[$i]) }}">
+                                                    </div>
+                                                    <div class="form-group mb-0">
+                                                        <label class="small fw-bold">বর্ণনা (Feature Description)</label>
+                                                        <textarea name="landing_settings[feature_{{ $i }}_desc]" class="form-control form-control-sm" rows="2">{{ old('landing_settings.feature_' . $i . '_desc', $defaultFeatureDescs[$i]) }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endfor
+                                    </div>
                                 </div>
                             </div>
                         </div>
