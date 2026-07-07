@@ -414,6 +414,36 @@
             </div>
         </section>
 
+        <!-- Product Video Section -->
+        @if(!empty($landingSettings['youtube_video_url']))
+            @php
+                $videoUrl = $landingSettings['youtube_video_url'];
+                $videoId = null;
+                if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|win/.+|watch\?v=)|youtu\.be/)([^"&?/\s]{11})%i', $videoUrl, $match)) {
+                    $videoId = $match[1];
+                }
+            @endphp
+
+            @if($videoId)
+                <section class="landing-video-section mb-4">
+                    <div class="info-card p-4 rounded-3 bg-white border" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                        <div class="section-heading text-center mb-4">
+                            <span class="section-tag" style="background: rgba(29, 78, 216, 0.1) !important; color: var(--primary-blue) !important;">Showcase Video</span>
+                            <h3 class="fw-bold text-dark mt-2">পণ্যটির বিবরণী ও ব্যবহারবিধি ভিডিও</h3>
+                        </div>
+                        <div class="video-container-wrapper mx-auto" style="max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;">
+                            <div class="ratio ratio-16x9">
+                                <iframe src="https://www.youtube.com/embed/{{ $videoId }}" 
+                                        title="Product Video" 
+                                        allowfullscreen 
+                                        style="border: 0;"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            @endif
+        @endif
+
         <!-- Why Choose Us / কেন আমাদের থেকে অর্ডার করবেন? -->
         <section class="landing-trust-section mb-4">
             <div class="info-card p-4 text-center rounded-3" style="background: #f0f7ff; border: 1px solid #dbeafe;">
