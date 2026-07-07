@@ -289,16 +289,62 @@
                         <!-- Categories -->
                         <div class="filter-section">
                             <h5 class="filter-title"><i class="fas fa-list"></i> Categories</h5>
-                            <div class="category-list">
-                                <label class="category-item">
+                            <div class="category-list" id="homeCategoryList">
+                                <label class="category-item home-cat-root active-cat" id="cat-all-label">
                                     <input type="radio" name="product_category" value="all" checked>
                                     <span class="category-name">All Products</span>
                                 </label>
+
                                 @foreach($productCategories as $category)
-                                    <label class="category-item">
-                                        <input type="radio" name="product_category" value="{{ $category->id }}">
-                                        <span class="category-name">{{ $category->name }}</span>
-                                    </label>
+                                    @if($category->children->isNotEmpty())
+                                        {{-- Parent with children --}}
+                                        <div class="home-cat-group" id="hcg-{{ $category->id }}">
+                                            <label class="category-item home-cat-root"
+                                                onclick="toggleHomeCat(event, 'hcg-{{ $category->id }}-children')">
+                                                <input type="radio" name="product_category" value="{{ $category->id }}">
+                                                <span class="category-name">{{ $category->name }}</span>
+                                                <span class="home-cat-arrow ms-auto">
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </span>
+                                            </label>
+                                            <div class="home-sub-list" id="hcg-{{ $category->id }}-children" style="display:none;">
+                                                @foreach($category->children as $child)
+                                                    @if($child->children->isNotEmpty())
+                                                        {{-- Sub with grandchildren --}}
+                                                        <div class="home-cat-group" id="hcg-{{ $child->id }}">
+                                                            <label class="category-item home-cat-sub"
+                                                                onclick="toggleHomeCat(event, 'hcg-{{ $child->id }}-children')">
+                                                                <input type="radio" name="product_category" value="{{ $child->id }}">
+                                                                <span class="category-name">{{ $child->name }}</span>
+                                                                <span class="home-cat-arrow ms-auto">
+                                                                    <i class="fas fa-chevron-down"></i>
+                                                                </span>
+                                                            </label>
+                                                            <div class="home-sub-list home-subsub-list" id="hcg-{{ $child->id }}-children" style="display:none;">
+                                                                @foreach($child->children as $grandchild)
+                                                                    <label class="category-item home-cat-subsub">
+                                                                        <input type="radio" name="product_category" value="{{ $grandchild->id }}">
+                                                                        <span class="category-name">{{ $grandchild->name }}</span>
+                                                                    </label>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <label class="category-item home-cat-sub">
+                                                            <input type="radio" name="product_category" value="{{ $child->id }}">
+                                                            <span class="category-name">{{ $child->name }}</span>
+                                                        </label>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @else
+                                        {{-- Leaf category --}}
+                                        <label class="category-item home-cat-root">
+                                            <input type="radio" name="product_category" value="{{ $category->id }}">
+                                            <span class="category-name">{{ $category->name }}</span>
+                                        </label>
+                                    @endif
                                 @endforeach
                             </div>
                         </div>
@@ -1376,8 +1422,42 @@
                 return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
 
-            // Category filter change
-            $('input[name="product_category"]').on('change', function () {
+            // Nested category tree toggle
+            window.toggleHomeCat = function(event, childListId) {
+                // Don't stop propagation — let radio change still fire
+                var childList = document.getElementById(childListId);
+                if (!childList) return;
+
+                var isOpen = childList.style.display !== 'none';
+                childList.style.display = isOpen ? 'none' : 'block';
+
+                // Toggle arrow icon
+                var arrow = event.currentTarget.querySelector('.home-cat-arrow i');
+                if (arrow) {
+                    if (isOpen) {
+                        arrow.className = 'fas fa-chevron-down';
+                    } else {
+                        arrow.className = 'fas fa-chevron-up';
+                    }
+                }
+            };
+
+            // Category filter change — update active class + filter products
+            $('body').on('change', 'input[name="product_category"]', function () {
+                // Remove active from all root labels
+                document.querySelectorAll('#homeCategoryList .category-item').forEach(function(el) {
+                    el.classList.remove('active-cat');
+                });
+                // Add active to parent label of checked input
+                var parentLabel = this.closest('label.category-item');
+                if (parentLabel) parentLabel.classList.add('active-cat');
+
+                // Auto-expand parent group if subcategory clicked
+                var parentGroup = this.closest('.home-sub-list');
+                if (parentGroup && parentGroup.style.display === 'none') {
+                    parentGroup.style.display = 'block';
+                }
+
                 filterProducts();
             });
 
@@ -2014,6 +2094,74 @@
         .category-item input:checked+.category-name {
             color: #1D4ED8;
             font-weight: 600;
+        }
+
+        /* ===== Nested Home Category Tree ===== */
+        .home-cat-group {
+            margin-bottom: 2px;
+        }
+
+        .home-cat-root {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .home-cat-root.active-cat {
+            background: #eff6ff;
+            color: #1D4ED8;
+        }
+
+        .home-cat-arrow {
+            font-size: 10px;
+            color: #94a3b8;
+            transition: transform 0.25s ease;
+            pointer-events: none;
+        }
+
+        .home-cat-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .home-sub-list {
+            padding-left: 12px;
+            border-left: 2px solid #e2e8f0;
+            margin-left: 10px;
+            margin-top: 2px;
+            margin-bottom: 4px;
+        }
+
+        .home-subsub-list {
+            padding-left: 10px;
+            border-left: 2px dashed #cbd5e1;
+            margin-left: 8px;
+        }
+
+        .home-cat-sub {
+            font-size: 13px !important;
+            padding: 7px 10px !important;
+            color: #475569;
+        }
+
+        .home-cat-sub:hover {
+            background: #f0f9ff;
+            color: #2563eb;
+        }
+
+        .home-cat-subsub {
+            font-size: 12px !important;
+            padding: 5px 8px !important;
+            color: #64748b;
+        }
+
+        .home-cat-subsub:hover {
+            background: #f8fafc;
+            color: #2563eb;
+        }
+
+        .category-list {
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 2px;
         }
 
         /* Product Card Modern */

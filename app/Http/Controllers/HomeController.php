@@ -28,7 +28,14 @@ class HomeController extends Controller
                          ->take(10)
                          ->get();
 
-        $productCategories = \App\Models\ProductCategory::where('is_active', true)->take(6)->get();
+        $productCategories = \App\Models\ProductCategory::with([
+                'children' => function ($q) { $q->where('is_active', true)->orderBy('name'); },
+                'children.children' => function ($q) { $q->where('is_active', true)->orderBy('name'); },
+            ])
+            ->whereNull('parent_id')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
         // Get top categories
         $topCategories = TopCategory::getActiveCategories();
