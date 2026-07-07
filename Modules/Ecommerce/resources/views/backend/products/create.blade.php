@@ -107,16 +107,19 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label for="productGalleryInput">Gallery Images</label>
-                                <input type="file" name="gallery[]" class="form-control" id="productGalleryInput" accept="image/*" multiple>
-                                <small id="productGalleryHelper" class="form-text text-muted">Upload multiple gallery images. These will appear as thumbnails on the product details page.</small>
+                                <label>Gallery Images</label>
+                                <small class="form-text text-muted mb-2 d-block">Select gallery images one by one. Click the "Add Image" box to select a file. These will appear as thumbnails on the product details page.</small>
 
-                                <div class="image-manager-shell mt-2" id="productGalleryPreviewContainer" style="display: none;">
+                                <div class="image-manager-shell mt-2">
+                                    <!-- Container for hidden dynamic file inputs -->
+                                    <div id="galleryInputsContainer" style="display: none;"></div>
+
                                     <div class="gallery-preview-group">
-                                        <span class="gallery-preview-label">Selected Gallery Images</span>
-                                        <div id="productGalleryPreviewGrid" class="gallery-preview-grid"></div>
+                                        <span class="gallery-preview-label">New Gallery Uploads</span>
+                                        <div id="interactiveGalleryGrid" class="gallery-preview-grid">
+                                            <!-- "+" card is added by Javascript -->
+                                        </div>
                                     </div>
-                                    <div class="gallery-empty-note">Choose files again if you want to replace the current selection before saving.</div>
                                 </div>
                             </div>
                         </div>
@@ -441,12 +444,9 @@
                 emptyMessage: 'Select the main product image. Large files will be compressed automatically before upload.'
             });
 
-            initializeProductGalleryUpload({
-                inputId: 'productGalleryInput',
-                previewContainerId: 'productGalleryPreviewContainer',
-                previewGridId: 'productGalleryPreviewGrid',
-                helperId: 'productGalleryHelper',
-                emptyMessage: 'Upload multiple gallery images. These will appear as thumbnails on the product details page.'
+            initializeInteractiveGalleryUploader({
+                gridId: 'interactiveGalleryGrid',
+                inputsContainerId: 'galleryInputsContainer'
             });
 
             initializeVariantManager();
@@ -485,77 +485,92 @@
             });
         }
 
-        function initializeProductGalleryUpload({ inputId, previewContainerId, previewGridId, helperId, emptyMessage }) {
-            const fileInput = document.getElementById(inputId);
-            const previewContainer = document.getElementById(previewContainerId);
-            const previewGrid = document.getElementById(previewGridId);
-            const helper = document.getElementById(helperId);
+        function initializeInteractiveGalleryUploader({ gridId, inputsContainerId }) {
+            const grid = document.getElementById(gridId);
+            const inputsContainer = document.getElementById(inputsContainerId);
 
-            if (!fileInput || !previewContainer || !previewGrid || !helper) {
-                return;
+            if (!grid || !inputsContainer) return;
+
+            inputsContainer.innerHTML = '';
+            grid.innerHTML = '';
+
+            let imageCounter = 0;
+
+            function createAddCard() {
+                const addCard = document.createElement('div');
+                addCard.className = 'gallery-add-card';
+                addCard.innerHTML = `
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Image</span>
+                `;
+                
+                addCard.addEventListener('click', function () {
+                    imageCounter++;
+                    
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.name = 'gallery[]';
+                    fileInput.accept = 'image/*';
+                    fileInput.style.display = 'none';
+                    fileInput.id = `gallery_input_${imageCounter}`;
+                    
+                    fileInput.addEventListener('change', function (event) {
+                        const file = event.target.files[0];
+                        if (!file) {
+                            fileInput.remove();
+                            return;
+                        }
+                        
+                        if (!file.type.startsWith('image/')) {
+                            alert('Please select a valid image file.');
+                            fileInput.remove();
+                            return;
+                        }
+                        
+                        inputsContainer.appendChild(fileInput);
+                        
+                        const previewCard = document.createElement('div');
+                        previewCard.className = 'gallery-preview-card';
+                        
+                        const objectUrl = URL.createObjectURL(file);
+                        previewCard.innerHTML = `
+                            <img src="${objectUrl}" alt="${file.name}">
+                            <div class="gallery-preview-meta">
+                                <strong>${file.name}</strong><br>
+                                ${(file.size / 1024).toFixed(1)} KB
+                            </div>
+                            <div class="gallery-preview-actions">
+                                <button type="button" class="btn btn-sm btn-outline-danger w-100 js-remove-preview">
+                                    Remove
+                                </button>
+                            </div>
+                        `;
+                        
+                        const img = previewCard.querySelector('img');
+                        img.addEventListener('load', function() {
+                            URL.revokeObjectURL(objectUrl);
+                        }, { once: true });
+                        
+                        previewCard.querySelector('.js-remove-preview').addEventListener('click', function() {
+                            previewCard.remove();
+                            fileInput.remove();
+                        });
+                        
+                        grid.insertBefore(previewCard, addCard);
+                    });
+                    
+                    fileInput.click();
+                });
+                
+                grid.appendChild(addCard);
             }
 
-            fileInput.addEventListener('change', function (event) {
-                const files = Array.from(event.target.files || []);
-
-                if (!files.length) {
-                    previewGrid.innerHTML = '';
-                    previewContainer.style.display = 'none';
-                    helper.textContent = emptyMessage;
-                    return;
-                }
-
-                const validFiles = files.filter(file => file.type.startsWith('image/'));
-
-                if (!validFiles.length) {
-                    previewGrid.innerHTML = '';
-                    previewContainer.style.display = 'none';
-                    helper.innerHTML = '<span class="text-danger">Please select valid image files.</span>';
-                    event.target.value = '';
-                    return;
-                }
-
-                if (validFiles.length !== files.length) {
-                    const dataTransfer = new DataTransfer();
-                    validFiles.forEach((file) => dataTransfer.items.add(file));
-                    event.target.files = dataTransfer.files;
-                }
-
-                renderGalleryPreview(previewGrid, validFiles);
-                previewContainer.style.display = 'block';
-
-                let totalSize = validFiles.reduce((sum, f) => sum + f.size, 0);
-                helper.innerHTML = `<span class="text-success">${validFiles.length} image(s) ready for upload. Total size: ${(totalSize / 1024).toFixed(2)} KB.</span>`;
-            });
+            createAddCard();
         }
 
         function updatePreview(preview, previewContainer, file) {
             preview.src = URL.createObjectURL(file);
             previewContainer.style.display = 'block';
-        }
-
-        function renderGalleryPreview(previewGrid, files) {
-            previewGrid.innerHTML = '';
-
-            files.forEach((file) => {
-                const objectUrl = URL.createObjectURL(file);
-                const card = document.createElement('div');
-                card.className = 'gallery-preview-card';
-                card.innerHTML = `
-                    <img src="${objectUrl}" alt="${file.name}">
-                    <div class="gallery-preview-meta">
-                        <strong>${file.name}</strong><br>
-                        ${(file.size / 1024).toFixed(2)} KB
-                    </div>
-                `;
-
-                const image = card.querySelector('img');
-                image.addEventListener('load', function () {
-                    URL.revokeObjectURL(objectUrl);
-                }, { once: true });
-
-                previewGrid.appendChild(card);
-            });
         }
 
         function initializeVariantManager() {

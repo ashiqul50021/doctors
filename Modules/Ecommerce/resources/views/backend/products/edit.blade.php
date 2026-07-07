@@ -116,39 +116,43 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label for="productGalleryInput">Gallery Images</label>
-                                <input type="file" name="gallery[]" class="form-control" id="productGalleryInput" accept="image/*" multiple>
-                                <small id="productGalleryHelper" class="form-text text-muted">
-                                    Add more gallery images here. Existing gallery images can be removed below.
+                                <label>Gallery Images</label>
+                                <small class="form-text text-muted mb-2 d-block">
+                                    Select gallery images one by one. Click the "Add Image" box to select a file. These will appear as thumbnails on the product details page. Existing gallery images can be removed below.
                                 </small>
 
                                 <div class="image-manager-shell mt-2">
-                                    <div class="gallery-preview-group" id="existingGallerySection" style="{{ $existingGalleryImages->isEmpty() ? 'display: none;' : '' }}">
-                                        <span class="gallery-preview-label">Current Gallery</span>
-                                        <div id="existingGalleryGrid" class="gallery-preview-grid">
-                                            @foreach($existingGalleryImages as $imagePath)
-                                                <div class="gallery-preview-card" data-gallery-path="{{ $imagePath }}">
-                                                    <img src="{{ \Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset($imagePath) }}"
-                                                        alt="Gallery image {{ $loop->iteration }}">
-                                                    <div class="gallery-preview-meta">
-                                                        <strong>Gallery image {{ $loop->iteration }}</strong>
+                                    <!-- Container for hidden dynamic file inputs -->
+                                    <div id="galleryInputsContainer" style="display: none;"></div>
+
+                                    @if($existingGalleryImages->isNotEmpty())
+                                        <div class="gallery-preview-group mb-4" id="existingGallerySection">
+                                            <span class="gallery-preview-label">Current Gallery</span>
+                                            <div id="existingGalleryGrid" class="gallery-preview-grid">
+                                                @foreach($existingGalleryImages as $imagePath)
+                                                    <div class="gallery-preview-card" data-gallery-path="{{ $imagePath }}">
+                                                        <img src="{{ \Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset($imagePath) }}"
+                                                            alt="Gallery image {{ $loop->iteration }}">
+                                                        <div class="gallery-preview-meta">
+                                                            <strong>Gallery image {{ $loop->iteration }}</strong>
+                                                        </div>
+                                                        <div class="gallery-preview-actions">
+                                                            <button type="button" class="btn btn-sm btn-outline-danger w-100 js-remove-existing-gallery" data-path="{{ $imagePath }}">
+                                                                Remove
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div class="gallery-preview-actions">
-                                                        <button type="button" class="btn btn-sm btn-outline-danger js-remove-existing-gallery" data-path="{{ $imagePath }}">
-                                                            Remove
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            @endforeach
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <div class="gallery-preview-group">
+                                        <span class="gallery-preview-label">New Gallery Uploads</span>
+                                        <div id="interactiveGalleryGrid" class="gallery-preview-grid">
+                                            <!-- "+" card is added by Javascript -->
                                         </div>
                                     </div>
-
-                                    <div class="gallery-preview-group" id="productGalleryPreviewContainer" style="display: none;">
-                                        <span class="gallery-preview-label">New Gallery Uploads</span>
-                                        <div id="productGalleryPreviewGrid" class="gallery-preview-grid"></div>
-                                    </div>
-
-                                    <div class="gallery-empty-note">Choose files again if you want to replace the current new upload selection before saving.</div>
                                 </div>
 
                                 <div id="removedGalleryInputs"></div>
@@ -482,12 +486,9 @@
                 emptyMessage: 'Choose a new main image to replace the current one. Selected image will preview instantly and be compressed before upload.'
             });
 
-            initializeProductGalleryUpload({
-                inputId: 'productGalleryInput',
-                previewContainerId: 'productGalleryPreviewContainer',
-                previewGridId: 'productGalleryPreviewGrid',
-                helperId: 'productGalleryHelper',
-                emptyMessage: 'Add more gallery images here. Existing gallery images can be removed below.'
+            initializeInteractiveGalleryUploader({
+                gridId: 'interactiveGalleryGrid',
+                inputsContainerId: 'galleryInputsContainer'
             });
 
             initializeExistingGalleryRemoval({
@@ -532,48 +533,87 @@
             });
         }
 
-        function initializeProductGalleryUpload({ inputId, previewContainerId, previewGridId, helperId, emptyMessage }) {
-            const fileInput = document.getElementById(inputId);
-            const previewContainer = document.getElementById(previewContainerId);
-            const previewGrid = document.getElementById(previewGridId);
-            const helper = document.getElementById(helperId);
+        function initializeInteractiveGalleryUploader({ gridId, inputsContainerId }) {
+            const grid = document.getElementById(gridId);
+            const inputsContainer = document.getElementById(inputsContainerId);
 
-            if (!fileInput || !previewContainer || !previewGrid || !helper) {
-                return;
+            if (!grid || !inputsContainer) return;
+
+            inputsContainer.innerHTML = '';
+            grid.innerHTML = '';
+
+            let imageCounter = 0;
+
+            function createAddCard() {
+                const addCard = document.createElement('div');
+                addCard.className = 'gallery-add-card';
+                addCard.innerHTML = `
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Image</span>
+                `;
+                
+                addCard.addEventListener('click', function () {
+                    imageCounter++;
+                    
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.name = 'gallery[]';
+                    fileInput.accept = 'image/*';
+                    fileInput.style.display = 'none';
+                    fileInput.id = `gallery_input_${imageCounter}`;
+                    
+                    fileInput.addEventListener('change', function (event) {
+                        const file = event.target.files[0];
+                        if (!file) {
+                            fileInput.remove();
+                            return;
+                        }
+                        
+                        if (!file.type.startsWith('image/')) {
+                            alert('Please select a valid image file.');
+                            fileInput.remove();
+                            return;
+                        }
+                        
+                        inputsContainer.appendChild(fileInput);
+                        
+                        const previewCard = document.createElement('div');
+                        previewCard.className = 'gallery-preview-card';
+                        
+                        const objectUrl = URL.createObjectURL(file);
+                        previewCard.innerHTML = `
+                            <img src="${objectUrl}" alt="${file.name}">
+                            <div class="gallery-preview-meta">
+                                <strong>${file.name}</strong><br>
+                                ${(file.size / 1024).toFixed(1)} KB
+                            </div>
+                            <div class="gallery-preview-actions">
+                                <button type="button" class="btn btn-sm btn-outline-danger w-100 js-remove-preview">
+                                    Remove
+                                </button>
+                            </div>
+                        `;
+                        
+                        const img = previewCard.querySelector('img');
+                        img.addEventListener('load', function() {
+                            URL.revokeObjectURL(objectUrl);
+                        }, { once: true });
+                        
+                        previewCard.querySelector('.js-remove-preview').addEventListener('click', function() {
+                            previewCard.remove();
+                            fileInput.remove();
+                        });
+                        
+                        grid.insertBefore(previewCard, addCard);
+                    });
+                    
+                    fileInput.click();
+                });
+                
+                grid.appendChild(addCard);
             }
 
-            fileInput.addEventListener('change', function (event) {
-                const files = Array.from(event.target.files || []);
-
-                if (!files.length) {
-                    previewGrid.innerHTML = '';
-                    previewContainer.style.display = 'none';
-                    helper.textContent = emptyMessage;
-                    return;
-                }
-
-                const validFiles = files.filter(file => file.type.startsWith('image/'));
-
-                if (!validFiles.length) {
-                    previewGrid.innerHTML = '';
-                    previewContainer.style.display = 'none';
-                    helper.innerHTML = '<span class="text-danger">Please select valid image files.</span>';
-                    event.target.value = '';
-                    return;
-                }
-
-                if (validFiles.length !== files.length) {
-                    const dataTransfer = new DataTransfer();
-                    validFiles.forEach((file) => dataTransfer.items.add(file));
-                    event.target.files = dataTransfer.files;
-                }
-
-                renderGalleryPreview(previewGrid, validFiles);
-                previewContainer.style.display = 'block';
-
-                let totalSize = validFiles.reduce((sum, f) => sum + f.size, 0);
-                helper.innerHTML = `<span class="text-success">${validFiles.length} image(s) ready for upload. Total size: ${(totalSize / 1024).toFixed(2)} KB.</span>`;
-            });
+            createAddCard();
         }
 
         function initializeExistingGalleryRemoval({ sectionId, gridId, removedInputsContainerId }) {
@@ -621,30 +661,6 @@
         function updatePreview(preview, previewContainer, file) {
             preview.src = URL.createObjectURL(file);
             previewContainer.style.display = 'block';
-        }
-
-        function renderGalleryPreview(previewGrid, files) {
-            previewGrid.innerHTML = '';
-
-            files.forEach((file) => {
-                const objectUrl = URL.createObjectURL(file);
-                const card = document.createElement('div');
-                card.className = 'gallery-preview-card';
-                card.innerHTML = `
-                    <img src="${objectUrl}" alt="${file.name}">
-                    <div class="gallery-preview-meta">
-                        <strong>${file.name}</strong><br>
-                        ${(file.size / 1024).toFixed(2)} KB
-                    </div>
-                `;
-
-                const image = card.querySelector('img');
-                image.addEventListener('load', function () {
-                    URL.revokeObjectURL(objectUrl);
-                }, { once: true });
-
-                previewGrid.appendChild(card);
-            });
         }
 
         function initializeVariantManager() {

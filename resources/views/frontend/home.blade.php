@@ -3182,11 +3182,16 @@
             }
 
             .hero-search-section {
-                position: relative;
-                left: auto;
-                right: auto;
-                bottom: auto;
-                margin-top: 15px;
+                position: relative !important;
+                left: auto !important;
+                right: auto !important;
+                bottom: auto !important;
+                transform: none !important;
+                margin-top: 15px !important;
+            }
+
+            .section-hero-doctime {
+                padding-bottom: 20px !important;
             }
 
             .hero-search-bar {

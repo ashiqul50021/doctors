@@ -592,20 +592,29 @@
         @endif
 
         <!-- Product Real Gallery showcase -->
-        @if($galleryImages->isNotEmpty())
+        @if($galleryImages->count() > 1)
             <section class="landing-gallery-section my-5">
-                <div class="section-heading text-center mb-4">
+                <div class="section-heading text-center mb-3">
                     <span class="section-tag">Showcase</span>
                     <h3 class="fw-bold">পণ্যটির কিছু বাস্তব ছবি (Real Gallery)</h3>
+                    <button class="btn btn-outline-primary btn-sm mt-2" id="galleryToggleBtn"
+                        onclick="toggleGallerySection()">
+                        <i class="fas fa-images me-1"></i> View All Photos ({{ $galleryImages->count() }})
+                    </button>
                 </div>
-                <div class="row g-3 justify-content-center">
-                    @foreach($galleryImages as $image)
-                        <div class="col-md-6 col-lg-4">
-                            <div class="gallery-image-wrapper card border-0 shadow-sm overflow-hidden p-2 bg-white">
-                                <img src="{{ $image }}" class="img-fluid rounded" alt="{{ $product->name }} gallery {{ $loop->iteration }}" style="height: 250px; object-fit: contain; background: #f8fafc;">
+                <div id="realGalleryGrid" style="display:none;">
+                    <div class="row g-3 justify-content-center">
+                        @foreach($galleryImages as $image)
+                            <div class="col-md-6 col-lg-4">
+                                <div class="gallery-image-wrapper card border-0 shadow-sm overflow-hidden p-2 bg-white">
+                                    <img src="{{ $image }}" class="img-fluid rounded"
+                                        alt="{{ $product->name }} gallery {{ $loop->iteration }}"
+                                        style="height: 250px; object-fit: contain; background: #f8fafc; cursor:pointer;"
+                                        onclick="setMainImage(this.src)">
+                                </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
             </section>
         @endif
@@ -3001,5 +3010,39 @@
         // Initial recalculate direct order totals on load
         recalculateDirectOrder();
     });
+
+    // Gallery toggle function
+    function toggleGallerySection() {
+        const grid = document.getElementById('realGalleryGrid');
+        const btn = document.getElementById('galleryToggleBtn');
+        if (!grid || !btn) return;
+        if (grid.style.display === 'none') {
+            grid.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-times me-1"></i> Hide Photos';
+            btn.classList.remove('btn-outline-primary');
+            btn.classList.add('btn-outline-secondary');
+        } else {
+            grid.style.display = 'none';
+            btn.innerHTML = '<i class="fas fa-images me-1"></i> View All Photos';
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-outline-primary');
+        }
+    }
+
+    // Set main product image from gallery click
+    function setMainImage(src) {
+        const activeImage = document.getElementById('activeProductImage');
+        if (activeImage && src) {
+            activeImage.src = src;
+            // Also update active thumb state
+            document.querySelectorAll('.product-thumb').forEach(function(t) {
+                t.classList.remove('is-active');
+                if (t.dataset.image === src) t.classList.add('is-active');
+            });
+            // Scroll to top of product image
+            const gallery = document.querySelector('.product-gallery-shell');
+            if (gallery) gallery.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
 </script>
 @endpush

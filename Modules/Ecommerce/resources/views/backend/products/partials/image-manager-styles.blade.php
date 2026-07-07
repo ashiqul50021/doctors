@@ -37,26 +37,66 @@
         background: #fff;
         overflow: hidden;
         box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 220px;
     }
 
     .gallery-preview-card img {
         width: 100%;
-        height: 145px;
+        height: 140px;
         object-fit: cover;
         display: block;
         background: #f8fafc;
     }
 
     .gallery-preview-meta {
-        padding: 10px 12px 8px;
+        padding: 8px 10px 4px;
         color: #64748b;
-        font-size: 12px;
-        line-height: 1.5;
-        word-break: break-word;
+        font-size: 11px;
+        line-height: 1.4;
+        word-break: break-all;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .gallery-preview-actions {
-        padding: 0 12px 12px;
+        padding: 0 10px 10px;
+        margin-top: auto;
+    }
+
+    .gallery-add-card {
+        border: 2px dashed #cbd5e1;
+        border-radius: 14px;
+        background: #fff;
+        height: 220px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #64748b;
+    }
+
+    .gallery-add-card:hover {
+        border-color: #3b82f6;
+        background: #eff6ff;
+        color: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.1);
+    }
+
+    .gallery-add-card i {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+
+    .gallery-add-card span {
+        font-size: 12px;
+        font-weight: 600;
     }
 
     .gallery-empty-note {
