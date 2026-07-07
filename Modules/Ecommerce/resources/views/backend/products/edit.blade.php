@@ -71,6 +71,11 @@
                                             <option value="{{ $child->id }}" {{ old('product_category_id', $product->product_category_id) == $child->id ? 'selected' : '' }}>
                                                 &nbsp;&nbsp;&mdash;&nbsp;{{ $child->name }}
                                             </option>
+                                            @foreach($child->children as $grandchild)
+                                                <option value="{{ $grandchild->id }}" {{ old('product_category_id', $product->product_category_id) == $grandchild->id ? 'selected' : '' }}>
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&mdash;&nbsp;&mdash;&nbsp;{{ $grandchild->name }}
+                                                </option>
+                                            @endforeach
                                         @endforeach
                                     @endforeach
                                 </select>

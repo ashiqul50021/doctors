@@ -47,6 +47,11 @@
                                     <option value="">None (Top-Level Category)</option>
                                     @foreach($parentCategories as $parent)
                                         <option value="{{ $parent->id }}" {{ old('parent_id', $productCategory->parent_id) == $parent->id ? 'selected' : '' }}>{{ $parent->name }}</option>
+                                        @foreach($parent->children as $child)
+                                            <option value="{{ $child->id }}" {{ old('parent_id', $productCategory->parent_id) == $child->id ? 'selected' : '' }}>
+                                                &nbsp;&nbsp;&mdash;&nbsp;{{ $child->name }}
+                                            </option>
+                                        @endforeach
                                     @endforeach
                                 </select>
                             </div>

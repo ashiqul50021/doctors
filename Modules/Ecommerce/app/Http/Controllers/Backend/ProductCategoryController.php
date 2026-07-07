@@ -18,7 +18,12 @@ class ProductCategoryController extends Controller
 
     public function create()
     {
-        $parentCategories = ProductCategory::whereNull('parent_id')->orderBy('name')->get();
+        $parentCategories = ProductCategory::with(['children' => function($query) {
+                $query->orderBy('name');
+            }])
+            ->whereNull('parent_id')
+            ->orderBy('name')
+            ->get();
         return view('ecommerce::backend.product_categories.create', compact('parentCategories'));
     }
 
@@ -50,7 +55,10 @@ class ProductCategoryController extends Controller
 
     public function edit(ProductCategory $productCategory)
     {
-        $parentCategories = ProductCategory::whereNull('parent_id')
+        $parentCategories = ProductCategory::with(['children' => function($query) use ($productCategory) {
+                $query->where('id', '!=', $productCategory->id)->orderBy('name');
+            }])
+            ->whereNull('parent_id')
             ->where('id', '!=', $productCategory->id)
             ->orderBy('name')
             ->get();

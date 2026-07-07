@@ -199,8 +199,20 @@ class ProductController extends Controller
         $query = $this->withReviewStats(Product::with(['category', 'variants']))
             ->where('is_active', true);
 
+        $selectedCategory = null;
         if ($request->has('category') && $request->category) {
-            $query->where('product_category_id', $request->category);
+            $categoryId = (int) $request->category;
+            $selectedCategory = ProductCategory::find($categoryId);
+            
+            if ($selectedCategory) {
+                $childIds = ProductCategory::where('parent_id', $categoryId)->pluck('id')->toArray();
+                $grandchildIds = [];
+                if (!empty($childIds)) {
+                    $grandchildIds = ProductCategory::whereIn('parent_id', $childIds)->pluck('id')->toArray();
+                }
+                $categoryIds = array_merge([$categoryId], $childIds, $grandchildIds);
+                $query->whereIn('product_category_id', $categoryIds);
+            }
         }
 
         if ($request->has('search') && $request->search) {
@@ -208,9 +220,21 @@ class ProductController extends Controller
         }
 
         $products = $query->latest()->paginate(12);
-        $categories = ProductCategory::orderBy('name')->get();
+        
+        $categories = ProductCategory::with([
+                'children' => function($query) {
+                    $query->where('is_active', true)->orderBy('name');
+                },
+                'children.children' => function($query) {
+                    $query->where('is_active', true)->orderBy('name');
+                }
+            ])
+            ->whereNull('parent_id')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
-        return view('ecommerce::frontend.products.index', compact('products', 'categories'));
+        return view('ecommerce::frontend.products.index', compact('products', 'categories', 'selectedCategory'));
     }
 
     public function show($id)
@@ -233,7 +257,14 @@ class ProductController extends Controller
             ->where('is_active', true);
 
         if ($request->category && $request->category !== 'all') {
-            $query->where('product_category_id', $request->category);
+            $categoryId = (int) $request->category;
+            $childIds = ProductCategory::where('parent_id', $categoryId)->pluck('id')->toArray();
+            $grandchildIds = [];
+            if (!empty($childIds)) {
+                $grandchildIds = ProductCategory::whereIn('parent_id', $childIds)->pluck('id')->toArray();
+            }
+            $categoryIds = array_merge([$categoryId], $childIds, $grandchildIds);
+            $query->whereIn('product_category_id', $categoryIds);
         }
 
         if ($request->search) {

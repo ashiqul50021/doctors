@@ -39,11 +39,49 @@
                                         <span>All Categories</span>
                                     </label>
                                     @foreach($categories as $category)
-                                        <label class="category-item">
-                                            <input type="radio" name="category" value="{{ $category->id }}"
-                                                {{ (string) request('category') === (string) $category->id ? 'checked' : '' }}>
-                                            <span>{{ $category->name }}</span>
-                                        </label>
+                                        @if($category->children->isNotEmpty())
+                                            <div class="category-group mb-2">
+                                                <label class="category-item parent-category">
+                                                    <input type="radio" name="category" value="{{ $category->id }}"
+                                                        {{ (string) request('category') === (string) $category->id ? 'checked' : '' }}>
+                                                    <span class="fw-bold">{{ $category->name }}</span>
+                                                </label>
+                                                <div class="subcategory-list">
+                                                    @foreach($category->children as $child)
+                                                        @if($child->children->isNotEmpty())
+                                                            <div class="subcategory-group mb-2">
+                                                                <label class="category-item subcategory-item fw-bold">
+                                                                    <input type="radio" name="category" value="{{ $child->id }}"
+                                                                        {{ (string) request('category') === (string) $child->id ? 'checked' : '' }}>
+                                                                    <span>{{ $child->name }}</span>
+                                                                </label>
+                                                                <div class="sub-subcategory-list">
+                                                                    @foreach($child->children as $grandchild)
+                                                                        <label class="category-item sub-subcategory-item">
+                                                                            <input type="radio" name="category" value="{{ $grandchild->id }}"
+                                                                                {{ (string) request('category') === (string) $grandchild->id ? 'checked' : '' }}>
+                                                                            <span>{{ $grandchild->name }}</span>
+                                                                        </label>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <label class="category-item subcategory-item">
+                                                                <input type="radio" name="category" value="{{ $child->id }}"
+                                                                    {{ (string) request('category') === (string) $child->id ? 'checked' : '' }}>
+                                                                <span>{{ $child->name }}</span>
+                                                            </label>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @else
+                                            <label class="category-item">
+                                                <input type="radio" name="category" value="{{ $category->id }}"
+                                                    {{ (string) request('category') === (string) $category->id ? 'checked' : '' }}>
+                                                <span>{{ $category->name }}</span>
+                                            </label>
+                                        @endif
                                     @endforeach
                                 </div>
                             </div>
@@ -79,15 +117,13 @@
                     </div>
                 @endif
 
-                @if(request('search') || request('category'))
+                @if(request('search') || $selectedCategory)
                     <div class="active-filters mb-3">
                         @if(request('search'))
                             <span class="chip">Search: {{ request('search') }}</span>
                         @endif
-                        @if(request('category'))
-                            <span class="chip">Category:
-                                {{ optional($categories->firstWhere('id', (int) request('category')))->name ?? 'Selected' }}
-                            </span>
+                        @if($selectedCategory)
+                            <span class="chip">Category: {{ $selectedCategory->name }}</span>
                         @endif
                     </div>
                 @endif
@@ -271,7 +307,7 @@
     }
 
     .category-list {
-        max-height: 280px;
+        max-height: 380px;
         overflow: auto;
         padding-right: 4px;
     }
@@ -292,6 +328,81 @@
     .category-item:hover {
         border-color: #93c5fd;
         background: #fff;
+    }
+
+    .category-group {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 10px;
+        margin-bottom: 10px;
+        transition: all 0.2s ease;
+    }
+
+    .category-group:hover {
+        border-color: #cbd5e1;
+    }
+
+    .category-item.parent-category {
+        border: none !important;
+        background: transparent !important;
+        padding: 4px 6px !important;
+        margin-bottom: 6px !important;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .subcategory-list {
+        border-left: 2px solid #e2e8f0;
+        margin-left: 10px;
+        padding-left: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .subcategory-item {
+        border: 1px solid #e2e8f0 !important;
+        background: #fff !important;
+        border-radius: 8px !important;
+        padding: 8px 10px !important;
+        margin-bottom: 0 !important;
+        font-size: 13px !important;
+        color: #475569;
+        font-weight: 500;
+    }
+
+    .subcategory-item:hover {
+        border-color: #3b82f6 !important;
+        color: #2563eb !important;
+        transform: translateX(2px);
+    }
+
+    .sub-subcategory-list {
+        border-left: 2px dashed #cbd5e1;
+        margin-left: 12px;
+        padding-left: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-top: 4px;
+    }
+
+    .sub-subcategory-item {
+        border: 1px solid #f1f5f9 !important;
+        background: #f8fafc !important;
+        border-radius: 6px !important;
+        padding: 6px 8px !important;
+        margin-bottom: 0 !important;
+        font-size: 12px !important;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .sub-subcategory-item:hover {
+        border-color: #3b82f6 !important;
+        color: #2563eb !important;
+        transform: translateX(2px);
     }
 
     .btn-filter {
