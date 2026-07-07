@@ -726,7 +726,7 @@
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <input type="hidden" name="variant_id" id="directFormVariantId" value="{{ $selectedVariant?->id }}">
                             <input type="hidden" name="quantity" id="directFormQuantity" value="1">
-                            <input type="hidden" name="shipping_charge" id="directFormShippingCharge" value="80">
+                            <input type="hidden" name="shipping_charge" id="directFormShippingCharge" value="130">
 
                             <div class="row g-4">
                                 <!-- Shipping Info Form (Left) -->
@@ -734,40 +734,62 @@
                                     <h4 class="mb-3 border-bottom pb-2 fw-bold" style="color: var(--primary-blue) !important; border-bottom-color: #dbeafe !important;">শিপিংয়ের তথ্য (Billing/Shipping)</h4>
                                     
                                     <div class="form-group mb-3 text-start">
-                                        <label class="form-label fw-bold">আপনার নাম (Full Name) <span class="text-danger">*</span></label>
+                                        <label class="form-label fw-bold">আপনার নামঃ <span class="text-danger">*</span></label>
                                         <input type="text" name="name" class="form-control form-control-lg shadow-none" placeholder="এখানে আপনার নাম লিখুন" required value="{{ old('name', Auth::user()->name ?? '') }}">
                                     </div>
 
                                     <div class="form-group mb-3 text-start">
-                                        <label class="form-label fw-bold">মোবাইল নাম্বার (Phone Number) <span class="text-danger">*</span></label>
+                                        <label class="form-label fw-bold">আপনার মোবাইল নাম্বারঃ <span class="text-danger">*</span></label>
                                         <input type="text" name="phone" id="directFormPhone" class="form-control form-control-lg shadow-none" placeholder="১১ ডিজিটের সচল মোবাইল নাম্বার" required value="{{ old('phone', Auth::user()->patient->phone ?? '') }}">
                                     </div>
 
-                                    <div class="form-group mb-3 text-start">
-                                        <label class="form-label fw-bold">ইমেইল এড্রেস (Email Address) <span class="text-muted">(ঐচ্ছিক - Optional)</span></label>
-                                        <input type="email" name="email" id="directFormEmail" class="form-control form-control-lg shadow-none" placeholder="যেমন: name@domain.com" value="{{ old('email', Auth::user()->email ?? '') }}">
-                                    </div>
+                                    <input type="hidden" name="email" id="directFormEmail" value="{{ old('email', Auth::user()->email ?? '') }}">
 
                                     <div class="form-group mb-3 text-start">
-                                        <label class="form-label fw-bold">সম্পূর্ণ ঠিকানা (Full Shipping Address) <span class="text-danger">*</span></label>
+                                        <label class="form-label fw-bold">গ্রাম, থানা, জেলা, পূর্ণ ঠিকানা লিখুনঃ <span class="text-danger">*</span></label>
                                         <textarea name="address" class="form-control form-control-lg shadow-none" rows="3" placeholder="জেলা, থানা, গ্রাম/রোড এবং বাসা নাম্বার উল্লেখ করুন" required>{{ old('address', Auth::user()->patient->address ?? '') }}</textarea>
                                     </div>
+
+                                    @if($hasVariants)
+                                        <div class="form-group mb-3 text-start">
+                                            <label class="form-label fw-bold d-block">আপনার পছন্দের পণ্য নির্বাচন করুনঃ <span class="text-danger">*</span></label>
+                                            <div class="variant-options-grid mt-2">
+                                                @foreach($activeVariants as $variant)
+                                                    <label class="variant-radio-card {{ $selectedVariant && $selectedVariant->id === $variant->id ? 'active' : '' }}">
+                                                        <input type="radio" name="direct_variant_select" value="{{ $variant->id }}" data-price="{{ $variant->currentPrice() }}" data-label="{{ $variant->display_label }}" {{ $selectedVariant && $selectedVariant->id === $variant->id ? 'checked' : '' }}>
+                                                        <div class="variant-item-image">
+                                                            <img src="{{ $mainImage }}" alt="{{ $variant->display_label }}" style="width: 44px; height: 44px; object-fit: contain;">
+                                                        </div>
+                                                        <div class="variant-radio-content w-100 d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <span class="variant-title fw-bold text-dark">{{ $variant->display_label }}</span>
+                                                                @if($variant->stock <= 5 && $variant->stock > 0)
+                                                                    <span class="variant-stock-warning text-danger small d-block mt-1">মাত্র {{ $variant->stock }} টি অবশিষ্ট আছে!</span>
+                                                                @endif
+                                                            </div>
+                                                            <span class="variant-price fw-extrabold" style="color: var(--primary-blue); font-size: 16px;">৳{{ number_format($variant->currentPrice(), 0) }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
 
                                     <div class="form-group mb-3 text-start">
                                         <label class="form-label fw-bold d-block">ডেলিভারি এরিয়া নির্বাচন করুন (Delivery Area) <span class="text-danger">*</span></label>
                                         <div class="delivery-options-grid mt-2">
-                                            <label class="delivery-radio-card active">
-                                                <input type="radio" name="delivery_area" value="inside" checked>
+                                            <label class="delivery-radio-card">
+                                                <input type="radio" name="delivery_area" value="inside">
                                                 <div class="delivery-radio-content">
-                                                    <span class="delivery-title">ঢাকার ভিতরে (Inside Dhaka)</span>
+                                                    <span class="delivery-title">ঢাকার মধ্যে (Inside Dhaka)</span>
                                                     <span class="delivery-price">৳৮০</span>
                                                 </div>
                                             </label>
-                                            <label class="delivery-radio-card">
-                                                <input type="radio" name="delivery_area" value="outside">
+                                            <label class="delivery-radio-card active">
+                                                <input type="radio" name="delivery_area" value="outside" checked>
                                                 <div class="delivery-radio-content">
-                                                    <span class="delivery-title">ঢাকার বাইরে (Outside Dhaka)</span>
-                                                    <span class="delivery-price">৳১৫০</span>
+                                                    <span class="delivery-title">ঢাকার বাহিরে (Outside Dhaka)</span>
+                                                    <span class="delivery-price">৳১৩০</span>
                                                 </div>
                                             </label>
                                         </div>
@@ -814,7 +836,7 @@
                                             </div>
                                             <div class="d-flex justify-content-between mb-2">
                                                 <span class="text-muted">ডেলিভারি চার্জ (Delivery)</span>
-                                                <strong id="directShipping" class="text-dark">৳৮০</strong>
+                                                <strong id="directShipping" class="text-dark">৳১৩০</strong>
                                             </div>
                                             <div class="d-flex justify-content-between mb-2 text-danger" id="directDiscountRow" style="display: none !important;">
                                                 <span class="text-muted">ডিসকাউন্ট (Discount) <small class="text-muted" id="directCouponCodeDisplay"></small></span>
@@ -823,7 +845,7 @@
                                             <hr>
                                             <div class="d-flex justify-content-between mb-4">
                                                 <span class="fs-5 fw-bold text-dark">সর্বমোট (Total)</span>
-                                                <strong class="fs-4 fw-bold" id="directTotal" style="color: var(--primary-blue) !important;">৳{{ number_format($displayPrice + 80, 0) }}</strong>
+                                                <strong class="fs-4 fw-bold" id="directTotal" style="color: var(--primary-blue) !important;">৳{{ number_format($displayPrice + 130, 0) }}</strong>
                                             </div>
                                         </div>
 
@@ -2122,6 +2144,58 @@
             flex-direction: column;
         }
     }
+
+    /* Variant Options Radio Grid */
+    .variant-options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .variant-radio-card {
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 14px 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #fff;
+        transition: all 0.2s ease;
+        margin-bottom: 0;
+    }
+
+    .variant-radio-card input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary-blue);
+        flex-shrink: 0;
+    }
+
+    .variant-radio-card.active {
+        border-color: var(--primary-blue);
+        background: #eff6ff;
+    }
+
+    .variant-item-image {
+        width: 50px;
+        height: 50px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 2px;
+        overflow: hidden;
+    }
+
+    .variant-item-image img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
 </style>
 @endpush
 
@@ -2148,7 +2222,7 @@
 
         let directQuantity = 1;
         let directPrice = {{ (float) $displayPrice }};
-        let directShippingCharge = 80;
+        let directShippingCharge = 130;
         let directDiscount = 0;
         let directCouponType = null;
         let directCouponAmount = 0;
@@ -2245,6 +2319,12 @@
             if (directTotal) {
                 directTotal.textContent = formatMoney(total);
             }
+
+            // Dynamic Order Button Price Update
+            const directSubmitBtn = document.getElementById('directSubmitBtn');
+            if (directSubmitBtn) {
+                directSubmitBtn.innerHTML = '<i class="fas fa-shopping-cart me-2"></i> অর্ডার করুন  ' + formatMoney(total);
+            }
         }
 
         // Delivery Area Selection
@@ -2263,7 +2343,7 @@
                 if (this.value === 'inside') {
                     directShippingCharge = 80;
                 } else {
-                    directShippingCharge = 150;
+                    directShippingCharge = 130;
                 }
 
                 recalculateDirectOrder();
@@ -2341,6 +2421,17 @@
                 directFormPriceDisplay.textContent = formatMoney(price);
             }
 
+            // Sync checkout form radio buttons
+            const matchingRadio = document.querySelector(`input[name="direct_variant_select"][value="${variantId}"]`);
+            if (matchingRadio) {
+                matchingRadio.checked = true;
+                document.querySelectorAll('.variant-radio-card').forEach(card => card.classList.remove('active'));
+                const card = matchingRadio.closest('.variant-radio-card');
+                if (card) {
+                    card.classList.add('active');
+                }
+            }
+
             // Update quantity max limit based on variant stock
             const stock = Number(selectedOption.dataset.stock || 0);
             if (quantityInput) {
@@ -2349,6 +2440,45 @@
 
             updateDirectQuantity(directQuantity);
         }
+
+        // Handle checkout variant radio card selection
+        const directVariantRadios = document.querySelectorAll('input[name="direct_variant_select"]');
+        directVariantRadios.forEach(radio => {
+            radio.addEventListener('change', function () {
+                const variantId = this.value;
+                const price = Number(this.dataset.price || 0);
+                const label = this.dataset.label || '';
+
+                // Update active card styling
+                document.querySelectorAll('.variant-radio-card').forEach(card => card.classList.remove('active'));
+                const card = this.closest('.variant-radio-card');
+                if (card) {
+                    card.classList.add('active');
+                }
+
+                // Sync with upper dropdown if exists
+                if (variantSelect) {
+                    variantSelect.value = variantId;
+                    variantSelect.dispatchEvent(new Event('change'));
+                }
+
+                // Update direct checkout form state
+                directPrice = price;
+                if (directFormVariantId) {
+                    directFormVariantId.value = variantId;
+                }
+                if (directFormVariantLabel) {
+                    directFormVariantLabel.textContent = label;
+                    directFormVariantLabel.style.display = label ? '' : 'none';
+                }
+                const directFormPriceDisplay = document.getElementById('directFormPriceDisplay');
+                if (directFormPriceDisplay) {
+                    directFormPriceDisplay.textContent = formatMoney(price);
+                }
+
+                recalculateDirectOrder();
+            });
+        });
 
         if (variantSelect) {
             // Also call sync on original select change
@@ -2597,6 +2727,9 @@
             variantSelect.addEventListener('change', syncVariantDetails);
             syncVariantDetails();
         }
+
+        // Initial recalculate direct order totals on load
+        recalculateDirectOrder();
     });
 </script>
 @endpush
