@@ -444,6 +444,221 @@
             @endif
         @endif
 
+        <!-- Product Features List / আমাদের প্রোডাক্টের বৈশিষ্ট্য -->
+        @php
+            $featuresTitle = $landingSettings['product_features_title'] ?? 'আমাদের প্রোডাক্টের বৈশিষ্ট্য';
+            $productFeatures = [];
+            for ($i = 1; $i <= 6; $i++) {
+                $featText = $landingSettings["product_feature_{$i}"] ?? '';
+                if (!empty(trim($featText))) {
+                    $productFeatures[] = $featText;
+                }
+            }
+            if (empty($productFeatures)) {
+                $productFeatures = [
+                    'অটো অন/অফ: মানুষ থাকলেই আলো জ্বলবে, চলে গেলে অটো বন্ধ।',
+                    'ইনফ্রারেড সেন্সর: দূর থেকেই নিখুঁতভাবে মুভমেন্ট শনাক্ত করে।',
+                    'স্মার্ট ডে-লাইট সেন্সর: দিনের আলো থাকলে এটি জ্বলবে না, ফলে আরও বিদ্যুৎ সাশ্রয় হবে।',
+                    'সহজ ইনস্টলেশন: কোনো টেকনিশিয়ান লাগবে না, সাধারণ হোল্ডারের মতোই লাগিয়ে নিন।',
+                    'মাল্টি-পারপাস: বাথরুম, সিঁড়ি, করিডোর, বারান্দা, স্টোর রুম বা গ্যারেজের জন্য সেরা।'
+                ];
+            }
+        @endphp
+
+        @if(!empty($productFeatures))
+            <section class="landing-features-section mb-4">
+                <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                    <div class="section-heading text-center mb-4">
+                        <span class="section-tag" style="background: rgba(29, 78, 216, 0.1) !important; color: var(--primary-blue) !important;">Product Features</span>
+                        <h3 class="fw-bold text-dark mt-2">{{ $featuresTitle }}</h3>
+                    </div>
+                    <div class="features-list-wrapper mx-auto" style="max-width: 800px;">
+                        <ul class="features-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
+                            @foreach($productFeatures as $featureText)
+                                <li class="features-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0; transition: all 0.2s ease;">
+                                    <span class="features-icon-list-icon text-primary fs-4" style="color: var(--primary-blue) !important; line-height: 1;">
+                                        <i class="fas fa-check-square"></i>
+                                    </span>
+                                    <span class="features-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $featureText }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        @endif
+
+        <!-- User Problems Section / এই সমস্যাগুলো কি আপনারও আছে? -->
+        @php
+            $problemsTitle = $landingSettings['problems_title'] ?? 'এই সমস্যাগুলো কি আপনারও আছে?';
+            $productProblems = [];
+            for ($i = 1; $i <= 6; $i++) {
+                $probText = $landingSettings["problem_{$i}"] ?? '';
+                if (!empty(trim($probText))) {
+                    $productProblems[] = $probText;
+                }
+            }
+            if (empty($productProblems)) {
+                $productProblems = [
+                    'অন্ধকারে বাথরুমে বা সিঁড়িতে সুইচ খুঁজতে গিয়ে পড়ে যাওয়ার ভয় পান?',
+                    'অপ্রয়োজনে লাইট অন থাকার কারণে প্রতি মাসে বিদ্যুৎ বিল বেশি আসে?',
+                    'রাতে অন্ধকারে হাতড়ে লাইটের সুইচ খুঁজে পেতে কষ্ট হয়?',
+                    'সুইচ অন-অফ করার আলসেমির কারণে বিদ্যুৎ অপচয় হচ্ছে?'
+                ];
+            }
+        @endphp
+
+        @if(!empty($productProblems))
+            <section class="landing-problems-section mb-4">
+                <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid #fee2e2 !important; background-color: #fffafb !important;">
+                    <div class="section-heading text-center mb-4">
+                        <span class="section-tag" style="background: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important;">Common Issues</span>
+                        <h3 class="fw-bold text-danger mt-2">{{ $problemsTitle }}</h3>
+                    </div>
+                    <div class="problems-list-wrapper mx-auto" style="max-width: 800px;">
+                        <ul class="problems-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
+                            @foreach($productProblems as $problemText)
+                                <li class="problems-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid #fee2e2; transition: all 0.2s ease; border-left: 4px solid #ef4444;">
+                                    <span class="problems-icon-list-icon text-danger fs-4" style="color: #ef4444 !important; line-height: 1;">
+                                        <i class="fas fa-times-circle"></i>
+                                    </span>
+                                    <span class="problems-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $problemText }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        @endif
+
+        @if($stockQty > 0)
+            <div class="text-center my-4">
+                <a href="#direct-checkout-section" class="btn btn-landing-cta px-5 py-3 fs-5 text-decoration-none">
+                    <i class="fas fa-shopping-cart me-2"></i> অর্ডার করতে চাই
+                </a>
+            </div>
+        @endif
+
+        <!-- Product Benefits Section / সুবিধা ও কার্যকারিতা -->
+        @php
+            $benefitsTitle = $landingSettings['benefits_title'] ?? 'বৈশিষ্ট্যগুলো কি কি জানতে চান?';
+            $productBenefits = [];
+            for ($i = 1; $i <= 6; $i++) {
+                $benefitText = $landingSettings["benefit_{$i}"] ?? '';
+                if (!empty(trim($benefitText))) {
+                    $productBenefits[] = $benefitText;
+                }
+            }
+            if (empty($productBenefits)) {
+                $productBenefits = [
+                    'মানুষের উপস্থিতি টের পেয়ে স্বয়ংক্রিয়ভাবে লাইট জ্বলবে।',
+                    'বিদ্যুৎ বিল সাশ্রয় করতে সাহায্য করবে।',
+                    'চোর ডাকাত থেকে আপনার বাড়ি সুরক্ষিত রাখতে ভূমিকা রাখবে।',
+                    'অন্ধকারে সুইচ খোঁজার ঝামেলা থেকে মুক্তি দেবে।',
+                    'বাসার শিশু ও বয়স্কদের জন্য রাতে চলাচলে নিরাপত্তা দেবে।'
+                ];
+            }
+        @endphp
+
+        @if(!empty($productBenefits))
+            <section class="landing-benefits-section mb-4">
+                <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                    <div class="section-heading text-center mb-4">
+                        <span class="section-tag" style="background: rgba(16, 185, 129, 0.1) !important; color: #10b981 !important;">Benefits</span>
+                        <h3 class="fw-bold text-dark mt-2">{{ $benefitsTitle }}</h3>
+                    </div>
+                    <div class="benefits-list-wrapper mx-auto" style="max-width: 800px;">
+                        <ul class="benefits-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
+                            @foreach($productBenefits as $benefitText)
+                                <li class="benefits-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #fdfefe; border: 1px solid #e2e8f0; transition: all 0.2s ease; border-left: 4px solid #10b981;">
+                                    <span class="benefits-icon-list-icon text-success fs-4" style="color: #10b981 !important; line-height: 1;">
+                                        <i class="fas fa-check-circle"></i>
+                                    </span>
+                                    <span class="benefits-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $benefitText }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        @endif
+
+        @if($stockQty > 0)
+            <div class="text-center my-4">
+                <a href="#direct-checkout-section" class="btn btn-landing-cta px-5 py-3 fs-5 text-decoration-none">
+                    <i class="fas fa-shopping-cart me-2"></i> অর্ডার করতে চাই
+                </a>
+            </div>
+        @endif
+
+        <!-- Product Real Gallery showcase -->
+        @if($galleryImages->isNotEmpty())
+            <section class="landing-gallery-section my-5">
+                <div class="section-heading text-center mb-4">
+                    <span class="section-tag">Showcase</span>
+                    <h3 class="fw-bold">পণ্যটির কিছু বাস্তব ছবি (Real Gallery)</h3>
+                </div>
+                <div class="row g-3 justify-content-center">
+                    @foreach($galleryImages as $image)
+                        <div class="col-md-6 col-lg-4">
+                            <div class="gallery-image-wrapper card border-0 shadow-sm overflow-hidden p-2 bg-white">
+                                <img src="{{ $image }}" class="img-fluid rounded" alt="{{ $product->name }} gallery {{ $loop->iteration }}" style="height: 250px; object-fit: contain; background: #f8fafc;">
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        <!-- Package Includes Section -->
+        @php
+            $packageTitle = $landingSettings['package_includes_title'] ?? 'প্যাকেজের সাথে যা যা পাবেন';
+            $packageIncludes = [];
+            for ($i = 1; $i <= 6; $i++) {
+                $includeText = $landingSettings["package_include_{$i}"] ?? '';
+                if (!empty(trim($includeText))) {
+                    $packageIncludes[] = $includeText;
+                }
+            }
+            if (empty($packageIncludes)) {
+                $packageIncludes = [
+                    '১টি পিআইআর মোশন সেন্সর হোল্ডার (PIR Motion Sensor Holder)',
+                    'প্রয়োজনীয় স্ক্রু ও ওয়াল প্লাগ (Mounting Screws & Plugs)',
+                    'ব্যবহারকারী নির্দেশিকা বই (User Manual Guide)',
+                    'টেস্টিং ওয়ারেন্টি কার্ড (Testing Warranty Card)'
+                ];
+            }
+        @endphp
+
+        @if(!empty($packageIncludes))
+            <section class="landing-package-section mb-4">
+                <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                    <div class="section-heading text-center mb-4">
+                        <span class="section-tag" style="background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important;">Package Contents</span>
+                        <h3 class="fw-bold text-dark mt-2">{{ $packageTitle }}</h3>
+                    </div>
+                    <div class="package-list-wrapper mx-auto" style="max-width: 800px;">
+                        <div class="p-3 rounded-3 bg-light border d-flex flex-column gap-3">
+                            @foreach($packageIncludes as $includeText)
+                                <div class="d-flex align-items-center gap-3 p-2 bg-white rounded border-start border-warning border-3">
+                                    <span class="text-warning fs-5"><i class="fas fa-box-open"></i></span>
+                                    <span class="text-dark fw-semibold" style="font-size: 15px;">{{ $includeText }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @endif
+
+        @if($stockQty > 0)
+            <div class="text-center my-4">
+                <a href="#direct-checkout-section" class="btn btn-landing-cta px-5 py-3 fs-5 text-decoration-none">
+                    <i class="fas fa-shopping-cart me-2"></i> অর্ডার করতে চাই
+                </a>
+            </div>
+        @endif
+
         <!-- Why Choose Us / কেন আমাদের থেকে অর্ডার করবেন? -->
         <section class="landing-trust-section mb-4">
             <div class="info-card p-4 text-center rounded-3" style="background: #f0f7ff; border: 1px solid #dbeafe;">
@@ -464,21 +679,62 @@
             </div>
         </section>
 
-        <!-- Product Real Gallery showcase -->
-        @if($galleryImages->isNotEmpty())
-            <section class="landing-gallery-section my-5">
-                <div class="section-heading text-center mb-4">
-                    <span class="section-tag">Showcase</span>
-                    <h3 class="fw-bold">পণ্যটির কিছু বাস্তব ছবি (Real Gallery)</h3>
-                </div>
-                <div class="row g-3 justify-content-center">
-                    @foreach($galleryImages as $image)
-                        <div class="col-md-6 col-lg-4">
-                            <div class="gallery-image-wrapper card border-0 shadow-sm overflow-hidden p-2 bg-white">
-                                <img src="{{ $image }}" class="img-fluid rounded" alt="{{ $product->name }} gallery {{ $loop->iteration }}" style="height: 250px; object-fit: contain; background: #f8fafc;">
+        <!-- FAQ Section -->
+        @php
+            $faqsTitle = $landingSettings['faqs_title'] ?? 'কিছু সাধারণ প্রশ্ন';
+            $productFAQs = [];
+            for ($i = 1; $i <= 4; $i++) {
+                $q = $landingSettings["faq_q_{$i}"] ?? '';
+                $a = $landingSettings["faq_a_{$i}"] ?? '';
+                if (!empty(trim($q)) && !empty(trim($a))) {
+                    $productFAQs[] = ['q' => $q, 'a' => $a];
+                }
+            }
+            if (empty($productFAQs)) {
+                $productFAQs = [
+                    [
+                        'q' => 'সেন্সর হোল্ডারটি লাগাতে কি অতিরিক্ত তার লাগবে?',
+                        'a' => 'জি না, এটি সাধারণ লাইট হোল্ডারের মতোই সরাসরি হোল্ডারে প্যাঁচ দিয়ে বসানো যায়। কোনো তার বা টেকনিশিয়ান লাগবে না।'
+                    ],
+                    [
+                        'q' => 'এর মোশন ডিটেকশন রেঞ্জ কত দূর?',
+                        'a' => 'এটি প্রায় ১০-১২ ফুট দূর থেকে মানুষের উপস্থিতি ডিটেক্ট করতে পারে এবং আলো অন করতে পারে।'
+                    ],
+                    [
+                        'q' => 'দিনের বেলায় কি এটি জ্বলবে?',
+                        'a' => 'না, এতে ডে-লাইট সেন্সর রয়েছে যা দিনের আলোতে লাইট অফ রাখে এবং কেবল অন্ধকারেই কাজ করে বিদ্যুৎ বাঁচায়।'
+                    ],
+                    [
+                        'q' => 'সব ধরণের বাল্ব কি এতে ব্যবহার করা যাবে?',
+                        'a' => 'জি হ্যাঁ, যেকোনো রেগুলার এলইডি বা এনার্জি সেভিং বাল্ব এতে খুব সহজেই ব্যবহার করতে পারবেন।'
+                    ]
+                ];
+            }
+        @endphp
+
+        @if(!empty($productFAQs))
+            <section class="landing-faqs-section mb-4">
+                <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                    <div class="section-heading text-center mb-4">
+                        <span class="section-tag" style="background: rgba(59, 130, 246, 0.1) !important; color: #3b82f6 !important;">FAQs</span>
+                        <h3 class="fw-bold text-dark mt-2">{{ $faqsTitle }}</h3>
+                    </div>
+                    <div class="accordion accordion-flush mx-auto" id="landingFAQAccordion" style="max-width: 800px;">
+                        @foreach($productFAQs as $faqIndex => $faq)
+                            <div class="accordion-item border rounded-3 mb-2 overflow-hidden shadow-sm" style="border: 1px solid #e2e8f0 !important;">
+                                <h2 class="accordion-header" id="faqHeading{{ $faqIndex }}">
+                                    <button class="accordion-button collapsed fw-bold text-dark fs-6" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faqIndex }}" aria-expanded="false" aria-controls="faqCollapse{{ $faqIndex }}" style="background: #f8fafc; outline: none; box-shadow: none;">
+                                        {{ $faq['q'] }}
+                                    </button>
+                                </h2>
+                                <div id="faqCollapse{{ $faqIndex }}" class="accordion-collapse collapse" aria-labelledby="faqHeading{{ $faqIndex }}" data-bs-parent="#landingFAQAccordion">
+                                    <div class="accordion-body text-muted text-start" style="line-height: 1.6; font-size: 14px; background: #fff; text-align: left;">
+                                        {{ $faq['a'] }}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
             </section>
         @endif
@@ -795,6 +1051,20 @@
                                         </div>
                                     </div>
 
+                                    <div class="delivery-info-note p-3 rounded-3 mt-3 bg-light border border-dashed border-primary text-start mb-3" style="border-style: dashed !important; border-color: #3b82f6 !important; background-color: #f0f7ff !important;">
+                                        <div class="d-flex align-items-start gap-2 text-primary">
+                                            <span class="fs-5"><i class="fas fa-shipping-fast"></i></span>
+                                            <div>
+                                                <strong class="d-block mb-1 text-dark" style="font-size: 14px;">ডেলিভারি চার্জ এবং সময়ঃ</strong>
+                                                <ul class="mb-0 ps-3 text-muted small" style="font-size: 12px; line-height: 1.5; text-align: left; list-style-type: disc;">
+                                                    <li>ঢাকার মধ্যে ডেলিভারি চার্জ ৮০ টাকা।</li>
+                                                    <li>ঢাকার বাহিরে ডেলিভারি চার্জ ১৩০ টাকা।</li>
+                                                    <li>অর্ডার করার ২৪ থেকে ৪৮ ঘণ্টার মধ্যে ডেলিভারি পাবেন।</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="form-group mb-3 text-start">
                                         <label class="form-label fw-bold">অর্ডার নোট (Order Notes - Optional)</label>
                                         <textarea name="notes" class="form-control shadow-none" rows="2" placeholder="অর্ডার সংক্রান্ত কোনো নির্দেশনা থাকলে লিখতে পারেন"></textarea>
@@ -978,20 +1248,20 @@
 
     /* Primary CTA Pulsing Button */
     .btn-landing-cta {
-        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 100%) !important;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
         color: #fff !important;
         border: none !important;
-        box-shadow: 0 8px 24px rgba(29, 78, 216, 0.25) !important;
+        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25) !important;
         font-size: 16px !important;
         font-weight: 700 !important;
-        animation: landing-pulse 2s infinite;
+        animation: landing-pulse 2.5s infinite;
         padding: 14px 28px !important;
         border-radius: 12px !important;
     }
 
     .btn-landing-cta:hover {
-        background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--primary-blue) 100%) !important;
-        box-shadow: 0 12px 30px rgba(29, 78, 216, 0.45) !important;
+        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+        box-shadow: 0 12px 30px rgba(16, 185, 129, 0.45) !important;
         transform: translateY(-2px) !important;
     }
 

@@ -284,6 +284,174 @@
                                             </div>
                                         @endfor
                                     </div>
+
+                                    <!-- Product Features Section -->
+                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-list-ul text-primary me-1"></i> ৪. আমাদের প্রোডাক্টের বৈশিষ্ট্য (Product Features List)</h5>
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <div class="form-group">
+                                                <label class="fw-bold">সেকশন টাইটেল (Features Section Title)</label>
+                                                <input type="text" name="landing_settings[product_features_title]" class="form-control" value="{{ old('landing_settings.product_features_title', $product->landing_settings['product_features_title'] ?? 'আমাদের প্রোডাক্টের বৈশিষ্ট্য') }}" placeholder="আমাদের প্রোডাক্টের বৈশিষ্ট্য">
+                                            </div>
+                                        </div>
+                                        @for ($i = 1; $i <= 6; $i++)
+                                            @php
+                                                $defaultProductFeatures = [
+                                                    1 => 'অটো অন/অফ: মানুষ থাকলেই আলো জ্বলবে, চলে গেলে অটো বন্ধ।',
+                                                    2 => 'ইনফ্রারেড সেন্সর: দূর থেকেই নিখুঁতভাবে মুভমেন্ট শনাক্ত করে।',
+                                                    3 => 'স্মার্ট ডে-লাইট সেন্সর: দিনের আলো থাকলে এটি জ্বলবে না, ফলে আরও বিদ্যুৎ সাশ্রয় হবে।',
+                                                    4 => 'সহজ ইনস্টলেশন: কোনো টেকনিশিয়ান লাগবে না, সাধারণ হোল্ডারের মতোই লাগিয়ে নিন।',
+                                                    5 => 'মাল্টি-পারপাস: বাথরুম, সিঁড়ি, করিডোর, বারান্দা, স্টোর রুম বা গ্যারেজের জন্য সেরা।',
+                                                    6 => ''
+                                                ];
+                                            @endphp
+                                            <div class="col-md-6 col-12 mb-3">
+                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
+                                                    <span class="badge bg-primary text-white mb-2">বৈশিষ্ট্য {{ $i }}</span>
+                                                    <div class="form-group mb-0">
+                                                        <label class="small fw-bold">ফিচার বিবরণ (Feature Text)</label>
+                                                        <textarea name="landing_settings[product_feature_{{ $i }}]" class="form-control form-control-sm" rows="2" placeholder="প্রোডাক্টের বৈশিষ্ট্যটি এখানে লিখুন">{{ old('landing_settings.product_feature_' . $i, $product->landing_settings['product_feature_' . $i] ?? ($defaultProductFeatures[$i] ?? '')) }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endfor
+                                    </div>
+
+                                    <!-- User Problems Section -->
+                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-exclamation-triangle text-danger me-1"></i> ৪.৫. এই সমস্যাগুলো কি আপনারও আছে? (User Pain Points / Problems List)</h5>
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <div class="form-group">
+                                                <label class="fw-bold">সেকশন টাইটেল (Problems Section Title)</label>
+                                                <input type="text" name="landing_settings[problems_title]" class="form-control" value="{{ old('landing_settings.problems_title', $product->landing_settings['problems_title'] ?? 'এই সমস্যাগুলো কি আপনারও আছে?') }}" placeholder="এই সমস্যাগুলো কি আপনারও আছে?">
+                                            </div>
+                                        </div>
+                                        @for ($i = 1; $i <= 6; $i++)
+                                            @php
+                                                $defaultProblems = [
+                                                    1 => 'অন্ধকারে বাথরুমে বা সিঁড়িতে সুইচ খুঁজতে গিয়ে পড়ে যাওয়ার ভয় পান?',
+                                                    2 => 'অপ্রয়োজনে লাইট অন থাকার কারণে প্রতি মাসে বিদ্যুৎ বিল বেশি আসে?',
+                                                    3 => 'রাতে অন্ধকারে হাতড়ে লাইটের সুইচ খুঁজে পেতে কষ্ট হয়?',
+                                                    4 => 'সুইচ অন-অফ করার আলসেমির কারণে বিদ্যুৎ অপচয় হচ্ছে?',
+                                                    5 => '',
+                                                    6 => ''
+                                                ];
+                                            @endphp
+                                            <div class="col-md-6 col-12 mb-3">
+                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
+                                                    <span class="badge bg-danger text-white mb-2">সমস্যা {{ $i }}</span>
+                                                    <div class="form-group mb-0">
+                                                        <label class="small fw-bold">সমস্যার বিবরণ (Problem Text)</label>
+                                                        <textarea name="landing_settings[problem_{{ $i }}]" class="form-control form-control-sm" rows="2" placeholder="সমস্যার বিবরণ এখানে লিখুন">{{ old('landing_settings.problem_' . $i, $product->landing_settings['problem_' . $i] ?? ($defaultProblems[$i] ?? '')) }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endfor
+                                    </div>
+
+                                    <!-- Product Benefits Section -->
+                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-magic text-success me-1"></i> ৫. প্রোডাক্টের সুবিধা ও কার্যকারিতা (Product Benefits List)</h5>
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <div class="form-group">
+                                                <label class="fw-bold">সেকশন টাইটেল (Benefits Section Title)</label>
+                                                <input type="text" name="landing_settings[benefits_title]" class="form-control" value="{{ old('landing_settings.benefits_title', $product->landing_settings['benefits_title'] ?? 'বৈশিষ্ট্যগুলো কি কি জানতে চান?') }}" placeholder="বৈশিষ্ট্যগুলো কি কি জানতে চান?">
+                                            </div>
+                                        </div>
+                                        @for ($i = 1; $i <= 6; $i++)
+                                            @php
+                                                $defaultBenefits = [
+                                                    1 => 'মানুষের উপস্থিতি টের পেয়ে স্বয়ংক্রিয়ভাবে লাইট জ্বলবে।',
+                                                    2 => 'বিদ্যুৎ বিল সাশ্রয় করতে সাহায্য করবে।',
+                                                    3 => 'চোর ডাকাত থেকে আপনার বাড়ি সুরক্ষিত রাখতে ভূমিকা রাখবে।',
+                                                    4 => 'অন্ধকারে সুইচ খোঁজার ঝামেলা থেকে মুক্তি দেবে।',
+                                                    5 => 'বাসার শিশু ও বয়স্কদের জন্য রাতে চলাচলে নিরাপত্তা দেবে।',
+                                                    6 => ''
+                                                ];
+                                            @endphp
+                                            <div class="col-md-6 col-12 mb-3">
+                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
+                                                    <span class="badge bg-success text-white mb-2">সুবিধা {{ $i }}</span>
+                                                    <div class="form-group mb-0">
+                                                        <label class="small fw-bold">সুবিধার বিবরণ (Benefit Text)</label>
+                                                        <textarea name="landing_settings[benefit_{{ $i }}]" class="form-control form-control-sm" rows="2" placeholder="সুবিধার বিবরণ এখানে লিখুন">{{ old('landing_settings.benefit_' . $i, $product->landing_settings['benefit_' . $i] ?? ($defaultBenefits[$i] ?? '')) }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endfor
+                                    </div>
+
+                                    <!-- Package Includes Section -->
+                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-box-open text-warning me-1"></i> ৬. প্যাকেজের সাথে যা যা পাবেন (Package Includes)</h5>
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <div class="form-group">
+                                                <label class="fw-bold">সেকশন টাইটেল (Package Title)</label>
+                                                <input type="text" name="landing_settings[package_includes_title]" class="form-control" value="{{ old('landing_settings.package_includes_title', $product->landing_settings['package_includes_title'] ?? 'প্যাকেজের সাথে যা যা পাবেন') }}" placeholder="প্যাকেজের সাথে যা যা পাবেন">
+                                            </div>
+                                        </div>
+                                        @for ($i = 1; $i <= 6; $i++)
+                                            @php
+                                                $defaultIncludes = [
+                                                    1 => '১টি পিআইআর মোশন সেন্সর হোল্ডার (PIR Motion Sensor Holder)',
+                                                    2 => 'প্রয়োজনীয় স্ক্রু ও ওয়াল প্লাগ (Mounting Screws & Plugs)',
+                                                    3 => 'ব্যবহারকারী নির্দেশিকা বই (User Manual Guide)',
+                                                    4 => 'টেস্টিং ওয়ারেন্টি কার্ড (Testing Warranty Card)',
+                                                    5 => '',
+                                                    6 => ''
+                                                ];
+                                            @endphp
+                                            <div class="col-md-6 col-12 mb-3">
+                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
+                                                    <span class="badge bg-warning text-dark mb-2">আইটেম {{ $i }}</span>
+                                                    <div class="form-group mb-0">
+                                                        <label class="small fw-bold">আইটেমের বিবরণ (Item Text)</label>
+                                                        <textarea name="landing_settings[package_include_{{ $i }}]" class="form-control form-control-sm" rows="2" placeholder="আইটেম বিবরণ এখানে লিখুন">{{ old('landing_settings.package_include_' . $i, $product->landing_settings['package_include_' . $i] ?? ($defaultIncludes[$i] ?? '')) }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endfor
+                                    </div>
+
+                                    <!-- FAQ Section -->
+                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-question-circle text-info me-1"></i> ৭. কিছু সাধারণ প্রশ্ন (Frequently Asked Questions - FAQ)</h5>
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <div class="form-group">
+                                                <label class="fw-bold">সেকশন টাইটেল (FAQ Section Title)</label>
+                                                <input type="text" name="landing_settings[faqs_title]" class="form-control" value="{{ old('landing_settings.faqs_title', $product->landing_settings['faqs_title'] ?? 'কিছু সাধারণ প্রশ্ন') }}" placeholder="কিছু সাধারণ প্রশ্ন">
+                                            </div>
+                                        </div>
+                                        @for ($i = 1; $i <= 4; $i++)
+                                            @php
+                                                $defaultFAQQs = [
+                                                    1 => 'সেন্সর হোল্ডারটি লাগাতে কি অতিরিক্ত তার লাগবে?',
+                                                    2 => 'এর মোশন ডিটেকশন রেঞ্জ কত দূর?',
+                                                    3 => 'দিনের বেলায় কি এটি জ্বলবে?',
+                                                    4 => 'সব ধরণের বাল্ব কি এতে ব্যবহার করা যাবে?'
+                                                ];
+                                                $defaultFAQAs = [
+                                                    1 => 'জি না, এটি সাধারণ লাইট হোল্ডারের মতোই সরাসরি হোল্ডারে প্যাক দিয়ে বসানো যায়। কোনো তার বা টেকনিশিয়ান লাগবে না।',
+                                                    2 => 'এটি প্রায় ১০-১২ ফুট দূর থেকে মানুষের উপস্থিতি ডিটেক্ট করতে পারে এবং আলো অন করতে পারে।',
+                                                    3 => 'না, এতে ডে-লাইট সেন্সর রয়েছে যা দিনের আলোতে লাইট অফ রাখে এবং কেবল অন্ধকারেই কাজ করে বিদ্যুৎ বাঁচায়।',
+                                                    4 => 'জি হ্যাঁ, যেকোনো রেগুলার এলইডি বা এনার্জি সেভিং বাল্ব এতে খুব সহজেই ব্যবহার করতে পারবেন।'
+                                                ];
+                                            @endphp
+                                            <div class="col-12 mb-3">
+                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
+                                                    <span class="badge bg-info text-white mb-2">প্রশ্ন ও উত্তর {{ $i }}</span>
+                                                    <div class="form-group mb-2">
+                                                        <label class="small fw-bold">প্রশ্ন (Question)</label>
+                                                        <input type="text" name="landing_settings[faq_q_{{ $i }}]" class="form-control form-control-sm" value="{{ old('landing_settings.faq_q_' . $i, $product->landing_settings['faq_q_' . $i] ?? ($defaultFAQQs[$i] ?? '')) }}" placeholder="প্রশ্ন লিখুন">
+                                                    </div>
+                                                    <div class="form-group mb-0">
+                                                        <label class="small fw-bold">উত্তর (Answer)</label>
+                                                        <textarea name="landing_settings[faq_a_{{ $i }}]" class="form-control form-control-sm" rows="2" placeholder="উত্তর লিখুন">{{ old('landing_settings.faq_a_' . $i, $product->landing_settings['faq_a_' . $i] ?? ($defaultFAQAs[$i] ?? '')) }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endfor
+                                    </div>
                                 </div>
                             </div>
                         </div>
