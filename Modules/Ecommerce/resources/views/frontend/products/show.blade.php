@@ -2481,6 +2481,26 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Core elements
+        const activeImage = document.getElementById('activeProductImage');
+        const zoomFrame = document.querySelector('.product-zoom-frame');
+        const thumbs = document.querySelectorAll('.product-thumb');
+        const variantSelect = document.getElementById('productVariant');
+        const quantityInput = document.getElementById('productQuantity');
+        const qtyButtons = document.querySelectorAll('.qty-btn');
+        const currentPrice = document.getElementById('productCurrentPrice');
+        const originalPrice = document.getElementById('productOriginalPrice');
+        const offerBadge = document.getElementById('productOfferBadge');
+        const priceMeta = document.getElementById('productPriceMeta');
+        const availabilityValue = document.getElementById('productAvailabilityValue');
+        const skuValue = document.getElementById('productSkuValue');
+        const infoSku = document.getElementById('productInfoSku');
+        const infoStock = document.getElementById('productInfoStock');
+        const stockBadge = document.getElementById('productStockBadge');
+        const stockBadgeText = document.getElementById('productStockBadgeText');
+        const priceType = document.getElementById('productPriceType');
+        const submitButtons = document.querySelectorAll('.detail-cart-btn, .detail-buy-btn');
+
         // Direct Checkout Logic
         const directFormVariantId = document.getElementById('directFormVariantId');
         const directFormQuantity = document.getElementById('directFormQuantity');
@@ -2831,24 +2851,6 @@
             });
         }
 
-        const activeImage = document.getElementById('activeProductImage');
-        const zoomFrame = document.querySelector('.product-zoom-frame');
-        const thumbs = document.querySelectorAll('.product-thumb');
-        const variantSelect = document.getElementById('productVariant');
-        const quantityInput = document.getElementById('productQuantity');
-        const qtyButtons = document.querySelectorAll('.qty-btn');
-        const currentPrice = document.getElementById('productCurrentPrice');
-        const originalPrice = document.getElementById('productOriginalPrice');
-        const offerBadge = document.getElementById('productOfferBadge');
-        const priceMeta = document.getElementById('productPriceMeta');
-        const availabilityValue = document.getElementById('productAvailabilityValue');
-        const skuValue = document.getElementById('productSkuValue');
-        const infoSku = document.getElementById('productInfoSku');
-        const infoStock = document.getElementById('productInfoStock');
-        const stockBadge = document.getElementById('productStockBadge');
-        const stockBadgeText = document.getElementById('productStockBadgeText');
-        const priceType = document.getElementById('productPriceType');
-        const submitButtons = document.querySelectorAll('.detail-cart-btn, .detail-buy-btn');
 
         function updateZoomOrigin(event) {
             if (!zoomFrame || !activeImage) {
