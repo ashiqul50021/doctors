@@ -13,6 +13,7 @@ class Agent extends Model
     protected $fillable = [
         'user_id',
         'phone',
+        'slug',
         'profile_image',
         'referral_code',
         'can_book_appointments',
@@ -72,6 +73,24 @@ class Agent extends Model
 
     protected static function booted()
     {
+        static::creating(function ($agent) {
+            if (empty($agent->slug)) {
+                $user = User::find($agent->user_id);
+                $name = $user ? $user->name : 'agent';
+                $slug = \Illuminate\Support\Str::slug($name);
+                if (empty($slug)) {
+                    $slug = 'agent';
+                }
+                $originalSlug = $slug;
+                $count = 2;
+                while (static::where('slug', $slug)->exists()) {
+                    $slug = $originalSlug . '-' . $count;
+                    $count++;
+                }
+                $agent->slug = $slug;
+            }
+        });
+
         static::saved(function ($agent) {
             if ($agent->status === 'active') {
                 // Check if coupon already exists for this agent
