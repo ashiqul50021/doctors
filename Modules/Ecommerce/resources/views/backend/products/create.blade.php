@@ -177,6 +177,15 @@
                                                 <input type="number" name="landing_settings[countdown_hours]" class="form-control" value="{{ old('landing_settings.countdown_hours', 3) }}" placeholder="3">
                                             </div>
                                         </div>
+                                        <div class="col-md-4 col-12">
+                                            <div class="form-group">
+                                                <label class="fw-bold">কাউন্টডাউন স্ট্যাটাস (Countdown Status)</label>
+                                                <select name="landing_settings[show_countdown]" class="form-control">
+                                                    <option value="1" {{ old('landing_settings.show_countdown', '1') == '1' ? 'selected' : '' }}>Active (সক্রিয়)</option>
+                                                    <option value="0" {{ old('landing_settings.show_countdown', '1') == '0' ? 'selected' : '' }}>Inactive (নিষ্ক্রিয়)</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <!-- Product Video -->

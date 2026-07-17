@@ -51,6 +51,7 @@
 
     // Landing settings fallbacks
     $landingSettings = $product->landing_settings ?? [];
+    $showCountdown = ($landingSettings['show_countdown'] ?? '1') == '1';
     $countdownTitle = $landingSettings['countdown_title'] ?? 'আজকের বিশেষ ছাড় অফার!';
     $countdownSubtitle = $landingSettings['countdown_subtitle'] ?? 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:';
     $countdownHours = (int) ($landingSettings['countdown_hours'] ?? 3);
@@ -127,6 +128,7 @@
         </nav>
 
         <!-- Urgency Countdown & Pricing Banner -->
+        @if($showCountdown)
         <div class="landing-urgency-banner mb-4">
             <div class="row align-items-center g-3">
                 <div class="col-md-7 text-center text-md-start">
@@ -152,6 +154,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <section class="product-hero-card">
             <div class="row g-4 align-items-start">
@@ -2537,6 +2540,7 @@
             });
         });
 
+        @if($showCountdown)
         // Looping countdown timer
         function startLandingCountdown() {
             const timerKey = 'landing_countdown_target_time_product_{{ $product->id }}';
@@ -2579,6 +2583,7 @@
             setInterval(updateTime, 1000);
         }
         startLandingCountdown();
+        @endif
 
         // Calculate totals dynamically
         function recalculateDirectOrder() {
