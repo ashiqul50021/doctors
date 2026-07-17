@@ -111,16 +111,29 @@
             background-color: #2a4aaa;
             color: #fff;
         }
+
+        .forgot-link {
+            font-size: 0.875rem;
+            color: #345cce;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
     </style>
 
     <div class="split-layout">
+        <!-- Centered Register Form -->
         <div class="split-right">
             <div class="split-form-container">
                 <img src="{{ !empty($siteSettings['logo']) ? asset($siteSettings['logo']) : asset('assets/img/logo.png') }}"
                     class="form-header-logo" alt="Logo">
 
                 <h3 class="form-title">Patient Register</h3>
-                <p class="form-subtitle">Create an account to book appointments and access services</p>
+                <p class="form-subtitle">Create an account to manage your appointments</p>
 
                 <form action="{{ route('register.submit') }}" method="POST">
                     @csrf
@@ -128,14 +141,14 @@
                     <div class="mb-4">
                         <label class="split-label">Name</label>
                         <input type="text" class="form-control split-input" name="name" required
-                            value="{{ old('name') }}" placeholder="Enter your full name">
+                            value="{{ old('name') }}" placeholder="John Doe">
                         @error('name') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="mb-4">
                         <label class="split-label">Mobile Number</label>
                         <input type="text" class="form-control split-input" name="mobile" required
-                            value="{{ old('mobile') }}" placeholder="Enter your mobile number">
+                            value="{{ old('mobile') }}" placeholder="01712345678">
                         @error('mobile') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
                     </div>
 
@@ -150,8 +163,8 @@
                         <label class="split-label">Create Password</label>
                         <div class="split-input-group">
                             <input type="password" class="form-control split-input pe-5" name="password" required
-                                placeholder="••••••••••••••" id="password_input">
-                            <i class="far fa-eye split-input-icon" onclick="togglePasswordVisibility('password_input')"></i>
+                                placeholder="••••••••••••••">
+                            <i class="far fa-eye split-input-icon" onclick="togglePassword(this)"></i>
                         </div>
                         @error('password') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
                     </div>
@@ -159,9 +172,9 @@
                     <div class="mb-4">
                         <label class="split-label">Confirm Password</label>
                         <div class="split-input-group">
-                            <input type="password" class="form-control split-input pe-5" name="password_confirmation" required
-                                placeholder="••••••••••••••" id="password_confirmation_input">
-                            <i class="far fa-eye split-input-icon" onclick="togglePasswordVisibility('password_confirmation_input')"></i>
+                            <input type="password" class="form-control split-input pe-5" name="password_confirmation"
+                                required placeholder="••••••••••••••">
+                            <i class="far fa-eye split-input-icon" onclick="togglePassword(this)"></i>
                         </div>
                     </div>
 
@@ -172,7 +185,7 @@
                     <div class="text-center mt-4">
                         <span style="font-size: 0.875rem; color: #4b5563;">Already have an account? <a
                                 href="{{ route('login') }}"
-                                style="color: #345cce; font-weight: 600; text-decoration: none;">Login</a></span>
+                                style="color: #345cce; font-weight: 600; text-decoration: none;">Sign In</a></span>
                     </div>
                 </form>
             </div>
@@ -180,15 +193,14 @@
     </div>
 
     <script>
-        function togglePasswordVisibility(inputId) {
-            const passwordInput = document.getElementById(inputId);
-            const icon = event.target;
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
+        function togglePassword(icon) {
+            const input = icon.previousElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
                 icon.classList.remove('fa-eye');
                 icon.classList.add('fa-eye-slash');
             } else {
-                passwordInput.type = 'password';
+                input.type = 'password';
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
             }

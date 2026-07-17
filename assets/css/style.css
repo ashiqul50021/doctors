@@ -8051,3 +8051,11 @@ html.menu-opened body {
 		margin-bottom: 10px;
 	}
 }
+
+/* Reduced opacity for placeholders globally */
+input::placeholder,
+textarea::placeholder,
+.placeholder,
+.placeholder-label {
+    opacity: 0.2 !important;
+}
