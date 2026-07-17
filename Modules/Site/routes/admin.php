@@ -36,6 +36,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Health Packages Management
     Route::resource('health-packages', App\Http\Controllers\Admin\HealthPackageController::class);
 
+    // Doctor Approval & Rejection
+    Route::post('/doctors/{id}/approve', [App\Http\Controllers\AdminController::class, 'approveDoctor'])->name('doctors.approve');
+    Route::post('/doctors/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectDoctor'])->name('doctors.reject');
+
     Route::get('/patients', [App\Http\Controllers\AdminController::class, 'patients'])->name('patients');
     Route::get('/appointments', [App\Http\Controllers\AdminController::class, 'appointments'])->name('appointments');
     Route::get('/reviews', [App\Http\Controllers\AdminController::class, 'reviews'])->name('reviews');

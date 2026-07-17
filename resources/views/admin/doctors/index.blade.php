@@ -55,8 +55,26 @@
                                             <br><small>{{ $doctor->created_at->format('h:i A') }}</small>
                                         </td>
                                         <td>
-                                            <span
-                                                class="badge badge-pill bg-{{ $doctor->status === 'approved' ? 'success' : 'warning' }}-light">{{ ucfirst($doctor->status) }}</span>
+                                            @if($doctor->status === 'pending')
+                                                <div class="d-flex gap-2">
+                                                    <form action="{{ route('admin.doctors.approve', $doctor->id) }}" method="POST" style="display:inline-block;">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm bg-success-light" style="padding: 2px 6px; font-size: 11px;">
+                                                            <i class="fas fa-check"></i> Approve
+                                                        </button>
+                                                    </form>
+                                                    <form action="{{ route('admin.doctors.reject', $doctor->id) }}" method="POST" style="display:inline-block;">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm bg-danger-light" style="padding: 2px 6px; font-size: 11px;">
+                                                            <i class="fas fa-times"></i> Reject
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            @elseif($doctor->status === 'approved')
+                                                <span class="badge badge-pill bg-success-light">Approved</span>
+                                            @else
+                                                <span class="badge badge-pill bg-danger-light">{{ ucfirst($doctor->status) }}</span>
+                                            @endif
                                         </td>
                                         <td>
                                             <div class="actions">
