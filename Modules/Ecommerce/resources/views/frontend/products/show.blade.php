@@ -472,6 +472,32 @@
             }
         @endphp
 
+        @php
+            $styleMap = [
+                'blue-check' => [
+                    'border' => '#dbeafe', 'bg' => '#fff', 'accent' => 'var(--primary-blue)', 'icon' => 'fas fa-check-square', 'tag_bg' => 'rgba(29, 78, 216, 0.1)'
+                ],
+                'green-check' => [
+                    'border' => '#dbeafe', 'bg' => '#fff', 'accent' => '#10b981', 'icon' => 'fas fa-check-circle', 'tag_bg' => 'rgba(16, 185, 129, 0.1)'
+                ],
+                'red-cross' => [
+                    'border' => '#fee2e2', 'bg' => '#fffafb', 'accent' => '#ef4444', 'icon' => 'fas fa-times-circle', 'tag_bg' => 'rgba(239, 68, 68, 0.1)'
+                ],
+                'yellow-star' => [
+                    'border' => '#fef3c7', 'bg' => '#fffdfa', 'accent' => '#f59e0b', 'icon' => 'fas fa-star', 'tag_bg' => 'rgba(245, 158, 11, 0.1)'
+                ],
+                'orange-info' => [
+                    'border' => '#ffedd5', 'bg' => '#fffbfa', 'accent' => '#f97316', 'icon' => 'fas fa-info-circle', 'tag_bg' => 'rgba(249, 115, 22, 0.1)'
+                ],
+                'package-box' => [
+                    'border' => '#ffedd5', 'bg' => '#fffbfa', 'accent' => '#f59e0b', 'icon' => 'fas fa-box-open', 'tag_bg' => 'rgba(245, 158, 11, 0.1)'
+                ],
+                'faq-accordion' => [
+                    'border' => '#dbeafe', 'bg' => '#fff', 'accent' => 'var(--primary-blue)', 'icon' => 'fas fa-question-circle', 'tag_bg' => 'rgba(59, 130, 246, 0.1)'
+                ]
+            ];
+        @endphp
+
         @foreach($sections as $section)
             @php
                 $secType = $section['type'] ?? 'custom';
@@ -483,20 +509,21 @@
             @if($secType === 'features')
                 @php
                     $featItems = $section['items'] ?? [];
+                    $cfg = $styleMap[$secStyle] ?? $styleMap['blue-check'];
                 @endphp
                 @if(!empty($featItems))
                     <section class="landing-features-section mb-4">
-                        <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $cfg['border'] }} !important; background-color: {{ $cfg['bg'] }} !important;">
                             <div class="section-heading text-center mb-4">
-                                <span class="section-tag" style="background: rgba(29, 78, 216, 0.1) !important; color: var(--primary-blue) !important;">{{ $secTag }}</span>
-                                <h3 class="fw-bold text-dark mt-2">{{ $secTitle }}</h3>
+                                <span class="section-tag" style="background: {{ $cfg['tag_bg'] }} !important; color: {{ $cfg['accent'] }} !important;">{{ $secTag }}</span>
+                                <h3 class="fw-bold mt-2" style="color: {{ $cfg['accent'] }} !important;">{{ $secTitle }}</h3>
                             </div>
                             <div class="features-list-wrapper mx-auto" style="max-width: 800px;">
                                 <ul class="features-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
                                     @foreach($featItems as $featureText)
-                                        <li class="features-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0; transition: all 0.2s ease;">
-                                            <span class="features-icon-list-icon text-primary fs-4" style="color: var(--primary-blue) !important; line-height: 1;">
-                                                <i class="fas fa-check-square"></i>
+                                        <li class="features-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid {{ $cfg['border'] }}; transition: all 0.2s ease; border-left: 4px solid {{ $cfg['accent'] }};">
+                                            <span class="features-icon-list-icon fs-4" style="color: {{ $cfg['accent'] }} !important; line-height: 1;">
+                                                <i class="{{ $cfg['icon'] }}"></i>
                                             </span>
                                             <span class="features-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $featureText }}</span>
                                         </li>
@@ -565,20 +592,21 @@
             @elseif($secType === 'problems')
                 @php
                     $probItems = $section['items'] ?? [];
+                    $cfg = $styleMap[$secStyle] ?? $styleMap['red-cross'];
                 @endphp
                 @if(!empty($probItems))
                     <section class="landing-problems-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid #fee2e2 !important; background-color: #fffafb !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $cfg['border'] }} !important; background-color: {{ $cfg['bg'] }} !important;">
                             <div class="section-heading text-center mb-4">
-                                <span class="section-tag" style="background: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important;">{{ $secTag }}</span>
-                                <h3 class="fw-bold text-danger mt-2">{{ $secTitle }}</h3>
+                                <span class="section-tag" style="background: {{ $cfg['tag_bg'] }} !important; color: {{ $cfg['accent'] }} !important;">{{ $secTag }}</span>
+                                <h3 class="fw-bold mt-2" style="color: {{ $cfg['accent'] }} !important;">{{ $secTitle }}</h3>
                             </div>
                             <div class="problems-list-wrapper mx-auto" style="max-width: 800px;">
                                 <ul class="problems-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
                                     @foreach($probItems as $problemText)
-                                        <li class="problems-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid #fee2e2; transition: all 0.2s ease; border-left: 4px solid #ef4444;">
-                                            <span class="problems-icon-list-icon text-danger fs-4" style="color: #ef4444 !important; line-height: 1;">
-                                                <i class="fas fa-times-circle"></i>
+                                        <li class="problems-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid {{ $cfg['border'] }}; transition: all 0.2s ease; border-left: 4px solid {{ $cfg['accent'] }};">
+                                            <span class="problems-icon-list-icon fs-4" style="color: {{ $cfg['accent'] }} !important; line-height: 1;">
+                                                <i class="{{ $cfg['icon'] }}"></i>
                                             </span>
                                             <span class="problems-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $problemText }}</span>
                                         </li>
@@ -592,20 +620,21 @@
             @elseif($secType === 'benefits')
                 @php
                     $benefitItems = $section['items'] ?? [];
+                    $cfg = $styleMap[$secStyle] ?? $styleMap['green-check'];
                 @endphp
                 @if(!empty($benefitItems))
                     <section class="landing-benefits-section mb-4">
-                        <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $cfg['border'] }} !important; background-color: {{ $cfg['bg'] }} !important;">
                             <div class="section-heading text-center mb-4">
-                                <span class="section-tag" style="background: rgba(16, 185, 129, 0.1) !important; color: #10b981 !important;">{{ $secTag }}</span>
-                                <h3 class="fw-bold text-dark mt-2">{{ $secTitle }}</h3>
+                                <span class="section-tag" style="background: {{ $cfg['tag_bg'] }} !important; color: {{ $cfg['accent'] }} !important;">{{ $secTag }}</span>
+                                <h3 class="fw-bold mt-2" style="color: {{ $cfg['accent'] }} !important;">{{ $secTitle }}</h3>
                             </div>
                             <div class="benefits-list-wrapper mx-auto" style="max-width: 800px;">
                                 <ul class="benefits-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
                                     @foreach($benefitItems as $benefitText)
-                                        <li class="benefits-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #fdfefe; border: 1px solid #e2e8f0; transition: all 0.2s ease; border-left: 4px solid #10b981;">
-                                            <span class="benefits-icon-list-icon text-success fs-4" style="color: #10b981 !important; line-height: 1;">
-                                                <i class="fas fa-check-circle"></i>
+                                        <li class="benefits-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid {{ $cfg['border'] }}; transition: all 0.2s ease; border-left: 4px solid {{ $cfg['accent'] }};">
+                                            <span class="benefits-icon-list-icon fs-4" style="color: {{ $cfg['accent'] }} !important; line-height: 1;">
+                                                <i class="{{ $cfg['icon'] }}"></i>
                                             </span>
                                             <span class="benefits-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $benefitText }}</span>
                                         </li>
@@ -645,19 +674,20 @@
             @elseif($secType === 'package')
                 @php
                     $packageItems = $section['items'] ?? [];
+                    $cfg = $styleMap[$secStyle] ?? $styleMap['package-box'];
                 @endphp
                 @if(!empty($packageItems))
                     <section class="landing-package-section mb-4">
-                        <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $cfg['border'] }} !important; background-color: {{ $cfg['bg'] }} !important;">
                             <div class="section-heading text-center mb-4">
-                                <span class="section-tag" style="background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important;">{{ $secTag }}</span>
-                                <h3 class="fw-bold text-dark mt-2">{{ $secTitle }}</h3>
+                                <span class="section-tag" style="background: {{ $cfg['tag_bg'] }} !important; color: {{ $cfg['accent'] }} !important;">{{ $secTag }}</span>
+                                <h3 class="fw-bold mt-2" style="color: {{ $cfg['accent'] }} !important;">{{ $secTitle }}</h3>
                             </div>
                             <div class="package-list-wrapper mx-auto" style="max-width: 800px;">
                                 <div class="p-3 rounded-3 bg-light border d-flex flex-column gap-3">
                                     @foreach($packageItems as $includeText)
-                                        <div class="d-flex align-items-center gap-3 p-2 bg-white rounded border-start border-warning border-3">
-                                            <span class="text-warning fs-5"><i class="fas fa-box-open"></i></span>
+                                        <div class="d-flex align-items-center gap-3 p-2 bg-white rounded border-start border-3" style="border-left-color: {{ $cfg['accent'] }} !important;">
+                                            <span class="fs-5" style="color: {{ $cfg['accent'] }} !important;"><i class="{{ $cfg['icon'] }}"></i></span>
                                             <span class="text-dark fw-semibold" style="font-size: 15px;">{{ $includeText }}</span>
                                         </div>
                                     @endforeach
@@ -724,23 +754,6 @@
             @elseif($secType === 'custom')
                 @php
                     $customItems = $section['items'] ?? [];
-                    $styleMap = [
-                        'blue-check' => [
-                            'border' => '#dbeafe', 'bg' => '#fff', 'accent' => 'var(--primary-blue)', 'icon' => 'fas fa-check-square', 'tag_bg' => 'rgba(29, 78, 216, 0.1)'
-                        ],
-                        'green-check' => [
-                            'border' => '#dbeafe', 'bg' => '#fff', 'accent' => '#10b981', 'icon' => 'fas fa-check-circle', 'tag_bg' => 'rgba(16, 185, 129, 0.1)'
-                        ],
-                        'red-cross' => [
-                            'border' => '#fee2e2', 'bg' => '#fffafb', 'accent' => '#ef4444', 'icon' => 'fas fa-times-circle', 'tag_bg' => 'rgba(239, 68, 68, 0.1)'
-                        ],
-                        'yellow-star' => [
-                            'border' => '#fef3c7', 'bg' => '#fffdfa', 'accent' => '#f59e0b', 'icon' => 'fas fa-star', 'tag_bg' => 'rgba(245, 158, 11, 0.1)'
-                        ],
-                        'orange-info' => [
-                            'border' => '#ffedd5', 'bg' => '#fffbfa', 'accent' => '#f97316', 'icon' => 'fas fa-info-circle', 'tag_bg' => 'rgba(249, 115, 22, 0.1)'
-                        ]
-                    ];
                     $cfg = $styleMap[$secStyle] ?? $styleMap['blue-check'];
                 @endphp
                 @if(!empty($customItems) && !empty($secTitle))
