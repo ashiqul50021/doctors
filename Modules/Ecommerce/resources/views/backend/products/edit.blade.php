@@ -627,11 +627,16 @@
 
             initializeInteractiveGalleryUploader({
                 gridId: 'interactiveGalleryGrid',
-                inputName: 'gallery_images[]',
-                addBtnId: 'addInteractiveGalleryBtn',
-                emptyMessageId: 'interactiveGalleryEmptyMessage',
-                maxFiles: 10
+                inputsContainerId: 'galleryInputsContainer'
             });
+
+            initializeExistingGalleryRemoval({
+                sectionId: 'existingGallerySection',
+                gridId: 'existingGalleryGrid',
+                removedInputsContainerId: 'removedGalleryInputs'
+            });
+    
+            initializeVariantManager();
 
             const hasVariantsToggle = document.getElementById('has_variants');
             const variantManagerContainer = document.getElementById('variant-manager-container');
@@ -673,9 +678,12 @@
                     <textarea name="landing_settings[sections][${secIndex}][items][]" class="form-control form-control-sm" rows="2" placeholder="আইটেমের বিবরণ লিখুন">${value}</textarea>
                     <button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
                 `;
-                div.querySelector('.remove-item-btn').addEventListener('click', function() {
-                    div.remove();
-                });
+                const removeBtn = div.querySelector('.remove-item-btn');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', function() {
+                        div.remove();
+                    });
+                }
                 return div;
             }
 
@@ -694,10 +702,14 @@
                         <textarea name="landing_settings[sections][${secIndex}][faqs][${faqIndex}][a]" class="form-control form-control-sm" rows="2" placeholder="উত্তর লিখুন">${a}</textarea>
                     </div>
                 `;
-                div.querySelector('.remove-item-btn').addEventListener('click', function() {
-                    div.remove();
-                    reindexFAQItems(div.closest('.section-card'));
-                });
+                const removeBtn = div.querySelector('.remove-item-btn');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', function() {
+                        div.remove();
+                        const card = div.closest('.section-card');
+                        if (card) reindexFAQItems(card);
+                    });
+                }
                 return div;
             }
 
@@ -705,7 +717,8 @@
                 const secIndex = parseInt(sectionCard.getAttribute('data-section-index') || '0');
                 const faqRows = sectionCard.querySelectorAll('.faq-item-row');
                 faqRows.forEach((row, faqIndex) => {
-                    row.querySelector('.text-muted').textContent = `প্রশ্ন ও উত্তর #${faqIndex + 1}`;
+                    const textMuted = row.querySelector('.text-muted');
+                    if (textMuted) textMuted.textContent = `প্রশ্ন ও উত্তর #${faqIndex + 1}`;
                     const qInput = row.querySelector('input');
                     if (qInput) qInput.name = `landing_settings[sections][${secIndex}][faqs][${faqIndex}][q]`;
                     const aTextarea = row.querySelector('textarea');
@@ -733,10 +746,14 @@
                         </div>
                     </div>
                 `;
-                div.querySelector('.remove-item-btn').addEventListener('click', function() {
-                    div.remove();
-                    reindexBadgeItems(div.closest('.section-card'));
-                });
+                const removeBtn = div.querySelector('.remove-item-btn');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', function() {
+                        div.remove();
+                        const card = div.closest('.section-card');
+                        if (card) reindexBadgeItems(card);
+                    });
+                }
                 return div;
             }
 
@@ -744,10 +761,17 @@
                 const secIndex = parseInt(sectionCard.getAttribute('data-section-index') || '0');
                 const rows = sectionCard.querySelectorAll('.badge-item-row');
                 rows.forEach((row, idx) => {
-                    row.querySelector('.text-muted').textContent = `ব্যাজ #${idx + 1}`;
-                    row.querySelector('input[name*="[icon]"]').name = `landing_settings[sections][${secIndex}][badges][${idx}][icon]`;
-                    row.querySelector('input[name*="[title]"]').name = `landing_settings[sections][${secIndex}][badges][${idx}][title]`;
-                    row.querySelector('input[name*="[desc]"]').name = `landing_settings[sections][${secIndex}][badges][${idx}][desc]`;
+                    const textMuted = row.querySelector('.text-muted');
+                    if (textMuted) textMuted.textContent = `ব্যাজ #${idx + 1}`;
+                    
+                    const iconInput = row.querySelector('input[name*="[icon]"]');
+                    if (iconInput) iconInput.name = `landing_settings[sections][${secIndex}][badges][${idx}][icon]`;
+                    
+                    const titleInput = row.querySelector('input[name*="[title]"]');
+                    if (titleInput) titleInput.name = `landing_settings[sections][${secIndex}][badges][${idx}][title]`;
+                    
+                    const descInput = row.querySelector('input[name*="[desc]"]');
+                    if (descInput) descInput.name = `landing_settings[sections][${secIndex}][badges][${idx}][desc]`;
                 });
             }
 
@@ -766,10 +790,14 @@
                         <textarea name="landing_settings[sections][${secIndex}][trust_features][${featureIndex}][desc]" class="form-control form-control-sm" rows="2" placeholder="বর্ণনা লিখুন">${desc}</textarea>
                     </div>
                 `;
-                div.querySelector('.remove-item-btn').addEventListener('click', function() {
-                    div.remove();
-                    reindexTrustFeatureItems(div.closest('.section-card'));
-                });
+                const removeBtn = div.querySelector('.remove-item-btn');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', function() {
+                        div.remove();
+                        const card = div.closest('.section-card');
+                        if (card) reindexTrustFeatureItems(card);
+                    });
+                }
                 return div;
             }
 
@@ -777,9 +805,14 @@
                 const secIndex = parseInt(sectionCard.getAttribute('data-section-index') || '0');
                 const rows = sectionCard.querySelectorAll('.trust-feature-item-row');
                 rows.forEach((row, idx) => {
-                    row.querySelector('.text-muted').textContent = `ফিচার #${idx + 1}`;
-                    row.querySelector('input[name*="[title]"]').name = `landing_settings[sections][${secIndex}][trust_features][${idx}][title]`;
-                    row.querySelector('textarea[name*="[desc]"]').name = `landing_settings[sections][${secIndex}][trust_features][${idx}][desc]`;
+                    const textMuted = row.querySelector('.text-muted');
+                    if (textMuted) textMuted.textContent = `ফিচার #${idx + 1}`;
+                    
+                    const titleInput = row.querySelector('input[name*="[title]"]');
+                    if (titleInput) titleInput.name = `landing_settings[sections][${secIndex}][trust_features][${idx}][title]`;
+                    
+                    const descInput = row.querySelector('textarea[name*="[desc]"]');
+                    if (descInput) descInput.name = `landing_settings[sections][${secIndex}][trust_features][${idx}][desc]`;
                 });
             }
 
@@ -892,65 +925,82 @@
                 const type = card.getAttribute('data-section-type');
 
                 // Delete section
-                card.querySelector('.remove-section-btn').addEventListener('click', function() {
-                    card.remove();
-                    reindexSections();
-                });
+                const removeBtn = card.querySelector('.remove-section-btn');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', function() {
+                        card.remove();
+                        reindexSections();
+                    });
+                }
 
                 // Move up
-                card.querySelector('.move-up-btn').addEventListener('click', function() {
-                    const prev = card.previousElementSibling;
-                    if (prev) {
-                        card.parentNode.insertBefore(card, prev);
-                        reindexSections();
-                    }
-                });
+                const moveUpBtn = card.querySelector('.move-up-btn');
+                if (moveUpBtn) {
+                    moveUpBtn.addEventListener('click', function() {
+                        const prev = card.previousElementSibling;
+                        if (prev) {
+                            card.parentNode.insertBefore(card, prev);
+                            reindexSections();
+                        }
+                    });
+                }
 
                 // Move down
-                card.querySelector('.move-down-btn').addEventListener('click', function() {
-                    const next = card.nextElementSibling;
-                    if (next) {
-                        card.parentNode.insertBefore(next, card);
-                        reindexSections();
-                    }
-                });
+                const moveDownBtn = card.querySelector('.move-down-btn');
+                if (moveDownBtn) {
+                    moveDownBtn.addEventListener('click', function() {
+                        const next = card.nextElementSibling;
+                        if (next) {
+                            card.parentNode.insertBefore(next, card);
+                            reindexSections();
+                        }
+                    });
+                }
 
                 // Add item
-                card.querySelector('.add-item-btn').addEventListener('click', function() {
-                    const secIndex = parseInt(card.getAttribute('data-section-index') || '0');
-                    const itemsList = card.querySelector('.items-list');
-                    if (type === 'faq') {
-                        const faqIndex = itemsList.querySelectorAll('.faq-item-row').length;
-                        itemsList.appendChild(createFAQItemRow(secIndex, faqIndex));
-                        const qInput = itemsList.lastElementChild.querySelector('input');
-                        if (qInput) qInput.focus();
-                    } else if (type === 'badges') {
-                        const badgeIndex = itemsList.querySelectorAll('.badge-item-row').length;
-                        itemsList.appendChild(createBadgeItemRow(secIndex, badgeIndex));
-                        const iconInput = itemsList.lastElementChild.querySelector('input');
-                        if (iconInput) iconInput.focus();
-                    } else if (type === 'trust') {
-                        const featureIndex = itemsList.querySelectorAll('.trust-feature-item-row').length;
-                        itemsList.appendChild(createTrustFeatureItemRow(secIndex, featureIndex));
-                        const titleInput = itemsList.lastElementChild.querySelector('input');
-                        if (titleInput) titleInput.focus();
-                    } else {
-                        itemsList.appendChild(createSectionItemRow(secIndex));
-                        const textarea = itemsList.lastElementChild.querySelector('textarea');
-                        if (textarea) textarea.focus();
-                    }
-                });
+                const addItemBtn = card.querySelector('.add-item-btn');
+                if (addItemBtn) {
+                    addItemBtn.addEventListener('click', function() {
+                        const secIndex = parseInt(card.getAttribute('data-section-index') || '0');
+                        const itemsList = card.querySelector('.items-list');
+                        if (!itemsList) return;
+                        
+                        if (type === 'faq') {
+                            const faqIndex = itemsList.querySelectorAll('.faq-item-row').length;
+                            itemsList.appendChild(createFAQItemRow(secIndex, faqIndex));
+                            const qInput = itemsList.lastElementChild.querySelector('input');
+                            if (qInput) qInput.focus();
+                        } else if (type === 'badges') {
+                            const badgeIndex = itemsList.querySelectorAll('.badge-item-row').length;
+                            itemsList.appendChild(createBadgeItemRow(secIndex, badgeIndex));
+                            const iconInput = itemsList.lastElementChild.querySelector('input');
+                            if (iconInput) iconInput.focus();
+                        } else if (type === 'trust') {
+                            const featureIndex = itemsList.querySelectorAll('.trust-feature-item-row').length;
+                            itemsList.appendChild(createTrustFeatureItemRow(secIndex, featureIndex));
+                            const titleInput = itemsList.lastElementChild.querySelector('input');
+                            if (titleInput) titleInput.focus();
+                        } else {
+                            itemsList.appendChild(createSectionItemRow(secIndex));
+                            const textarea = itemsList.lastElementChild.querySelector('textarea');
+                            if (textarea) textarea.focus();
+                        }
+                    });
+                }
 
                 // Bind existing inner delete buttons
                 card.querySelectorAll('.remove-item-btn').forEach((btn) => {
                     btn.addEventListener('click', function() {
-                        btn.closest('.item-row, .faq-item-row, .badge-item-row, .trust-feature-item-row').remove();
-                        if (type === 'faq') {
-                            reindexFAQItems(card);
-                        } else if (type === 'badges') {
-                            reindexBadgeItems(card);
-                        } else if (type === 'trust') {
-                            reindexTrustFeatureItems(card);
+                        const row = btn.closest('.item-row, .faq-item-row, .badge-item-row, .trust-feature-item-row');
+                        if (row) {
+                            row.remove();
+                            if (type === 'faq') {
+                                reindexFAQItems(card);
+                            } else if (type === 'badges') {
+                                reindexBadgeItems(card);
+                            } else if (type === 'trust') {
+                                reindexTrustFeatureItems(card);
+                            }
                         }
                     });
                 });
@@ -960,9 +1010,12 @@
                 const cards = document.querySelectorAll('.section-card');
                 cards.forEach((card, index) => {
                     card.setAttribute('data-section-index', index);
-                    card.querySelector('.sec-number').textContent = index + 1;
+                    
+                    const secNumSpan = card.querySelector('.sec-number');
+                    if (secNumSpan) secNumSpan.textContent = index + 1;
 
-                    card.querySelector('input[type="hidden"]').name = `landing_settings[sections][${index}][type]`;
+                    const typeInput = card.querySelector('input[type="hidden"]');
+                    if (typeInput) typeInput.name = `landing_settings[sections][${index}][type]`;
 
                     const titleInput = card.querySelector('input[name*="[title]"]');
                     if (titleInput) titleInput.name = `landing_settings[sections][${index}][title]`;
@@ -992,6 +1045,8 @@
                         addBtn.parentNode.replaceChild(newAddBtn, addBtn);
                         newAddBtn.addEventListener('click', function() {
                             const itemsList = card.querySelector('.items-list');
+                            if (!itemsList) return;
+                            
                             if (type === 'faq') {
                                 const faqIndex = itemsList.querySelectorAll('.faq-item-row').length;
                                 itemsList.appendChild(createFAQItemRow(index, faqIndex));
@@ -1015,8 +1070,11 @@
                         });
                     }
 
-                    card.querySelector('.move-up-btn').disabled = (index === 0);
-                    card.querySelector('.move-down-btn').disabled = (index === cards.length - 1);
+                    const moveUpBtn = card.querySelector('.move-up-btn');
+                    if (moveUpBtn) moveUpBtn.disabled = (index === 0);
+                    
+                    const moveDownBtn = card.querySelector('.move-down-btn');
+                    if (moveDownBtn) moveDownBtn.disabled = (index === cards.length - 1);
                 });
             }
 
@@ -1036,6 +1094,198 @@
                     if (titleInput) titleInput.focus();
                 });
             }
+        });
+
+        function initializeProductImageUpload({ inputId, previewId, previewContainerId, helperId, emptyMessage }) {
+            const fileInput = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const previewContainer = document.getElementById(previewContainerId);
+            const helper = document.getElementById(helperId);
+
+            if (!fileInput || !preview || !previewContainer || !helper) {
+                return;
+            }
+
+            fileInput.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+
+                if (!file) {
+                    preview.src = '#';
+                    previewContainer.style.display = 'none';
+                    helper.textContent = emptyMessage;
+                    return;
+                }
+
+                if (!file.type.startsWith('image/')) {
+                    helper.textContent = 'Please select a valid image file.';
+                    event.target.value = '';
+                    preview.src = '#';
+                    previewContainer.style.display = 'none';
+                    return;
+                }
+
+                updatePreview(preview, previewContainer, file);
+                helper.innerHTML = `<span class="text-success">Image selected. Size: ${(file.size / 1024).toFixed(2)} KB.</span>`;
+            });
+        }
+
+        function updatePreview(preview, previewContainer, file) {
+            preview.src = URL.createObjectURL(file);
+            previewContainer.style.display = 'block';
+        }
+
+        function initializeInteractiveGalleryUploader({ gridId, inputsContainerId }) {
+            const grid = document.getElementById(gridId);
+            const inputsContainer = document.getElementById(inputsContainerId);
+
+            if (!grid || !inputsContainer) return;
+
+            inputsContainer.innerHTML = '';
+            grid.innerHTML = '';
+
+            let imageCounter = 0;
+
+            function createAddCard() {
+                const addCard = document.createElement('div');
+                addCard.className = 'gallery-add-card';
+                addCard.innerHTML = `
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Image</span>
+                `;
+
+                addCard.addEventListener('click', function () {
+                    imageCounter++;
+
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.name = 'gallery[]';
+                    fileInput.accept = 'image/*';
+                    fileInput.style.display = 'none';
+                    fileInput.id = `gallery_input_${imageCounter}`;
+
+                    fileInput.addEventListener('change', function (event) {
+                        const file = event.target.files[0];
+                        if (!file) {
+                            fileInput.remove();
+                            return;
+                        }
+
+                        if (!file.type.startsWith('image/')) {
+                            alert('Please select a valid image file.');
+                            fileInput.remove();
+                            return;
+                        }
+
+                        inputsContainer.appendChild(fileInput);
+
+                        const previewCard = document.createElement('div');
+                        previewCard.className = 'gallery-preview-card';
+
+                        const objectUrl = URL.createObjectURL(file);
+                        previewCard.innerHTML = `
+                            <img src="${objectUrl}" alt="${file.name}">
+                            <div class="gallery-preview-meta">
+                                <strong>${file.name}</strong><br>
+                                ${(file.size / 1024).toFixed(1)} KB
+                            </div>
+                            <div class="gallery-preview-actions">
+                                <button type="button" class="btn btn-sm btn-outline-danger w-100 js-remove-preview">
+                                    Remove
+                                </button>
+                            </div>
+                        `;
+
+                        const img = previewCard.querySelector('img');
+                        img.addEventListener('load', function() {
+                            URL.revokeObjectURL(objectUrl);
+                        }, { once: true });
+
+                        previewCard.querySelector('.js-remove-preview').addEventListener('click', function() {
+                            previewCard.remove();
+                            fileInput.remove();
+                        });
+
+                        grid.insertBefore(previewCard, addCard);
+                    });
+
+                    fileInput.click();
+                });
+
+                grid.appendChild(addCard);
+            }
+
+            createAddCard();
+        }
+
+        function initializeExistingGalleryRemoval({ sectionId, gridId, removedInputsContainerId }) {
+            const section = document.getElementById(sectionId);
+            const grid = document.getElementById(gridId);
+            const removedInputsContainer = document.getElementById(removedInputsContainerId);
+
+            if (!section || !grid || !removedInputsContainer) {
+                return;
+            }
+
+            grid.addEventListener('click', function (event) {
+                const removeButton = event.target.closest('.js-remove-existing-gallery');
+
+                if (!removeButton) {
+                    return;
+                }
+
+                const path = removeButton.dataset.path;
+                const card = removeButton.closest('[data-gallery-path]');
+
+                if (!path || !card) {
+                    return;
+                }
+
+                const alreadyRemoved = Array.from(removedInputsContainer.querySelectorAll('input[name="removed_gallery[]"]'))
+                    .some((input) => input.value === path);
+
+                if (!alreadyRemoved) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'removed_gallery[]';
+                    input.value = path;
+                    removedInputsContainer.appendChild(input);
+                }
+
+                card.remove();
+
+                if (!grid.children.length) {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        function initializeVariantManager() {
+            const rowsContainer = document.getElementById('variantRows');
+            const template = document.getElementById('variantRowTemplate');
+            const addButton = document.getElementById('addVariantRowBtn');
+
+            if (!rowsContainer || !template || !addButton) {
+                return;
+            }
+
+            let nextIndex = rowsContainer.querySelectorAll('.variant-row').length;
+
+            addButton.addEventListener('click', function () {
+                const wrapper = document.createElement('tbody');
+                wrapper.innerHTML = template.innerHTML.replace(/__INDEX__/g, nextIndex);
+                rowsContainer.appendChild(wrapper.firstElementChild);
+                nextIndex += 1;
+            });
+
+            rowsContainer.addEventListener('click', function (event) {
+                const removeButton = event.target.closest('.js-remove-variant-row');
+
+                if (!removeButton) {
+                    return;
+                }
+
+                removeButton.closest('.variant-row')?.remove();
+            });
         }
     </script>
 @endpush
