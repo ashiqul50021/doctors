@@ -2541,7 +2541,7 @@
         @if($showCountdown)
         // Looping countdown timer
         function startLandingCountdown() {
-            const timerKey = 'landing_countdown_target_time_product_{{ $product->id }}';
+            const timerKey = 'landing_countdown_target_time_product_{{ $product->id }}_{{ $countdownHours }}';
             let targetTime = localStorage.getItem(timerKey);
             const now = new Date().getTime();
             const durationMs = {{ $countdownHours }} * 60 * 60 * 1000;
