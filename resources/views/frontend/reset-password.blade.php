@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Doctor Login - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
+@section('title', 'Reset Password - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
 
 @section('body_class', 'account-page')
 
@@ -112,82 +112,50 @@
             color: #fff;
         }
 
-        .forgot-link {
-            font-size: 0.875rem;
-            color: #345cce;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .forgot-link:hover {
-            text-decoration: underline;
-        }
-
     </style>
 
     <div class="split-layout">
-        <!-- Centered Doctor Login Form -->
         <div class="split-right">
             <div class="split-form-container">
                 <img src="{{ !empty($siteSettings['logo']) ? asset($siteSettings['logo']) : asset('assets/img/logo.png') }}"
                     class="form-header-logo" alt="Logo">
 
-                <h3 class="form-title">Doctor Login</h3>
-                <p class="form-subtitle">Enter your credentials to access your doctor dashboard</p>
+                <h3 class="form-title">Reset Password</h3>
+                <p class="form-subtitle">Choose a strong new password for your account</p>
 
-                @if(session('status'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="font-size: 0.9rem; border-radius: 8px;">
-                        {{ session('status') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="font-size: 0.9rem; border-radius: 8px;">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                @if(session('warning'))
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert" style="font-size: 0.9rem; border-radius: 8px;">
-                        {{ session('warning') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                <form action="{{ route('doctor.login.submit') }}" method="POST">
+                <form action="{{ route('password.update') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="token" value="{{ $token }}">
 
                     <div class="mb-4">
                         <label class="split-label">Email</label>
                         <input type="email" class="form-control split-input" name="email" required
-                            value="{{ old('email') }}" placeholder="example@gmail.com">
+                            value="{{ old('email', $email) }}" readonly placeholder="example@gmail.com">
                         @error('email') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="mb-2">
-                        <label class="split-label">Password</label>
+                    <div class="mb-4">
+                        <label class="split-label">New Password</label>
                         <div class="split-input-group">
                             <input type="password" class="form-control split-input pe-5" name="password" required
                                 placeholder="••••••••••••••">
-                            <i class="far fa-eye split-input-icon" onclick="togglePassword(this)"></i>
+                            <i class="far fa-eye split-input-icon toggle-password"></i>
                         </div>
                         @error('password') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="text-end mb-4">
-                        <a class="forgot-link" href="{{ route('forgot.password') }}">Forgot Password?</a>
+                    <div class="mb-4">
+                        <label class="split-label">Confirm Password</label>
+                        <div class="split-input-group">
+                            <input type="password" class="form-control split-input pe-5" name="password_confirmation" required
+                                placeholder="••••••••••••••">
+                            <i class="far fa-eye split-input-icon toggle-password"></i>
+                        </div>
+                        @error('password_confirmation') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="d-grid mb-4">
-                        <button class="btn split-btn" type="submit">Sign In</button>
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <span style="font-size: 0.875rem; color: #4b5563;">Don't have an account? <a
-                                href="{{ route('doctor.register') }}"
-                                style="color: #345cce; font-weight: 600; text-decoration: none;">Register as Doctor</a></span>
+                        <button class="btn split-btn" type="submit">Reset Password</button>
                     </div>
                 </form>
             </div>
@@ -195,17 +163,22 @@
     </div>
 
     <script>
-        function togglePassword(icon) {
-            const input = icon.previousElementSibling;
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            const togglePasswordIcons = document.querySelectorAll('.toggle-password');
+            togglePasswordIcons.forEach(icon => {
+                icon.addEventListener('click', function () {
+                    const input = this.parentElement.querySelector('input');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        this.classList.remove('fa-eye');
+                        this.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        this.classList.remove('fa-eye-slash');
+                        this.classList.add('fa-eye');
+                    }
+                });
+            });
+        });
     </script>
 @endsection

@@ -135,6 +135,24 @@
                 <h3 class="form-title">Login</h3>
                 <p class="form-subtitle">Enter your credentials to login to your account</p>
 
+                @if (session('success'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if (session('status'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('status') }}
+                    </div>
+                @endif
+
+                @if (session('warning'))
+                    <div class="alert alert-warning" role="alert">
+                        {{ session('warning') }}
+                    </div>
+                @endif
+
                 <form action="{{ route('patient.login.submit') }}" method="POST">
                     @csrf
 

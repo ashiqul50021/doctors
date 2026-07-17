@@ -139,9 +139,14 @@
                         </div>
                     </div>
 
-                    <div class="row mt-5">
+                    <div class="row mt-5" data-html2canvas-ignore="true">
                         <div class="col-md-12 text-center">
-                            <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print Prescription</button>
+                            <button class="btn btn-secondary me-2" id="download-pdf-btn">
+                                <i class="fas fa-download"></i> Download PDF
+                            </button>
+                            <button class="btn btn-primary" onclick="window.print()">
+                                <i class="fas fa-print"></i> Print Prescription
+                            </button>
                         </div>
                     </div>
 
@@ -153,4 +158,27 @@
 
 </div>
 <!-- /Page Content -->
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const downloadBtn = document.getElementById('download-pdf-btn');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function () {
+                const element = document.querySelector('.invoice-content');
+                const opt = {
+                    margin:       0.3,
+                    filename:     'prescription-PR{{ sprintf("%04d", $prescription->id) }}.pdf',
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(element).save();
+            });
+        }
+    });
+</script>
+@endpush
 @endsection

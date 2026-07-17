@@ -45,9 +45,11 @@ Route::post('/heartbeat', function (Request $request) {
 
     return response()->json(['ok' => true]);
 })->middleware('auth')->name('heartbeat');
-Route::get('/forgot-password', function () {
-    return view('frontend.forgot-password');
-})->name('forgot.password');
+// Password Reset Routes
+Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'showLinkRequestForm'])->name('forgot.password');
+Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [App\Http\Controllers\PasswordResetController::class, 'reset'])->name('password.update');
 
 // Google Calendar OAuth
 Route::get('/google/callback', [App\Http\Controllers\GoogleAuthController::class, 'callback'])->name('google.callback');
