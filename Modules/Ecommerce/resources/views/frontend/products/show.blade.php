@@ -228,45 +228,7 @@
                                 @else
                                     <span class="price-note">Standard listed price</span>
                                 @endif
-                            </div>
                         </div>
-
-                        <div class="summary-status-grid">
-                            <div class="status-card">
-                                <span class="status-label">Availability</span>
-                                <strong id="productAvailabilityValue" class="{{ $stockQty > 0 ? 'text-success' : 'text-danger' }}">
-                                    {{ $stockQty > 0 ? 'In stock' : 'Out of stock' }}
-                                </strong>
-                            </div>
-                            <div class="status-card">
-                                <span class="status-label">SKU</span>
-                                <strong id="productSkuValue">{{ $sku }}</strong>
-                            </div>
-                            <div class="status-card">
-                                <span class="status-label">Category</span>
-                                <strong>{{ $product->category->name ?? 'General' }}</strong>
-                            </div>
-                            <div class="status-card">
-                                <span class="status-label">Price Type</span>
-                                <strong id="productPriceType">{{ $displayPrice < $regularPrice ? 'Discounted' : ($hasVariants ? 'Variant' : 'Regular') }}</strong>
-                            </div>
-                        </div>
-
-                        @if($summaryPoints->isNotEmpty())
-                            <ul class="summary-feature-list">
-                                @foreach($summaryPoints as $point)
-                                    <li><i class="fas fa-check"></i> {{ $point }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
-
-                        @if($tagList->isNotEmpty())
-                            <div class="product-tag-list">
-                                @foreach($tagList->take(6) as $tag)
-                                    <span>{{ ucfirst($tag) }}</span>
-                                @endforeach
-                            </div>
-                        @endif
 
                         <form action="{{ route('ecommerce.cart.add') }}" method="POST" class="purchase-form">
                             @csrf
@@ -325,39 +287,18 @@
                                     </button>
                                 </div>
                             </div>
-                            
-                            @if($stockQty > 0)
-                                <div class="mt-3">
-                                    <a href="#direct-checkout-section" class="btn btn-landing-cta btn-landing-cta-pulsing w-100 text-center text-white d-block py-3 text-decoration-none">
-                                        <i class="fas fa-shopping-bag me-2"></i> সরাসরি অর্ডার করতে এখানে ক্লিক করুন
-                                    </a>
-                                </div>
-                            @endif
                         </form>
 
-                        <a href="{{ route('ecommerce.cart') }}" class="detail-view-cart">
-                            <i class="fas fa-eye"></i>
-                            <span>View Cart</span>
-                        </a>
 
-                        <div class="summary-assurance">
-                            <div class="assurance-item">
-                                <i class="fas fa-wallet"></i>
-                                <span>Cash on delivery available</span>
-                            </div>
-                            <div class="assurance-item">
-                                <i class="fas fa-undo"></i>
-                                <span>Easy replacement on eligible issues</span>
-                            </div>
-                            <div class="assurance-item">
-                                <i class="fas fa-lock"></i>
-                                <span>Secure checkout experience</span>
-                            </div>
-                        </div>
                     </aside>
                 </div>
             </div>
         </section>
+
+        <!-- Trust Highlights Grid Title -->
+        <div class="text-center mb-4 mt-5">
+            <h3 class="fw-bold" style="color: var(--primary-blue) !important; font-size: 24px;">আমাদের থেকে কেন কিনবেন?</h3>
+        </div>
 
         <!-- Trust Highlights Grid -->
         <div class="row g-3 mb-4 mt-2">
@@ -374,48 +315,12 @@
 
         @if($stockQty > 0)
             <div class="text-center my-4">
-                <a href="#direct-checkout-section" class="btn btn-landing-cta px-5 py-3 fs-5 text-decoration-none">
-                    <i class="fas fa-shopping-cart me-2"></i> ঝটপট অর্ডার করতে এখানে ক্লিক করুন
+                <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Buy Now</span>
                 </a>
             </div>
         @endif
-
-        <section class="product-detail-sections">
-            <div class="row g-4">
-                <div class="col-lg-8">
-                    <div class="info-card">
-                        <div class="section-heading">
-                            <span class="section-tag">Product Details</span>
-                            <h2>About this product</h2>
-                        </div>
-
-                        <div class="info-copy">{!! $detailDescription !!}</div>
-
-                        <div class="info-chip-list">
-                            <span>{{ $brandName }}</span>
-                            <span>{{ $product->category->name ?? 'General' }}</span>
-                            <span id="productInfoSku">{{ $sku }}</span>
-                            <span id="productInfoStock">{{ $stockQty > 0 ? $stockQty . ' units available' : 'Currently unavailable' }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="info-card info-side-card">
-                        <div class="section-heading">
-                            <span class="section-tag">Order Support</span>
-                            <h2>Before you checkout</h2>
-                        </div>
-
-                        <ul class="summary-feature-list compact-feature-list">
-                            <li><i class="fas fa-check"></i> Adjust quantity before adding the item to your cart.</li>
-                            <li><i class="fas fa-check"></i> Use Buy Now for a direct checkout flow.</li>
-                            <li><i class="fas fa-check"></i> Browse related products below for similar options.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <!-- Product Video Section -->
         @if(!empty($landingSettings['youtube_video_url']))
@@ -451,12 +356,22 @@
         @php
             $featuresTitle = $landingSettings['product_features_title'] ?? 'আমাদের প্রোডাক্টের বৈশিষ্ট্য';
             $productFeatures = [];
-            for ($i = 1; $i <= 6; $i++) {
-                $featText = $landingSettings["product_feature_{$i}"] ?? '';
-                if (!empty(trim($featText))) {
-                    $productFeatures[] = $featText;
+
+            if (isset($landingSettings['product_features']) && is_array($landingSettings['product_features'])) {
+                foreach ($landingSettings['product_features'] as $featText) {
+                    if (!empty(trim((string) $featText))) {
+                        $productFeatures[] = $featText;
+                    }
+                }
+            } else {
+                for ($i = 1; $i <= 6; $i++) {
+                    $featText = $landingSettings["product_feature_{$i}"] ?? '';
+                    if (!empty(trim((string) $featText))) {
+                        $productFeatures[] = $featText;
+                    }
                 }
             }
+
             if (empty($productFeatures)) {
                 $productFeatures = [
                     'অটো অন/অফ: মানুষ থাকলেই আলো জ্বলবে, চলে গেলে অটো বন্ধ।',
@@ -536,8 +451,9 @@
 
         @if($stockQty > 0)
             <div class="text-center my-4">
-                <a href="#direct-checkout-section" class="btn btn-landing-cta px-5 py-3 fs-5 text-decoration-none">
-                    <i class="fas fa-shopping-cart me-2"></i> অর্ডার করতে চাই
+                <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Buy Now</span>
                 </a>
             </div>
         @endif
@@ -588,8 +504,9 @@
 
         @if($stockQty > 0)
             <div class="text-center my-4">
-                <a href="#direct-checkout-section" class="btn btn-landing-cta px-5 py-3 fs-5 text-decoration-none">
-                    <i class="fas fa-shopping-cart me-2"></i> অর্ডার করতে চাই
+                <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Buy Now</span>
                 </a>
             </div>
         @endif
@@ -665,8 +582,9 @@
 
         @if($stockQty > 0)
             <div class="text-center my-4">
-                <a href="#direct-checkout-section" class="btn btn-landing-cta px-5 py-3 fs-5 text-decoration-none">
-                    <i class="fas fa-shopping-cart me-2"></i> অর্ডার করতে চাই
+                <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Buy Now</span>
                 </a>
             </div>
         @endif
@@ -753,8 +671,9 @@
 
         @if($stockQty > 0)
             <div class="text-center my-4">
-                <a href="#direct-checkout-section" class="btn btn-landing-cta px-5 py-3 fs-5 text-decoration-none">
-                    <i class="fas fa-shopping-cart me-2"></i> সরাসরি অর্ডার করতে এখানে ক্লিক করুন
+                <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Buy Now</span>
                 </a>
             </div>
         @endif
@@ -2529,13 +2448,23 @@
         let directCouponType = null;
         let directCouponAmount = 0;
 
-        // Smooth scroll for landing CTA buttons
-        document.querySelectorAll('.btn-landing-cta').forEach(button => {
+        // Submit main purchase form on landing CTA click
+        document.querySelectorAll('.landing-buy-now').forEach(button => {
             button.addEventListener('click', function (e) {
                 e.preventDefault();
-                const target = document.getElementById('direct-checkout-section');
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const mainForm = document.querySelector('.purchase-form');
+                if (mainForm) {
+                    let buyNowInput = mainForm.querySelector('input[name="buy_now"]');
+                    if (!buyNowInput) {
+                        buyNowInput = document.createElement('input');
+                        buyNowInput.type = 'hidden';
+                        buyNowInput.name = 'buy_now';
+                        buyNowInput.value = '1';
+                        mainForm.appendChild(buyNowInput);
+                    } else {
+                        buyNowInput.value = '1';
+                    }
+                    mainForm.submit();
                 }
             });
         });

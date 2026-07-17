@@ -278,27 +278,30 @@
                                                 <input type="text" name="landing_settings[product_features_title]" class="form-control" value="{{ old('landing_settings.product_features_title', 'আমাদের প্রোডাক্টের বৈশিষ্ট্য') }}" placeholder="আমাদের প্রোডাক্টের বৈশিষ্ট্য">
                                             </div>
                                         </div>
-                                        @for ($i = 1; $i <= 6; $i++)
-                                            @php
-                                                $defaultProductFeatures = [
-                                                    1 => 'অটো অন/অফ: মানুষ থাকলেই আলো জ্বলবে, চলে গেলে অটো বন্ধ।',
-                                                    2 => 'ইনফ্রারেড সেন্সর: দূর থেকেই নিখুঁতভাবে মুভমেন্ট শনাক্ত করে।',
-                                                    3 => 'স্মার্ট ডে-লাইট সেন্সর: দিনের আলো থাকলে এটি জ্বলবে না, ফলে আরও বিদ্যুৎ সাশ্রয় হবে।',
-                                                    4 => 'সহজ ইনস্টলেশন: কোনো টেকনিশিয়ান লাগবে না, সাধারণ হোল্ডারের মতোই লাগিয়ে নিন।',
-                                                    5 => 'মাল্টি-পারপাস: বাথরুম, সিঁড়ি, করিডোর, বারান্দা, স্টোর রুম বা গ্যারেজের জন্য সেরা।',
-                                                    6 => ''
-                                                ];
-                                            @endphp
-                                            <div class="col-md-6 col-12 mb-3">
-                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
-                                                    <span class="badge bg-primary text-white mb-2">বৈশিষ্ট্য {{ $i }}</span>
-                                                    <div class="form-group mb-0">
-                                                        <label class="small fw-bold">ফিচার বিবরণ (Feature Text)</label>
-                                                        <textarea name="landing_settings[product_feature_{{ $i }}]" class="form-control form-control-sm" rows="2" placeholder="প্রোডাক্টের বৈশিষ্ট্যটি এখানে লিখুন">{{ old('landing_settings.product_feature_' . $i, $defaultProductFeatures[$i]) }}</textarea>
+                                        <div class="col-12">
+                                            <div id="product-features-container">
+                                                @php
+                                                    $defaultCreateFeatures = [
+                                                        'অটো অন/অফ: মানুষ থাকলেই আলো জ্বলবে, চলে গেলে অটো বন্ধ।',
+                                                        'ইনফ্রারেড সেন্সর: দূর থেকেই নিখুঁতভাবে মুভমেন্ট শনাক্ত করে।',
+                                                        'স্মার্ট ডে-লাইট সেন্সর: দিনের আলো থাকলে এটি জ্বলবে না, ফলে আরও বিদ্যুৎ সাশ্রয় হবে।',
+                                                        'সহজ ইনস্টলেশন: কোনো টেকনিশিয়ান লাগবে না, সাধারণ হোল্ডারের মতোই লাগিয়ে নিন।',
+                                                        'মাল্টি-পারপাস: বাথরুম, সিঁড়ি, করিডোর, বারান্দা, স্টোর রুম বা গ্যারেজের জন্য সেরা।'
+                                                    ];
+                                                @endphp
+                                                @foreach($defaultCreateFeatures as $idx => $featureText)
+                                                    <div class="feature-item d-flex align-items-start gap-2 mb-2">
+                                                        <textarea name="landing_settings[product_features][]" class="form-control form-control-sm" rows="2" placeholder="প্রোডাক্টের বৈশিষ্ট্যটি এখানে লিখুন">{{ old('landing_settings.product_features.' . $idx, $featureText) }}</textarea>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger remove-feature-btn mt-1 flex-shrink-0" title="ডিলিট করুন">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     </div>
-                                                </div>
+                                                @endforeach
                                             </div>
-                                        @endfor
+                                            <button type="button" id="add-feature-btn" class="btn btn-sm btn-outline-primary mt-2">
+                                                <i class="fas fa-plus me-1"></i> ফিচার যোগ করুন (Add Feature)
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <!-- User Problems Section -->
@@ -639,6 +642,41 @@
             if (hasVariantsToggle && variantManagerContainer) {
                 hasVariantsToggle.addEventListener('change', toggleVariantFields);
                 toggleVariantFields();
+            }
+
+            // Dynamic Product Features Builder
+            const featuresContainer = document.getElementById('product-features-container');
+            const addFeatureBtn = document.getElementById('add-feature-btn');
+
+            function createFeatureItem(value = '') {
+                const div = document.createElement('div');
+                div.className = 'feature-item d-flex align-items-start gap-2 mb-2';
+                div.innerHTML = `
+                    <textarea name="landing_settings[product_features][]" class="form-control form-control-sm" rows="2" placeholder="প্রোডাক্টের বৈশিষ্ট্যটি এখানে লিখুন">${value}</textarea>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-feature-btn mt-1 flex-shrink-0" title="ডিলিট করুন">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                div.querySelector('.remove-feature-btn').addEventListener('click', function () {
+                    div.remove();
+                });
+                return div;
+            }
+
+            if (featuresContainer) {
+                featuresContainer.querySelectorAll('.remove-feature-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        btn.closest('.feature-item').remove();
+                    });
+                });
+            }
+
+            if (addFeatureBtn && featuresContainer) {
+                addFeatureBtn.addEventListener('click', function () {
+                    featuresContainer.appendChild(createFeatureItem());
+                    const newTextarea = featuresContainer.lastElementChild.querySelector('textarea');
+                    if (newTextarea) newTextarea.focus();
+                });
             }
         }
     </script>
