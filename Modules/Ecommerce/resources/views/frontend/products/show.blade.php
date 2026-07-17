@@ -459,6 +459,67 @@
             </section>
         @endif
 
+        <!-- Dynamic Custom Sections -->
+        @if(isset($landingSettings['custom_sections']) && is_array($landingSettings['custom_sections']))
+            @foreach($landingSettings['custom_sections'] as $customSec)
+                @php
+                    $secTitle = $customSec['title'] ?? '';
+                    $secTag = $customSec['tag'] ?? 'INFO';
+                    $secStyle = $customSec['style'] ?? 'blue-check';
+                    $secItems = [];
+                    if (isset($customSec['items']) && is_array($customSec['items'])) {
+                        foreach ($customSec['items'] as $itemText) {
+                            if (!empty(trim((string) $itemText))) {
+                                $secItems[] = $itemText;
+                            }
+                        }
+                    }
+
+                    $styleMap = [
+                        'blue-check' => [
+                            'border' => '#dbeafe', 'bg' => '#fff', 'accent' => 'var(--primary-blue)', 'icon' => 'fas fa-check-square', 'tag_bg' => 'rgba(29, 78, 216, 0.1)'
+                        ],
+                        'green-check' => [
+                            'border' => '#dbeafe', 'bg' => '#fff', 'accent' => '#10b981', 'icon' => 'fas fa-check-circle', 'tag_bg' => 'rgba(16, 185, 129, 0.1)'
+                        ],
+                        'red-cross' => [
+                            'border' => '#fee2e2', 'bg' => '#fffafb', 'accent' => '#ef4444', 'icon' => 'fas fa-times-circle', 'tag_bg' => 'rgba(239, 68, 68, 0.1)'
+                        ],
+                        'yellow-star' => [
+                            'border' => '#fef3c7', 'bg' => '#fffdfa', 'accent' => '#f59e0b', 'icon' => 'fas fa-star', 'tag_bg' => 'rgba(245, 158, 11, 0.1)'
+                        ],
+                        'orange-info' => [
+                            'border' => '#ffedd5', 'bg' => '#fffbfa', 'accent' => '#f97316', 'icon' => 'fas fa-info-circle', 'tag_bg' => 'rgba(249, 115, 22, 0.1)'
+                        ]
+                    ];
+                    $cfg = $styleMap[$secStyle] ?? $styleMap['blue-check'];
+                @endphp
+
+                @if(!empty($secItems) && !empty($secTitle))
+                    <section class="landing-custom-section mb-4">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $cfg['border'] }} !important; background-color: {{ $cfg['bg'] }} !important;">
+                            <div class="section-heading text-center mb-4">
+                                <span class="section-tag" style="background: {{ $cfg['tag_bg'] }} !important; color: {{ $cfg['accent'] }} !important;">{{ $secTag }}</span>
+                                <h3 class="fw-bold mt-2" style="color: {{ $cfg['accent'] }} !important;">{{ $secTitle }}</h3>
+                            </div>
+                            <div class="custom-list-wrapper mx-auto" style="max-width: 800px;">
+                                <ul class="list-unstyled ps-0 d-flex flex-column gap-3">
+                                    @foreach($secItems as $itemText)
+                                        <li class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid {{ $cfg['border'] }}; transition: all 0.2s ease; border-left: 4px solid {{ $cfg['accent'] }};">
+                                            <span class="fs-4" style="color: {{ $cfg['accent'] }} !important; line-height: 1;">
+                                                <i class="{{ $cfg['icon'] }}"></i>
+                                            </span>
+                                            <span class="text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $itemText }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                @endif
+            @endforeach
+        @endif
+
         @if($stockQty > 0)
             <div class="text-center my-4">
                 <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
@@ -472,12 +533,22 @@
         @php
             $benefitsTitle = $landingSettings['benefits_title'] ?? 'বৈশিষ্ট্যগুলো কি কি জানতে চান?';
             $productBenefits = [];
-            for ($i = 1; $i <= 6; $i++) {
-                $benefitText = $landingSettings["benefit_{$i}"] ?? '';
-                if (!empty(trim($benefitText))) {
-                    $productBenefits[] = $benefitText;
+
+            if (isset($landingSettings['product_benefits']) && is_array($landingSettings['product_benefits'])) {
+                foreach ($landingSettings['product_benefits'] as $benefitText) {
+                    if (!empty(trim((string) $benefitText))) {
+                        $productBenefits[] = $benefitText;
+                    }
+                }
+            } else {
+                for ($i = 1; $i <= 6; $i++) {
+                    $benefitText = $landingSettings["benefit_{$i}"] ?? '';
+                    if (!empty(trim((string) $benefitText))) {
+                        $productBenefits[] = $benefitText;
+                    }
                 }
             }
+
             if (empty($productBenefits)) {
                 $productBenefits = [
                     'মানুষের উপস্থিতি টের পেয়ে স্বয়ংক্রিয়ভাবে লাইট জ্বলবে।',

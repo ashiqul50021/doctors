@@ -405,27 +405,41 @@
                                                 <input type="text" name="landing_settings[benefits_title]" class="form-control" value="{{ old('landing_settings.benefits_title', $product->landing_settings['benefits_title'] ?? 'বৈশিষ্ট্যগুলো কি কি জানতে চান?') }}" placeholder="বৈশিষ্ট্যগুলো কি কি জানতে চান?">
                                             </div>
                                         </div>
-                                        @for ($i = 1; $i <= 6; $i++)
-                                            @php
-                                                $defaultBenefits = [
-                                                    1 => 'মানুষের উপস্থিতি টের পেয়ে স্বয়ংক্রিয়ভাবে লাইট জ্বলবে।',
-                                                    2 => 'বিদ্যুৎ বিল সাশ্রয় করতে সাহায্য করবে।',
-                                                    3 => 'চোর ডাকাত থেকে আপনার বাড়ি সুরক্ষিত রাখতে ভূমিকা রাখবে।',
-                                                    4 => 'অন্ধকারে সুইচ খোঁজার ঝামেলা থেকে মুক্তি দেবে।',
-                                                    5 => 'বাসার শিশু ও বয়স্কদের জন্য রাতে চলাচলে নিরাপত্তা দেবে।',
-                                                    6 => ''
-                                                ];
-                                            @endphp
-                                            <div class="col-md-6 col-12 mb-3">
-                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
-                                                    <span class="badge bg-success text-white mb-2">সুবিধা {{ $i }}</span>
-                                                    <div class="form-group mb-0">
-                                                        <label class="small fw-bold">সুবিধার বিবরণ (Benefit Text)</label>
-                                                        <textarea name="landing_settings[benefit_{{ $i }}]" class="form-control form-control-sm" rows="2" placeholder="সুবিধার বিবরণ এখানে লিখুন">{{ old('landing_settings.benefit_' . $i, $product->landing_settings['benefit_' . $i] ?? ($defaultBenefits[$i] ?? '')) }}</textarea>
+                                        <div class="col-12">
+                                            <div id="product-benefits-container">
+                                                @php
+                                                    $existingBenefits = [];
+                                                    if (isset($product->landing_settings['product_benefits']) && is_array($product->landing_settings['product_benefits'])) {
+                                                        $existingBenefits = array_values(array_filter($product->landing_settings['product_benefits'], fn($b) => !empty(trim((string)$b))));
+                                                    } else {
+                                                        for ($i = 1; $i <= 6; $i++) {
+                                                            $bt = $product->landing_settings["benefit_{$i}"] ?? '';
+                                                            if (!empty(trim($bt))) $existingBenefits[] = $bt;
+                                                        }
+                                                    }
+                                                    if (empty($existingBenefits)) {
+                                                        $existingBenefits = [
+                                                            'মানুষের উপস্থিতি টের পেয়ে স্বয়ংক্রিয়ভাবে লাইট জ্বলবে।',
+                                                            'বিদ্যুৎ বিল সাশ্রয় করতে সাহায্য করবে।',
+                                                            'চোর ডাকাত থেকে আপনার বাড়ি সুরক্ষিত রাখতে ভূমিকা রাখবে।',
+                                                            'অন্ধকারে সুইচ খোঁজার ঝামেলা থেকে মুক্তি দেবে।',
+                                                            'বাসার শিশু ও বয়স্কদের জন্য রাতে চলাচলে নিরাপত্তা দেবে।'
+                                                        ];
+                                                    }
+                                                @endphp
+                                                @foreach($existingBenefits as $benefitText)
+                                                    <div class="benefit-item d-flex align-items-start gap-2 mb-2">
+                                                        <textarea name="landing_settings[product_benefits][]" class="form-control form-control-sm" rows="2" placeholder="সুবিধার বিবরণ এখানে লিখুন">{{ $benefitText }}</textarea>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger remove-benefit-btn mt-1 flex-shrink-0" title="ডিলিট করুন">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     </div>
-                                                </div>
+                                                @endforeach
                                             </div>
-                                        @endfor
+                                            <button type="button" id="add-benefit-btn" class="btn btn-sm btn-outline-success mt-2">
+                                                <i class="fas fa-plus me-1"></i> সুবিধা যোগ করুন (Add Benefit)
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <!-- Package Includes Section -->
@@ -498,6 +512,79 @@
                                                 </div>
                                             </div>
                                         @endfor
+                                    </div>
+
+                                    <!-- Dynamic Custom Sections Section -->
+                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-layer-group text-primary me-1"></i> ৮. অতিরিক্ত কাস্টম সেকশন (Dynamic Custom Sections)</h5>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div id="custom-sections-container">
+                                                @php
+                                                    $customSections = $product->landing_settings['custom_sections'] ?? [];
+                                                @endphp
+
+                                                @foreach($customSections as $secIdx => $sec)
+                                                    <div class="custom-section-card card p-3 mb-3 border bg-light shadow-sm animate-fade-in" data-section-index="{{ $secIdx }}" style="border-radius: 12px; border: 1px solid #dbeafe !important;">
+                                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                                            <span class="badge bg-primary text-white p-2">সেকশন #{{ $secIdx + 1 }}</span>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger remove-section-btn" title="ডিলিট করুন">
+                                                                <i class="fas fa-trash me-1"></i> ডিলিট সেকশন
+                                                            </button>
+                                                        </div>
+                                                        <div class="row g-2 mb-2">
+                                                            <div class="col-md-6 col-12">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
+                                                                    <input type="text" name="landing_settings[custom_sections][{{ $secIdx }}][title]" class="form-control form-control-sm" value="{{ $sec['title'] ?? '' }}" placeholder="যেমন: কেন আমাদের প্রোডাক্ট সেরা?">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3 col-6">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small fw-bold">সেকশন ট্যাগ (Tag)</label>
+                                                                    <input type="text" name="landing_settings[custom_sections][{{ $secIdx }}][tag]" class="form-control form-control-sm" value="{{ $sec['tag'] ?? 'INFO' }}" placeholder="যেমন: WHY US">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3 col-6">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small fw-bold">আইকন স্টাইল (Style)</label>
+                                                                    <select name="landing_settings[custom_sections][{{ $secIdx }}][style]" class="form-control form-control-sm form-select">
+                                                                        <option value="blue-check" {{ ($sec['style'] ?? '') === 'blue-check' ? 'selected' : '' }}>Blue Check Square</option>
+                                                                        <option value="green-check" {{ ($sec['style'] ?? '') === 'green-check' ? 'selected' : '' }}>Green Check Circle</option>
+                                                                        <option value="red-cross" {{ ($sec['style'] ?? '') === 'red-cross' ? 'selected' : '' }}>Red Cross</option>
+                                                                        <option value="yellow-star" {{ ($sec['style'] ?? '') === 'yellow-star' ? 'selected' : '' }}>Yellow Star</option>
+                                                                        <option value="orange-info" {{ ($sec['style'] ?? '') === 'orange-info' ? 'selected' : '' }}>Orange Info</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="custom-section-items-container mt-2 border-top pt-2">
+                                                            <label class="small fw-bold mb-2">সেকশন আইটেমসমূহ (Items)</label>
+                                                            <div class="items-list">
+                                                                @php
+                                                                    $secItems = $sec['items'] ?? [];
+                                                                @endphp
+                                                                @foreach($secItems as $itemText)
+                                                                    <div class="custom-item-row d-flex align-items-center gap-2 mb-2">
+                                                                        <input type="text" name="landing_settings[custom_sections][{{ $secIdx }}][items][]" class="form-control form-control-sm" value="{{ $itemText }}" placeholder="আইটেমটি লিখুন">
+                                                                        <button type="button" class="btn btn-sm btn-outline-danger remove-item-btn" title="আইটেম ডিলিট">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                            <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
+                                                                <i class="fas fa-plus me-1"></i> আইটেম যোগ করুন (Add Item)
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+
+                                            <button type="button" id="add-section-btn" class="btn btn-sm btn-outline-primary mt-2">
+                                                <i class="fas fa-plus me-1"></i> কাস্টম সেকশন যোগ করুন (Add Section)
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -820,6 +907,196 @@
                     problemsContainer.appendChild(createProblemItem());
                     const newTextarea = problemsContainer.lastElementChild.querySelector('textarea');
                     if (newTextarea) newTextarea.focus();
+                });
+            }
+
+            // Dynamic Product Benefits Builder
+            const benefitsContainer = document.getElementById('product-benefits-container');
+            const addBenefitBtn = document.getElementById('add-benefit-btn');
+
+            function createBenefitItem(value = '') {
+                const div = document.createElement('div');
+                div.className = 'benefit-item d-flex align-items-start gap-2 mb-2';
+                div.innerHTML = `
+                    <textarea name="landing_settings[product_benefits][]" class="form-control form-control-sm" rows="2" placeholder="সুবিধার বিবরণ এখানে লিখুন">${value}</textarea>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-benefit-btn mt-1 flex-shrink-0" title="ডিলিট করুন">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                div.querySelector('.remove-benefit-btn').addEventListener('click', function () {
+                    div.remove();
+                });
+                return div;
+            }
+
+            if (benefitsContainer) {
+                benefitsContainer.querySelectorAll('.remove-benefit-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        btn.closest('.benefit-item').remove();
+                    });
+                });
+            }
+
+            if (addBenefitBtn && benefitsContainer) {
+                addBenefitBtn.addEventListener('click', function () {
+                    benefitsContainer.appendChild(createBenefitItem());
+                    const newTextarea = benefitsContainer.lastElementChild.querySelector('textarea');
+                    if (newTextarea) newTextarea.focus();
+                });
+            }
+
+            // Dynamic Custom Sections Builder
+            const customSectionsContainer = document.getElementById('custom-sections-container');
+            const addSectionBtn = document.getElementById('add-section-btn');
+            let sectionCounter = document.querySelectorAll('.custom-section-card').length;
+
+            function createCustomSectionCard(index) {
+                const div = document.createElement('div');
+                div.className = 'custom-section-card card p-3 mb-3 border bg-light shadow-sm';
+                div.style.borderRadius = '12px';
+                div.style.border = '1px solid #dbeafe';
+                div.setAttribute('data-section-index', index);
+                div.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-primary text-white p-2">সেকশন #${index + 1}</span>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-section-btn" title="ডিলিট করুন">
+                            <i class="fas fa-trash me-1"></i> ডিলিট সেকশন
+                        </button>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6 col-12">
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
+                                <input type="text" name="landing_settings[custom_sections][${index}][title]" class="form-control form-control-sm" placeholder="যেমন: কেন আমাদের প্রোডাক্ট সেরা?">
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">সেকশন ট্যাগ (Tag)</label>
+                                <input type="text" name="landing_settings[custom_sections][${index}][tag]" class="form-control form-control-sm" value="INFO" placeholder="যেমন: WHY US">
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">আইকন স্টাইল (Style)</label>
+                                <select name="landing_settings[custom_sections][${index}][style]" class="form-control form-control-sm form-select">
+                                    <option value="blue-check">Blue Check Square</option>
+                                    <option value="green-check">Green Check Circle</option>
+                                    <option value="red-cross">Red Cross</option>
+                                    <option value="yellow-star">Yellow Star</option>
+                                    <option value="orange-info">Orange Info</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="custom-section-items-container mt-2 border-top pt-2">
+                        <label class="small fw-bold mb-2">সেকশন আইটেমসমূহ (Items)</label>
+                        <div class="items-list"></div>
+                        <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
+                            <i class="fas fa-plus me-1"></i> আইটেম যোগ করুন (Add Item)
+                        </button>
+                    </div>
+                `;
+
+                // Event listener to delete this section
+                div.querySelector('.remove-section-btn').addEventListener('click', function () {
+                    div.remove();
+                    reindexCustomSections();
+                });
+
+                // Event listener to add item under this section
+                div.querySelector('.add-item-btn').addEventListener('click', function () {
+                    const itemsList = div.querySelector('.items-list');
+                    itemsList.appendChild(createCustomItemRow(index));
+                    const newField = itemsList.lastElementChild.querySelector('input');
+                    if (newField) newField.focus();
+                });
+
+                return div;
+            }
+
+            function createCustomItemRow(sectionIndex, value = '') {
+                const div = document.createElement('div');
+                div.className = 'custom-item-row d-flex align-items-center gap-2 mb-2';
+                div.innerHTML = `
+                    <input type="text" name="landing_settings[custom_sections][${sectionIndex}][items][]" class="form-control form-control-sm" value="${value}" placeholder="আইটেমটি লিখুন">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-item-btn" title="আইটেম ডিলিট">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                div.querySelector('.remove-item-btn').addEventListener('click', function () {
+                    div.remove();
+                });
+                return div;
+            }
+
+            function reindexCustomSections() {
+                const cards = document.querySelectorAll('.custom-section-card');
+                sectionCounter = cards.length;
+                cards.forEach((card, index) => {
+                    card.setAttribute('data-section-index', index);
+                    card.querySelector('.badge').textContent = `সেকশন #${index + 1}`;
+                    
+                    // Update field names for title, tag, style
+                    const titleInput = card.querySelector('input[name*="[title]"]');
+                    if (titleInput) titleInput.name = `landing_settings[custom_sections][${index}][title]`;
+
+                    const tagInput = card.querySelector('input[name*="[tag]"]');
+                    if (tagInput) tagInput.name = `landing_settings[custom_sections][${index}][tag]`;
+
+                    const styleSelect = card.querySelector('select[name*="[style]"]');
+                    if (styleSelect) styleSelect.name = `landing_settings[custom_sections][${index}][style]`;
+
+                    // Update field names for items
+                    card.querySelectorAll('.custom-item-row input').forEach(input => {
+                        input.name = `landing_settings[custom_sections][${index}][items][]`;
+                    });
+
+                    // Re-bind click on the Add Item button for the correct section index
+                    const addBtn = card.querySelector('.add-item-btn');
+                    // Clone button to strip existing event listeners
+                    const newAddBtn = addBtn.cloneNode(true);
+                    addBtn.parentNode.replaceChild(newAddBtn, addBtn);
+                    newAddBtn.addEventListener('click', function () {
+                        const itemsList = card.querySelector('.items-list');
+                        itemsList.appendChild(createCustomItemRow(index));
+                        const newField = itemsList.lastElementChild.querySelector('input');
+                        if (newField) newField.focus();
+                    });
+                });
+            }
+
+            // Bind existing custom section cards
+            if (customSectionsContainer) {
+                document.querySelectorAll('.custom-section-card').forEach((card, index) => {
+                    card.querySelector('.remove-section-btn').addEventListener('click', function () {
+                        card.remove();
+                        reindexCustomSections();
+                    });
+
+                    card.querySelector('.add-item-btn').addEventListener('click', function () {
+                        const itemsList = card.querySelector('.items-list');
+                        itemsList.appendChild(createCustomItemRow(index));
+                        const newField = itemsList.lastElementChild.querySelector('input');
+                        if (newField) newField.focus();
+                    });
+
+                    card.querySelectorAll('.remove-item-btn').forEach(btn => {
+                        btn.addEventListener('click', function () {
+                            btn.closest('.custom-item-row').remove();
+                        });
+                    });
+                });
+            }
+
+            if (addSectionBtn && customSectionsContainer) {
+                addSectionBtn.addEventListener('click', function () {
+                    const newSecCard = createCustomSectionCard(sectionCounter);
+                    customSectionsContainer.appendChild(newSecCard);
+                    sectionCounter++;
+                    const titleField = newSecCard.querySelector('input');
+                    if (titleField) titleField.focus();
                 });
             }
         }
