@@ -322,159 +322,378 @@
             </div>
         @endif
 
-        <!-- Product Video Section -->
-        @if(!empty($landingSettings['youtube_video_url']))
-            @php
-                $videoUrl = $landingSettings['youtube_video_url'];
-                $videoId = null;
-                if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|win/.+|watch\?v=)|youtu\.be/)([^"&?/\s]{11})%i', $videoUrl, $match)) {
-                    $videoId = $match[1];
+        <!-- Dynamic Layout Sections -->
+        @php
+            $sections = $landingSettings['sections'] ?? null;
+            if (!is_array($sections)) {
+                $sections = [];
+
+                // 1. Features
+                $features = [];
+                if (isset($landingSettings['product_features'])) {
+                    $features = $landingSettings['product_features'];
+                } else {
+                    for ($i = 1; $i <= 6; $i++) {
+                        $val = $landingSettings["product_feature_{$i}"] ?? '';
+                        if (!empty(trim((string)$val))) $features[] = $val;
+                    }
                 }
+                if (!empty($features)) {
+                    $sections[] = [
+                        'type' => 'features',
+                        'title' => $landingSettings['product_features_title'] ?? 'আমাদের প্রোডাক্টের বৈশিষ্ট্য',
+                        'tag' => 'Product Features',
+                        'style' => 'blue-check',
+                        'items' => $features
+                    ];
+                }
+
+                // 2. Video
+                if (!empty($landingSettings['youtube_video_url'])) {
+                    $sections[] = [
+                        'type' => 'video',
+                        'title' => 'পণ্যটির বিবরণী ও ব্যবহারবিধি ভিডিও',
+                        'tag' => 'Showcase Video'
+                    ];
+                }
+
+                // 3. Problems
+                $problems = [];
+                if (isset($landingSettings['product_problems'])) {
+                    $problems = $landingSettings['product_problems'];
+                } else {
+                    for ($i = 1; $i <= 6; $i++) {
+                        $val = $landingSettings["problem_{$i}"] ?? '';
+                        if (!empty(trim((string)$val))) $problems[] = $val;
+                    }
+                }
+                if (!empty($problems)) {
+                    $sections[] = [
+                        'type' => 'problems',
+                        'title' => $landingSettings['problems_title'] ?? 'এই সমস্যাগুলো কি আপনারও আছে?',
+                        'tag' => 'Common Issues',
+                        'style' => 'red-cross',
+                        'items' => $problems
+                    ];
+                }
+
+                // 4. Benefits
+                $benefits = [];
+                if (isset($landingSettings['product_benefits'])) {
+                    $benefits = $landingSettings['product_benefits'];
+                } else {
+                    for ($i = 1; $i <= 6; $i++) {
+                        $val = $landingSettings["benefit_{$i}"] ?? '';
+                        if (!empty(trim((string)$val))) $benefits[] = $val;
+                    }
+                }
+                if (!empty($benefits)) {
+                    $sections[] = [
+                        'type' => 'benefits',
+                        'title' => $landingSettings['benefits_title'] ?? 'বৈশিষ্ট্যগুলো কি কি জানতে চান?',
+                        'tag' => 'Benefits',
+                        'style' => 'green-check',
+                        'items' => $benefits
+                    ];
+                }
+
+                // 5. Gallery
+                if ($galleryImages->count() > 1) {
+                    $sections[] = [
+                        'type' => 'gallery',
+                        'title' => 'পণ্যটির কিছু বাস্তব ছবি (Real Gallery)',
+                        'tag' => 'Showcase'
+                    ];
+                }
+
+                // 6. Package Includes
+                $package = [];
+                if (isset($landingSettings['package_includes'])) {
+                    $package = $landingSettings['package_includes'];
+                } else {
+                    for ($i = 1; $i <= 6; $i++) {
+                        $val = $landingSettings["package_include_{$i}"] ?? '';
+                        if (!empty(trim((string)$val))) $package[] = $val;
+                    }
+                }
+                if (!empty($package)) {
+                    $sections[] = [
+                        'type' => 'package',
+                        'title' => $landingSettings['package_includes_title'] ?? 'প্যাকেজের সাথে যা যা পাবেন',
+                        'tag' => 'Package Contents',
+                        'style' => 'package-box',
+                        'items' => $package
+                    ];
+                }
+
+                // 7. Why Choose Us
+                $sections[] = [
+                    'type' => 'trust',
+                    'title' => $trustTitle ?? 'কেন আমাদের থেকে অর্ডার করবেন?',
+                    'tag' => 'Trust'
+                ];
+
+                // 8. FAQ
+                $faqs = [];
+                if (isset($landingSettings['faqs']) && is_array($landingSettings['faqs'])) {
+                    $faqs = $landingSettings['faqs'];
+                } else {
+                    for ($i = 1; $i <= 4; $i++) {
+                        $q = $landingSettings["faq_q_{$i}"] ?? '';
+                        $a = $landingSettings["faq_a_{$i}"] ?? '';
+                        if (!empty(trim((string)$q)) && !empty(trim((string)$a))) {
+                            $faqs[] = ['q' => $q, 'a' => $a];
+                        }
+                    }
+                }
+                if (!empty($faqs)) {
+                    $sections[] = [
+                        'type' => 'faq',
+                        'title' => $landingSettings['faqs_title'] ?? 'কিছু সাধারণ প্রশ্ন',
+                        'tag' => 'FAQs',
+                        'style' => 'faq-accordion',
+                        'faqs' => $faqs
+                    ];
+                }
+
+                // 9. Custom Sections
+                if (isset($landingSettings['custom_sections']) && is_array($landingSettings['custom_sections'])) {
+                    foreach ($landingSettings['custom_sections'] as $cs) {
+                        $sections[] = [
+                            'type' => 'custom',
+                            'title' => $cs['title'] ?? '',
+                            'tag' => $cs['tag'] ?? 'INFO',
+                            'style' => $cs['style'] ?? 'blue-check',
+                            'items' => $cs['items'] ?? []
+                        ];
+                    }
+                }
+            }
+        @endphp
+
+        @foreach($sections as $section)
+            @php
+                $secType = $section['type'] ?? 'custom';
+                $secTitle = $section['title'] ?? '';
+                $secTag = $section['tag'] ?? 'INFO';
+                $secStyle = $section['style'] ?? 'blue-check';
             @endphp
 
-            @if($videoId)
-                <section class="landing-video-section mb-4">
-                    <div class="info-card p-4 rounded-3 bg-white border" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
-                        <div class="section-heading text-center mb-4">
-                            <span class="section-tag" style="background: rgba(29, 78, 216, 0.1) !important; color: var(--primary-blue) !important;">Showcase Video</span>
-                            <h3 class="fw-bold text-dark mt-2">পণ্যটির বিবরণী ও ব্যবহারবিধি ভিডিও</h3>
-                        </div>
-                        <div class="video-container-wrapper mx-auto" style="max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;">
-                            <div class="ratio ratio-16x9">
-                                <iframe src="https://www.youtube.com/embed/{{ $videoId }}" 
-                                        title="Product Video" 
-                                        allowfullscreen 
-                                        style="border: 0;"></iframe>
+            @if($secType === 'features')
+                @php
+                    $featItems = $section['items'] ?? [];
+                @endphp
+                @if(!empty($featItems))
+                    <section class="landing-features-section mb-4">
+                        <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                            <div class="section-heading text-center mb-4">
+                                <span class="section-tag" style="background: rgba(29, 78, 216, 0.1) !important; color: var(--primary-blue) !important;">{{ $secTag }}</span>
+                                <h3 class="fw-bold text-dark mt-2">{{ $secTitle }}</h3>
                             </div>
+                            <div class="features-list-wrapper mx-auto" style="max-width: 800px;">
+                                <ul class="features-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
+                                    @foreach($featItems as $featureText)
+                                        <li class="features-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0; transition: all 0.2s ease;">
+                                            <span class="features-icon-list-icon text-primary fs-4" style="color: var(--primary-blue) !important; line-height: 1;">
+                                                <i class="fas fa-check-square"></i>
+                                            </span>
+                                            <span class="features-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $featureText }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                @endif
+
+            @elseif($secType === 'video')
+                @if(!empty($landingSettings['youtube_video_url']))
+                    @php
+                        $videoUrl = $landingSettings['youtube_video_url'];
+                        $videoId = null;
+                        if (preg_match('%(?:youtube(?:-nocookie)?\\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|win/.+|watch\\?v=)|youtu\\.be/)([^"&?/\\s]{11})%i', $videoUrl, $match)) {
+                            $videoId = $match[1];
+                        }
+                    @endphp
+                    @if($videoId)
+                        <section class="landing-video-section mb-4">
+                            <div class="info-card p-4 rounded-3 bg-white border" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                                <div class="section-heading text-center mb-4">
+                                    <span class="section-tag" style="background: rgba(29, 78, 216, 0.1) !important; color: var(--primary-blue) !important;">{{ $secTag }}</span>
+                                    <h3 class="fw-bold text-dark mt-2">{{ $secTitle }}</h3>
+                                </div>
+                                <div class="video-container-wrapper mx-auto" style="max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;">
+                                    <div class="ratio ratio-16x9">
+                                        <iframe src="https://www.youtube.com/embed/{{ $videoId }}" 
+                                                title="Product Video" 
+                                                allowfullscreen 
+                                                style="border: 0;"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    @endif
+                @endif
+
+            @elseif($secType === 'problems')
+                @php
+                    $probItems = $section['items'] ?? [];
+                @endphp
+                @if(!empty($probItems))
+                    <section class="landing-problems-section mb-4">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid #fee2e2 !important; background-color: #fffafb !important;">
+                            <div class="section-heading text-center mb-4">
+                                <span class="section-tag" style="background: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important;">{{ $secTag }}</span>
+                                <h3 class="fw-bold text-danger mt-2">{{ $secTitle }}</h3>
+                            </div>
+                            <div class="problems-list-wrapper mx-auto" style="max-width: 800px;">
+                                <ul class="problems-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
+                                    @foreach($probItems as $problemText)
+                                        <li class="problems-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid #fee2e2; transition: all 0.2s ease; border-left: 4px solid #ef4444;">
+                                            <span class="problems-icon-list-icon text-danger fs-4" style="color: #ef4444 !important; line-height: 1;">
+                                                <i class="fas fa-times-circle"></i>
+                                            </span>
+                                            <span class="problems-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $problemText }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                @endif
+
+            @elseif($secType === 'benefits')
+                @php
+                    $benefitItems = $section['items'] ?? [];
+                @endphp
+                @if(!empty($benefitItems))
+                    <section class="landing-benefits-section mb-4">
+                        <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                            <div class="section-heading text-center mb-4">
+                                <span class="section-tag" style="background: rgba(16, 185, 129, 0.1) !important; color: #10b981 !important;">{{ $secTag }}</span>
+                                <h3 class="fw-bold text-dark mt-2">{{ $secTitle }}</h3>
+                            </div>
+                            <div class="benefits-list-wrapper mx-auto" style="max-width: 800px;">
+                                <ul class="benefits-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
+                                    @foreach($benefitItems as $benefitText)
+                                        <li class="benefits-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #fdfefe; border: 1px solid #e2e8f0; transition: all 0.2s ease; border-left: 4px solid #10b981;">
+                                            <span class="benefits-icon-list-icon text-success fs-4" style="color: #10b981 !important; line-height: 1;">
+                                                <i class="fas fa-check-circle"></i>
+                                            </span>
+                                            <span class="benefits-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $benefitText }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                @endif
+
+            @elseif($secType === 'gallery')
+                @if($galleryImages->count() > 1)
+                    <section class="landing-gallery-section my-5">
+                        <div class="section-heading text-center mb-3">
+                            <span class="section-tag">{{ $secTag }}</span>
+                            <h3 class="fw-bold">{{ $secTitle }}</h3>
+                            <button class="btn btn-outline-primary btn-sm mt-2" id="galleryToggleBtn"
+                                onclick="toggleGallerySection()">
+                                <i class="fas fa-images me-1"></i> View All Photos ({{ $galleryImages->count() }})
+                            </button>
+                        </div>
+                        <div id="realGalleryGrid" style="display:none;">
+                            <div class="row g-3 justify-content-center">
+                                @foreach($galleryImages as $image)
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="gallery-image-wrapper card border-0 shadow-sm overflow-hidden p-2 bg-white">
+                                            <img src="{{ $image }}" class="img-fluid rounded"
+                                                alt="Gallery image" style="height: 220px; object-fit: cover; width: 100%;">
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </section>
+                @endif
+
+            @elseif($secType === 'package')
+                @php
+                    $packageItems = $section['items'] ?? [];
+                @endphp
+                @if(!empty($packageItems))
+                    <section class="landing-package-section mb-4">
+                        <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                            <div class="section-heading text-center mb-4">
+                                <span class="section-tag" style="background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important;">{{ $secTag }}</span>
+                                <h3 class="fw-bold text-dark mt-2">{{ $secTitle }}</h3>
+                            </div>
+                            <div class="package-list-wrapper mx-auto" style="max-width: 800px;">
+                                <div class="p-3 rounded-3 bg-light border d-flex flex-column gap-3">
+                                    @foreach($packageItems as $includeText)
+                                        <div class="d-flex align-items-center gap-3 p-2 bg-white rounded border-start border-warning border-3">
+                                            <span class="text-warning fs-5"><i class="fas fa-box-open"></i></span>
+                                            <span class="text-dark fw-semibold" style="font-size: 15px;">{{ $includeText }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                @endif
+
+            @elseif($secType === 'trust')
+                <section class="landing-trust-section mb-4">
+                    <div class="info-card p-4 text-center rounded-3" style="background: #f0f7ff; border: 1px solid #dbeafe;">
+                        <h3 class="mb-4 fw-bold" style="color: var(--primary-blue) !important;">{{ $secTitle }}</h3>
+                        <div class="row g-4 text-start">
+                            @foreach($trustFeatures as $feature)
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start gap-2 mb-2">
+                                        <span class="fs-5" style="color: var(--primary-blue) !important;"><i class="fas fa-check-circle"></i></span>
+                                        <div>
+                                            <strong class="text-dark d-block mb-1">{{ $feature['title'] }}</strong>
+                                            <span class="text-muted small">{{ $feature['desc'] }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </section>
-            @endif
-        @endif
 
-        <!-- Product Features List / আমাদের প্রোডাক্টের বৈশিষ্ট্য -->
-        @php
-            $featuresTitle = $landingSettings['product_features_title'] ?? 'আমাদের প্রোডাক্টের বৈশিষ্ট্য';
-            $productFeatures = [];
-
-            if (isset($landingSettings['product_features']) && is_array($landingSettings['product_features'])) {
-                foreach ($landingSettings['product_features'] as $featText) {
-                    if (!empty(trim((string) $featText))) {
-                        $productFeatures[] = $featText;
-                    }
-                }
-            } else {
-                for ($i = 1; $i <= 6; $i++) {
-                    $featText = $landingSettings["product_feature_{$i}"] ?? '';
-                    if (!empty(trim((string) $featText))) {
-                        $productFeatures[] = $featText;
-                    }
-                }
-            }
-
-            if (empty($productFeatures)) {
-                $productFeatures = [
-                    'অটো অন/অফ: মানুষ থাকলেই আলো জ্বলবে, চলে গেলে অটো বন্ধ।',
-                    'ইনফ্রারেড সেন্সর: দূর থেকেই নিখুঁতভাবে মুভমেন্ট শনাক্ত করে।',
-                    'স্মার্ট ডে-লাইট সেন্সর: দিনের আলো থাকলে এটি জ্বলবে না, ফলে আরও বিদ্যুৎ সাশ্রয় হবে।',
-                    'সহজ ইনস্টলেশন: কোনো টেকনিশিয়ান লাগবে না, সাধারণ হোল্ডারের মতোই লাগিয়ে নিন।',
-                    'মাল্টি-পারপাস: বাথরুম, সিঁড়ি, করিডোর, বারান্দা, স্টোর রুম বা গ্যারেজের জন্য সেরা।'
-                ];
-            }
-        @endphp
-
-        @if(!empty($productFeatures))
-            <section class="landing-features-section mb-4">
-                <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
-                    <div class="section-heading text-center mb-4">
-                        <span class="section-tag" style="background: rgba(29, 78, 216, 0.1) !important; color: var(--primary-blue) !important;">Product Features</span>
-                        <h3 class="fw-bold text-dark mt-2">{{ $featuresTitle }}</h3>
-                    </div>
-                    <div class="features-list-wrapper mx-auto" style="max-width: 800px;">
-                        <ul class="features-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
-                            @foreach($productFeatures as $featureText)
-                                <li class="features-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0; transition: all 0.2s ease;">
-                                    <span class="features-icon-list-icon text-primary fs-4" style="color: var(--primary-blue) !important; line-height: 1;">
-                                        <i class="fas fa-check-square"></i>
-                                    </span>
-                                    <span class="features-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $featureText }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </section>
-        @endif
-
-        <!-- User Problems Section / এই সমস্যাগুলো কি আপনারও আছে? -->
-        @php
-            $problemsTitle = $landingSettings['problems_title'] ?? 'এই সমস্যাগুলো কি আপনারও আছে?';
-            $productProblems = [];
-
-            if (isset($landingSettings['product_problems']) && is_array($landingSettings['product_problems'])) {
-                foreach ($landingSettings['product_problems'] as $probText) {
-                    if (!empty(trim((string) $probText))) {
-                        $productProblems[] = $probText;
-                    }
-                }
-            } else {
-                for ($i = 1; $i <= 6; $i++) {
-                    $probText = $landingSettings["problem_{$i}"] ?? '';
-                    if (!empty(trim((string) $probText))) {
-                        $productProblems[] = $probText;
-                    }
-                }
-            }
-
-            if (empty($productProblems)) {
-                $productProblems = [
-                    'অন্ধকারে বাথরুমে বা সিঁড়িতে সুইচ খুঁজতে গিয়ে পড়ে যাওয়ার ভয় পান?',
-                    'অপ্রয়োজনে লাইট অন থাকার কারণে প্রতি মাসে বিদ্যুৎ বিল বেশি আসে?',
-                    'রাতে অন্ধকারে হাতড়ে লাইটের সুইচ খুঁজে পেতে কষ্ট হয়?',
-                    'সুইচ অন-অফ করার আলসেমির কারণে বিদ্যুৎ অপচয় হচ্ছে?'
-                ];
-            }
-        @endphp
-
-        @if(!empty($productProblems))
-            <section class="landing-problems-section mb-4">
-                <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid #fee2e2 !important; background-color: #fffafb !important;">
-                    <div class="section-heading text-center mb-4">
-                        <span class="section-tag" style="background: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important;">Common Issues</span>
-                        <h3 class="fw-bold text-danger mt-2">{{ $problemsTitle }}</h3>
-                    </div>
-                    <div class="problems-list-wrapper mx-auto" style="max-width: 800px;">
-                        <ul class="problems-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
-                            @foreach($productProblems as $problemText)
-                                <li class="problems-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid #fee2e2; transition: all 0.2s ease; border-left: 4px solid #ef4444;">
-                                    <span class="problems-icon-list-icon text-danger fs-4" style="color: #ef4444 !important; line-height: 1;">
-                                        <i class="fas fa-times-circle"></i>
-                                    </span>
-                                    <span class="problems-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $problemText }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </section>
-        @endif
-
-        <!-- Dynamic Custom Sections -->
-        @if(isset($landingSettings['custom_sections']) && is_array($landingSettings['custom_sections']))
-            @foreach($landingSettings['custom_sections'] as $customSec)
+            @elseif($secType === 'faq')
                 @php
-                    $secTitle = $customSec['title'] ?? '';
-                    $secTag = $customSec['tag'] ?? 'INFO';
-                    $secStyle = $customSec['style'] ?? 'blue-check';
-                    $secItems = [];
-                    if (isset($customSec['items']) && is_array($customSec['items'])) {
-                        foreach ($customSec['items'] as $itemText) {
-                            if (!empty(trim((string) $itemText))) {
-                                $secItems[] = $itemText;
-                            }
-                        }
-                    }
+                    $faqItems = $section['faqs'] ?? [];
+                @endphp
+                @if(!empty($faqItems))
+                    <section class="landing-faqs-section mb-4">
+                        <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                            <div class="section-heading text-center mb-4">
+                                <span class="section-tag" style="background: rgba(59, 130, 246, 0.1) !important; color: #3b82f6 !important;">{{ $secTag }}</span>
+                                <h3 class="fw-bold text-dark mt-2">{{ $secTitle }}</h3>
+                            </div>
+                            <div class="accordion accordion-flush mx-auto" id="landingFAQAccordion" style="max-width: 800px;">
+                                @foreach($faqItems as $faqIndex => $faq)
+                                    <div class="accordion-item border rounded-3 mb-2 overflow-hidden shadow-sm" style="border: 1px solid #e2e8f0 !important;">
+                                        <h2 class="accordion-header" id="faqHeading{{ $faqIndex }}">
+                                            <button class="accordion-button collapsed fw-bold text-dark fs-6" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faqIndex }}" aria-expanded="false" aria-controls="faqCollapse{{ $faqIndex }}" style="background: #f8fafc; outline: none; box-shadow: none;">
+                                                {{ $faq['q'] }}
+                                            </button>
+                                        </h2>
+                                        <div id="faqCollapse{{ $faqIndex }}" class="accordion-collapse collapse" aria-labelledby="faqHeading{{ $faqIndex }}" data-bs-parent="#landingFAQAccordion">
+                                            <div class="accordion-body text-muted text-start" style="line-height: 1.6; font-size: 14px; background: #fff; text-align: left;">
+                                                {{ $faq['a'] }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </section>
+                @endif
 
+            @elseif($secType === 'custom')
+                @php
+                    $customItems = $section['items'] ?? [];
                     $styleMap = [
                         'blue-check' => [
                             'border' => '#dbeafe', 'bg' => '#fff', 'accent' => 'var(--primary-blue)', 'icon' => 'fas fa-check-square', 'tag_bg' => 'rgba(29, 78, 216, 0.1)'
@@ -494,8 +713,7 @@
                     ];
                     $cfg = $styleMap[$secStyle] ?? $styleMap['blue-check'];
                 @endphp
-
-                @if(!empty($secItems) && !empty($secTitle))
+                @if(!empty($customItems) && !empty($secTitle))
                     <section class="landing-custom-section mb-4">
                         <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $cfg['border'] }} !important; background-color: {{ $cfg['bg'] }} !important;">
                             <div class="section-heading text-center mb-4">
@@ -504,7 +722,7 @@
                             </div>
                             <div class="custom-list-wrapper mx-auto" style="max-width: 800px;">
                                 <ul class="list-unstyled ps-0 d-flex flex-column gap-3">
-                                    @foreach($secItems as $itemText)
+                                    @foreach($customItems as $itemText)
                                         <li class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid {{ $cfg['border'] }}; transition: all 0.2s ease; border-left: 4px solid {{ $cfg['accent'] }};">
                                             <span class="fs-4" style="color: {{ $cfg['accent'] }} !important; line-height: 1;">
                                                 <i class="{{ $cfg['icon'] }}"></i>
@@ -517,248 +735,18 @@
                         </div>
                     </section>
                 @endif
-            @endforeach
-        @endif
+            @endif
 
-        @if($stockQty > 0)
-            <div class="text-center my-4">
-                <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Buy Now</span>
-                </a>
-            </div>
-        @endif
-
-        <!-- Product Benefits Section / সুবিধা ও কার্যকারিতা -->
-        @php
-            $benefitsTitle = $landingSettings['benefits_title'] ?? 'বৈশিষ্ট্যগুলো কি কি জানতে চান?';
-            $productBenefits = [];
-
-            if (isset($landingSettings['product_benefits']) && is_array($landingSettings['product_benefits'])) {
-                foreach ($landingSettings['product_benefits'] as $benefitText) {
-                    if (!empty(trim((string) $benefitText))) {
-                        $productBenefits[] = $benefitText;
-                    }
-                }
-            } else {
-                for ($i = 1; $i <= 6; $i++) {
-                    $benefitText = $landingSettings["benefit_{$i}"] ?? '';
-                    if (!empty(trim((string) $benefitText))) {
-                        $productBenefits[] = $benefitText;
-                    }
-                }
-            }
-
-            if (empty($productBenefits)) {
-                $productBenefits = [
-                    'মানুষের উপস্থিতি টের পেয়ে স্বয়ংক্রিয়ভাবে লাইট জ্বলবে।',
-                    'বিদ্যুৎ বিল সাশ্রয় করতে সাহায্য করবে।',
-                    'চোর ডাকাত থেকে আপনার বাড়ি সুরক্ষিত রাখতে ভূমিকা রাখবে।',
-                    'অন্ধকারে সুইচ খোঁজার ঝামেলা থেকে মুক্তি দেবে।',
-                    'বাসার শিশু ও বয়স্কদের জন্য রাতে চলাচলে নিরাপত্তা দেবে।'
-                ];
-            }
-        @endphp
-
-        @if(!empty($productBenefits))
-            <section class="landing-benefits-section mb-4">
-                <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
-                    <div class="section-heading text-center mb-4">
-                        <span class="section-tag" style="background: rgba(16, 185, 129, 0.1) !important; color: #10b981 !important;">Benefits</span>
-                        <h3 class="fw-bold text-dark mt-2">{{ $benefitsTitle }}</h3>
-                    </div>
-                    <div class="benefits-list-wrapper mx-auto" style="max-width: 800px;">
-                        <ul class="benefits-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
-                            @foreach($productBenefits as $benefitText)
-                                <li class="benefits-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #fdfefe; border: 1px solid #e2e8f0; transition: all 0.2s ease; border-left: 4px solid #10b981;">
-                                    <span class="benefits-icon-list-icon text-success fs-4" style="color: #10b981 !important; line-height: 1;">
-                                        <i class="fas fa-check-circle"></i>
-                                    </span>
-                                    <span class="benefits-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $benefitText }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
+            @if(in_array($secType, ['features', 'problems', 'benefits', 'package', 'faq', 'custom']) && $stockQty > 0)
+                <div class="text-center my-4">
+                    <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Buy Now</span>
+                    </a>
                 </div>
-            </section>
-        @endif
+            @endif
 
-        @if($stockQty > 0)
-            <div class="text-center my-4">
-                <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Buy Now</span>
-                </a>
-            </div>
-        @endif
-
-        <!-- Product Real Gallery showcase -->
-        @if($galleryImages->count() > 1)
-            <section class="landing-gallery-section my-5">
-                <div class="section-heading text-center mb-3">
-                    <span class="section-tag">Showcase</span>
-                    <h3 class="fw-bold">পণ্যটির কিছু বাস্তব ছবি (Real Gallery)</h3>
-                    <button class="btn btn-outline-primary btn-sm mt-2" id="galleryToggleBtn"
-                        onclick="toggleGallerySection()">
-                        <i class="fas fa-images me-1"></i> View All Photos ({{ $galleryImages->count() }})
-                    </button>
-                </div>
-                <div id="realGalleryGrid" style="display:none;">
-                    <div class="row g-3 justify-content-center">
-                        @foreach($galleryImages as $image)
-                            <div class="col-md-6 col-lg-4">
-                                <div class="gallery-image-wrapper card border-0 shadow-sm overflow-hidden p-2 bg-white">
-                                    <img src="{{ $image }}" class="img-fluid rounded"
-                                        alt="{{ $product->name }} gallery {{ $loop->iteration }}"
-                                        style="height: 250px; object-fit: contain; background: #f8fafc; cursor:pointer;"
-                                        onclick="setMainImage(this.src)">
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </section>
-        @endif
-
-        <!-- Package Includes Section -->
-        @php
-            $packageTitle = $landingSettings['package_includes_title'] ?? 'প্যাকেজের সাথে যা যা পাবেন';
-            $packageIncludes = [];
-            for ($i = 1; $i <= 6; $i++) {
-                $includeText = $landingSettings["package_include_{$i}"] ?? '';
-                if (!empty(trim($includeText))) {
-                    $packageIncludes[] = $includeText;
-                }
-            }
-            if (empty($packageIncludes)) {
-                $packageIncludes = [
-                    '১টি পিআইআর মোশন সেন্সর হোল্ডার (PIR Motion Sensor Holder)',
-                    'প্রয়োজনীয় স্ক্রু ও ওয়াল প্লাগ (Mounting Screws & Plugs)',
-                    'ব্যবহারকারী নির্দেশিকা বই (User Manual Guide)',
-                    'টেস্টিং ওয়ারেন্টি কার্ড (Testing Warranty Card)'
-                ];
-            }
-        @endphp
-
-        @if(!empty($packageIncludes))
-            <section class="landing-package-section mb-4">
-                <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
-                    <div class="section-heading text-center mb-4">
-                        <span class="section-tag" style="background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important;">Package Contents</span>
-                        <h3 class="fw-bold text-dark mt-2">{{ $packageTitle }}</h3>
-                    </div>
-                    <div class="package-list-wrapper mx-auto" style="max-width: 800px;">
-                        <div class="p-3 rounded-3 bg-light border d-flex flex-column gap-3">
-                            @foreach($packageIncludes as $includeText)
-                                <div class="d-flex align-items-center gap-3 p-2 bg-white rounded border-start border-warning border-3">
-                                    <span class="text-warning fs-5"><i class="fas fa-box-open"></i></span>
-                                    <span class="text-dark fw-semibold" style="font-size: 15px;">{{ $includeText }}</span>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            </section>
-        @endif
-
-        @if($stockQty > 0)
-            <div class="text-center my-4">
-                <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Buy Now</span>
-                </a>
-            </div>
-        @endif
-
-        <!-- Why Choose Us / কেন আমাদের থেকে অর্ডার করবেন? -->
-        <section class="landing-trust-section mb-4">
-            <div class="info-card p-4 text-center rounded-3" style="background: #f0f7ff; border: 1px solid #dbeafe;">
-                <h3 class="mb-4 fw-bold" style="color: var(--primary-blue) !important;">{{ $trustTitle }}</h3>
-                <div class="row g-4 text-start">
-                    @foreach($trustFeatures as $feature)
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-start gap-2 mb-2">
-                                <span class="fs-5" style="color: var(--primary-blue) !important;"><i class="fas fa-check-circle"></i></span>
-                                <div>
-                                    <strong class="text-dark d-block mb-1">{{ $feature['title'] }}</strong>
-                                    <span class="text-muted small">{{ $feature['desc'] }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
-        <!-- FAQ Section -->
-        @php
-            $faqsTitle = $landingSettings['faqs_title'] ?? 'কিছু সাধারণ প্রশ্ন';
-            $productFAQs = [];
-            for ($i = 1; $i <= 4; $i++) {
-                $q = $landingSettings["faq_q_{$i}"] ?? '';
-                $a = $landingSettings["faq_a_{$i}"] ?? '';
-                if (!empty(trim($q)) && !empty(trim($a))) {
-                    $productFAQs[] = ['q' => $q, 'a' => $a];
-                }
-            }
-            if (empty($productFAQs)) {
-                $productFAQs = [
-                    [
-                        'q' => 'সেন্সর হোল্ডারটি লাগাতে কি অতিরিক্ত তার লাগবে?',
-                        'a' => 'জি না, এটি সাধারণ লাইট হোল্ডারের মতোই সরাসরি হোল্ডারে প্যাঁচ দিয়ে বসানো যায়। কোনো তার বা টেকনিশিয়ান লাগবে না।'
-                    ],
-                    [
-                        'q' => 'এর মোশন ডিটেকশন রেঞ্জ কত দূর?',
-                        'a' => 'এটি প্রায় ১০-১২ ফুট দূর থেকে মানুষের উপস্থিতি ডিটেক্ট করতে পারে এবং আলো অন করতে পারে।'
-                    ],
-                    [
-                        'q' => 'দিনের বেলায় কি এটি জ্বলবে?',
-                        'a' => 'না, এতে ডে-লাইট সেন্সর রয়েছে যা দিনের আলোতে লাইট অফ রাখে এবং কেবল অন্ধকারেই কাজ করে বিদ্যুৎ বাঁচায়।'
-                    ],
-                    [
-                        'q' => 'সব ধরণের বাল্ব কি এতে ব্যবহার করা যাবে?',
-                        'a' => 'জি হ্যাঁ, যেকোনো রেগুলার এলইডি বা এনার্জি সেভিং বাল্ব এতে খুব সহজেই ব্যবহার করতে পারবেন।'
-                    ]
-                ];
-            }
-        @endphp
-
-        @if(!empty($productFAQs))
-            <section class="landing-faqs-section mb-4">
-                <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
-                    <div class="section-heading text-center mb-4">
-                        <span class="section-tag" style="background: rgba(59, 130, 246, 0.1) !important; color: #3b82f6 !important;">FAQs</span>
-                        <h3 class="fw-bold text-dark mt-2">{{ $faqsTitle }}</h3>
-                    </div>
-                    <div class="accordion accordion-flush mx-auto" id="landingFAQAccordion" style="max-width: 800px;">
-                        @foreach($productFAQs as $faqIndex => $faq)
-                            <div class="accordion-item border rounded-3 mb-2 overflow-hidden shadow-sm" style="border: 1px solid #e2e8f0 !important;">
-                                <h2 class="accordion-header" id="faqHeading{{ $faqIndex }}">
-                                    <button class="accordion-button collapsed fw-bold text-dark fs-6" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faqIndex }}" aria-expanded="false" aria-controls="faqCollapse{{ $faqIndex }}" style="background: #f8fafc; outline: none; box-shadow: none;">
-                                        {{ $faq['q'] }}
-                                    </button>
-                                </h2>
-                                <div id="faqCollapse{{ $faqIndex }}" class="accordion-collapse collapse" aria-labelledby="faqHeading{{ $faqIndex }}" data-bs-parent="#landingFAQAccordion">
-                                    <div class="accordion-body text-muted text-start" style="line-height: 1.6; font-size: 14px; background: #fff; text-align: left;">
-                                        {{ $faq['a'] }}
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </section>
-        @endif
-
-        @if($stockQty > 0)
-            <div class="text-center my-4">
-                <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Buy Now</span>
-                </a>
-            </div>
-        @endif
-
+        @endforeach
         <section class="product-reviews-section">
             <div class="row g-4">
                 <div class="col-lg-5">
