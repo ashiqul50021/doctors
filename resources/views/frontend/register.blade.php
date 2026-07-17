@@ -2,83 +2,196 @@
 
 @section('title', 'Register - ' . ($siteSettings['site_name'] ?? 'abcsheba'))
 
+@section('body_class', 'account-page')
+
 @section('content')
-    <!-- Page Content -->
-    <div class="content">
-        <div class="container-fluid">
+    <style>
+        .main-wrapper {
+            padding: 0;
+            margin: 0;
+            background-color: #fff;
+        }
 
-            <div class="row">
-                <div class="col-md-8 offset-md-2">
+        .content {
+            padding: 40px 0;
+        }
 
-                    <!-- Register Content -->
-                    <div class="account-content">
-                        <div class="row align-items-center justify-content-center">
-                            <div class="col-md-7 col-lg-6 login-left">
-                                <img src="{{ asset('assets/img/login-banner.png') }}" class="img-fluid"
-                                    alt="abcsheba Register">
-                            </div>
-                            <div class="col-md-12 col-lg-6 login-right">
-                                <div class="login-header">
-                                    <h3>Patient Register</h3>
-                                </div>
-                                <form action="{{ route('register.submit') }}" method="POST">
-                                    @csrf
-                                    <div class="mb-3 form-focus">
-                                        <input type="text" class="form-control floating" name="name" required
-                                            value="{{ old('name') }}">
-                                        <label class="focus-label">Name</label>
-                                        @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div class="mb-3 form-focus">
-                                        <input type="text" class="form-control floating" name="mobile" required
-                                            value="{{ old('mobile') }}">
-                                        <label class="focus-label">Mobile Number</label>
-                                        @error('mobile') <span class="text-danger small">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div class="mb-3 form-focus">
-                                        <input type="email" class="form-control floating" name="email" required
-                                            value="{{ old('email') }}">
-                                        <label class="focus-label">Email</label>
-                                        @error('email') <span class="text-danger small">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div class="mb-3 form-focus">
-                                        <input type="password" class="form-control floating" name="password" required>
-                                        <label class="focus-label">Create Password</label>
-                                        @error('password') <span class="text-danger small">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div class="mb-3 form-focus">
-                                        <input type="password" class="form-control floating" name="password_confirmation"
-                                            required>
-                                        <label class="focus-label">Confirm Password</label>
-                                    </div>
-                                    <div class="text-end">
-                                        <a class="forgot-link" href="{{ route('login') }}">Already have an account?</a>
-                                    </div>
-                                    <button class="btn btn-primary btn-block btn-lg login-btn" type="submit">Signup</button>
-                                    <div class="login-or">
-                                        <span class="or-line"></span>
-                                        <span class="span-or">or</span>
-                                    </div>
-                                    <div class="row form-row social-login">
-                                        <div class="col-6">
-                                            <a href="#" class="btn btn-facebook btn-block"><i
-                                                    class="fab fa-facebook-f me-1"></i> Login</a>
-                                        </div>
-                                        <div class="col-6">
-                                            <a href="#" class="btn btn-google btn-block"><i class="fab fa-google me-1"></i>
-                                                Login</a>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
+        /* Centered Layout */
+        .split-layout {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+        }
+
+        /* Right Side - Form */
+        .split-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .split-form-container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .form-header-logo {
+            max-width: 130px;
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: #6b7280;
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* Custom Input Styling */
+        .split-input {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            color: #1f2937;
+            background-color: #fff;
+            transition: border-color 0.2s;
+        }
+
+        .split-input:focus {
+            border-color: #345cce;
+            box-shadow: 0 0 0 3px rgba(52, 92, 206, 0.1);
+            outline: none;
+        }
+
+        .split-input-group {
+            position: relative;
+        }
+
+        .split-input-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            cursor: pointer;
+        }
+
+        .split-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .split-btn {
+            background-color: #345cce;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.875rem 1rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .split-btn:hover {
+            background-color: #2a4aaa;
+            color: #fff;
+        }
+    </style>
+
+    <div class="split-layout">
+        <div class="split-right">
+            <div class="split-form-container">
+                <img src="{{ !empty($siteSettings['logo']) ? asset($siteSettings['logo']) : asset('assets/img/logo.png') }}"
+                    class="form-header-logo" alt="Logo">
+
+                <h3 class="form-title">Patient Register</h3>
+                <p class="form-subtitle">Create an account to book appointments and access services</p>
+
+                <form action="{{ route('register.submit') }}" method="POST">
+                    @csrf
+
+                    <div class="mb-4">
+                        <label class="split-label">Name</label>
+                        <input type="text" class="form-control split-input" name="name" required
+                            value="{{ old('name') }}" placeholder="Enter your full name">
+                        @error('name') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="split-label">Mobile Number</label>
+                        <input type="text" class="form-control split-input" name="mobile" required
+                            value="{{ old('mobile') }}" placeholder="Enter your mobile number">
+                        @error('mobile') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="split-label">Email</label>
+                        <input type="email" class="form-control split-input" name="email" required
+                            value="{{ old('email') }}" placeholder="example@gmail.com">
+                        @error('email') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="split-label">Create Password</label>
+                        <div class="split-input-group">
+                            <input type="password" class="form-control split-input pe-5" name="password" required
+                                placeholder="••••••••••••••" id="password_input">
+                            <i class="far fa-eye split-input-icon" onclick="togglePasswordVisibility('password_input')"></i>
+                        </div>
+                        @error('password') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="split-label">Confirm Password</label>
+                        <div class="split-input-group">
+                            <input type="password" class="form-control split-input pe-5" name="password_confirmation" required
+                                placeholder="••••••••••••••" id="password_confirmation_input">
+                            <i class="far fa-eye split-input-icon" onclick="togglePasswordVisibility('password_confirmation_input')"></i>
                         </div>
                     </div>
-                    <!-- /Register Content -->
 
-                </div>
+                    <div class="d-grid mb-4">
+                        <button class="btn split-btn" type="submit">Sign Up</button>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <span style="font-size: 0.875rem; color: #4b5563;">Already have an account? <a
+                                href="{{ route('login') }}"
+                                style="color: #345cce; font-weight: 600; text-decoration: none;">Login</a></span>
+                    </div>
+                </form>
             </div>
-
         </div>
     </div>
-    <!-- /Page Content -->
+
+    <script>
+        function togglePasswordVisibility(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = event.target;
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 @endsection
