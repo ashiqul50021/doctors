@@ -1423,8 +1423,14 @@
             }
 
             // Nested category tree toggle
+            var lastToggleTimes = {};
             window.toggleHomeCat = function(event, childListId) {
-                // Don't stop propagation — let radio change still fire
+                var now = Date.now();
+                if (lastToggleTimes[childListId] && (now - lastToggleTimes[childListId] < 100)) {
+                    return;
+                }
+                lastToggleTimes[childListId] = now;
+
                 var childList = document.getElementById(childListId);
                 if (!childList) return;
 
