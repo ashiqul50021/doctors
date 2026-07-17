@@ -313,27 +313,29 @@
                                                 <input type="text" name="landing_settings[problems_title]" class="form-control" value="{{ old('landing_settings.problems_title', 'এই সমস্যাগুলো কি আপনারও আছে?') }}" placeholder="এই সমস্যাগুলো কি আপনারও আছে?">
                                             </div>
                                         </div>
-                                        @for ($i = 1; $i <= 6; $i++)
-                                            @php
-                                                $defaultProblems = [
-                                                    1 => 'অন্ধকারে বাথরুমে বা সিঁড়িতে সুইচ খুঁজতে গিয়ে পড়ে যাওয়ার ভয় পান?',
-                                                    2 => 'অপ্রয়োজনে লাইট অন থাকার কারণে প্রতি মাসে বিদ্যুৎ বিল বেশি আসে?',
-                                                    3 => 'রাতে অন্ধকারে হাতড়ে লাইটের সুইচ খুঁজে পেতে কষ্ট হয়?',
-                                                    4 => 'সুইচ অন-অফ করার আলসেমির কারণে বিদ্যুৎ অপচয় হচ্ছে?',
-                                                    5 => '',
-                                                    6 => ''
-                                                ];
-                                            @endphp
-                                            <div class="col-md-6 col-12 mb-3">
-                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
-                                                    <span class="badge bg-danger text-white mb-2">সমস্যা {{ $i }}</span>
-                                                    <div class="form-group mb-0">
-                                                        <label class="small fw-bold">সমস্যার বিবরণ (Problem Text)</label>
-                                                        <textarea name="landing_settings[problem_{{ $i }}]" class="form-control form-control-sm" rows="2" placeholder="সমস্যার বিবরণ এখানে লিখুন">{{ old('landing_settings.problem_' . $i, $defaultProblems[$i]) }}</textarea>
+                                        <div class="col-12">
+                                            <div id="product-problems-container">
+                                                @php
+                                                    $defaultCreateProblems = [
+                                                        'অন্ধকারে বাথরুমে বা সিঁড়িতে সুইচ খুঁজতে গিয়ে পড়ে যাওয়ার ভয় পান?',
+                                                        'অপ্রয়োজনে লাইট অন থাকার কারণে প্রতি মাসে বিদ্যুৎ বিল বেশি আসে?',
+                                                        'রাতে অন্ধকারে হাতড়ে লাইটের সুইচ খুঁজে পেতে কষ্ট হয়?',
+                                                        'সুইচ অন-অফ করার আলসেমির কারণে বিদ্যুৎ অপচয় হচ্ছে?'
+                                                    ];
+                                                @endphp
+                                                @foreach($defaultCreateProblems as $idx => $problemText)
+                                                    <div class="problem-item d-flex align-items-start gap-2 mb-2">
+                                                        <textarea name="landing_settings[product_problems][]" class="form-control form-control-sm" rows="2" placeholder="সমস্যার বিবরণ এখানে লিখুন">{{ old('landing_settings.product_problems.' . $idx, $problemText) }}</textarea>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger remove-problem-btn mt-1 flex-shrink-0" title="ডিলিট করুন">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     </div>
-                                                </div>
+                                                @endforeach
                                             </div>
-                                        @endfor
+                                            <button type="button" id="add-problem-btn" class="btn btn-sm btn-outline-danger mt-2">
+                                                <i class="fas fa-plus me-1"></i> সমস্যা যোগ করুন (Add Problem)
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <!-- Product Benefits Section -->
@@ -675,6 +677,41 @@
                 addFeatureBtn.addEventListener('click', function () {
                     featuresContainer.appendChild(createFeatureItem());
                     const newTextarea = featuresContainer.lastElementChild.querySelector('textarea');
+                    if (newTextarea) newTextarea.focus();
+                });
+            }
+
+            // Dynamic Product Problems Builder
+            const problemsContainer = document.getElementById('product-problems-container');
+            const addProblemBtn = document.getElementById('add-problem-btn');
+
+            function createProblemItem(value = '') {
+                const div = document.createElement('div');
+                div.className = 'problem-item d-flex align-items-start gap-2 mb-2';
+                div.innerHTML = `
+                    <textarea name="landing_settings[product_problems][]" class="form-control form-control-sm" rows="2" placeholder="সমস্যার বিবরণ এখানে লিখুন">${value}</textarea>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-problem-btn mt-1 flex-shrink-0" title="ডিলিট করুন">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                div.querySelector('.remove-problem-btn').addEventListener('click', function () {
+                    div.remove();
+                });
+                return div;
+            }
+
+            if (problemsContainer) {
+                problemsContainer.querySelectorAll('.remove-problem-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        btn.closest('.problem-item').remove();
+                    });
+                });
+            }
+
+            if (addProblemBtn && problemsContainer) {
+                addProblemBtn.addEventListener('click', function () {
+                    problemsContainer.appendChild(createProblemItem());
+                    const newTextarea = problemsContainer.lastElementChild.querySelector('textarea');
                     if (newTextarea) newTextarea.focus();
                 });
             }

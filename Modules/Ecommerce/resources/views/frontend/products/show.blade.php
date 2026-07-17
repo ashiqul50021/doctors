@@ -410,12 +410,22 @@
         @php
             $problemsTitle = $landingSettings['problems_title'] ?? 'এই সমস্যাগুলো কি আপনারও আছে?';
             $productProblems = [];
-            for ($i = 1; $i <= 6; $i++) {
-                $probText = $landingSettings["problem_{$i}"] ?? '';
-                if (!empty(trim($probText))) {
-                    $productProblems[] = $probText;
+
+            if (isset($landingSettings['product_problems']) && is_array($landingSettings['product_problems'])) {
+                foreach ($landingSettings['product_problems'] as $probText) {
+                    if (!empty(trim((string) $probText))) {
+                        $productProblems[] = $probText;
+                    }
+                }
+            } else {
+                for ($i = 1; $i <= 6; $i++) {
+                    $probText = $landingSettings["problem_{$i}"] ?? '';
+                    if (!empty(trim((string) $probText))) {
+                        $productProblems[] = $probText;
+                    }
                 }
             }
+
             if (empty($productProblems)) {
                 $productProblems = [
                     'অন্ধকারে বাথরুমে বা সিঁড়িতে সুইচ খুঁজতে গিয়ে পড়ে যাওয়ার ভয় পান?',
