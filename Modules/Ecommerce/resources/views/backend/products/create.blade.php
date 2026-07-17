@@ -194,83 +194,46 @@
                                         </div>
                                     </div>
 
-                                    <!-- 4 Trust Highlights Badges -->
-                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-award text-warning me-1"></i> ২. পণ্যের পাশের ৪টি ট্রাস্ট ব্যাজ (Trust Highlights Grid)</h5>
-                                    <div class="row">
-                                        @for ($i = 1; $i <= 4; $i++)
-                                            @php
-                                                $defaultIcons = [1 => 'fas fa-undo-alt', 2 => 'fas fa-hand-holding-usd', 3 => 'fas fa-headset', 4 => 'fas fa-shipping-fast'];
-                                                $defaultTitles = [1 => '৭ দিনের রিটার্ন', 2 => 'হাতে পেয়ে পেমেন্ট', 3 => 'অনলাইন সাপোর্ট', 4 => 'সারাদেশে ডেলিভারি'];
-                                                $defaultDescs = [1 => 'সহজ এক্সচেঞ্জ সুবিধা', 2 => 'ক্যাশ অন ডেলিভারি', 3 => '২৪/৭ কাস্টমার কেয়ার', 4 => 'দ্রুত ও নিরাপদ ডেলিভারি'];
-                                            @endphp
-                                            <div class="col-md-6 col-12 mb-3">
-                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
-                                                    <span class="badge bg-secondary mb-2">ব্যাজ {{ $i }}</span>
-                                                    <div class="form-group mb-2">
-                                                        <label class="small fw-bold">ফন্ট-অসাম আইকন ক্লাস (FontAwesome Icon Class)</label>
-                                                        <input type="text" name="landing_settings[badge_{{ $i }}_icon]" class="form-control form-control-sm" value="{{ old('landing_settings.badge_' . $i . '_icon', $defaultIcons[$i]) }}">
-                                                    </div>
-                                                    <div class="form-group mb-2">
-                                                        <label class="small fw-bold">টাইটেল (Title)</label>
-                                                        <input type="text" name="landing_settings[badge_{{ $i }}_title]" class="form-control form-control-sm" value="{{ old('landing_settings.badge_' . $i . '_title', $defaultTitles[$i]) }}">
-                                                    </div>
-                                                    <div class="form-group mb-0">
-                                                        <label class="small fw-bold">বর্ণনা (Subtitle/Desc)</label>
-                                                        <input type="text" name="landing_settings[badge_{{ $i }}_desc]" class="form-control form-control-sm" value="{{ old('landing_settings.badge_' . $i . '_desc', $defaultDescs[$i]) }}">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endfor
-                                    </div>
-
-                                    <!-- Why Choose Us Features -->
-                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-check-circle text-success me-1"></i> ৩. আমাদের থেকে কেন সংগ্রহ করবেন? (Why Choose Us Section)</h5>
-                                    <div class="row">
-                                        <div class="col-12 mb-3">
-                                            <div class="form-group">
-                                                <label class="fw-bold">সেকশন টাইটেল (Trust Section Title)</label>
-                                                <input type="text" name="landing_settings[trust_title]" class="form-control" value="{{ old('landing_settings.trust_title', 'আমাদের থেকে কেন সংগ্রহ করবেন?') }}" placeholder="আমাদের থেকে কেন সংগ্রহ করবেন?">
-                                            </div>
-                                        </div>
-                                        @for ($i = 1; $i <= 4; $i++)
-                                            @php
-                                                $defaultFeatureTitles = [
-                                                    1 => '১০০% আসল প্রোডাক্ট (100% Original)',
-                                                    2 => 'নিরাপদ প্যাকেজিং ও ডেলিভারি (Secure Shipping)',
-                                                    3 => 'সহজ রিটার্ন পলিসি (Easy Returns)',
-                                                    4 => '২৪/৭ কাস্টমার সাপোর্ট (Dedicated Hotline)'
-                                                ];
-                                                $defaultFeatureDescs = [
-                                                    1 => 'আমরা কোনো নকল পণ্য বিক্রি করি না। সরাসরি ভেরিফাইড ব্র্যান্ড ও ইমপোর্টার থেকে পণ্য সংগ্রহ করি।',
-                                                    2 => 'আপনার পণ্যটি যাতে অক্ষত অবস্থায় পৌঁছায়, সেজন্য আমাদের রয়েছে নিখুঁত বাবল-র‍্যাপড প্যাকেজিং ব্যবস্থা।',
-                                                    3 => 'পণ্য গ্রহণের পর কোনো ত্রুটি পেলে ৭ দিনের মধ্যে আমাদের সাথে যোগাযোগ করে রিফান্ড বা এক্সচেঞ্জ করতে পারবেন।',
-                                                    4 => 'অর্ডার করার আগে বা পরে যেকোনো গাইডলাইনের জন্য আমাদের কাস্টমার কেয়ার হেল্পলাইন সর্বদা উন্মুক্ত।'
-                                                ];
-                                            @endphp
-                                            <div class="col-md-6 col-12 mb-3">
-                                                <div class="p-3 border rounded-3 bg-white shadow-sm">
-                                                    <span class="badge bg-info text-white mb-2">ফিচার {{ $i }}</span>
-                                                    <div class="form-group mb-2">
-                                                        <label class="small fw-bold">টাইটেল (Feature Title)</label>
-                                                        <input type="text" name="landing_settings[feature_{{ $i }}_title]" class="form-control form-control-sm" value="{{ old('landing_settings.feature_' . $i . '_title', $defaultFeatureTitles[$i]) }}">
-                                                    </div>
-                                                    <div class="form-group mb-0">
-                                                        <label class="small fw-bold">বর্ণনা (Feature Description)</label>
-                                                        <textarea name="landing_settings[feature_{{ $i }}_desc]" class="form-control form-control-sm" rows="2">{{ old('landing_settings.feature_' . $i . '_desc', $defaultFeatureDescs[$i]) }}</textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endfor
-                                    </div>
-
                                     <!-- Unified Landing Sections Builder -->
-                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-layer-group text-primary me-1"></i> ৪. ল্যান্ডিং পেজ সেকশন বিল্ডার (Landing Page Sections Builder)</h5>
+                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-layer-group text-primary me-1"></i> ২. ল্যান্ডিং পেজ সেকশন বিল্ডার (Landing Page Sections Builder)</h5>
                                     <div class="row">
                                         <div class="col-12">
                                             <p class="text-muted small">এখানে আপনি ল্যান্ডিং পেজের সেকশনগুলোর ক্রম পরিবর্তন (Up/Down), নতুন সেকশন যোগ বা ডিলিট করতে পারবেন।</p>
                                             
                                             <div id="landing-sections-builder-container">
                                                 @php
+                                                    $defaultBadges = [];
+                                                    $defaultIcons = [1 => 'fas fa-undo-alt', 2 => 'fas fa-hand-holding-usd', 3 => 'fas fa-headset', 4 => 'fas fa-shipping-fast'];
+                                                    $defaultTitles = [1 => '৭ দিনের রিটার্ন', 2 => 'হাতে পেয়ে পেমেন্ট', 3 => 'অনলাইন সাপোর্ট', 4 => 'সারাদেশে ডেলিভারি'];
+                                                    $defaultDescs = [1 => 'সহজ এক্সচেঞ্জ সুবিধা', 2 => 'ক্যাশ অন ডেলিভারি', 3 => '২৪/৭ কাস্টমার কেয়ার', 4 => 'দ্রুত ও নিরাপদ ডেলিভারি'];
+                                                    for ($i = 1; $i <= 4; $i++) {
+                                                        $defaultBadges[] = [
+                                                            'icon' => $defaultIcons[$i],
+                                                            'title' => $defaultTitles[$i],
+                                                            'desc' => $defaultDescs[$i]
+                                                        ];
+                                                    }
+
+                                                    $defaultFeatureTitles = [
+                                                        1 => '১০০% আসল প্রোডাক্ট (100% Original)',
+                                                        2 => 'নিরাপদ প্যাকেজিং ও ডেলিভারি (Secure Shipping)',
+                                                        3 => 'সহজ রিটার্ন পলিসি (Easy Returns)',
+                                                        4 => '২৪/৭ কাস্টমার সাপোর্ট (Dedicated Hotline)'
+                                                    ];
+                                                    $defaultFeatureDescs = [
+                                                        1 => 'আমরা কোনো নকল পণ্য বিক্রি করি না। সরাসরি ভেরিফাইড ব্র্যান্ড ও ইমপোর্টার থেকে পণ্য সংগ্রহ করি।',
+                                                        2 => 'আপনার পণ্যটি যাতে অক্ষত অবস্থায় পৌঁছায়, সেজন্য আমাদের রয়েছে নিখুঁত বাবল-র‍্যাপড প্যাকেজিং ব্যবস্থা।',
+                                                        3 => 'পণ্য গ্রহণের পর কোনো ত্রুটি পেলে ৭ দিনের মধ্যে আমাদের সাথে যোগাযোগ করে রিফান্ড বা এক্সচেঞ্জ করতে পারবেন।',
+                                                        4 => 'অর্ডার করার আগে বা পরে যেকোনো গাইডলাইনের জন্য আমাদের কাস্টমার কেয়ার হেল্পলাইন সর্বদা উন্মুক্ত।'
+                                                    ];
+                                                    $defaultFeatures = [];
+                                                    for ($i = 1; $i <= 4; $i++) {
+                                                        $defaultFeatures[] = [
+                                                            'title' => $defaultFeatureTitles[$i],
+                                                            'desc' => $defaultFeatureDescs[$i]
+                                                        ];
+                                                    }
+
                                                     $sections = [
                                                         [
                                                             'type' => 'features',
@@ -278,28 +241,26 @@
                                                             'tag' => 'Product Features',
                                                             'style' => 'blue-check',
                                                             'items' => [
-                                                                'অটো অন/অফ: মানুষ থাকলেই আলো জ্বলবে, চলে গেলে অটো বন্ধ।',
-                                                                'ইনফ্রারেড সেন্সর: দূর থেকেই নিখুঁতভাবে মুভমেন্ট শনাক্ত করে।',
-                                                                'স্মার্ট ডে-লাইট সেন্সর: দিনের আলো থাকলে এটি জ্বলবে না, ফলে আরও বিদ্যুৎ সাশ্রয় হবে।',
-                                                                'সহজ ইনস্টলেশন: কোনো টেকনিশিয়ান লাগবে না, সাধারণ হোল্ডারের মতোই লাগিয়ে নিন।',
-                                                                'মাল্টি-পারপাস: বাথরুম, সিঁড়ি, করিডোর, বারান্দা, স্টোর রুম বা গ্যারেজের জন্য সেরা।'
+                                                                '১০০% প্রিমিয়াম কোয়ালিটি',
+                                                                'টেকসই ও আকর্ষণীয় ডিজাইন',
+                                                                'সহজে ব্যবহারযোগ্য ও বহনযোগ্য'
                                                             ]
                                                         ],
                                                         [
-                                                            'type' => 'video',
-                                                            'title' => 'পণ্যটির বিবরণী ও ব্যবহারবিধি ভিডিও',
-                                                            'tag' => 'Showcase Video'
+                                                            'type' => 'badges',
+                                                            'title' => 'আমাদের থেকে কেন কিনবেন?',
+                                                            'tag' => 'Trust Badges',
+                                                            'badges' => $defaultBadges
                                                         ],
                                                         [
                                                             'type' => 'problems',
-                                                            'title' => 'এই সমস্যাগুলো কি আপনারও আছে?',
+                                                            'title' => 'এই समस्याগুলো কি আপনারও আছে?',
                                                             'tag' => 'Common Issues',
                                                             'style' => 'red-cross',
                                                             'items' => [
-                                                                'অন্ধকারে বাথরুমে বা সিঁড়িতে সুইচ খুঁজতে গিয়ে পড়ে যাওয়ার ভয় পান?',
-                                                                'অপ্রয়োজনে লাইট অন থাকার কারণে প্রতি মাসে বিদ্যুৎ বিল বেশি আসে?',
-                                                                'রাতে অন্ধকারে হাতড়ে লাইটের সুইচ খুঁজে পেতে কষ্ট হয়?',
-                                                                'সুইচ অন-অফ করার আলসেমির কারণে বিদ্যুৎ অপচয় হচ্ছে?'
+                                                                'বাজারে নকল প্রোডাক্টের ভয়?',
+                                                                'সঠিক দাম ও কোয়ালিটি নিয়ে দুশ্চিন্তা?',
+                                                                'ডেলিভারি পেতে অনেক দেরি হওয়া?'
                                                             ]
                                                         ],
                                                         [
@@ -308,17 +269,10 @@
                                                             'tag' => 'Benefits',
                                                             'style' => 'green-check',
                                                             'items' => [
-                                                                'মানুষের উপস্থিতি টের পেয়ে স্বয়ংক্রিয়ভাবে লাইট জ্বলবে।',
-                                                                'বিদ্যুৎ বিল সাশ্রয় করতে সাহায্য করবে।',
-                                                                'চোর ডাকাত থেকে আপনার বাড়ি সুরক্ষিত রাখতে ভূমিকা রাখবে।',
-                                                                'অন্ধকারে সুইচ খোঁজার ঝামেলা থেকে মুক্তি দেবে।',
-                                                                'বাসার শিশু ও বয়স্কদের জন্য রাতে চলাচলে নিরাপত্তা দেবে।'
+                                                                'আমাদের প্রোডাক্ট ব্যবহারে আপনার সময় বাঁচবে।',
+                                                                'এটি ব্যবহারে কাজের পারফরম্যান্স বৃদ্ধি পাবে।',
+                                                                '১০০% রিফান্ড বা এক্সচেঞ্জ পলিসি গ্যারান্টি।'
                                                             ]
-                                                        ],
-                                                        [
-                                                            'type' => 'gallery',
-                                                            'title' => 'পণ্যটির কিছু বাস্তব ছবি (Real Gallery)',
-                                                            'tag' => 'Showcase'
                                                         ],
                                                         [
                                                             'type' => 'package',
@@ -326,16 +280,17 @@
                                                             'tag' => 'Package Contents',
                                                             'style' => 'package-box',
                                                             'items' => [
-                                                                '১টি পিআইআর মোশন সেন্সর হোল্ডার (PIR Motion Sensor Holder)',
-                                                                'প্রয়োজনীয় স্ক্রু ও ওয়াল প্লাগ (Mounting Screws & Plugs)',
-                                                                'ব্যবহারকারী নির্দেশিকা বই (User Manual Guide)',
-                                                                'টেস্টিং ওয়ারেন্টি কার্ড (Testing Warranty Card)'
+                                                                '১টি প্রিমিয়াম মেইন প্রোডাক্ট',
+                                                                '১টি ইউজার ম্যানুয়াল গাইডবুক',
+                                                                '১টি ওয়ারেন্টি কার্ড (১ বছরের গ্যারান্টি)',
+                                                                '১টি প্রিমিয়াম গিফট বক্স প্যাকেজিং'
                                                             ]
                                                         ],
                                                         [
                                                             'type' => 'trust',
                                                             'title' => 'কেন আমাদের থেকে অর্ডার করবেন?',
-                                                            'tag' => 'Trust'
+                                                            'tag' => 'Trust',
+                                                            'trust_features' => $defaultFeatures
                                                         ],
                                                         [
                                                             'type' => 'faq',
@@ -344,20 +299,12 @@
                                                             'style' => 'faq-accordion',
                                                             'faqs' => [
                                                                 [
-                                                                    'q' => 'সেন্সর হোল্ডারটি লাগাতে কি অতিরিক্ত তার লাগবে?',
-                                                                    'a' => 'জি না, এটি সাধারণ লাইট হোল্ডারের মতোই সরাসরি হোল্ডারে প্যাঁচ দিয়ে বসানো যায়। কোনো তার বা টেকনিশিয়ান লাগবে না।'
+                                                                    'q' => 'অর্ডার কিভাবে করব?',
+                                                                    'a' => 'অর্ডার করার জন্য ফর্মটি পূরণ করে সাবমিট করুন। আমাদের টিম দ্রুত আপনার সাথে যোগাযোগ করবে।'
                                                                 ],
                                                                 [
-                                                                    'q' => 'এর মোশন ডিটেকশন রেঞ্জ কত দূর?',
-                                                                    'a' => 'এটি প্রায় ১০-১২ ফুট দূর থেকে মানুষের উপস্থিতি ডিটেক্ট করতে পারে এবং আলো অন করতে পারে।'
-                                                                ],
-                                                                [
-                                                                    'q' => 'দিনের বেলায় কি এটি জ্বলবে?',
-                                                                    'a' => 'না, এতে ডে-লাইট সেন্সর রয়েছে যা দিনের আলোতে লাইট অফ রাখে এবং কেবল অন্ধকারেই কাজ করে বিদ্যুৎ বাঁচায়।'
-                                                                ],
-                                                                [
-                                                                    'q' => 'সব ধরণের বাল্ব কি এতে ব্যবহার করা যাবে?',
-                                                                    'a' => 'জি হ্যাঁ, যেকোনো রেগুলার এলইডি বা এনার্জি সেভিং বাল্ব এতে খুব সহজেই ব্যবহার করতে পারবেন।'
+                                                                    'q' => 'ডেলিভারি চার্জ কত?',
+                                                                    'a' => 'সারাদেশে ডেলিভারি চার্জ সম্পূর্ণ ফ্রি! কোনো অতিরিক্ত ফি দিতে হবে না।'
                                                                 ]
                                                             ]
                                                         ]
@@ -389,13 +336,13 @@
                                                             <div class="col-md-6 col-12">
                                                                 <div class="form-group mb-2">
                                                                     <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
-                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][title]" class="form-control form-control-sm" value="{{ $secTitle }}" placeholder="যেমন: আমাদের প্রোডাক্টের বৈশিষ্ট্য">
+                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][title]" class="form-control form-control-sm" value="{{ $secTitle }}" placeholder="টাইটেল লিখুন">
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-3 col-6">
                                                                 <div class="form-group mb-2">
                                                                     <label class="small fw-bold">সেকশন ট্যাগ (Tag)</label>
-                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][tag]" class="form-control form-control-sm" value="{{ $secTag }}" placeholder="যেমন: Product Features">
+                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][tag]" class="form-control form-control-sm" value="{{ $secTag }}" placeholder="ট্যাগ লিখুন">
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-3 col-6">
@@ -414,7 +361,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="section-content-container mt-2 border-top pt-2" style="{{ in_array($secType, ['video', 'gallery', 'trust']) ? 'display: none;' : '' }}">
+                                                        <div class="section-content-container mt-2 border-top pt-2" style="{{ in_array($secType, ['video', 'gallery']) ? 'display: none;' : '' }}">
                                                             @if($secType === 'faq')
                                                                 <label class="small fw-bold mb-2">প্রশ্ন ও উত্তরসমূহ (FAQs)</label>
                                                                 <div class="items-list">
@@ -437,6 +384,55 @@
                                                                     @endforeach
                                                                 </div>
                                                                 <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)</button>
+                                                            @elseif($secType === 'badges')
+                                                                <label class="small fw-bold mb-2">পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)</label>
+                                                                <div class="items-list">
+                                                                    @php
+                                                                        $secBadges = $sec['badges'] ?? [];
+                                                                    @endphp
+                                                                    @foreach($secBadges as $itemIdx => $badge)
+                                                                        <div class="badge-item-row border p-2 mb-2 bg-white rounded shadow-sm">
+                                                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                                <span class="small fw-bold text-muted">ব্যাজ #{{ $itemIdx + 1 }}</span>
+                                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
+                                                                            </div>
+                                                                            <div class="row g-1">
+                                                                                <div class="col-4">
+                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][icon]" class="form-control form-control-sm" value="{{ $badge['icon'] ?? '' }}" placeholder="আইকন ক্লাস">
+                                                                                </div>
+                                                                                <div class="col-4">
+                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][title]" class="form-control form-control-sm" value="{{ $badge['title'] ?? '' }}" placeholder="টাইটেল">
+                                                                                </div>
+                                                                                <div class="col-4">
+                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][desc]" class="form-control form-control-sm" value="{{ $badge['desc'] ?? '' }}" placeholder="বর্ণনা">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> ব্যাজ যোগ করুন (Add Badge)</button>
+                                                            @elseif($secType === 'trust')
+                                                                <label class="small fw-bold mb-2">কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)</label>
+                                                                <div class="items-list">
+                                                                    @php
+                                                                        $secTrustFeatures = $sec['trust_features'] ?? [];
+                                                                    @endphp
+                                                                    @foreach($secTrustFeatures as $itemIdx => $feat)
+                                                                        <div class="trust-feature-item-row border p-2 mb-2 bg-white rounded shadow-sm">
+                                                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                                <span class="small fw-bold text-muted">ফিচার #{{ $itemIdx + 1 }}</span>
+                                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
+                                                                            </div>
+                                                                            <div class="form-group mb-1">
+                                                                                <input type="text" name="landing_settings[sections][{{ $secIdx }}][trust_features][{{ $itemIdx }}][title]" class="form-control form-control-sm" value="{{ $feat['title'] ?? '' }}" placeholder="টাইটেল লিখুন">
+                                                                            </div>
+                                                                            <div class="form-group mb-0">
+                                                                                <textarea name="landing_settings[sections][{{ $secIdx }}][trust_features][{{ $itemIdx }}][desc]" class="form-control form-control-sm" rows="2" placeholder="বর্ণনা লিখুন">{{ $feat['desc'] ?? '' }}</textarea>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> ফিচার যোগ করুন (Add Feature)</button>
                                                             @else
                                                                 <label class="small fw-bold mb-2">সেকশন আইটেমসমূহ (Items)</label>
                                                                 <div class="items-list">
@@ -462,6 +458,7 @@
                                                 <div class="d-flex gap-2">
                                                     <select id="new-section-type" class="form-control form-control-sm form-select" style="max-width: 250px;">
                                                         <option value="features">Product Features (ফিচারসমূহ)</option>
+                                                        <option value="badges">Trust Badges (পণ্যের ট্রাস্ট ব্যাজসমূহ)</option>
                                                         <option value="problems">User Problems (সমস্যাসমূহ)</option>
                                                         <option value="benefits">Product Benefits (সুবিধাসমূহ)</option>
                                                         <option value="package">Package Includes (প্যাকেজে কী পাবেন)</option>
@@ -482,7 +479,7 @@
 
                         @include('ecommerce::backend.products.partials.variant-manager', ['variantRows' => $variantRows])
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Save Product</button>
+                    <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
                 </form>
             </div>
         </div>
@@ -498,179 +495,31 @@
                 previewId: 'productImagePreview',
                 previewContainerId: 'productImagePreviewContainer',
                 helperId: 'productImageHelper',
-                emptyMessage: 'Select the main product image. Large files will be compressed automatically before upload.'
+                emptyMessage: 'Choose a new main image to replace the current one. Selected image will preview instantly and be compressed before upload.'
             });
 
             initializeInteractiveGalleryUploader({
                 gridId: 'interactiveGalleryGrid',
-                inputsContainerId: 'galleryInputsContainer'
+                inputName: 'gallery_images[]',
+                addBtnId: 'addInteractiveGalleryBtn',
+                emptyMessageId: 'interactiveGalleryEmptyMessage',
+                maxFiles: 10
             });
 
-            initializeVariantManager();
-        });
-
-        function initializeProductImageUpload({ inputId, previewId, previewContainerId, helperId, emptyMessage }) {
-            const fileInput = document.getElementById(inputId);
-            const preview = document.getElementById(previewId);
-            const previewContainer = document.getElementById(previewContainerId);
-            const helper = document.getElementById(helperId);
-
-            if (!fileInput || !preview || !previewContainer || !helper) {
-                return;
-            }
-
-            fileInput.addEventListener('change', function (event) {
-                const file = event.target.files[0];
-
-                if (!file) {
-                    preview.src = '#';
-                    previewContainer.style.display = 'none';
-                    helper.textContent = emptyMessage;
-                    return;
-                }
-
-                if (!file.type.startsWith('image/')) {
-                    helper.textContent = 'Please select a valid image file.';
-                    event.target.value = '';
-                    preview.src = '#';
-                    previewContainer.style.display = 'none';
-                    return;
-                }
-
-                updatePreview(preview, previewContainer, file);
-                helper.innerHTML = `<span class="text-success">Image selected. Size: ${(file.size / 1024).toFixed(2)} KB.</span>`;
-            });
-        }
-
-        function initializeInteractiveGalleryUploader({ gridId, inputsContainerId }) {
-            const grid = document.getElementById(gridId);
-            const inputsContainer = document.getElementById(inputsContainerId);
-
-            if (!grid || !inputsContainer) return;
-
-            inputsContainer.innerHTML = '';
-            grid.innerHTML = '';
-
-            let imageCounter = 0;
-
-            function createAddCard() {
-                const addCard = document.createElement('div');
-                addCard.className = 'gallery-add-card';
-                addCard.innerHTML = `
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Add Image</span>
-                `;
-                
-                addCard.addEventListener('click', function () {
-                    imageCounter++;
-                    
-                    const fileInput = document.createElement('input');
-                    fileInput.type = 'file';
-                    fileInput.name = 'gallery[]';
-                    fileInput.accept = 'image/*';
-                    fileInput.style.display = 'none';
-                    fileInput.id = `gallery_input_${imageCounter}`;
-                    
-                    fileInput.addEventListener('change', function (event) {
-                        const file = event.target.files[0];
-                        if (!file) {
-                            fileInput.remove();
-                            return;
-                        }
-                        
-                        if (!file.type.startsWith('image/')) {
-                            alert('Please select a valid image file.');
-                            fileInput.remove();
-                            return;
-                        }
-                        
-                        inputsContainer.appendChild(fileInput);
-                        
-                        const previewCard = document.createElement('div');
-                        previewCard.className = 'gallery-preview-card';
-                        
-                        const objectUrl = URL.createObjectURL(file);
-                        previewCard.innerHTML = `
-                            <img src="${objectUrl}" alt="${file.name}">
-                            <div class="gallery-preview-meta">
-                                <strong>${file.name}</strong><br>
-                                ${(file.size / 1024).toFixed(1)} KB
-                            </div>
-                            <div class="gallery-preview-actions">
-                                <button type="button" class="btn btn-sm btn-outline-danger w-100 js-remove-preview">
-                                    Remove
-                                </button>
-                            </div>
-                        `;
-                        
-                        const img = previewCard.querySelector('img');
-                        img.addEventListener('load', function() {
-                            URL.revokeObjectURL(objectUrl);
-                        }, { once: true });
-                        
-                        previewCard.querySelector('.js-remove-preview').addEventListener('click', function() {
-                            previewCard.remove();
-                            fileInput.remove();
-                        });
-                        
-                        grid.insertBefore(previewCard, addCard);
-                    });
-                    
-                    fileInput.click();
-                });
-                
-                grid.appendChild(addCard);
-            }
-
-            createAddCard();
-        }
-
-        function updatePreview(preview, previewContainer, file) {
-            preview.src = URL.createObjectURL(file);
-            previewContainer.style.display = 'block';
-        }
-
-        function initializeVariantManager() {
-            const rowsContainer = document.getElementById('variantRows');
-            const template = document.getElementById('variantRowTemplate');
-            const addButton = document.getElementById('addVariantRowBtn');
-
-            if (!rowsContainer || !template || !addButton) {
-                return;
-            }
-
-            let nextIndex = rowsContainer.querySelectorAll('.variant-row').length;
-
-            addButton.addEventListener('click', function () {
-                const wrapper = document.createElement('tbody');
-                wrapper.innerHTML = template.innerHTML.replace(/__INDEX__/g, nextIndex);
-                rowsContainer.appendChild(wrapper.firstElementChild);
-                nextIndex += 1;
-            });
-
-            rowsContainer.addEventListener('click', function (event) {
-                const removeButton = event.target.closest('.js-remove-variant-row');
-
-                if (!removeButton) {
-                    return;
-                }
-
-                removeButton.closest('.variant-row')?.remove();
-            });
-
-            // Toggle variants section based on checkbox
-            const hasVariantsToggle = document.getElementById('has_variants_toggle');
+            const hasVariantsToggle = document.getElementById('has_variants');
             const variantManagerContainer = document.getElementById('variant-manager-container');
 
             function toggleVariantFields() {
-                if (hasVariantsToggle.checked) {
-                    variantManagerContainer.style.display = 'block';
-                    variantManagerContainer.querySelectorAll('input, select, button').forEach(el => {
+                const isChecked = hasVariantsToggle.checked;
+                variantManagerContainer.style.display = isChecked ? 'block' : 'none';
+                
+                const variantInputs = variantManagerContainer.querySelectorAll('input, select, textarea');
+                if (isChecked) {
+                    variantInputs.forEach(el => {
                         el.disabled = false;
                     });
                 } else {
-                    variantManagerContainer.style.display = 'none';
-                    variantManagerContainer.querySelectorAll('input, select, button').forEach(el => {
+                    variantInputs.forEach(el => {
                         el.disabled = true;
                     });
                 }
@@ -737,6 +586,76 @@
                 });
             }
 
+            function createBadgeItemRow(secIndex, badgeIndex, icon = '', title = '', desc = '') {
+                const div = document.createElement('div');
+                div.className = 'badge-item-row border p-2 mb-2 bg-white rounded shadow-sm';
+                div.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small fw-bold text-muted">ব্যাজ #${badgeIndex + 1}</span>
+                        <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="row g-1">
+                        <div class="col-4">
+                            <input type="text" name="landing_settings[sections][${secIndex}][badges][${badgeIndex}][icon]" class="form-control form-control-sm" value="${icon}" placeholder="আইকন ক্লাস">
+                        </div>
+                        <div class="col-4">
+                            <input type="text" name="landing_settings[sections][${secIndex}][badges][${badgeIndex}][title]" class="form-control form-control-sm" value="${title}" placeholder="টাইটেল">
+                        </div>
+                        <div class="col-4">
+                            <input type="text" name="landing_settings[sections][${secIndex}][badges][${badgeIndex}][desc]" class="form-control form-control-sm" value="${desc}" placeholder="বর্ণনা">
+                        </div>
+                    </div>
+                `;
+                div.querySelector('.remove-item-btn').addEventListener('click', function() {
+                    div.remove();
+                    reindexBadgeItems(div.closest('.section-card'));
+                });
+                return div;
+            }
+
+            function reindexBadgeItems(sectionCard) {
+                const secIndex = parseInt(sectionCard.getAttribute('data-section-index') || '0');
+                const rows = sectionCard.querySelectorAll('.badge-item-row');
+                rows.forEach((row, idx) => {
+                    row.querySelector('.text-muted').textContent = `ব্যাজ #${idx + 1}`;
+                    row.querySelector('input[name*="[icon]"]').name = `landing_settings[sections][${secIndex}][badges][${idx}][icon]`;
+                    row.querySelector('input[name*="[title]"]').name = `landing_settings[sections][${secIndex}][badges][${idx}][title]`;
+                    row.querySelector('input[name*="[desc]"]').name = `landing_settings[sections][${secIndex}][badges][${idx}][desc]`;
+                });
+            }
+
+            function createTrustFeatureItemRow(secIndex, featureIndex, title = '', desc = '') {
+                const div = document.createElement('div');
+                div.className = 'trust-feature-item-row border p-2 mb-2 bg-white rounded shadow-sm';
+                div.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small fw-bold text-muted">ফিচার #${featureIndex + 1}</span>
+                        <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="form-group mb-1">
+                        <input type="text" name="landing_settings[sections][${secIndex}][trust_features][${featureIndex}][title]" class="form-control form-control-sm" value="${title}" placeholder="টাইটেল লিখুন">
+                    </div>
+                    <div class="form-group mb-0">
+                        <textarea name="landing_settings[sections][${secIndex}][trust_features][${featureIndex}][desc]" class="form-control form-control-sm" rows="2" placeholder="বর্ণনা লিখুন">${desc}</textarea>
+                    </div>
+                `;
+                div.querySelector('.remove-item-btn').addEventListener('click', function() {
+                    div.remove();
+                    reindexTrustFeatureItems(div.closest('.section-card'));
+                });
+                return div;
+            }
+
+            function reindexTrustFeatureItems(sectionCard) {
+                const secIndex = parseInt(sectionCard.getAttribute('data-section-index') || '0');
+                const rows = sectionCard.querySelectorAll('.trust-feature-item-row');
+                rows.forEach((row, idx) => {
+                    row.querySelector('.text-muted').textContent = `ফিচার #${idx + 1}`;
+                    row.querySelector('input[name*="[title]"]').name = `landing_settings[sections][${secIndex}][trust_features][${idx}][title]`;
+                    row.querySelector('textarea[name*="[desc]"]').name = `landing_settings[sections][${secIndex}][trust_features][${idx}][desc]`;
+                });
+            }
+
             function createSectionCard(type, index) {
                 const card = document.createElement('div');
                 card.className = 'section-card card p-3 mb-3 border shadow-sm';
@@ -748,6 +667,7 @@
 
                 const titles = {
                     features: 'আমাদের প্রোডাক্টের বৈশিষ্ট্য',
+                    badges: 'আমাদের থেকে কেন কিনবেন?',
                     problems: 'এই সমস্যাগুলো কি আপনারও আছে?',
                     benefits: 'বৈশিষ্ট্যগুলো কি কি জানতে চান?',
                     package: 'প্যাকেজের সাথে যা যা পাবেন',
@@ -759,6 +679,7 @@
                 };
                 const tags = {
                     features: 'Product Features',
+                    badges: 'Trust Badges',
                     problems: 'Common Issues',
                     benefits: 'Benefits',
                     package: 'Package Contents',
@@ -770,6 +691,7 @@
                 };
                 const styles = {
                     features: 'blue-check',
+                    badges: 'blue-check',
                     problems: 'red-cross',
                     benefits: 'green-check',
                     package: 'package-box',
@@ -823,11 +745,14 @@
                         </div>
                     </div>
 
-                    <div class="section-content-container mt-2 border-top pt-2" style="${['video', 'gallery', 'trust'].includes(type) ? 'display: none;' : ''}">
-                        <label class="small fw-bold mb-2">${type === 'faq' ? 'প্রশ্ন ও উত্তরসমূহ (FAQs)' : 'সেকশন আইটেমসমূহ (Items)'}</label>
+                    <div class="section-content-container mt-2 border-top pt-2" style="${['video', 'gallery'].includes(type) ? 'display: none;' : ''}">
+                        <label class="small fw-bold mb-2">
+                            ${type === 'faq' ? 'প্রশ্ন ও উত্তরসমূহ (FAQs)' : (type === 'badges' ? 'পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)' : (type === 'trust' ? 'কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)' : 'সেকশন আইটেমসমূহ (Items)'))}
+                        </label>
                         <div class="items-list"></div>
                         <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
-                            <i class="fas fa-plus me-1"></i> ${type === 'faq' ? 'প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)' : 'আইটেম যোগ করুন (Add Item)'}
+                            <i class="fas fa-plus me-1"></i>
+                            ${type === 'faq' ? 'প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)' : (type === 'badges' ? 'ব্যাজ যোগ করুন (Add Badge)' : (type === 'trust' ? 'ফিচার যোগ করুন (Add Feature)' : 'আইটেম যোগ করুন (Add Item)'))}
                         </button>
                     </div>
                 `;
@@ -872,6 +797,16 @@
                         itemsList.appendChild(createFAQItemRow(secIndex, faqIndex));
                         const qInput = itemsList.lastElementChild.querySelector('input');
                         if (qInput) qInput.focus();
+                    } else if (type === 'badges') {
+                        const badgeIndex = itemsList.querySelectorAll('.badge-item-row').length;
+                        itemsList.appendChild(createBadgeItemRow(secIndex, badgeIndex));
+                        const iconInput = itemsList.lastElementChild.querySelector('input');
+                        if (iconInput) iconInput.focus();
+                    } else if (type === 'trust') {
+                        const featureIndex = itemsList.querySelectorAll('.trust-feature-item-row').length;
+                        itemsList.appendChild(createTrustFeatureItemRow(secIndex, featureIndex));
+                        const titleInput = itemsList.lastElementChild.querySelector('input');
+                        if (titleInput) titleInput.focus();
                     } else {
                         itemsList.appendChild(createSectionItemRow(secIndex));
                         const textarea = itemsList.lastElementChild.querySelector('textarea');
@@ -880,11 +815,15 @@
                 });
 
                 // Bind existing inner delete buttons
-                card.querySelectorAll('.remove-item-btn').forEach((btn, faqIdx) => {
+                card.querySelectorAll('.remove-item-btn').forEach((btn) => {
                     btn.addEventListener('click', function() {
-                        btn.closest('.item-row, .faq-item-row').remove();
+                        btn.closest('.item-row, .faq-item-row, .badge-item-row, .trust-feature-item-row').remove();
                         if (type === 'faq') {
                             reindexFAQItems(card);
+                        } else if (type === 'badges') {
+                            reindexBadgeItems(card);
+                        } else if (type === 'trust') {
+                            reindexTrustFeatureItems(card);
                         }
                     });
                 });
@@ -910,6 +849,10 @@
                     const type = card.getAttribute('data-section-type');
                     if (type === 'faq') {
                         reindexFAQItems(card);
+                    } else if (type === 'badges') {
+                        reindexBadgeItems(card);
+                    } else if (type === 'trust') {
+                        reindexTrustFeatureItems(card);
                     } else {
                         card.querySelectorAll('.item-row textarea').forEach(textarea => {
                             textarea.name = `landing_settings[sections][${index}][items][]`;
@@ -917,21 +860,33 @@
                     }
 
                     const addBtn = card.querySelector('.add-item-btn');
-                    const newAddBtn = addBtn.cloneNode(true);
-                    addBtn.parentNode.replaceChild(newAddBtn, addBtn);
-                    newAddBtn.addEventListener('click', function() {
-                        const itemsList = card.querySelector('.items-list');
-                        if (type === 'faq') {
-                            const faqIndex = itemsList.querySelectorAll('.faq-item-row').length;
-                            itemsList.appendChild(createFAQItemRow(index, faqIndex));
-                            const qInput = itemsList.lastElementChild.querySelector('input');
-                            if (qInput) qInput.focus();
-                        } else {
-                            itemsList.appendChild(createSectionItemRow(index));
-                            const textarea = itemsList.lastElementChild.querySelector('textarea');
-                            if (textarea) textarea.focus();
-                        }
-                    });
+                    if (addBtn) {
+                        const newAddBtn = addBtn.cloneNode(true);
+                        addBtn.parentNode.replaceChild(newAddBtn, addBtn);
+                        newAddBtn.addEventListener('click', function() {
+                            const itemsList = card.querySelector('.items-list');
+                            if (type === 'faq') {
+                                const faqIndex = itemsList.querySelectorAll('.faq-item-row').length;
+                                itemsList.appendChild(createFAQItemRow(index, faqIndex));
+                                const qInput = itemsList.lastElementChild.querySelector('input');
+                                if (qInput) qInput.focus();
+                            } else if (type === 'badges') {
+                                const badgeIndex = itemsList.querySelectorAll('.badge-item-row').length;
+                                itemsList.appendChild(createBadgeItemRow(index, badgeIndex));
+                                const iconInput = itemsList.lastElementChild.querySelector('input');
+                                if (iconInput) iconInput.focus();
+                            } else if (type === 'trust') {
+                                const featureIndex = itemsList.querySelectorAll('.trust-feature-item-row').length;
+                                itemsList.appendChild(createTrustFeatureItemRow(index, featureIndex));
+                                const titleInput = itemsList.lastElementChild.querySelector('input');
+                                if (titleInput) titleInput.focus();
+                            } else {
+                                itemsList.appendChild(createSectionItemRow(index));
+                                const textarea = itemsList.lastElementChild.querySelector('textarea');
+                                if (textarea) textarea.focus();
+                            }
+                        });
+                    }
 
                     card.querySelector('.move-up-btn').disabled = (index === 0);
                     card.querySelector('.move-down-btn').disabled = (index === cards.length - 1);

@@ -58,23 +58,28 @@
 
     $trustTitle = $landingSettings['trust_title'] ?? 'আমাদের থেকে কেন সংগ্রহ করবেন?';
 
-    // 4 Badges
+    // 4 Badges (Dynamic with Legacy Fallback)
     $badges = [];
-    for ($i = 1; $i <= 4; $i++) {
+    if (isset($landingSettings['trust_badges']) && is_array($landingSettings['trust_badges'])) {
+        $badges = $landingSettings['trust_badges'];
+    } else {
         $defaultIcons = [1 => 'fas fa-undo-alt', 2 => 'fas fa-hand-holding-usd', 3 => 'fas fa-headset', 4 => 'fas fa-shipping-fast'];
         $defaultTitles = [1 => '৭ দিনের রিটার্ন', 2 => 'হাতে পেয়ে পেমেন্ট', 3 => 'অনলাইন সাপোর্ট', 4 => 'সারাদেশে ডেলিভারি'];
         $defaultDescs = [1 => 'সহজ এক্সচেঞ্জ সুবিধা', 2 => 'ক্যাশ অন ডেলিভারি', 3 => '২৪/৭ কাস্টমার কেয়ার', 4 => 'দ্রুত ও নিরাপদ ডেলিভারি'];
-
-        $badges[$i] = [
-            'icon' => $landingSettings["badge_{$i}_icon"] ?? $defaultIcons[$i],
-            'title' => $landingSettings["badge_{$i}_title"] ?? $defaultTitles[$i],
-            'desc' => $landingSettings["badge_{$i}_desc"] ?? $defaultDescs[$i],
-        ];
+        for ($i = 1; $i <= 4; $i++) {
+            $badges[] = [
+                'icon' => $landingSettings["badge_{$i}_icon"] ?? $defaultIcons[$i],
+                'title' => $landingSettings["badge_{$i}_title"] ?? $defaultTitles[$i],
+                'desc' => $landingSettings["badge_{$i}_desc"] ?? $defaultDescs[$i],
+            ];
+        }
     }
 
-    // 4 Trust Features
+    // 4 Trust Features (Dynamic with Legacy Fallback)
     $trustFeatures = [];
-    for ($i = 1; $i <= 4; $i++) {
+    if (isset($landingSettings['trust_features']) && is_array($landingSettings['trust_features'])) {
+        $trustFeatures = $landingSettings['trust_features'];
+    } else {
         $defaultFeatureTitles = [
             1 => '১০০% আসল প্রোডাক্ট (100% Original)',
             2 => 'নিরাপদ প্যাকেজিং ও ডেলিভারি (Secure Shipping)',
@@ -87,11 +92,12 @@
             3 => 'পণ্য গ্রহণের পর কোনো ত্রুটি পেলে ৭ দিনের মধ্যে আমাদের সাথে যোগাযোগ করে রিফান্ড বা এক্সচেঞ্জ করতে পারবেন।',
             4 => 'অর্ডার করার আগে বা পরে যেকোনো গাইডলাইনের জন্য আমাদের কাস্টমার কেয়ার হেল্পলাইন সর্বদা উন্মুক্ত।'
         ];
-
-        $trustFeatures[$i] = [
-            'title' => $landingSettings["feature_{$i}_title"] ?? $defaultFeatureTitles[$i],
-            'desc' => $landingSettings["feature_{$i}_desc"] ?? $defaultFeatureDescs[$i],
-        ];
+        for ($i = 1; $i <= 4; $i++) {
+            $trustFeatures[] = [
+                'title' => $landingSettings["feature_{$i}_title"] ?? $defaultFeatureTitles[$i],
+                'desc' => $landingSettings["feature_{$i}_desc"] ?? $defaultFeatureDescs[$i],
+            ];
+        }
     }
 @endphp
 
@@ -295,23 +301,7 @@
             </div>
         </section>
 
-        <!-- Trust Highlights Grid Title -->
-        <div class="text-center mb-4 mt-5">
-            <h3 class="fw-bold" style="color: var(--primary-blue) !important; font-size: 24px;">আমাদের থেকে কেন কিনবেন?</h3>
-        </div>
 
-        <!-- Trust Highlights Grid -->
-        <div class="row g-3 mb-4 mt-2">
-            @foreach($badges as $badge)
-                <div class="col-6 col-md-3">
-                    <div class="landing-badge-card">
-                        <i class="{{ $badge['icon'] }} d-block mb-2 fs-3" style="color: var(--primary-blue) !important;"></i>
-                        <h5 class="fw-bold mb-1">{{ $badge['title'] }}</h5>
-                        <p class="text-muted small mb-0">{{ $badge['desc'] }}</p>
-                    </div>
-                </div>
-            @endforeach
-        </div>
 
         @if($stockQty > 0)
             <div class="text-center my-4">
@@ -345,6 +335,16 @@
                         'tag' => 'Product Features',
                         'style' => 'blue-check',
                         'items' => $features
+                    ];
+                }
+
+                // 1.5. Badges Section
+                if (!empty($badges)) {
+                    $sections[] = [
+                        'type' => 'badges',
+                        'title' => $landingSettings['trust_badges_title'] ?? 'আমাদের থেকে কেন কিনবেন?',
+                        'tag' => 'Trust Badges',
+                        'badges' => array_values($badges)
                     ];
                 }
 
@@ -430,7 +430,8 @@
                 $sections[] = [
                     'type' => 'trust',
                     'title' => $trustTitle ?? 'কেন আমাদের থেকে অর্ডার করবেন?',
-                    'tag' => 'Trust'
+                    'tag' => 'Trust',
+                    'trust_features' => array_values($trustFeatures)
                 ];
 
                 // 8. FAQ
@@ -502,6 +503,32 @@
                                     @endforeach
                                 </ul>
                             </div>
+                        </div>
+                    </section>
+                @endif
+
+            @elseif($secType === 'badges')
+                @php
+                    $secBadges = $section['badges'] ?? $badges;
+                @endphp
+                @if(!empty($secBadges))
+                    <section class="landing-badges-section mb-4">
+                        <!-- Trust Highlights Grid Title -->
+                        <div class="text-center mb-4 mt-5">
+                            <h3 class="fw-bold" style="color: var(--primary-blue) !important; font-size: 24px;">{{ $secTitle }}</h3>
+                        </div>
+
+                        <!-- Trust Highlights Grid -->
+                        <div class="row g-3 mb-4 mt-2">
+                            @foreach($secBadges as $badge)
+                                <div class="col-6 col-md-3">
+                                    <div class="landing-badge-card">
+                                        <i class="{{ $badge['icon'] ?? 'fas fa-check-circle' }} d-block mb-2 fs-3" style="color: var(--primary-blue) !important;"></i>
+                                        <h5 class="fw-bold mb-1">{{ $badge['title'] ?? '' }}</h5>
+                                        <p class="text-muted small mb-0">{{ $badge['desc'] ?? '' }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </section>
                 @endif
@@ -641,17 +668,20 @@
                 @endif
 
             @elseif($secType === 'trust')
+                @php
+                    $secTrustFeatures = $section['trust_features'] ?? $trustFeatures;
+                @endphp
                 <section class="landing-trust-section mb-4">
                     <div class="info-card p-4 text-center rounded-3" style="background: #f0f7ff; border: 1px solid #dbeafe;">
                         <h3 class="mb-4 fw-bold" style="color: var(--primary-blue) !important;">{{ $secTitle }}</h3>
                         <div class="row g-4 text-start">
-                            @foreach($trustFeatures as $feature)
+                            @foreach($secTrustFeatures as $feature)
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-start gap-2 mb-2">
                                         <span class="fs-5" style="color: var(--primary-blue) !important;"><i class="fas fa-check-circle"></i></span>
                                         <div>
-                                            <strong class="text-dark d-block mb-1">{{ $feature['title'] }}</strong>
-                                            <span class="text-muted small">{{ $feature['desc'] }}</span>
+                                            <strong class="text-dark d-block mb-1">{{ $feature['title'] ?? '' }}</strong>
+                                            <span class="text-muted small">{{ $feature['desc'] ?? '' }}</span>
                                         </div>
                                     </div>
                                 </div>
