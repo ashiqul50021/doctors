@@ -49,7 +49,7 @@
                         <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="email" class="form-control" value="{{ $doctor->user->email }}" readonly>
+                                <input type="email" name="email" class="form-control" value="{{ $doctor->user->email }}" required>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">

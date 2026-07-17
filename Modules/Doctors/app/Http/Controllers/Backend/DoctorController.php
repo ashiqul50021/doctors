@@ -80,6 +80,7 @@ class DoctorController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'email' => ['required', 'string', 'email', 'max:255', \Illuminate\Validation\Rule::unique('users')->ignore($doctor->user_id)],
             'speciality_id' => 'required|exists:specialities,id',
             'qualification' => 'required|string',
             'consultation_fee' => 'nullable|numeric',
@@ -89,6 +90,7 @@ class DoctorController extends Controller
 
         $doctor->user->update([
             'name' => $request->name,
+            'email' => $request->email,
         ]);
 
         $data = [
