@@ -173,15 +173,16 @@ class AuthController extends Controller
         ]);
 
         // Create Doctor Profile (Pending Status)
-        Doctor::create([
+        $doctor = Doctor::create([
             'user_id' => $user->id,
             'status' => 'pending',
             'phone' => $request->mobile, // Assuming phone field exists in doctor table from migration
             // Speciality and Qualification are now nullable
         ]);
 
-        return redirect()->route('login')
-            ->with('warning', 'Your registration was successful. Please wait for admin approval before you can log in.');
+        Auth::login($user);
+
+        return $this->redirectDoctorAfterAuth($doctor);
     }
 
     private function redirectDoctorAfterAuth(?Doctor $doctor): RedirectResponse
@@ -191,21 +192,19 @@ class AuthController extends Controller
             return redirect()->route('login')->with('error', 'Doctor profile not found.');
         }
 
-        // 1. Check if the doctor status is approved
-        if ($doctor->status !== 'approved') {
-            Auth::logout();
-            request()->session()->invalidate();
-            request()->session()->regenerateToken();
-            return redirect()->route('login')
-                ->with('warning', 'Your account is pending admin approval.');
-        }
-
-        // 2. Check if profile is complete
+        // 1. If profile is not complete, redirect to settings page
         if (!$doctor->isProfileComplete()) {
             return redirect()->route('doctors.profile.settings')
-                ->with('warning', 'Please complete your profile to access your dashboard.');
+                ->with('warning', 'Please complete your profile to submit for admin approval.');
         }
 
+        // 2. If profile is complete but status is not approved, redirect to settings page with pending notice
+        if ($doctor->status !== 'approved') {
+            return redirect()->route('doctors.profile.settings')
+                ->with('info', 'Your profile is complete and pending admin approval. You will gain access to the dashboard once approved.');
+        }
+
+        // 3. Otherwise, go to dashboard
         return redirect()->route('doctors.dashboard');
     }
 

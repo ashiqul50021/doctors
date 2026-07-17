@@ -104,23 +104,31 @@ class BookingController extends Controller
             default  => $doctor->consultation_fee ?? 0,
         };
 
-        // Store booking details in session
-        session([
-            'booking_details' => [
-                'doctor_id' => $doctor_id,
-                'date' => $request->appointment_date,
-                'time' => $request->appointment_time,
-                'type' => $request->type,
-                'fee' => $fee,
-            ]
-        ]);
+        $bookingDetails = [
+            'doctor_id' => $doctor_id,
+            'date' => $request->appointment_date,
+            'time' => $request->appointment_time,
+            'type' => $request->type,
+            'fee' => $fee,
+        ];
 
-        return redirect()->route('checkout');
+        // Store booking details in session
+        session(['booking_details' => $bookingDetails]);
+
+        // Also store as a fallback cookie (expires in 30 minutes)
+        $cookie = cookie('booking_details', json_encode($bookingDetails), 30);
+
+        return redirect()->route('checkout')->withCookie($cookie);
     }
 
     public function checkout()
     {
         $booking = session('booking_details');
+        if (!$booking) {
+            $cookieData = request()->cookie('booking_details');
+            $booking = $cookieData ? json_decode($cookieData, true) : null;
+        }
+
         if (!$booking) {
             return redirect()->route('home');
         }
@@ -133,6 +141,11 @@ class BookingController extends Controller
     public function processPayment(Request $request)
     {
         $booking = session('booking_details');
+        if (!$booking) {
+            $cookieData = $request->cookie('booking_details');
+            $booking = $cookieData ? json_decode($cookieData, true) : null;
+        }
+
         if (!$booking) {
             return redirect()->route('home');
         }
@@ -219,8 +232,9 @@ class BookingController extends Controller
             'reason' => 'Consultation',
         ]);
 
-        // Clear session
+        // Clear session and cookie
         session()->forget('booking_details');
+        \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('booking_details'));
 
         // Build flash data
         $flashData = [
