@@ -15,7 +15,7 @@
     }
 @endphp
 
-<div class="col-12">
+<div class="col-12" id="variant-manager-container">
     <div class="card border mt-3">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">

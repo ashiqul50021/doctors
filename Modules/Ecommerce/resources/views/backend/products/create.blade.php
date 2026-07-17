@@ -95,6 +95,14 @@
                                 <small class="text-muted d-block mt-1">Used for simple products. Active variants below will control stock automatically.</small>
                             </div>
                         </div>
+                        <div class="col-12 col-md-6 d-flex align-items-center">
+                            <div class="form-group mb-0">
+                                <div class="form-check form-switch mt-3">
+                                    <input class="form-check-input" type="checkbox" id="has_variants_toggle" name="has_variants" value="1" {{ old('has_variants', false) ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-bold" for="has_variants_toggle">This product has variants (Variable Product)</label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label for="productImageInput">Primary Image</label>
@@ -600,6 +608,29 @@
 
                 removeButton.closest('.variant-row')?.remove();
             });
+
+            // Toggle variants section based on checkbox
+            const hasVariantsToggle = document.getElementById('has_variants_toggle');
+            const variantManagerContainer = document.getElementById('variant-manager-container');
+
+            function toggleVariantFields() {
+                if (hasVariantsToggle.checked) {
+                    variantManagerContainer.style.display = 'block';
+                    variantManagerContainer.querySelectorAll('input, select, button').forEach(el => {
+                        el.disabled = false;
+                    });
+                } else {
+                    variantManagerContainer.style.display = 'none';
+                    variantManagerContainer.querySelectorAll('input, select, button').forEach(el => {
+                        el.disabled = true;
+                    });
+                }
+            }
+
+            if (hasVariantsToggle && variantManagerContainer) {
+                hasVariantsToggle.addEventListener('change', toggleVariantFields);
+                toggleVariantFields();
+            }
         }
     </script>
 @endpush
