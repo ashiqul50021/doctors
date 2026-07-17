@@ -26,8 +26,11 @@ class DashboardController extends Controller
         if (!$doctor) {
             abort(redirect()->route('home')->with('error', 'Doctor profile not found.'));
         }
-        if ($doctor->isProfileComplete() && $doctor->status !== 'approved') {
-            $doctor->update(['status' => 'approved']);
+        if ($doctor->status !== 'approved') {
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            abort(redirect()->route('login')->with('warning', 'Your account is pending admin approval.'));
         }
         $doctor->load(['user', 'speciality']);
         return $doctor;
@@ -351,10 +354,6 @@ class DashboardController extends Controller
         $doctor->refresh();
 
         if ($doctor->isProfileComplete()) {
-            if ($doctor->status !== 'approved') {
-                $doctor->update(['status' => 'approved']);
-            }
-
             return redirect()->route('doctors.dashboard')
                 ->with('success', 'Profile updated successfully. Your doctor account is now active.');
         }

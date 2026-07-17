@@ -22,9 +22,17 @@ class EnsureDoctorProfileCompleted
             return redirect()->route('home')->with('error', 'Doctor profile not found.');
         }
 
+        if ($doctor->status !== 'approved') {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login')
+                ->with('warning', 'Your account is pending admin approval.');
+        }
+
         if (!$doctor->isProfileComplete()) {
             return redirect()->route('doctors.profile.settings')
-                ->with('warning', 'Please complete your profile to activate your doctor account.');
+                ->with('warning', 'Please complete your profile to access your dashboard.');
         }
 
         return $next($request);

@@ -180,21 +180,30 @@ class AuthController extends Controller
             // Speciality and Qualification are now nullable
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('doctors.profile.settings')
-            ->with('warning', 'Please complete your profile to activate your doctor account.');
+        return redirect()->route('login')
+            ->with('warning', 'Your registration was successful. Please wait for admin approval before you can log in.');
     }
 
     private function redirectDoctorAfterAuth(?Doctor $doctor): RedirectResponse
     {
-        if (!$doctor || !$doctor->isProfileComplete()) {
-            return redirect()->route('doctors.profile.settings')
-                ->with('warning', 'Please complete your profile to activate your doctor account.');
+        if (!$doctor) {
+            Auth::logout();
+            return redirect()->route('login')->with('error', 'Doctor profile not found.');
         }
 
+        // 1. Check if the doctor status is approved
         if ($doctor->status !== 'approved') {
-            $doctor->update(['status' => 'approved']);
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            return redirect()->route('login')
+                ->with('warning', 'Your account is pending admin approval.');
+        }
+
+        // 2. Check if profile is complete
+        if (!$doctor->isProfileComplete()) {
+            return redirect()->route('doctors.profile.settings')
+                ->with('warning', 'Please complete your profile to access your dashboard.');
         }
 
         return redirect()->route('doctors.dashboard');
