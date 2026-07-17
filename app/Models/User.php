@@ -50,6 +50,10 @@ class User extends Authenticatable
 
     public function isOnline(int $minutes = 2): bool
     {
+        if (\Illuminate\Support\Facades\Cache::has('user-online-' . $this->id)) {
+            return true;
+        }
+
         if (!$this->last_seen_at) {
             return false;
         }

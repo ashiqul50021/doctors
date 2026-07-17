@@ -6,6 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Illuminate\Support\Facades\Cache;
+
 class UpdateLastSeen
 {
     /**
@@ -20,10 +22,14 @@ class UpdateLastSeen
             return $response;
         }
 
+        // Cache online status for 3 minutes (which is > 2 min threshold)
+        Cache::put('user-online-' . $user->id, true, now()->addMinutes(3));
+
         $now = now();
         $lastTouchedAt = (int) $request->session()->get('last_seen_touched_at', 0);
 
-        if (($now->timestamp - $lastTouchedAt) >= 60) {
+        // Update database last_seen_at once every 5 minutes to reduce DB write load
+        if (($now->timestamp - $lastTouchedAt) >= 300) {
             $user->forceFill([
                 'last_seen_at' => $now,
             ])->saveQuietly();

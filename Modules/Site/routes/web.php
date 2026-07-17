@@ -39,9 +39,7 @@ Route::get('/doctor-register', [App\Http\Controllers\AuthController::class, 'sho
 Route::post('/doctor-register', [App\Http\Controllers\AuthController::class, 'registerDoctor'])->name('doctor.register.submit');
 Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 Route::post('/heartbeat', function (Request $request) {
-    $request->user()->forceFill([
-        'last_seen_at' => now(),
-    ])->saveQuietly();
+    \Illuminate\Support\Facades\Cache::put('user-online-' . $request->user()->id, true, now()->addMinutes(3));
 
     return response()->json(['ok' => true]);
 })->middleware('auth')->name('heartbeat');
