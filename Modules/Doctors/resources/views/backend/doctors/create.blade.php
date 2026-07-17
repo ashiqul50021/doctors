@@ -94,7 +94,7 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label>Biography</label>
-                                <textarea name="bio" class="form-control" rows="4"></textarea>
+                                <textarea name="bio" class="form-control" rows="8" style="min-height: 200px; resize: vertical;"></textarea>
                             </div>
                         </div>
                         <div class="col-12">

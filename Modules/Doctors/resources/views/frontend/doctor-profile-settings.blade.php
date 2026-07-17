@@ -193,7 +193,7 @@
                         <h4 class="card-title">About Me</h4>
                         <div class="form-group mb-0">
                             <label>Biography</label>
-                            <textarea class="form-control" rows="5"></textarea>
+                            <textarea class="form-control" rows="8" style="min-height: 200px; resize: vertical;"></textarea>
                         </div>
                     </div>
                 </div>

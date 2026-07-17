@@ -213,7 +213,7 @@
                                 <div class="col-md-12">
                                     <div class="mb-3 mb-0">
                                         <label>Biography <span class="text-danger">*</span></label>
-                                        <textarea class="form-control" rows="4" name="bio" required>{{ old('bio', $doctor->bio) }}</textarea>
+                                        <textarea class="form-control" rows="8" name="bio" style="min-height: 200px; resize: vertical;" required>{{ old('bio', $doctor->bio) }}</textarea>
                                     </div>
                                 </div>
                             </div>
