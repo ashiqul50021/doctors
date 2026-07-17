@@ -2,6 +2,65 @@
 
 @section('title', 'Prescription View - abcsheba')
 
+@push('styles')
+<style>
+    /* Print Layout Configuration */
+    @media print {
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        
+        /* Hide navbar, header, footer, bottom navigation, and download/print buttons */
+        .header, 
+        .footer, 
+        .breadcrumb-bar, 
+        .main-wrapper > .breadcrumb, 
+        .bottom-nav-container,
+        [data-html2canvas-ignore="true"] {
+            display: none !important;
+        }
+        
+        .content {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        .invoice-content {
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100% !important;
+        }
+        
+        .col-lg-8 {
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: 0 0 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .offset-lg-2 {
+            margin-left: 0 !important;
+        }
+        
+        /* Clean up table formatting for print */
+        .table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+        
+        .table th, .table td {
+            background-color: transparent !important;
+            color: #000 !important;
+            border: 1px solid #dee2e6 !important;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 
 <!-- Page Content -->
