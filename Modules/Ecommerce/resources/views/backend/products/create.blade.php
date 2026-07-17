@@ -133,12 +133,6 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label>Description</label>
-                                <textarea name="description" class="form-control" rows="4">{{ old('description') }}</textarea>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" {{ old('is_featured') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="is_featured">

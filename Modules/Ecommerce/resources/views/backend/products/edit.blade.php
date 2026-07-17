@@ -168,12 +168,6 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label>Description</label>
-                                <textarea name="description" class="form-control" rows="4">{{ old('description', $product->description) }}</textarea>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="is_active">
