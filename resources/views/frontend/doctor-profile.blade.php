@@ -198,7 +198,7 @@
                     <div class="profile-section">
                         <h3 class="profile-section-title">
                             <span><i class="fas fa-star"></i> Reviews</span>
-                            <a href="#" class="text-primary" style="font-size: 14px; font-weight: 500;">Write a Review</a>
+                            <a href="{{ route('patient.doctor.review.redirect', $doctor->id) }}" class="text-primary" style="font-size: 14px; font-weight: 500;">Write a Review</a>
                         </h3>
 
                         <div class="reviews-list">

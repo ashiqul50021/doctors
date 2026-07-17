@@ -25,7 +25,7 @@ class DashboardController extends Controller
             ]);
         }
         
-        $appointments = Appointment::with(['doctor.user', 'doctor.speciality'])
+        $appointments = Appointment::with(['doctor.user', 'doctor.speciality', 'review'])
             ->where('patient_id', $patient->id)
             ->orderBy('appointment_date', 'desc')
             ->get();
@@ -196,5 +196,86 @@ class DashboardController extends Controller
         $siteSettings = \App\Models\SiteSetting::pluck('value', 'key')->toArray();
 
         return view('frontend.invoice-view', compact('appointment', 'siteSettings'));
+    }
+
+    public function writeReview($appointmentId)
+    {
+        $patient = Auth::user()->patient;
+        if (!$patient) {
+            abort(404, 'Patient profile not found.');
+        }
+
+        $appointment = Appointment::with(['doctor.user', 'review'])
+            ->where('patient_id', $patient->id)
+            ->findOrFail($appointmentId);
+
+        if ($appointment->status !== 'completed') {
+            return back()->with('error', 'You can only review completed appointments.');
+        }
+
+        if ($appointment->review) {
+            return back()->with('error', 'You have already reviewed this appointment.');
+        }
+
+        return view('frontend.write-review', compact('appointment'));
+    }
+
+    public function storeReview(Request $request, $appointmentId)
+    {
+        $patient = Auth::user()->patient;
+        if (!$patient) {
+            abort(404, 'Patient profile not found.');
+        }
+
+        $appointment = Appointment::with('review')
+            ->where('patient_id', $patient->id)
+            ->findOrFail($appointmentId);
+
+        if ($appointment->status !== 'completed') {
+            return back()->with('error', 'You can only review completed appointments.');
+        }
+
+        if ($appointment->review) {
+            return back()->with('error', 'You have already reviewed this appointment.');
+        }
+
+        $request->validate([
+            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'comment' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        \App\Models\Review::create([
+            'doctor_id' => $appointment->doctor_id,
+            'patient_id' => $patient->id,
+            'appointment_id' => $appointment->id,
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+            'is_approved' => true,
+        ]);
+
+        return redirect()->route('patient.dashboard')
+            ->with('success', 'Review submitted successfully!');
+    }
+
+    public function reviewRedirect($doctorId)
+    {
+        $patient = Auth::user()->patient;
+        if (!$patient) {
+            return redirect()->route('login')->with('warning', 'Please log in as a patient to write a review.');
+        }
+
+        $appointment = Appointment::where('patient_id', $patient->id)
+            ->where('doctor_id', $doctorId)
+            ->where('status', 'completed')
+            ->whereDoesntHave('review')
+            ->orderBy('appointment_date', 'desc')
+            ->first();
+
+        if (!$appointment) {
+            return redirect()->route('doctors.profile', $doctorId)
+                ->with('warning', 'You can only review this doctor after completing an appointment with them.');
+        }
+
+        return redirect()->route('patient.appointment.review', $appointment->id);
     }
 }

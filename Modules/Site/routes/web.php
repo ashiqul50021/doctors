@@ -131,6 +131,9 @@ Route::middleware(['auth', 'role:patient'])->name('patient.')->group(function ()
     Route::post('/change-password', [\App\Http\Controllers\Patient\DashboardController::class, 'updatePassword'])->name('change.password.update');
     Route::get('/favourites', [\App\Http\Controllers\Patient\DashboardController::class, 'favourites'])->name('favourites');
     Route::post('/favourite/toggle/{doctor_id}', [\App\Http\Controllers\Patient\DashboardController::class, 'toggleFavourite'])->name('favourite.toggle');
+    Route::get('/appointment/{id}/review', [\App\Http\Controllers\Patient\DashboardController::class, 'writeReview'])->name('appointment.review');
+    Route::post('/appointment/{id}/review', [\App\Http\Controllers\Patient\DashboardController::class, 'storeReview'])->name('appointment.review.store');
+    Route::get('/doctor/{id}/review-redirect', [\App\Http\Controllers\Patient\DashboardController::class, 'reviewRedirect'])->name('doctor.review.redirect');
 });
 
 Route::middleware(['auth'])->group(function () {

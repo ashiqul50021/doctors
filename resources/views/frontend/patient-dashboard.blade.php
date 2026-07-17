@@ -107,6 +107,18 @@
                                                                             <i class="fas fa-video"></i> Join Call
                                                                         </a>
                                                                     @endif
+                                                                    @if($appt->status === 'completed')
+                                                                        @if($appt->review)
+                                                                            <span class="btn btn-sm bg-success-light disabled" style="cursor: default;">
+                                                                                <i class="fas fa-check-circle text-success"></i> Reviewed ({{ $appt->review->rating }} ★)
+                                                                            </span>
+                                                                        @else
+                                                                            <a href="{{ route('patient.appointment.review', $appt->id) }}"
+                                                                                class="btn btn-sm bg-warning-light">
+                                                                                <i class="fas fa-star text-warning"></i> Review
+                                                                            </a>
+                                                                        @endif
+                                                                    @endif
                                                                     <a href="{{ route('chat', ['user_id' => $appt->doctor->user_id]) }}"
                                                                         class="btn btn-sm bg-success-light">
                                                                         <i class="far fa-comment-dots"></i> Chat
