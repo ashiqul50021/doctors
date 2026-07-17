@@ -466,7 +466,8 @@
                                                         <option value="video">Showcase Video (ইউটিউব ভিডিও)</option>
                                                         <option value="gallery">Gallery Showcase (বাস্তব ছবি গ্যালারি)</option>
                                                         <option value="trust">Why Choose Us (কেন আমাদের থেকে কিনবেন)</option>
-                                                        <option value="custom">Custom Section (কাস্টম সেকশন)</option>
+                                                        <option value="cta">Buy Now Button (অর্ডার বাটন)</option>
+                                                         <option value="custom">Custom Section (কাস্টম সেকশন)</option>
                                                     </select>
                                                     <button type="button" id="add-section-btn" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i> সেকশন যোগ করুন (Add Section)</button>
                                                 </div>
@@ -702,6 +703,7 @@
                     video: 'পণ্যটির বিবরণী ও ব্যবহারবিধি ভিডিও',
                     gallery: 'পণ্যটির কিছু বাস্তব ছবি (Real Gallery)',
                     trust: 'কেন আমাদের থেকে অর্ডার করবেন?',
+                    cta: 'অর্ডার করতে এখানে ক্লিক করুন',
                     custom: 'নতুন কাস্টম সেকশন'
                 };
                 const tags = {
@@ -714,6 +716,7 @@
                     video: 'Showcase Video',
                     gallery: 'Showcase',
                     trust: 'Trust',
+                    cta: 'Call To Action',
                     custom: 'INFO'
                 };
                 const styles = {
@@ -726,6 +729,7 @@
                     video: 'blue-check',
                     gallery: 'blue-check',
                     trust: 'blue-check',
+                    cta: 'blue-check',
                     custom: 'blue-check'
                 };
 
@@ -772,7 +776,7 @@
                         </div>
                     </div>
 
-                    <div class="section-content-container mt-2 border-top pt-2" style="${['video', 'gallery'].includes(type) ? 'display: none;' : ''}">
+                    <div class="section-content-container mt-2 border-top pt-2" style="${['video', 'gallery', 'cta'].includes(type) ? 'display: none;' : ''}">
                         <label class="small fw-bold mb-2">
                             ${type === 'faq' ? 'প্রশ্ন ও উত্তরসমূহ (FAQs)' : (type === 'badges' ? 'পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)' : (type === 'trust' ? 'কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)' : 'সেকশন আইটেমসমূহ (Items)'))}
                         </label>
