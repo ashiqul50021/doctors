@@ -300,38 +300,60 @@ class ProductController extends Controller
 
     public function storeReview(Request $request, Product $product)
     {
-        $validated = $request->validate([
+        $rules = [
             'rating' => 'required|integer|min:1|max:5',
             'title' => 'nullable|string|max:120',
             'comment' => 'required|string|max:1000',
-        ]);
+        ];
 
-        $patient = $this->resolvePatientFromUser($request);
-
-        if (! $patient) {
-            return redirect()->back()->with('error', 'Only patient accounts can review products.');
+        if (!auth()->check() || !auth()->user()->patient) {
+            $rules['reviewer_name'] = 'required|string|max:255';
         }
 
-        $order = $this->latestOrderContainingProduct($patient->id, $product->id);
+        $validated = $request->validate($rules);
 
-        $review = ProductReview::updateOrCreate(
-            [
+        $patient = $this->resolvePatientFromUser($request);
+        $reviewerName = null;
+        $order = null;
+
+        if ($patient) {
+            $reviewerName = $patient->user->name;
+            $order = $this->latestOrderContainingProduct($patient->id, $product->id);
+
+            $review = ProductReview::updateOrCreate(
+                [
+                    'product_id' => $product->id,
+                    'patient_id' => $patient->id,
+                ],
+                [
+                    'order_id' => $order?->id,
+                    'reviewer_name' => $reviewerName,
+                    'rating' => (int) $validated['rating'],
+                    'title' => $validated['title'] ?? null,
+                    'comment' => $validated['comment'],
+                    'is_verified_purchase' => (bool) $order,
+                    'is_approved' => false, // Pending admin approval
+                ]
+            );
+        } else {
+            $reviewerName = $validated['reviewer_name'] ?? (auth()->check() ? auth()->user()->name : 'Guest');
+
+            $review = ProductReview::create([
                 'product_id' => $product->id,
-                'patient_id' => $patient->id,
-            ],
-            [
-                'order_id' => $order?->id,
+                'patient_id' => null,
+                'order_id' => null,
+                'reviewer_name' => $reviewerName,
                 'rating' => (int) $validated['rating'],
                 'title' => $validated['title'] ?? null,
                 'comment' => $validated['comment'],
-                'is_verified_purchase' => (bool) $order,
-                'is_approved' => true,
-            ]
-        );
+                'is_verified_purchase' => false,
+                'is_approved' => false, // Pending admin approval
+            ]);
+        }
 
         return redirect()
             ->route('ecommerce.products.show', $product->id)
-            ->with('success', $review->wasRecentlyCreated ? 'Review submitted successfully.' : 'Review updated successfully.');
+            ->with('success', 'Review submitted successfully. It will be visible after admin approval.');
     }
 
     public function addToCart(Request $request)

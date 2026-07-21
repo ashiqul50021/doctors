@@ -47,6 +47,9 @@
                     <a href="{{ route('ecommerce.admin.products.index') }}"><i class="fe fe-shopping-cart"></i>
                         <span>Products</span></a>
                 </li>
+                <li class="{{ request()->routeIs('ecommerce.admin.product-reviews.*') ? 'active' : '' }}">
+                    <a href="{{ route('ecommerce.admin.product-reviews.index') }}"><i class="fe fe-star-o"></i> <span>Product Reviews</span></a>
+                </li>
                 <li class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                     <a href="{{ route('admin.orders.index') }}"><i class="fe fe-cart"></i> <span>Orders</span></a>
                 </li>

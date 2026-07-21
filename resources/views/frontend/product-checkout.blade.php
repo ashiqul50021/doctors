@@ -279,18 +279,7 @@
                                     <span class="text-danger">-৳<span id="discount_display">0.00</span></span>
                                 </div>
 
-                                <div class="coupon-box mt-3 mb-3 p-3 bg-white rounded border"
-                                    style="border-style: dashed !important; border-color: #dee2e6 !important;">
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 ps-3"><i
-                                                class="fas fa-tag text-muted"></i></span>
-                                        <input type="text" class="form-control border-start-0 ps-0 shadow-none"
-                                            id="coupon_code" placeholder="Enter Coupon Code"
-                                            style="background: transparent;">
-                                        <button class="btn btn-dark px-4" type="button"
-                                            onclick="applyCoupon()">Apply</button>
-                                    </div>
-                                </div>
+
 
                                 <div class="d-flex justify-content-between mb-4 border-top pt-3">
                                     <span class="h5 mb-0">Total</span>

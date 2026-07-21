@@ -126,18 +126,7 @@
                                 <span class="text-danger">-৳<span id="discount_display">{{ number_format($discount, 2) }}</span></span>
                             </div>
 
-                            <div class="coupon-box mt-3 mb-3 p-3 bg-white rounded border" style="border-style: dashed !important; border-color: #dee2e6 !important;">
-                                <div class="input-group">
-                                    <span class="input-group-text bg-transparent border-end-0 ps-3"><i class="fas fa-tag text-muted"></i></span>
-                                    <input type="text" class="form-control border-start-0 ps-0 shadow-none" id="coupon_code" placeholder="Enter Coupon Code" style="background: transparent;" @if($autoCoupon) value="{{ $autoCoupon->code }}" @endif>
-                                    <button class="btn btn-dark px-4" type="button" onclick="applyCoupon()">Apply</button>
-                                </div>
-                                @if($autoCoupon)
-                                    <div class="text-success small mt-1" id="auto_coupon_msg">
-                                        <i class="fas fa-check-circle me-1"></i>Referral discount automatically applied!
-                                    </div>
-                                @endif
-                            </div>
+
 
                             <hr>
 

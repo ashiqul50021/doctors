@@ -14,7 +14,6 @@ use Modules\Ecommerce\Http\Controllers\Backend\ProductCategoryController as Admi
 Route::prefix('products')->name('ecommerce.')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('products');
     Route::post('/{product}/reviews', [ProductController::class, 'storeReview'])
-        ->middleware('auth')
         ->name('products.reviews.store');
     Route::get('/{id}', [ProductController::class, 'show'])->name('products.show');
 });
@@ -42,4 +41,6 @@ Route::get('/api/products/filter', [ProductController::class, 'filter'])->name('
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('ecommerce.admin.')->group(function () {
     Route::resource('products', AdminProductController::class)->except(['show']);
     Route::resource('product-categories', AdminProductCategoryController::class)->except(['show']);
+    Route::resource('product-reviews', \Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class)->except(['show']);
+    Route::post('product-reviews/{review}/approve', [\Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class, 'approve'])->name('product-reviews.approve');
 });

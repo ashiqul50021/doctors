@@ -811,10 +811,21 @@
                             </div>
                         </div>
 
-                        @auth
-                            @if(auth()->user()->role === 'patient')
                                 <form action="{{ route('ecommerce.products.reviews.store', $product->id) }}" method="POST" class="review-form">
                                     @csrf
+                                    @if(!auth()->check() || !auth()->user()->patient)
+                                        <div class="form-group">
+                                            <label for="reviewerName">Your Name <span class="text-danger">*</span></label>
+                                            <input id="reviewerName"
+                                                type="text"
+                                                name="reviewer_name"
+                                                class="form-control"
+                                                required
+                                                value="{{ old('reviewer_name', auth()->check() ? auth()->user()->name : '') }}"
+                                                placeholder="Enter your name">
+                                        </div>
+                                    @endif
+
                                     <div class="form-group">
                                         <label>Your rating</label>
                                         <div class="review-rating-options">
@@ -856,35 +867,22 @@
                                         {{ $currentUserReview ? 'Update Review' : 'Submit Review' }}
                                     </button>
                                 </form>
-                            @else
-                                <div class="review-access-card">
-                                    <strong>Patient account required</strong>
-                                    <span>Only patient accounts can write product reviews.</span>
-                                </div>
-                            @endif
-                        @else
-                            <div class="review-access-card">
-                                <strong>Login to write a review</strong>
-                                <span>Sign in with a patient account to share your product experience.</span>
-                                <a href="{{ route('login') }}" class="btn-view-all-arrow">Login</a>
                             </div>
-                        @endauth
-                    </div>
-                </div>
-
-                <div class="col-lg-7">
-                    <div class="info-card review-list-card">
-                        <div class="section-heading">
-                            <span class="section-tag">Feedback</span>
-                            <h2>What customers say</h2>
                         </div>
 
-                        <div class="review-list">
-                            @forelse($productReviews as $review)
-                                @php
-                                    $reviewerName = $review->patient?->user?->name ?? 'Patient';
-                                    $reviewerInitial = strtoupper(substr($reviewerName, 0, 1));
-                                @endphp
+                        <div class="col-lg-7">
+                            <div class="info-card review-list-card">
+                                <div class="section-heading">
+                                    <span class="section-tag">Feedback</span>
+                                    <h2>What customers say</h2>
+                                </div>
+
+                                <div class="review-list">
+                                    @forelse($productReviews as $review)
+                                        @php
+                                            $reviewerName = $review->reviewer_name ?? ($review->patient?->user?->name ?? 'Customer');
+                                            $reviewerInitial = !empty($reviewerName) ? strtoupper(substr($reviewerName, 0, 1)) : 'C';
+                                        @endphp
                                 <article class="review-item-card">
                                     <div class="review-avatar">{{ $reviewerInitial }}</div>
                                     <div class="review-content">
@@ -1162,15 +1160,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Coupon Code -->
-                                        <div class="coupon-widget mb-3">
-                                            <div class="input-group input-group-sm">
-                                                <input type="text" class="form-control shadow-none" id="directCouponInput" placeholder="কুপন কোড লিখুন (Coupon)">
-                                                <button class="btn btn-dark" type="button" id="applyDirectCouponBtn">Apply</button>
-                                            </div>
-                                            <div id="directCouponMessage" class="small mt-1" style="display: none;"></div>
-                                            <input type="hidden" name="coupon_code" id="directAppliedCouponCode" value="">
-                                        </div>
+                                        <input type="hidden" name="coupon_code" id="directAppliedCouponCode" value="">
 
                                         <!-- Payment Assurance -->
                                         <div class="payment-method-badge p-3 bg-white border rounded-3 mb-4 text-center">
