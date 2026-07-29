@@ -16,8 +16,14 @@ class Product extends Model
         'gallery' => 'array',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'is_approved' => 'boolean',
         'landing_settings' => 'array',
     ];
+
+    public function seller()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'seller_id');
+    }
 
     public function category()
     {

@@ -43,4 +43,22 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('ecommerce.admi
     Route::resource('product-categories', AdminProductCategoryController::class)->except(['show']);
     Route::resource('product-reviews', \Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class)->except(['show']);
     Route::post('product-reviews/{review}/approve', [\Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class, 'approve'])->name('product-reviews.approve');
+    
+    // Seller Management Routes
+    Route::get('sellers', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'index'])->name('sellers.index');
+    Route::get('sellers/{id}', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'show'])->name('sellers.show');
+    Route::patch('sellers/{id}/status', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'updateStatus'])->name('sellers.update-status');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Ecommerce Seller Panel Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', \Modules\Ecommerce\Http\Middleware\SellerMiddleware::class])
+    ->prefix('seller')
+    ->name('ecommerce.seller.')
+    ->group(function () {
+        Route::get('/dashboard', [\Modules\Ecommerce\Http\Controllers\Seller\DashboardController::class, 'index'])->name('dashboard');
+    });

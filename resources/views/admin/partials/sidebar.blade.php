@@ -39,6 +39,9 @@
                 <li class="menu-title">
                     <span>Ecommerce</span>
                 </li>
+                <li class="{{ request()->routeIs('ecommerce.admin.sellers.*') ? 'active' : '' }}">
+                    <a href="{{ route('ecommerce.admin.sellers.index') }}"><i class="fe fe-users"></i> <span>Sellers List</span></a>
+                </li>
                 <li class="{{ request()->routeIs('ecommerce.admin.product-categories.*') ? 'active' : '' }}">
                     <a href="{{ route('ecommerce.admin.product-categories.index') }}"><i class="fe fe-layout"></i> <span>Product
                             Categories</span></a>

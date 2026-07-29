@@ -211,6 +211,12 @@
                             <span class="review-count">({{ $reviewCount }} reviews)</span>
                         </div>
 
+                        @if($product->seller && $product->seller->sellerProfile)
+                            <div class="seller-badge mb-2">
+                                <span class="badge badge-info"><i class="fas fa-store mr-1"></i> Sold by: {{ $product->seller->sellerProfile->store_name }}</span>
+                            </div>
+                        @endif
+
                         <div class="product-brand">{{ $brandName }}</div>
 
                         <div class="summary-head">
@@ -1009,178 +1015,7 @@
             </section>
         @endif
 
-        @if($stockQty > 0)
-            <!-- Embedded Direct Checkout Form -->
-            <section id="direct-checkout-section" class="direct-checkout-section my-5">
-                <div class="card checkout-card border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
-                    <div class="checkout-card-header text-white py-3 px-4" style="background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--primary-blue) 100%) !important;">
-                        <h4 class="mb-0 text-white fw-bold"><i class="fas fa-shopping-cart me-2"></i> সরাসরি অর্ডার করতে নিচের ফর্মটি পূরণ করুন</h4>
-                    </div>
-                    <div class="checkout-card-body p-4">
-                        <form action="{{ route('ecommerce.order.place') }}" method="POST" id="landingDirectCheckoutForm">
-                            @csrf
-                            <input type="hidden" name="direct_order" value="1">
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <input type="hidden" name="variant_id" id="directFormVariantId" value="{{ $selectedVariant?->id }}">
-                            <input type="hidden" name="quantity" id="directFormQuantity" value="1">
-                            <input type="hidden" name="shipping_charge" id="directFormShippingCharge" value="130">
-
-                            <div class="row g-4">
-                                <!-- Shipping Info Form (Left) -->
-                                <div class="col-lg-7">
-                                    <h4 class="mb-3 border-bottom pb-2 fw-bold" style="color: var(--primary-blue) !important; border-bottom-color: #dbeafe !important;">শিপিংয়ের তথ্য (Billing/Shipping)</h4>
-                                    
-                                    <div class="form-group mb-3 text-start">
-                                        <label class="form-label fw-bold">আপনার নামঃ <span class="text-danger">*</span></label>
-                                        <input type="text" name="name" class="form-control form-control-lg shadow-none" placeholder="এখানে আপনার নাম লিখুন" required value="{{ old('name', Auth::user()->name ?? '') }}">
-                                    </div>
-
-                                    <div class="form-group mb-3 text-start">
-                                        <label class="form-label fw-bold">আপনার মোবাইল নাম্বারঃ <span class="text-danger">*</span></label>
-                                        <input type="text" name="phone" id="directFormPhone" class="form-control form-control-lg shadow-none" placeholder="১১ ডিজিটের সচল মোবাইল নাম্বার" required value="{{ old('phone', Auth::user()->patient->phone ?? '') }}">
-                                    </div>
-
-                                    <input type="hidden" name="email" id="directFormEmail" value="{{ old('email', Auth::user()->email ?? '') }}">
-
-                                    <div class="form-group mb-3 text-start">
-                                        <label class="form-label fw-bold">গ্রাম, থানা, জেলা, পূর্ণ ঠিকানা লিখুনঃ <span class="text-danger">*</span></label>
-                                        <textarea name="address" class="form-control form-control-lg shadow-none" rows="3" placeholder="জেলা, থানা, গ্রাম/রোড এবং বাসা নাম্বার উল্লেখ করুন" required>{{ old('address', Auth::user()->patient->address ?? '') }}</textarea>
-                                    </div>
-
-                                    @if($hasVariants)
-                                        <div class="form-group mb-3 text-start">
-                                            <label class="form-label fw-bold d-block">আপনার পছন্দের পণ্য নির্বাচন করুনঃ <span class="text-danger">*</span></label>
-                                            <div class="variant-options-grid mt-2">
-                                                @foreach($activeVariants as $variant)
-                                                    <label class="variant-radio-card {{ $selectedVariant && $selectedVariant->id === $variant->id ? 'active' : '' }}">
-                                                        <input type="radio" name="direct_variant_select" value="{{ $variant->id }}" data-price="{{ $variant->currentPrice() }}" data-label="{{ $variant->display_label }}" {{ $selectedVariant && $selectedVariant->id === $variant->id ? 'checked' : '' }}>
-                                                        <div class="variant-item-image">
-                                                            <img src="{{ $mainImage }}" alt="{{ $variant->display_label }}" style="width: 44px; height: 44px; object-fit: contain;">
-                                                        </div>
-                                                        <div class="variant-radio-content w-100 d-flex justify-content-between align-items-center">
-                                                            <div>
-                                                                <span class="variant-title fw-bold text-dark">{{ $variant->display_label }}</span>
-                                                                @if($variant->stock <= 5 && $variant->stock > 0)
-                                                                    <span class="variant-stock-warning text-danger small d-block mt-1">মাত্র {{ $variant->stock }} টি অবশিষ্ট আছে!</span>
-                                                                @endif
-                                                            </div>
-                                                            <span class="variant-price fw-extrabold" style="color: var(--primary-blue); font-size: 16px;">৳{{ number_format($variant->currentPrice(), 0) }}</span>
-                                                        </div>
-                                                    </label>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    <div class="form-group mb-3 text-start">
-                                        <label class="form-label fw-bold d-block">ডেলিভারি এরিয়া নির্বাচন করুন (Delivery Area) <span class="text-danger">*</span></label>
-                                        <div class="delivery-options-grid mt-2">
-                                            <label class="delivery-radio-card">
-                                                <input type="radio" name="delivery_area" value="inside">
-                                                <div class="delivery-radio-content">
-                                                    <span class="delivery-title">ঢাকার মধ্যে (Inside Dhaka)</span>
-                                                    <span class="delivery-price">৳৮০</span>
-                                                </div>
-                                            </label>
-                                            <label class="delivery-radio-card active">
-                                                <input type="radio" name="delivery_area" value="outside" checked>
-                                                <div class="delivery-radio-content">
-                                                    <span class="delivery-title">ঢাকার বাহিরে (Outside Dhaka)</span>
-                                                    <span class="delivery-price">৳১৩০</span>
-                                                </div>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="delivery-info-note p-3 rounded-3 mt-3 bg-light border border-dashed border-primary text-start mb-3" style="border-style: dashed !important; border-color: #3b82f6 !important; background-color: #f0f7ff !important;">
-                                        <div class="d-flex align-items-start gap-2 text-primary">
-                                            <span class="fs-5"><i class="fas fa-shipping-fast"></i></span>
-                                            <div>
-                                                <strong class="d-block mb-1 text-dark" style="font-size: 14px;">ডেলিভারি চার্জ এবং সময়ঃ</strong>
-                                                <ul class="mb-0 ps-3 text-muted small" style="font-size: 12px; line-height: 1.5; text-align: left; list-style-type: disc;">
-                                                    <li>ঢাকার মধ্যে ডেলিভারি চার্জ ৮০ টাকা।</li>
-                                                    <li>ঢাকার বাহিরে ডেলিভারি চার্জ ১৩০ টাকা।</li>
-                                                    <li>অর্ডার করার ২৪ থেকে ৪৮ ঘণ্টার মধ্যে ডেলিভারি পাবেন।</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group mb-3 text-start">
-                                        <label class="form-label fw-bold">অর্ডার নোট (Order Notes - Optional)</label>
-                                        <textarea name="notes" class="form-control shadow-none" rows="2" placeholder="অর্ডার সংক্রান্ত কোনো নির্দেশনা থাকলে লিখতে পারেন"></textarea>
-                                    </div>
-                                </div>
-
-                                <!-- Order Summary (Right) -->
-                                <div class="col-lg-5">
-                                    <div class="summary-wrapper p-4 rounded-3 bg-light border border-2 text-start" style="border-color: #dbeafe !important;">
-                                        <h4 class="mb-3 border-bottom pb-2 fw-bold" style="color: var(--primary-blue) !important; border-bottom-color: #dbeafe !important;">আপনার অর্ডার (Your Order)</h4>
-                                        
-                                        <!-- Product Row -->
-                                        <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom">
-                                            <div class="direct-checkout-thumb rounded border overflow-hidden">
-                                                <img id="directFormProductThumb" src="{{ $mainImage }}" alt="{{ $product->name }}" class="img-fluid">
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1 fw-bold text-dark" style="font-size: 15px;">{{ $product->name }}</h6>
-                                                @if($hasVariants)
-                                                    <span class="badge bg-secondary mb-1" id="directFormVariantLabel" style="font-size: 11px;">{{ $selectedVariant?->display_label }}</span>
-                                                @endif
-                                                
-                                                <div class="qty-changer-widget d-flex align-items-center gap-2 mt-1">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 fw-bold" id="directQtyDec">-</button>
-                                                    <span class="fw-bold" id="directQtyDisplay">1</span>
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 fw-bold" id="directQtyInc">+</button>
-                                                </div>
-                                            </div>
-                                            <div class="text-end">
-                                                <strong class="fs-5" id="directFormPriceDisplay" style="color: var(--primary-blue) !important;">৳{{ number_format($displayPrice, 0) }}</strong>
-                                            </div>
-                                        </div>
-
-                                        <!-- Live Calculations -->
-                                        <div class="calculation-rows">
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <span class="text-muted">সাবটোটাল (Subtotal)</span>
-                                                <strong id="directSubtotal" class="text-dark">৳{{ number_format($displayPrice, 0) }}</strong>
-                                            </div>
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <span class="text-muted">ডেলিভারি চার্জ (Delivery)</span>
-                                                <strong id="directShipping" class="text-dark">৳১৩০</strong>
-                                            </div>
-                                            <div class="d-flex justify-content-between mb-2 text-danger" id="directDiscountRow" style="display: none !important;">
-                                                <span class="text-muted">ডিসকাউন্ট (Discount) <small class="text-muted" id="directCouponCodeDisplay"></small></span>
-                                                <strong class="text-danger">-৳<span id="directDiscount">0</span></strong>
-                                            </div>
-                                            <hr>
-                                            <div class="d-flex justify-content-between mb-4">
-                                                <span class="fs-5 fw-bold text-dark">সর্বমোট (Total)</span>
-                                                <strong class="fs-4 fw-bold" id="directTotal" style="color: var(--primary-blue) !important;">৳{{ number_format($displayPrice + 130, 0) }}</strong>
-                                            </div>
-                                        </div>
-
-                                        <input type="hidden" name="coupon_code" id="directAppliedCouponCode" value="">
-
-                                        <!-- Payment Assurance -->
-                                        <div class="payment-method-badge p-3 bg-white border rounded-3 mb-4 text-center">
-                                            <i class="fas fa-truck text-success fs-4 mb-2"></i>
-                                            <h6 class="mb-1 fw-bold text-success" style="font-size: 15px;">ক্যাশ অন ডেলিভারি (Cash on Delivery)</h6>
-                                            <p class="small text-muted mb-0" style="font-size: 12px;">পণ্য হাতে পেয়ে টাকা পরিশোধ করুন। কোনো অগ্রিম পেমেন্ট লাগবেনা।</p>
-                                        </div>
-
-                                        <!-- Place Order Button -->
-                                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold py-3 fs-5 text-white shadow-sm hover-grow" id="directSubmitBtn" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 100%); border: none;">
-                                            <i class="fas fa-check-circle me-2"></i> অর্ডার কনফার্ম করুন (Confirm Order)
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </section>
-        @else
+        @if($stockQty <= 0)
             <div class="alert alert-warning text-center py-4 my-5 rounded-3 shadow-sm border-0">
                 <i class="fas fa-exclamation-triangle me-2 fs-4 text-warning"></i>
                 <span class="fw-bold fs-5 text-dark">দুঃখিত! এই পণ্যটি বর্তমানে স্টক আউট আছে। স্টক আসলে আপনাকে জানানো হবে।</span>

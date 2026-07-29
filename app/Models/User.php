@@ -76,9 +76,19 @@ class User extends Authenticatable
         return $this->hasOne(\Modules\Agents\Models\Agent::class);
     }
 
+    public function sellerProfile()
+    {
+        return $this->hasOne(\Modules\Ecommerce\Models\SellerProfile::class);
+    }
+
     public function isAgent(): bool
     {
         return $this->role === 'agent';
+    }
+
+    public function isSeller(): bool
+    {
+        return $this->role === 'seller';
     }
 
     public function getProfileImageUrlAttribute(): string
@@ -92,6 +102,12 @@ class User extends Authenticatable
         if ($this->role === 'agent') {
             if ($this->agent && $this->agent->profile_image) {
                 return asset($this->agent->profile_image);
+            }
+            return asset('assets/img/patients/patient.jpg');
+        }
+        if ($this->role === 'seller') {
+            if ($this->sellerProfile && $this->sellerProfile->store_logo) {
+                return asset($this->sellerProfile->store_logo);
             }
             return asset('assets/img/patients/patient.jpg');
         }

@@ -678,9 +678,13 @@ class ProductController extends Controller
                 ]);
 
                 foreach ($cart as $cartKey => $item) {
+                    $productId = $this->resolveCartProductId($cartKey, $item);
+                    $product = Product::find($productId);
+
                     OrderItem::create([
                         'order_id' => $order->id,
-                        'product_id' => $this->resolveCartProductId($cartKey, $item),
+                        'product_id' => $productId,
+                        'seller_id' => $product?->seller_id,
                         'product_variant_id' => $this->resolveCartVariantId($cartKey, $item),
                         'variant_label' => $item['variant_label'] ?? null,
                         'quantity' => $item['quantity'],
