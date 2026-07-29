@@ -24,10 +24,14 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
+        $sellerProfile = \Modules\Ecommerce\Models\SellerProfile::where('user_id', $sellerId)->first();
+        $walletBalance = (float) ($sellerProfile->wallet_balance ?? 0);
+
         return view('ecommerce::seller.dashboard', compact(
             'totalProducts',
             'totalItemsSold',
             'totalEarnings',
+            'walletBalance',
             'recentItems'
         ));
     }

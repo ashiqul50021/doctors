@@ -61,6 +61,7 @@ class OrderController extends Controller
                 ]);
 
                 $this->handleAgentCommissionTransition($order, $previousStatus, $nextStatus);
+                $this->handleSellerEarningsTransition($order, $previousStatus, $nextStatus);
             });
         } catch (ValidationException $exception) {
             return back()->withErrors($exception->errors());
@@ -148,4 +149,49 @@ class OrderController extends Controller
             }
         }
     }
+
+    protected function handleSellerEarningsTransition($order, $previousStatus, $nextStatus)
+    {
+        $order->loadMissing('items');
+
+        // Group order items by seller_id
+        $sellerItemsMap = [];
+        foreach ($order->items as $item) {
+            if (!empty($item->seller_id)) {
+                if (!isset($sellerItemsMap[$item->seller_id])) {
+                    $sellerItemsMap[$item->seller_id] = 0;
+                }
+                $sellerItemsMap[$item->seller_id] += ($item->price * $item->quantity);
+            }
+        }
+
+        if (empty($sellerItemsMap)) {
+            return;
+        }
+
+        // 1. Moving to 'delivered' -> Credit seller wallet
+        if ($nextStatus === 'delivered' && $previousStatus !== 'delivered') {
+            foreach ($sellerItemsMap as $sellerId => $grossAmount) {
+                $sellerProfile = \Modules\Ecommerce\Models\SellerProfile::where('user_id', $sellerId)->first();
+                if ($sellerProfile) {
+                    $commissionRate = (float) ($sellerProfile->commission_rate ?? 0);
+                    $netEarning = max(0, $grossAmount - ($grossAmount * ($commissionRate / 100)));
+                    $sellerProfile->increment('wallet_balance', $netEarning);
+                }
+            }
+        }
+
+        // 2. Moving away from 'delivered' -> Debit seller wallet
+        if ($previousStatus === 'delivered' && $nextStatus !== 'delivered') {
+            foreach ($sellerItemsMap as $sellerId => $grossAmount) {
+                $sellerProfile = \Modules\Ecommerce\Models\SellerProfile::where('user_id', $sellerId)->first();
+                if ($sellerProfile) {
+                    $commissionRate = (float) ($sellerProfile->commission_rate ?? 0);
+                    $netEarning = max(0, $grossAmount - ($grossAmount * ($commissionRate / 100)));
+                    $sellerProfile->decrement('wallet_balance', $netEarning);
+                }
+            }
+        }
+    }
 }
+

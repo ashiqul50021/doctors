@@ -48,6 +48,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('ecommerce.admi
     Route::get('sellers', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'index'])->name('sellers.index');
     Route::get('sellers/{id}', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'show'])->name('sellers.show');
     Route::patch('sellers/{id}/status', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'updateStatus'])->name('sellers.update-status');
+
+    // Seller Payout Routes (Admin)
+    Route::get('seller-payouts', [\Modules\Ecommerce\Http\Controllers\Backend\SellerPayoutController::class, 'index'])->name('seller-payouts.index');
+    Route::patch('seller-payouts/{id}/status', [\Modules\Ecommerce\Http\Controllers\Backend\SellerPayoutController::class, 'updateStatus'])->name('seller-payouts.update-status');
 });
 
 /*
@@ -61,4 +65,7 @@ Route::middleware(['auth', \Modules\Ecommerce\Http\Middleware\SellerMiddleware::
     ->name('ecommerce.seller.')
     ->group(function () {
         Route::get('/dashboard', [\Modules\Ecommerce\Http\Controllers\Seller\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/payouts', [\Modules\Ecommerce\Http\Controllers\Seller\PayoutController::class, 'index'])->name('payouts.index');
+        Route::post('/payouts', [\Modules\Ecommerce\Http\Controllers\Seller\PayoutController::class, 'store'])->name('payouts.store');
     });
+

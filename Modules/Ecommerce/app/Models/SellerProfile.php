@@ -20,6 +20,7 @@ class SellerProfile extends Model
         'store_banner',
         'status',
         'commission_rate',
+        'wallet_balance',
         'bank_name',
         'bank_account_name',
         'bank_account_number',
@@ -34,4 +35,10 @@ class SellerProfile extends Model
     {
         return $this->hasMany(Product::class, 'seller_id', 'user_id');
     }
+
+    public function payouts()
+    {
+        return $this->hasMany(SellerPayout::class, 'seller_id', 'user_id');
+    }
 }
+
