@@ -112,7 +112,7 @@
                                 <td>#{{ $item->order_id }}</td>
                                 <td>{{ $item->product->name ?? 'Deleted Product' }}</td>
                                 <td>{{ $item->quantity }}</td>
-                                <td>৳{{ number_format($item->total_price, 2) }}</td>
+                                <td>৳{{ number_format($item->total, 2) }}</td>
                                 <td>{{ $item->created_at->format('d M Y, h:i A') }}</td>
                             </tr>
                             @empty

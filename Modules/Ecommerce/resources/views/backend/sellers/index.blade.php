@@ -4,13 +4,16 @@
 
 @section('content')
 <div class="page-header">
-    <div class="row">
-        <div class="col-sm-12">
+    <div class="row align-items-center">
+        <div class="col">
             <h3 class="page-title">Sellers</h3>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                 <li class="breadcrumb-item active">Sellers</li>
             </ul>
+        </div>
+        <div class="col-auto">
+            <a href="{{ route('ecommerce.admin.sellers.create') }}" class="btn btn-primary">Add New Seller</a>
         </div>
     </div>
 </div>

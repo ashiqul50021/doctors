@@ -46,6 +46,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('ecommerce.admi
     
     // Seller Management Routes
     Route::get('sellers', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'index'])->name('sellers.index');
+    Route::get('sellers/create', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'create'])->name('sellers.create');
+    Route::post('sellers', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'store'])->name('sellers.store');
     Route::get('sellers/{id}', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'show'])->name('sellers.show');
     Route::patch('sellers/{id}/status', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'updateStatus'])->name('sellers.update-status');
 
@@ -67,5 +69,16 @@ Route::middleware(['auth', \Modules\Ecommerce\Http\Middleware\SellerMiddleware::
         Route::get('/dashboard', [\Modules\Ecommerce\Http\Controllers\Seller\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/payouts', [\Modules\Ecommerce\Http\Controllers\Seller\PayoutController::class, 'index'])->name('payouts.index');
         Route::post('/payouts', [\Modules\Ecommerce\Http\Controllers\Seller\PayoutController::class, 'store'])->name('payouts.store');
+
+        // Profile Settings
+        Route::get('/profile', [\Modules\Ecommerce\Http\Controllers\Seller\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [\Modules\Ecommerce\Http\Controllers\Seller\ProfileController::class, 'update'])->name('profile.update');
+
+        // Products Management
+        Route::resource('products', \Modules\Ecommerce\Http\Controllers\Seller\ProductController::class);
+
+        // Orders Management
+        Route::get('/orders', [\Modules\Ecommerce\Http\Controllers\Seller\OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{id}', [\Modules\Ecommerce\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
     });
 

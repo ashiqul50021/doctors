@@ -16,7 +16,7 @@ class DashboardController extends Controller
 
         $totalProducts = Product::where('seller_id', $sellerId)->count();
         $totalItemsSold = OrderItem::where('seller_id', $sellerId)->sum('quantity');
-        $totalEarnings = OrderItem::where('seller_id', $sellerId)->sum('total_price');
+        $totalEarnings = OrderItem::where('seller_id', $sellerId)->sum('total');
 
         $recentItems = OrderItem::with(['order', 'product', 'variant'])
             ->where('seller_id', $sellerId)

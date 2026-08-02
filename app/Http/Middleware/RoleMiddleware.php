@@ -41,6 +41,8 @@ class RoleMiddleware
                 return redirect()->route('doctors.dashboard');
             } elseif ($user->role === 'agent') {
                 return redirect()->route('agent.dashboard');
+            } elseif ($user->role === 'seller') {
+                return redirect()->route('ecommerce.seller.dashboard');
             }
             return redirect()->route('patient.dashboard');
         }

@@ -20,6 +20,9 @@ class AuthController extends Controller
             if (Auth::user()->role === 'doctor') {
                 return $this->redirectDoctorAfterAuth(Auth::user()->doctor);
             }
+            if (Auth::user()->role === 'seller') {
+                return redirect()->route('ecommerce.seller.dashboard');
+            }
             return redirect()->route('patient.dashboard');
         }
         return view('frontend.login');
@@ -52,6 +55,10 @@ class AuthController extends Controller
             // Redirect based on role
             if ($user->role === 'doctor') {
                 return $this->redirectDoctorAfterAuth($user->doctor);
+            }
+
+            if ($user->role === 'seller') {
+                return redirect()->route('ecommerce.seller.dashboard');
             }
 
             return redirect()->route('patient.dashboard');
