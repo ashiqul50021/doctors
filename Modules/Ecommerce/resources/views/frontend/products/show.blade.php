@@ -784,9 +784,36 @@
                         </div>
                     </section>
                 @endif
+            @elseif($secType === 'rich_text')
+                @php
+                    $bgColor = $section['bg_color'] ?? '#ffffff';
+                    $textColor = $section['text_color'] ?? '#333333';
+                    $accentColor = $section['accent_color'] ?? '#007bff';
+                    $content = $section['content'] ?? '';
+                    $tag = $section['tag'] ?? '';
+                @endphp
+                @if(!empty($content) || !empty($secTitle))
+                    <section class="landing-rich-text-section mb-4">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
+                            @if(!empty($secTitle) || !empty($tag))
+                                <div class="section-heading text-center mb-4">
+                                    @if(!empty($tag))
+                                        <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $tag }}</span>
+                                    @endif
+                                    @if(!empty($secTitle))
+                                        <h3 class="fw-bold mt-2" style="color: {{ $accentColor }} !important;">{{ $secTitle }}</h3>
+                                    @endif
+                                </div>
+                            @endif
+                            <div class="rich-text-content mx-auto" style="max-width: 800px; font-size: 16px; line-height: 1.8;">
+                                {!! nl2br($content) !!}
+                            </div>
+                        </div>
+                    </section>
+                @endif
             @endif
 
-            @if(in_array($secType, ['features', 'problems', 'benefits', 'package', 'faq', 'custom']) && $stockQty > 0)
+            @if(in_array($secType, ['features', 'problems', 'benefits', 'package', 'faq', 'custom', 'rich_text']) && $stockQty > 0)
                 <div class="text-center my-4">
                     <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
                         <i class="fas fa-shopping-cart"></i>

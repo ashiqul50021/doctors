@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @include('ecommerce::backend.products.partials.image-manager-styles')
+@include('ecommerce::backend.products.partials.product-manager-styles')
 
 @section('title', 'Add Product - Seller')
 
@@ -46,152 +47,56 @@
                     </div>
                 @endif
 
-                <form action="{{ route('ecommerce.seller.products.store') }}" method="POST" enctype="multipart/form-data">
+                <!-- Tab Navigation Links -->
+                <ul class="nav nav-tabs nav-tabs-solid nav-justified mb-4" id="productFormTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="general-tab" data-bs-toggle="tab" href="#general-pane" role="tab" aria-controls="general-pane" aria-selected="true">
+                            <i class="fas fa-info-circle me-1"></i> General Info
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pricing-tab" data-bs-toggle="tab" href="#pricing-pane" role="tab" aria-controls="pricing-pane" aria-selected="false">
+                            <i class="fas fa-coins me-1"></i> Pricing & Stock
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="landing-tab" data-bs-toggle="tab" href="#landing-pane" role="tab" aria-controls="landing-pane" aria-selected="false">
+                            <i class="fas fa-layer-group me-1"></i> Landing Page Builder
+                        </a>
+                    </li>
+                </ul>
+
+                <form action="{{ route('ecommerce.seller.products.store') }}" method="POST" enctype="multipart/form-data" id="productMainForm">
                     @csrf
-                    <div class="row form-row">
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Product Name</label>
-                                <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Category</label>
-                                <select name="product_category_id" class="form-control" required>
-                                    <option value="">Select Category</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('product_category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                                        @foreach($category->children as $child)
-                                            <option value="{{ $child->id }}" {{ old('product_category_id') == $child->id ? 'selected' : '' }}>
-                                                &nbsp;&nbsp;&mdash;&nbsp;{{ $child->name }}
-                                            </option>
-                                            @foreach($child->children as $grandchild)
-                                                <option value="{{ $grandchild->id }}" {{ old('product_category_id') == $grandchild->id ? 'selected' : '' }}>
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;&mdash;&nbsp;&mdash;&nbsp;{{ $grandchild->name }}
-                                                </option>
+                    <div class="tab-content" id="productFormTabsContent">
+                        
+                        <!-- Tab 1: General Info -->
+                        <div class="tab-pane fade show active" id="general-pane" role="tabpanel" aria-labelledby="general-tab">
+                            <div class="row form-row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Product Name</label>
+                                        <input type="text" name="name" id="productNameInput" class="form-control" value="{{ old('name') }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Category</label>
+                                        <select name="product_category_id" class="form-control" required>
+                                            <option value="">Select Category</option>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}" {{ old('product_category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                @foreach($category->children as $child)
+                                                    <option value="{{ $child->id }}" {{ old('product_category_id') == $child->id ? 'selected' : '' }}>
+                                                        &nbsp;&nbsp;&mdash;&nbsp;{{ $child->name }}
+                                                    </option>
+                                                    @foreach($child->children as $grandchild)
+                                                        <option value="{{ $grandchild->id }}" {{ old('product_category_id') == $grandchild->id ? 'selected' : '' }}>
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;&mdash;&nbsp;&mdash;&nbsp;{{ $grandchild->name }}
+                                                        </option>
+                                                    @endforeach
+                                                @endforeach
                                             @endforeach
-                                        @endforeach
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Price</label>
-                                <input type="number" step="0.01" name="price" class="form-control" value="{{ old('price') }}" required>
-                            </div>
-                        </div>
-                         <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Sale Price (Optional)</label>
-                                <input type="number" step="0.01" name="sale_price" class="form-control" value="{{ old('sale_price') }}">
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Stock</label>
-                                <input type="number" name="stock" class="form-control" value="{{ old('stock', 0) }}" required>
-                                <small class="text-muted d-block mt-1">Used for simple products. Active variants below will control stock automatically.</small>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 d-flex align-items-center">
-                            <div class="form-group mb-0">
-                                <div class="form-check form-switch mt-3">
-                                    <input class="form-check-input" type="checkbox" id="has_variants_toggle" name="has_variants" value="1" {{ old('has_variants', false) ? 'checked' : '' }}>
-                                    <label class="form-check-label fw-bold" for="has_variants_toggle">This product has variants (Variable Product)</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label for="productImageInput">Primary Image</label>
-                                <input type="file" name="image" class="form-control" id="productImageInput" accept="image/*">
-                                <small id="productImageHelper" class="form-text text-muted">Select the main product image. Large files will be compressed automatically before upload.</small>
-                                <div class="image-manager-shell mt-2 single-image-preview" id="productImagePreviewContainer" style="display: none;">
-                                    <img id="productImagePreview" src="#" alt="Product Preview" class="img-thumbnail">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label>Gallery Images</label>
-                                <small class="form-text text-muted mb-2 d-block">Select gallery images one by one. Click the "Add Image" box to select a file. These will appear as thumbnails on the product details page.</small>
-
-                                <div class="image-manager-shell mt-2">
-                                    <!-- Container for hidden dynamic file inputs -->
-                                    <div id="galleryInputsContainer" style="display: none;"></div>
-
-                                    <div class="gallery-preview-group">
-                                        <span class="gallery-preview-label">New Gallery Uploads</span>
-                                        <div id="interactiveGalleryGrid" class="gallery-preview-grid">
-                                            <!-- "+" card is added by Javascript -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 mt-4 mb-4">
-                            <div class="card border-primary shadow-sm" style="border-radius: 12px; overflow: hidden; border-left: 5px solid #007bff;">
-                                <div class="card-header bg-light d-flex align-items-center justify-content-between py-3">
-                                    <h4 class="card-title mb-0 text-primary fw-bold" style="font-size: 18px;">
-                                        <i class="fas fa-magic me-2"></i> Landing Page Customization (সীমিত সময়ের অফার ও ট্রাস্ট ইনফো)
-                                    </h4>
-                                    <span class="badge bg-primary text-white">Dynamic Content</span>
-                                </div>
-                                <div class="card-body">
-                                    <!-- Countdown Banner -->
-                                    <h5 class="fw-bold mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-clock text-danger me-1"></i> ১. জরুরী অফার কাউন্টডাউন (Urgency Countdown Banner)</h5>
-                                    <div class="row">
-                                        <div class="col-md-6 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">অফার টাইটেল (Countdown Title)</label>
-                                                <input type="text" name="landing_settings[countdown_title]" class="form-control" value="{{ old('landing_settings.countdown_title', 'আজকের বিশেষ ছাড় অফার!') }}" placeholder="আজকের বিশেষ ছাড় অফার!">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">অফার সাবটাইটেল (Countdown Subtitle)</label>
-                                                <input type="text" name="landing_settings[countdown_subtitle]" class="form-control" value="{{ old('landing_settings.countdown_subtitle', 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:') }}" placeholder="অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">অফার সময় - ঘণ্টায় (Countdown Hours)</label>
-                                                <input type="number" name="landing_settings[countdown_hours]" class="form-control" value="{{ old('landing_settings.countdown_hours', 3) }}" placeholder="3">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">কাউন্টডাউন স্ট্যাটাস (Countdown Status)</label>
-                                                <select name="landing_settings[show_countdown]" class="form-control">
-                                                    <option value="1" {{ old('landing_settings.show_countdown', '1') == '1' ? 'selected' : '' }}>Active (সক্রিয়)</option>
-                                                    <option value="0" {{ old('landing_settings.show_countdown', '1') == '0' ? 'selected' : '' }}>Inactive (নিষ্ক্রিয়)</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Product Video -->
-                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fab fa-youtube text-danger me-1"></i> ১.৫. প্রোডাক্ট ভিডিও (Product Video - Optional)</h5>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">ইউটিউব ভিডিও লিংক (YouTube Video URL)</label>
-                                                <input type="text" name="landing_settings[youtube_video_url]" class="form-control" value="{{ old('landing_settings.youtube_video_url') }}" placeholder="যেমন: https://www.youtube.com/watch?v=xxxxxx">
-                                                <small class="text-muted d-block mt-1">প্রোডাক্টের ব্যবহারবিধি বা রিভিউ ভিডিওর ইউটিউব লিংক এখানে দিন।</small>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Unified Landing Sections Builder -->
-                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-layer-group text-primary me-1"></i> ২. ল্যান্ডিং পেজ সেকশন বিল্ডার (Landing Page Sections Builder)</h5>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <p class="text-muted small">এখানে আপনি ল্যান্ডিং পেজের সেকশনগুলোর ক্রম পরিবর্তন (Up/Down), নতুন সেকশন যোগ বা ডিলিট করতে পারবেন।</p>
-                                            
-                                            <div id="landing-sections-builder-container">
                                                 @php
                                                     $defaultBadges = [];
                                                     $defaultIcons = [1 => 'fas fa-undo-alt', 2 => 'fas fa-hand-holding-usd', 3 => 'fas fa-headset', 4 => 'fas fa-shipping-fast'];
@@ -956,6 +861,285 @@
                     if (titleInput) titleInput.focus();
                 });
             }
+
+            // Tab Wizard Controls
+            const tabLinks = ['general-tab', 'pricing-tab', 'landing-tab'];
+            let currentTabIdx = 0;
+
+            const prevBtn = document.getElementById('prevTabBtn');
+            const nextBtn = document.getElementById('nextTabBtn');
+            const submitBtn = document.getElementById('submitProductBtn');
+
+            function updateWizardButtons() {
+                if (currentTabIdx === 0) {
+                    prevBtn.style.display = 'none';
+                } else {
+                    prevBtn.style.display = 'block';
+                }
+
+                if (currentTabIdx === tabLinks.length - 1) {
+                    nextBtn.style.display = 'none';
+                    submitBtn.style.display = 'block';
+                } else {
+                    nextBtn.style.display = 'block';
+                    submitBtn.style.display = 'none';
+                }
+            }
+
+            if (nextBtn && prevBtn && submitBtn) {
+                nextBtn.addEventListener('click', function() {
+                    if (currentTabIdx < tabLinks.length - 1) {
+                        currentTabIdx++;
+                        document.getElementById(tabLinks[currentTabIdx]).click();
+                        updateWizardButtons();
+                    }
+                });
+
+                prevBtn.addEventListener('click', function() {
+                    if (currentTabIdx > 0) {
+                        currentTabIdx--;
+                        document.getElementById(tabLinks[currentTabIdx]).click();
+                        updateWizardButtons();
+                    }
+                });
+
+                // If user clicks tabs manually, update our index
+                tabLinks.forEach((id, idx) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.addEventListener('click', function() {
+                            currentTabIdx = idx;
+                            updateWizardButtons();
+                        });
+                    }
+                });
+            }
+
+            // Live Preview Updates
+            function updateLivePreview() {
+                // Name
+                const nameInput = document.getElementById('productNameInput');
+                const simName = document.getElementById('simProductName');
+                if (nameInput && simName) {
+                    simName.textContent = nameInput.value || 'Product Title Preview';
+                }
+
+                // Price
+                const priceInput = document.getElementById('productPriceInput');
+                const salePriceInput = document.getElementById('productSalePriceInput');
+                const simCurrentPrice = document.getElementById('simCurrentPrice');
+                const simOldPrice = document.getElementById('simOldPrice');
+                const simDiscountBadge = document.getElementById('simDiscountBadge');
+
+                if (priceInput && simCurrentPrice) {
+                    const price = parseFloat(priceInput.value) || 0;
+                    const salePrice = parseFloat(salePriceInput ? salePriceInput.value : '0') || 0;
+
+                    if (salePrice > 0 && salePrice < price) {
+                        simCurrentPrice.textContent = '৳' + salePrice.toFixed(2);
+                        if (simOldPrice) {
+                            simOldPrice.textContent = '৳' + price.toFixed(2);
+                            simOldPrice.style.display = 'inline';
+                        }
+                        if (simDiscountBadge) {
+                            const discount = Math.round(((price - salePrice) / price) * 100);
+                            simDiscountBadge.textContent = discount + '% OFF';
+                            simDiscountBadge.style.display = 'inline';
+                        }
+                    } else {
+                        simCurrentPrice.textContent = '৳' + price.toFixed(2);
+                        if (simOldPrice) simOldPrice.style.display = 'none';
+                        if (simDiscountBadge) simDiscountBadge.style.display = 'none';
+                    }
+                }
+
+                // Countdown Urgency
+                const countdownStatus = document.getElementById('countdownStatusSelect');
+                const simCountdownBanner = document.getElementById('simCountdownBanner');
+                if (countdownStatus && simCountdownBanner) {
+                    if (countdownStatus.value === '1') {
+                        simCountdownBanner.style.display = 'block';
+                        const titleInput = document.getElementById('countdownTitleInput');
+                        const subtitleInput = document.getElementById('countdownSubtitleInput');
+                        const simTitle = document.getElementById('simCountdownTitle');
+                        const simSubtitle = document.getElementById('simCountdownSubtitle');
+                        
+                        if (titleInput && simTitle) simTitle.textContent = titleInput.value || 'আজকের বিশেষ ছাড় অফার!';
+                        if (subtitleInput && simSubtitle) simSubtitle.textContent = subtitleInput.value || 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:';
+                    } else {
+                        simCountdownBanner.style.display = 'none';
+                    }
+                }
+
+                // Primary Image Preview
+                const imageInput = document.getElementById('productImageInput');
+                const simProductImage = document.getElementById('simProductImage');
+                if (imageInput && simProductImage && imageInput.files && imageInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        simProductImage.style.backgroundImage = `url('${e.target.result}')`;
+                    }
+                    reader.readAsDataURL(imageInput.files[0]);
+                }
+
+                // Sections Preview Generator
+                const simSectionsContainer = document.getElementById('simSectionsContainer');
+                if (simSectionsContainer) {
+                    simSectionsContainer.innerHTML = '';
+                    const sectionCards = document.querySelectorAll('.section-card');
+                    sectionCards.forEach((card) => {
+                        const type = card.getAttribute('data-section-type');
+                        const titleVal = card.querySelector('input[name*="[title]"]')?.value || '';
+                        const tagVal = card.querySelector('input[name*="[tag]"]')?.value || '';
+
+                        const simSecCard = document.createElement('div');
+                        simSecCard.className = 'sim-section-card';
+                        
+                        // Header
+                        let headerHTML = '';
+                        if (tagVal || titleVal) {
+                            headerHTML = `
+                                <div class="sim-section-header">
+                                    ${tagVal ? `<span class="sim-section-tag" style="background:#dbeafe; color:#2563eb;">${tagVal}</span>` : ''}
+                                    ${titleVal ? `<h6 class="sim-section-title">${titleVal}</h6>` : ''}
+                                </div>
+                            `;
+                        }
+
+                        let contentHTML = '';
+                        if (type === 'features' || type === 'problems' || type === 'benefits' || type === 'package') {
+                            let icon = 'fa-check-circle text-success';
+                            if (type === 'features') icon = 'fa-check text-primary';
+                            if (type === 'problems') icon = 'fa-times text-danger';
+                            if (type === 'benefits') icon = 'fa-check-circle text-success';
+                            if (type === 'package') icon = 'fa-box text-warning';
+
+                            const items = Array.from(card.querySelectorAll('textarea')).map(el => el.value);
+                            contentHTML = items.map(item => `
+                                <div class="sim-item-row">
+                                    <i class="fas ${icon}"></i>
+                                    <span>${item}</span>
+                                </div>
+                            `).join('');
+                        } else if (type === 'faq') {
+                            const faqRows = card.querySelectorAll('.faq-item-row');
+                            contentHTML = Array.from(faqRows).map(row => {
+                                const q = row.querySelector('input')?.value || '';
+                                const a = row.querySelector('textarea')?.value || '';
+                                return `
+                                    <div class="sim-faq-item">
+                                        <div class="sim-faq-q">Q: ${q}</div>
+                                        <div class="sim-faq-a">${a}</div>
+                                    </div>
+                                `;
+                            }).join('');
+                        } else if (type === 'badges') {
+                            const badgeRows = card.querySelectorAll('.badge-item-row');
+                            contentHTML = '<div class="sim-badge-grid">' + Array.from(badgeRows).map(row => {
+                                const icon = row.querySelector('input[name*="[icon]"]')?.value || 'fas fa-shield-alt';
+                                const title = row.querySelector('input[name*="[title]"]')?.value || '';
+                                const desc = row.querySelector('input[name*="[desc]"]')?.value || '';
+                                return `
+                                    <div class="sim-badge-item">
+                                        <i class="${icon} text-primary"></i>
+                                        <div class="sim-badge-title">${title}</div>
+                                        <div class="sim-badge-desc">${desc}</div>
+                                    </div>
+                                `;
+                            }).join('') + '</div>';
+                        } else if (type === 'trust') {
+                            const featRows = card.querySelectorAll('.trust-feature-item-row');
+                            contentHTML = Array.from(featRows).map(row => {
+                                const t = row.querySelector('input')?.value || '';
+                                const d = row.querySelector('textarea')?.value || '';
+                                return `
+                                    <div class="sim-faq-item" style="border-bottom:none;">
+                                        <div class="sim-faq-q"><i class="fas fa-check-circle text-success me-1"></i>${t}</div>
+                                        <div class="sim-faq-a" style="margin-left:14px;">${d}</div>
+                                    </div>
+                                `;
+                            }).join('');
+                        } else if (type === 'rich_text') {
+                            const bg = card.querySelector('input[name*="[bg_color]"]')?.value || '#ffffff';
+                            const text = card.querySelector('input[name*="[text_color]"]')?.value || '#333333';
+                            const accent = card.querySelector('input[name*="[accent_color]"]')?.value || '#007bff';
+                            const content = card.querySelector('textarea[name*="[content]"]')?.value || '';
+                            simSecCard.style.backgroundColor = bg;
+                            simSecCard.style.color = text;
+                            simSecCard.style.borderColor = accent;
+                            contentHTML = `<div style="font-size:11px; line-height:1.4;">${content.replace(/\n/g, '<br>')}</div>`;
+                        } else if (type === 'custom') {
+                            const items = Array.from(card.querySelectorAll('textarea')).map(el => el.value);
+                            contentHTML = items.map(item => `<div style="font-size:11px; line-height:1.4; margin-bottom:6px;">${item.replace(/\n/g, '<br>')}</div>`).join('');
+                        } else if (type === 'video') {
+                            contentHTML = `
+                                <div style="background:#e2e8f0; height:120px; display:flex; align-items:center; justify-content:center; border-radius:6px;">
+                                    <i class="fab fa-youtube text-danger" style="font-size:32px;"></i>
+                                </div>
+                            `;
+                        } else if (type === 'gallery') {
+                            contentHTML = `
+                                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:4px;">
+                                    <div style="background:#cbd5e1; height:60px;"></div>
+                                    <div style="background:#cbd5e1; height:60px;"></div>
+                                    <div style="background:#cbd5e1; height:60px;"></div>
+                                </div>
+                            `;
+                        } else if (type === 'cta') {
+                            contentHTML = `
+                                <div class="sim-buy-button" style="padding:6px; font-size:11px; margin-top:4px;">অর্ডার করতে এখানে ক্লিক করুন</div>
+                            `;
+                        }
+
+                        simSecCard.innerHTML = headerHTML + contentHTML;
+                        simSectionsContainer.appendChild(simSecCard);
+                    });
+                }
+            }
+
+            // Register Preview Event Listeners
+            const previewSelectors = [
+                '#productNameInput',
+                '#productPriceInput',
+                '#productSalePriceInput',
+                '#countdownTitleInput',
+                '#countdownSubtitleInput',
+                '#countdownStatusSelect'
+            ];
+            
+            previewSelectors.forEach(selector => {
+                const el = document.querySelector(selector);
+                if (el) {
+                    el.addEventListener('input', updateLivePreview);
+                    el.addEventListener('change', updateLivePreview);
+                }
+            });
+
+            document.getElementById('productImageInput')?.addEventListener('change', updateLivePreview);
+
+            // Hook into Section Card events to trigger preview update
+            const originalBindSectionCardEvents = bindSectionCardEvents;
+            bindSectionCardEvents = function(card) {
+                originalBindSectionCardEvents(card);
+                
+                // Add event listeners for inputs inside the section card
+                card.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.addEventListener('input', updateLivePreview);
+                    input.addEventListener('change', updateLivePreview);
+                });
+                
+                // Update preview on section list changes
+                updateLivePreview();
+            };
+
+            const originalReindexSections = reindexSections;
+            reindexSections = function() {
+                originalReindexSections();
+                updateLivePreview();
+            };
+
+            // Trigger initial preview load
+            setTimeout(updateLivePreview, 1000);
         });
 
         function initializeProductImageUpload({ inputId, previewId, previewContainerId, helperId, emptyMessage }) {

@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @include('ecommerce::backend.products.partials.image-manager-styles')
+@include('ecommerce::backend.products.partials.product-manager-styles')
 
 @section('title', 'Edit Product - Seller')
 
@@ -37,6 +38,199 @@
                 ->reject(fn ($path) => collect(old('removed_gallery', []))->contains($path))
                 ->filter()
                 ->values();
+
+            $sections = $product->landing_settings['sections'] ?? null;
+            if (!is_array($sections)) {
+                $sections = [];
+
+                // Features
+                $features = [];
+                if (isset($product->landing_settings['product_features'])) {
+                    $features = $product->landing_settings['product_features'];
+                } else {
+                    for ($i = 1; $i <= 6; $i++) {
+                        $val = $product->landing_settings["product_feature_{$i}"] ?? '';
+                        if (!empty(trim((string)$val))) $features[] = $val;
+                    }
+                }
+                if (!empty($features)) {
+                    $sections[] = [
+                        'type' => 'features',
+                        'title' => $product->landing_settings['product_features_title'] ?? 'আমাদের প্রোডাক্টের বৈশিষ্ট্য',
+                        'tag' => 'Product Features',
+                        'style' => 'blue-check',
+                        'items' => $features
+                    ];
+                }
+
+                // Badges
+                $trustBadges = $product->landing_settings['trust_badges'] ?? [];
+                if (empty($trustBadges)) {
+                    $defaultIcons = [1 => 'fas fa-undo-alt', 2 => 'fas fa-hand-holding-usd', 3 => 'fas fa-headset', 4 => 'fas fa-shipping-fast'];
+                    $defaultTitles = [1 => '৭ দিনের রিটার্ন', 2 => 'হাতে পেয়ে পেমেন্ট', 3 => 'অনলাইন সাপোর্ট', 4 => 'সারাদেশে ডেলিভারি'];
+                    $defaultDescs = [1 => 'সহজ এক্সচেঞ্জ সুবিধা', 2 => 'ক্যাশ অন ডেলিভারি', 3 => '২৪/৭ কাস্টমার কেয়ার', 4 => 'দ্রুত ও নিরাপদ ডেলিভারি'];
+                    for ($i = 1; $i <= 4; $i++) {
+                        $bi = $product->landing_settings["badge_{$i}_icon"] ?? $defaultIcons[$i];
+                        $bt = $product->landing_settings["badge_{$i}_title"] ?? $defaultTitles[$i];
+                        $bd = $product->landing_settings["badge_{$i}_desc"] ?? $defaultDescs[$i];
+                        if (!empty(trim($bt))) {
+                            $trustBadges[] = ['icon' => $bi, 'title' => $bt, 'desc' => $bd];
+                        }
+                    }
+                }
+                if (!empty($trustBadges)) {
+                    $sections[] = [
+                        'type' => 'badges',
+                        'title' => $product->landing_settings['trust_badges_title'] ?? 'আমাদের থেকে কেন কিনবেন?',
+                        'tag' => 'Trust Badges',
+                        'badges' => $trustBadges
+                    ];
+                }
+
+                // Video
+                if (!empty($product->landing_settings['youtube_video_url'])) {
+                    $sections[] = [
+                        'type' => 'video',
+                        'title' => 'পণ্যটির বিবরণী ও ব্যবহারবিধি ভিডিও',
+                        'tag' => 'Showcase Video'
+                    ];
+                }
+
+                // Problems
+                $problems = [];
+                if (isset($product->landing_settings['product_problems'])) {
+                    $problems = $product->landing_settings['product_problems'];
+                } else {
+                    for ($i = 1; $i <= 6; $i++) {
+                        $val = $product->landing_settings["problem_{$i}"] ?? '';
+                        if (!empty(trim((string)$val))) $problems[] = $val;
+                    }
+                }
+                if (!empty($problems)) {
+                    $sections[] = [
+                        'type' => 'problems',
+                        'title' => $product->landing_settings['problems_title'] ?? 'এই সমস্যাগুলো কি আপনারও আছে?',
+                        'tag' => 'Common Issues',
+                        'style' => 'red-cross',
+                        'items' => $problems
+                    ];
+                }
+
+                // Benefits
+                $benefits = [];
+                if (isset($product->landing_settings['product_benefits'])) {
+                    $benefits = $product->landing_settings['product_benefits'];
+                } else {
+                    for ($i = 1; $i <= 6; $i++) {
+                        $val = $product->landing_settings["benefit_{$i}"] ?? '';
+                        if (!empty(trim((string)$val))) $benefits[] = $val;
+                    }
+                }
+                if (!empty($benefits)) {
+                    $sections[] = [
+                        'type' => 'benefits',
+                        'title' => $product->landing_settings['benefits_title'] ?? 'বৈশিষ্ট্যগুলো কি কি জানতে চান?',
+                        'tag' => 'Benefits',
+                        'style' => 'green-check',
+                        'items' => $benefits
+                    ];
+                }
+
+                // Gallery
+                $sections[] = [
+                    'type' => 'gallery',
+                    'title' => 'পণ্যটির কিছু বাস্তব ছবি (Real Gallery)',
+                    'tag' => 'Showcase'
+                ];
+
+                // Package Includes
+                $package = [];
+                if (isset($product->landing_settings['package_includes'])) {
+                    $package = $product->landing_settings['package_includes'];
+                } else {
+                    for ($i = 1; $i <= 6; $i++) {
+                        $val = $product->landing_settings["package_include_{$i}"] ?? '';
+                        if (!empty(trim((string)$val))) $package[] = $val;
+                    }
+                }
+                if (!empty($package)) {
+                    $sections[] = [
+                        'type' => 'package',
+                        'title' => $product->landing_settings['package_includes_title'] ?? 'প্যাকেজের সাথে যা যা পাবেন',
+                        'tag' => 'Package Contents',
+                        'style' => 'package-box',
+                        'items' => $package
+                    ];
+                }
+
+                // Why Choose Us
+                $trustFeatures = $product->landing_settings['trust_features'] ?? [];
+                if (empty($trustFeatures)) {
+                    $defaultFeatureTitles = [
+                        1 => '১০০% আসল প্রোডাক্ট (100% Original)',
+                        2 => 'নিরাপদ প্যাকেজিং ও ডেলিভারি (Secure Shipping)',
+                        3 => 'সহজ রিটার্ন পলিসি (Easy Returns)',
+                        4 => '২৪/৭ কাস্টমার সাপোর্ট (Dedicated Hotline)'
+                    ];
+                    $defaultFeatureDescs = [
+                        1 => 'আমরা কোনো নকল পণ্য বিক্রি করি না। সরাসরি ভেরিফাইড ব্র্যান্ড ও ইমপোর্টার থেকে পণ্য সংগ্রহ করি।',
+                        2 => 'আপনার পণ্যটি যাতে অক্ষত অবস্থায় পৌঁছায়, সেজন্য আমাদের রয়েছে নিখুঁত বাবল-র‍্যাপড প্যাকেজিং ব্যবস্থা।',
+                        3 => 'পণ্য গ্রহণের পর কোনো ত্রুটি পেলে ৭ দিনের মধ্যে আমাদের সাথে যোগাযোগ করে রিফান্ড বা এক্সচেঞ্জ করতে পারবেন।',
+                        4 => 'অर्डर করার আগে বা পরে যেকোনো গাইডলাইনের জন্য আমাদের কাস্টমার কেয়ার হেল্পলাইন সর্বদা উন্মুক্ত।'
+                    ];
+                    for ($i = 1; $i <= 4; $i++) {
+                        $ft = $product->landing_settings["feature_{$i}_title"] ?? $defaultFeatureTitles[$i];
+                        $fd = $product->landing_settings["feature_{$i}_desc"] ?? $defaultFeatureDescs[$i];
+                        if (!empty(trim($ft))) {
+                            $trustFeatures[] = ['title' => $ft, 'desc' => $fd];
+                        }
+                    }
+                }
+                if (!empty($trustFeatures)) {
+                    $sections[] = [
+                        'type' => 'trust',
+                        'title' => $product->landing_settings['trust_title'] ?? 'কেন আমাদের থেকে সংগ্রহ করবেন?',
+                        'tag' => 'Trust',
+                        'trust_features' => $trustFeatures
+                    ];
+                }
+
+                // FAQ
+                $faqs = [];
+                if (isset($product->landing_settings['faqs']) && is_array($product->landing_settings['faqs'])) {
+                    $faqs = $product->landing_settings['faqs'];
+                } else {
+                    for ($i = 1; $i <= 4; $i++) {
+                        $q = $product->landing_settings["faq_q_{$i}"] ?? '';
+                        $a = $product->landing_settings["faq_a_{$i}"] ?? '';
+                        if (!empty(trim((string)$q)) && !empty(trim((string)$a))) {
+                            $faqs[] = ['q' => $q, 'a' => $a];
+                        }
+                    }
+                }
+                if (!empty($faqs)) {
+                    $sections[] = [
+                        'type' => 'faq',
+                        'title' => $product->landing_settings['faqs_title'] ?? 'কিছু সাধারণ প্রশ্ন',
+                        'tag' => 'FAQs',
+                        'style' => 'faq-accordion',
+                        'faqs' => $faqs
+                    ];
+                }
+
+                // Custom Sections
+                if (isset($product->landing_settings['custom_sections']) && is_array($product->landing_settings['custom_sections'])) {
+                    foreach ($product->landing_settings['custom_sections'] as $cs) {
+                        $sections[] = [
+                            'type' => 'custom',
+                            'title' => $cs['title'] ?? '',
+                            'tag' => $cs['tag'] ?? 'INFO',
+                            'style' => $cs['style'] ?? 'blue-check',
+                            'items' => $cs['items'] ?? []
+                        ];
+                    }
+                }
+            }
         @endphp
         <div class="card">
             <div class="card-body">
@@ -383,182 +577,6 @@
                                                                 if (!empty(trim($ft))) {
                                                                     $trustFeatures[] = ['title' => $ft, 'desc' => $fd];
                                                                 }
-                                                            }
-                                                        }
-                                                        if (!empty($trustFeatures)) {
-                                                            $sections[] = [
-                                                                'type' => 'trust',
-                                                                'title' => $product->landing_settings['trust_title'] ?? 'কেন আমাদের থেকে সংগ্রহ করবেন?',
-                                                                'tag' => 'Trust',
-                                                                'trust_features' => $trustFeatures
-                                                            ];
-                                                        }
-
-                                                        // FAQ
-                                                        $faqs = [];
-                                                        if (isset($product->landing_settings['faqs']) && is_array($product->landing_settings['faqs'])) {
-                                                            $faqs = $product->landing_settings['faqs'];
-                                                        } else {
-                                                            for ($i = 1; $i <= 4; $i++) {
-                                                                $q = $product->landing_settings["faq_q_{$i}"] ?? '';
-                                                                $a = $product->landing_settings["faq_a_{$i}"] ?? '';
-                                                                if (!empty(trim((string)$q)) && !empty(trim((string)$a))) {
-                                                                    $faqs[] = ['q' => $q, 'a' => $a];
-                                                                }
-                                                            }
-                                                        }
-                                                        if (!empty($faqs)) {
-                                                            $sections[] = [
-                                                                'type' => 'faq',
-                                                                'title' => $product->landing_settings['faqs_title'] ?? 'কিছু সাধারণ প্রশ্ন',
-                                                                'tag' => 'FAQs',
-                                                                'style' => 'faq-accordion',
-                                                                'faqs' => $faqs
-                                                            ];
-                                                        }
-
-                                                        // Custom Sections
-                                                        if (isset($product->landing_settings['custom_sections']) && is_array($product->landing_settings['custom_sections'])) {
-                                                            foreach ($product->landing_settings['custom_sections'] as $cs) {
-                                                                $sections[] = [
-                                                                    'type' => 'custom',
-                                                                    'title' => $cs['title'] ?? '',
-                                                                    'tag' => $cs['tag'] ?? 'INFO',
-                                                                    'style' => $cs['style'] ?? 'blue-check',
-                                                                    'items' => $cs['items'] ?? []
-                                                                ];
-                                                            }
-                                                        }
-                                                    }
-                                                @endphp
-
-                                                @foreach($sections as $secIdx => $sec)
-                                                    @php
-                                                        $secType = $sec['type'] ?? 'custom';
-                                                        $secTitle = $sec['title'] ?? '';
-                                                        $secTag = $sec['tag'] ?? '';
-                                                        $secStyle = $sec['style'] ?? 'blue-check';
-                                                    @endphp
-                                                    <div class="section-card card p-3 mb-3 border shadow-sm" data-section-type="{{ $secType }}" style="border-radius: 12px; border: 1px solid #cbd5e1 !important; background-color: #f8fafc;">
-                                                        <input type="hidden" name="landing_settings[sections][{{ $secIdx }}][type]" value="{{ $secType }}">
-                                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                                            <div class="d-flex align-items-center gap-2">
-                                                                <span class="badge bg-dark text-white p-2">সেকশন #<span class="sec-number">{{ $secIdx + 1 }}</span></span>
-                                                                <span class="badge bg-info text-white p-2">{{ strtoupper($secType) }}</span>
-                                                            </div>
-                                                            <div class="d-flex align-items-center gap-1">
-                                                                <button type="button" class="btn btn-xs btn-outline-secondary move-up-btn" title="উপরে তুলুন"><i class="fas fa-arrow-up"></i></button>
-                                                                <button type="button" class="btn btn-xs btn-outline-secondary move-down-btn" title="নিচে নামান"><i class="fas fa-arrow-down"></i></button>
-                                                                <button type="button" class="btn btn-xs btn-danger remove-section-btn ms-2" title="ডিলিট"><i class="fas fa-trash"></i> ডিলিট</button>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row g-2 mb-2">
-                                                            <div class="col-md-6 col-12">
-                                                                <div class="form-group mb-2">
-                                                                    <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
-                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][title]" class="form-control form-control-sm" value="{{ $secTitle }}" placeholder="টাইটেল লিখুন">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-3 col-6">
-                                                                <div class="form-group mb-2">
-                                                                    <label class="small fw-bold">সেকশন ট্যাগ (Tag)</label>
-                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][tag]" class="form-control form-control-sm" value="{{ $secTag }}" placeholder="ট্যাগ লিখুন">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-3 col-6">
-                                                                <div class="form-group mb-2">
-                                                                    <label class="small fw-bold">স্টাইল / লেআউট (Style)</label>
-                                                                    <select name="landing_settings[sections][{{ $secIdx }}][style]" class="form-control form-control-sm form-select">
-                                                                        <option value="blue-check" {{ $secStyle === 'blue-check' ? 'selected' : '' }}>Blue Check Square</option>
-                                                                        <option value="green-check" {{ $secStyle === 'green-check' ? 'selected' : '' }}>Green Check Circle</option>
-                                                                        <option value="red-cross" {{ $secStyle === 'red-cross' ? 'selected' : '' }}>Red Cross</option>
-                                                                        <option value="yellow-star" {{ $secStyle === 'yellow-star' ? 'selected' : '' }}>Yellow Star</option>
-                                                                        <option value="orange-info" {{ $secStyle === 'orange-info' ? 'selected' : '' }}>Orange Info</option>
-                                                                        <option value="package-box" {{ $secStyle === 'package-box' ? 'selected' : '' }}>Package Box Style</option>
-                                                                        <option value="faq-accordion" {{ $secStyle === 'faq-accordion' ? 'selected' : '' }}>FAQ Accordion</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="section-content-container mt-2 border-top pt-2" style="{{ in_array($secType, ['video', 'gallery']) ? 'display: none;' : '' }}">
-                                                            @if($secType === 'faq')
-                                                                <label class="small fw-bold mb-2">প্রশ্ন ও উত্তরসমূহ (FAQs)</label>
-                                                                <div class="items-list">
-                                                                    @php
-                                                                        $faqItems = $sec['faqs'] ?? [];
-                                                                    @endphp
-                                                                    @foreach($faqItems as $itemIdx => $faq)
-                                                                        <div class="faq-item-row border p-2 mb-2 bg-white rounded shadow-sm">
-                                                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                                <span class="small fw-bold text-muted">প্রশ্ন ও উত্তর #{{ $itemIdx + 1 }}</span>
-                                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
-                                                                            </div>
-                                                                            <div class="form-group mb-1">
-                                                                                <input type="text" name="landing_settings[sections][{{ $secIdx }}][faqs][{{ $itemIdx }}][q]" class="form-control form-control-sm" value="{{ $faq['q'] ?? '' }}" placeholder="প্রশ্ন লিখুন">
-                                                                            </div>
-                                                                            <div class="form-group mb-0">
-                                                                                <textarea name="landing_settings[sections][{{ $secIdx }}][faqs][{{ $itemIdx }}][a]" class="form-control form-control-sm" rows="2" placeholder="উত্তর লিখুন">{{ $faq['a'] ?? '' }}</textarea>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)</button>
-                                                            @elseif($secType === 'badges')
-                                                                <label class="small fw-bold mb-2">পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)</label>
-                                                                <div class="items-list">
-                                                                    @php
-                                                                        $secBadges = $sec['badges'] ?? [];
-                                                                    @endphp
-                                                                    @foreach($secBadges as $itemIdx => $badge)
-                                                                        <div class="badge-item-row border p-2 mb-2 bg-white rounded shadow-sm">
-                                                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                                <span class="small fw-bold text-muted">ব্যাজ #{{ $itemIdx + 1 }}</span>
-                                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
-                                                                            </div>
-                                                                            <div class="row g-1">
-                                                                                <div class="col-4">
-                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][icon]" class="form-control form-control-sm" value="{{ $badge['icon'] ?? '' }}" placeholder="আইকন ক্লাস">
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][title]" class="form-control form-control-sm" value="{{ $badge['title'] ?? '' }}" placeholder="টাইটেল">
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][desc]" class="form-control form-control-sm" value="{{ $badge['desc'] ?? '' }}" placeholder="বর্ণনা">
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> ব্যাজ যোগ করুন (Add Badge)</button>
-                                                            @elseif($secType === 'trust')
-                                                                <label class="small fw-bold mb-2">কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)</label>
-                                                                <div class="items-list">
-                                                                    @php
-                                                                        $secTrustFeatures = $sec['trust_features'] ?? [];
-                                                                    @endphp
-                                                                    @foreach($secTrustFeatures as $itemIdx => $feat)
-                                                                        <div class="trust-feature-item-row border p-2 mb-2 bg-white rounded shadow-sm">
-                                                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                                <span class="small fw-bold text-muted">ফিচার #{{ $itemIdx + 1 }}</span>
-                                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
-                                                                            </div>
-                                                                            <div class="form-group mb-1">
-                                                                                <input type="text" name="landing_settings[sections][{{ $secIdx }}][trust_features][{{ $itemIdx }}][title]" class="form-control form-control-sm" value="{{ $feat['title'] ?? '' }}" placeholder="টাইটেল লিখুন">
-                                                                            </div>
-                                                                            <div class="form-group mb-0">
-                                                                                <textarea name="landing_settings[sections][{{ $secIdx }}][trust_features][{{ $itemIdx }}][desc]" class="form-control form-control-sm" rows="2" placeholder="বর্ণনা লিখুন">{{ $feat['desc'] ?? '' }}</textarea>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> ফিচার যোগ করুন (Add Feature)</button>
-                                                            @else
-                                                                <label class="small fw-bold mb-2">সেকশন আইটেমসমূহ (Items)</label>
-                                                                <div class="items-list">
-                                                                    @php
-                                                                        $secItems = $sec['items'] ?? [];
                                                                     @endphp
                                                                     @foreach($secItems as $itemText)
                                                                         <div class="item-row d-flex align-items-center gap-2 mb-2">
@@ -589,6 +607,7 @@
                                                         <option value="trust">Why Choose Us (কেন আমাদের থেকে কিনবেন)</option>
                                                         <option value="cta">Buy Now Button (অর্ডার বাটন)</option>
                                                          <option value="custom">Custom Section (কাস্টম সেকশন)</option>
+                                                         <option value="rich_text">Custom Rich Text (কালার, এইচটিএমএল সহ)</option>
                                                     </select>
                                                     <button type="button" id="add-section-btn" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i> সেকশন যোগ করুন (Add Section)</button>
                                                 </div>
@@ -831,7 +850,8 @@
                     gallery: 'পণ্যটির কিছু বাস্তব ছবি (Real Gallery)',
                     trust: 'কেন আমাদের থেকে অর্ডার করবেন?',
                     cta: 'অর্ডার করতে এখানে ক্লিক করুন',
-                    custom: 'নতুন কাস্টম সেকশন'
+                    custom: 'নতুন কাস্টম সেকশন',
+                    rich_text: 'নতুন কাস্টম ফ্রী টেক্সট সেকশন'
                 };
                 const tags = {
                     features: 'Product Features',
@@ -844,7 +864,8 @@
                     gallery: 'Showcase',
                     trust: 'Trust',
                     cta: 'Call To Action',
-                    custom: 'INFO'
+                    custom: 'INFO',
+                    rich_text: 'INFO'
                 };
                 const styles = {
                     features: 'blue-check',
@@ -857,7 +878,8 @@
                     gallery: 'blue-check',
                     trust: 'blue-check',
                     cta: 'blue-check',
-                    custom: 'blue-check'
+                    custom: 'blue-check',
+                    rich_text: 'blue-check'
                 };
 
                 card.innerHTML = `
@@ -904,14 +926,41 @@
                     </div>
 
                     <div class="section-content-container mt-2 border-top pt-2" style="${['video', 'gallery', 'cta'].includes(type) ? 'display: none;' : ''}">
-                        <label class="small fw-bold mb-2">
-                            ${type === 'faq' ? 'প্রশ্ন ও উত্তরসমূহ (FAQs)' : (type === 'badges' ? 'পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)' : (type === 'trust' ? 'কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)' : 'সেকশন আইটেমসমূহ (Items)'))}
-                        </label>
-                        <div class="items-list"></div>
-                        <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
-                            <i class="fas fa-plus me-1"></i>
-                            ${type === 'faq' ? 'প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)' : (type === 'badges' ? 'ব্যাজ যোগ করুন (Add Badge)' : (type === 'trust' ? 'ফিচার যোগ করুন (Add Feature)' : 'আইটেম যোগ করুন (Add Item)'))}
-                        </button>
+                        ${type === 'rich_text' ? `
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-4 col-12">
+                                    <div class="form-group mb-2">
+                                        <label class="small fw-bold">ব্যাকগ্রাউন্ড কালার (Background)</label>
+                                        <input type="color" name="landing_settings[sections][${index}][bg_color]" class="form-control form-control-sm form-control-color w-100" value="#ffffff">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                    <div class="form-group mb-2">
+                                        <label class="small fw-bold">টেক্সট কালার (Text Color)</label>
+                                        <input type="color" name="landing_settings[sections][${index}][text_color]" class="form-control form-control-sm form-control-color w-100" value="#333333">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                    <div class="form-group mb-2">
+                                        <label class="small fw-bold">বর্ডার/অ্যাকসেন্ট কালার (Accent Color)</label>
+                                        <input type="color" name="landing_settings[sections][${index}][accent_color]" class="form-control form-control-sm form-control-color w-100" value="#007bff">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">সেকশন কন্টেন্ট / বিবরণী (Custom HTML or Text Content)</label>
+                                <textarea name="landing_settings[sections][${index}][content]" class="form-control form-control-sm" rows="6" placeholder="এখানে আপনার কাস্টম টেক্সট বা এইচটিএমএল কন্টেন্ট লিখুন..."></textarea>
+                            </div>
+                        ` : `
+                            <label class="small fw-bold mb-2">
+                                ${type === 'faq' ? 'প্রশ্ন ও উত্তরসমূহ (FAQs)' : (type === 'badges' ? 'পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)' : (type === 'trust' ? 'কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)' : 'সেকশন আইটেমসমূহ (Items)'))}
+                            </label>
+                            <div class="items-list"></div>
+                            <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
+                                <i class="fas fa-plus me-1"></i>
+                                ${type === 'faq' ? 'প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)' : (type === 'badges' ? 'ব্যাজ যোগ করুন (Add Badge)' : (type === 'trust' ? 'ফিচার যোগ করুন (Add Feature)' : 'আইটেম যোগ করুন (Add Item)'))}
+                            </button>
+                        `}
                     </div>
                 `;
 
@@ -1031,6 +1080,15 @@
                         reindexBadgeItems(card);
                     } else if (type === 'trust') {
                         reindexTrustFeatureItems(card);
+                    } else if (type === 'rich_text') {
+                        const bgColorInput = card.querySelector('input[name*="[bg_color]"]');
+                        if (bgColorInput) bgColorInput.name = `landing_settings[sections][${index}][bg_color]`;
+                        const textColorInput = card.querySelector('input[name*="[text_color]"]');
+                        if (textColorInput) textColorInput.name = `landing_settings[sections][${index}][text_color]`;
+                        const accentColorInput = card.querySelector('input[name*="[accent_color]"]');
+                        if (accentColorInput) accentColorInput.name = `landing_settings[sections][${index}][accent_color]`;
+                        const contentTextarea = card.querySelector('textarea[name*="[content]"]');
+                        if (contentTextarea) contentTextarea.name = `landing_settings[sections][${index}][content]`;
                     } else {
                         card.querySelectorAll('.item-row textarea').forEach(textarea => {
                             textarea.name = `landing_settings[sections][${index}][items][]`;
@@ -1080,7 +1138,6 @@
                 bindSectionCardEvents(card);
             });
             reindexSections();
-
             if (addSectionBtn && sectionsContainer) {
                 addSectionBtn.addEventListener('click', function() {
                     const type = newSectionTypeSelect.value;
@@ -1092,6 +1149,285 @@
                     if (titleInput) titleInput.focus();
                 });
             }
+
+            // Tab Wizard Controls
+            const tabLinks = ['general-tab', 'pricing-tab', 'landing-tab'];
+            let currentTabIdx = 0;
+
+            const prevBtn = document.getElementById('prevTabBtn');
+            const nextBtn = document.getElementById('nextTabBtn');
+            const submitBtn = document.getElementById('submitProductBtn');
+
+            function updateWizardButtons() {
+                if (currentTabIdx === 0) {
+                    prevBtn.style.display = 'none';
+                } else {
+                    prevBtn.style.display = 'block';
+                }
+
+                if (currentTabIdx === tabLinks.length - 1) {
+                    nextBtn.style.display = 'none';
+                    submitBtn.style.display = 'block';
+                } else {
+                    nextBtn.style.display = 'block';
+                    submitBtn.style.display = 'none';
+                }
+            }
+
+            if (nextBtn && prevBtn && submitBtn) {
+                nextBtn.addEventListener('click', function() {
+                    if (currentTabIdx < tabLinks.length - 1) {
+                        currentTabIdx++;
+                        document.getElementById(tabLinks[currentTabIdx]).click();
+                        updateWizardButtons();
+                    }
+                });
+
+                prevBtn.addEventListener('click', function() {
+                    if (currentTabIdx > 0) {
+                        currentTabIdx--;
+                        document.getElementById(tabLinks[currentTabIdx]).click();
+                        updateWizardButtons();
+                    }
+                });
+
+                // If user clicks tabs manually, update our index
+                tabLinks.forEach((id, idx) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.addEventListener('click', function() {
+                            currentTabIdx = idx;
+                            updateWizardButtons();
+                        });
+                    }
+                });
+            }
+
+            // Live Preview Updates
+            function updateLivePreview() {
+                // Name
+                const nameInput = document.getElementById('productNameInput');
+                const simName = document.getElementById('simProductName');
+                if (nameInput && simName) {
+                    simName.textContent = nameInput.value || 'Product Title Preview';
+                }
+
+                // Price
+                const priceInput = document.getElementById('productPriceInput');
+                const salePriceInput = document.getElementById('productSalePriceInput');
+                const simCurrentPrice = document.getElementById('simCurrentPrice');
+                const simOldPrice = document.getElementById('simOldPrice');
+                const simDiscountBadge = document.getElementById('simDiscountBadge');
+
+                if (priceInput && simCurrentPrice) {
+                    const price = parseFloat(priceInput.value) || 0;
+                    const salePrice = parseFloat(salePriceInput ? salePriceInput.value : '0') || 0;
+
+                    if (salePrice > 0 && salePrice < price) {
+                        simCurrentPrice.textContent = '৳' + salePrice.toFixed(2);
+                        if (simOldPrice) {
+                            simOldPrice.textContent = '৳' + price.toFixed(2);
+                            simOldPrice.style.display = 'inline';
+                        }
+                        if (simDiscountBadge) {
+                            const discount = Math.round(((price - salePrice) / price) * 100);
+                            simDiscountBadge.textContent = discount + '% OFF';
+                            simDiscountBadge.style.display = 'inline';
+                        }
+                    } else {
+                        simCurrentPrice.textContent = '৳' + price.toFixed(2);
+                        if (simOldPrice) simOldPrice.style.display = 'none';
+                        if (simDiscountBadge) simDiscountBadge.style.display = 'none';
+                    }
+                }
+
+                // Countdown Urgency
+                const countdownStatus = document.getElementById('countdownStatusSelect');
+                const simCountdownBanner = document.getElementById('simCountdownBanner');
+                if (countdownStatus && simCountdownBanner) {
+                    if (countdownStatus.value === '1') {
+                        simCountdownBanner.style.display = 'block';
+                        const titleInput = document.getElementById('countdownTitleInput');
+                        const subtitleInput = document.getElementById('countdownSubtitleInput');
+                        const simTitle = document.getElementById('simCountdownTitle');
+                        const simSubtitle = document.getElementById('simCountdownSubtitle');
+                        
+                        if (titleInput && simTitle) simTitle.textContent = titleInput.value || 'আজকের বিশেষ ছাড় অফার!';
+                        if (subtitleInput && simSubtitle) simSubtitle.textContent = subtitleInput.value || 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:';
+                    } else {
+                        simCountdownBanner.style.display = 'none';
+                    }
+                }
+
+                // Primary Image Preview
+                const imageInput = document.getElementById('productImageInput');
+                const simProductImage = document.getElementById('simProductImage');
+                if (imageInput && simProductImage && imageInput.files && imageInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        simProductImage.style.backgroundImage = `url('${e.target.result}')`;
+                    }
+                    reader.readAsDataURL(imageInput.files[0]);
+                }
+
+                // Sections Preview Generator
+                const simSectionsContainer = document.getElementById('simSectionsContainer');
+                if (simSectionsContainer) {
+                    simSectionsContainer.innerHTML = '';
+                    const sectionCards = document.querySelectorAll('.section-card');
+                    sectionCards.forEach((card) => {
+                        const type = card.getAttribute('data-section-type');
+                        const titleVal = card.querySelector('input[name*="[title]"]')?.value || '';
+                        const tagVal = card.querySelector('input[name*="[tag]"]')?.value || '';
+
+                        const simSecCard = document.createElement('div');
+                        simSecCard.className = 'sim-section-card';
+                        
+                        // Header
+                        let headerHTML = '';
+                        if (tagVal || titleVal) {
+                            headerHTML = `
+                                <div class="sim-section-header">
+                                    ${tagVal ? `<span class="sim-section-tag" style="background:#dbeafe; color:#2563eb;">${tagVal}</span>` : ''}
+                                    ${titleVal ? `<h6 class="sim-section-title">${titleVal}</h6>` : ''}
+                                </div>
+                            `;
+                        }
+
+                        let contentHTML = '';
+                        if (type === 'features' || type === 'problems' || type === 'benefits' || type === 'package') {
+                            let icon = 'fa-check-circle text-success';
+                            if (type === 'features') icon = 'fa-check text-primary';
+                            if (type === 'problems') icon = 'fa-times text-danger';
+                            if (type === 'benefits') icon = 'fa-check-circle text-success';
+                            if (type === 'package') icon = 'fa-box text-warning';
+
+                            const items = Array.from(card.querySelectorAll('textarea')).map(el => el.value);
+                            contentHTML = items.map(item => `
+                                <div class="sim-item-row">
+                                    <i class="fas ${icon}"></i>
+                                    <span>${item}</span>
+                                </div>
+                            `).join('');
+                        } else if (type === 'faq') {
+                            const faqRows = card.querySelectorAll('.faq-item-row');
+                            contentHTML = Array.from(faqRows).map(row => {
+                                const q = row.querySelector('input')?.value || '';
+                                const a = row.querySelector('textarea')?.value || '';
+                                return `
+                                    <div class="sim-faq-item">
+                                        <div class="sim-faq-q">Q: ${q}</div>
+                                        <div class="sim-faq-a">${a}</div>
+                                    </div>
+                                `;
+                            }).join('');
+                        } else if (type === 'badges') {
+                            const badgeRows = card.querySelectorAll('.badge-item-row');
+                            contentHTML = '<div class="sim-badge-grid">' + Array.from(badgeRows).map(row => {
+                                const icon = row.querySelector('input[name*="[icon]"]')?.value || 'fas fa-shield-alt';
+                                const title = row.querySelector('input[name*="[title]"]')?.value || '';
+                                const desc = row.querySelector('input[name*="[desc]"]')?.value || '';
+                                return `
+                                    <div class="sim-badge-item">
+                                        <i class="${icon} text-primary"></i>
+                                        <div class="sim-badge-title">${title}</div>
+                                        <div class="sim-badge-desc">${desc}</div>
+                                    </div>
+                                `;
+                            }).join('') + '</div>';
+                        } else if (type === 'trust') {
+                            const featRows = card.querySelectorAll('.trust-feature-item-row');
+                            contentHTML = Array.from(featRows).map(row => {
+                                const t = row.querySelector('input')?.value || '';
+                                const d = row.querySelector('textarea')?.value || '';
+                                return `
+                                    <div class="sim-faq-item" style="border-bottom:none;">
+                                        <div class="sim-faq-q"><i class="fas fa-check-circle text-success me-1"></i>${t}</div>
+                                        <div class="sim-faq-a" style="margin-left:14px;">${d}</div>
+                                    </div>
+                                `;
+                            }).join('');
+                        } else if (type === 'rich_text') {
+                            const bg = card.querySelector('input[name*="[bg_color]"]')?.value || '#ffffff';
+                            const text = card.querySelector('input[name*="[text_color]"]')?.value || '#333333';
+                            const accent = card.querySelector('input[name*="[accent_color]"]')?.value || '#007bff';
+                            const content = card.querySelector('textarea[name*="[content]"]')?.value || '';
+                            simSecCard.style.backgroundColor = bg;
+                            simSecCard.style.color = text;
+                            simSecCard.style.borderColor = accent;
+                            contentHTML = `<div style="font-size:11px; line-height:1.4;">${content.replace(/\n/g, '<br>')}</div>`;
+                        } else if (type === 'custom') {
+                            const items = Array.from(card.querySelectorAll('textarea')).map(el => el.value);
+                            contentHTML = items.map(item => `<div style="font-size:11px; line-height:1.4; margin-bottom:6px;">${item.replace(/\n/g, '<br>')}</div>`).join('');
+                        } else if (type === 'video') {
+                            contentHTML = `
+                                <div style="background:#e2e8f0; height:120px; display:flex; align-items:center; justify-content:center; border-radius:6px;">
+                                    <i class="fab fa-youtube text-danger" style="font-size:32px;"></i>
+                                </div>
+                            `;
+                        } else if (type === 'gallery') {
+                            contentHTML = `
+                                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:4px;">
+                                    <div style="background:#cbd5e1; height:60px;"></div>
+                                    <div style="background:#cbd5e1; height:60px;"></div>
+                                    <div style="background:#cbd5e1; height:60px;"></div>
+                                </div>
+                            `;
+                        } else if (type === 'cta') {
+                            contentHTML = `
+                                <div class="sim-buy-button" style="padding:6px; font-size:11px; margin-top:4px;">অর্ডার করতে এখানে ক্লিক করুন</div>
+                            `;
+                        }
+
+                        simSecCard.innerHTML = headerHTML + contentHTML;
+                        simSectionsContainer.appendChild(simSecCard);
+                    });
+                }
+            }
+
+            // Register Preview Event Listeners
+            const previewSelectors = [
+                '#productNameInput',
+                '#productPriceInput',
+                '#productSalePriceInput',
+                '#countdownTitleInput',
+                '#countdownSubtitleInput',
+                '#countdownStatusSelect'
+            ];
+            
+            previewSelectors.forEach(selector => {
+                const el = document.querySelector(selector);
+                if (el) {
+                    el.addEventListener('input', updateLivePreview);
+                    el.addEventListener('change', updateLivePreview);
+                }
+            });
+
+            document.getElementById('productImageInput')?.addEventListener('change', updateLivePreview);
+
+            // Hook into Section Card events to trigger preview update
+            const originalBindSectionCardEvents = bindSectionCardEvents;
+            bindSectionCardEvents = function(card) {
+                originalBindSectionCardEvents(card);
+                
+                // Add event listeners for inputs inside the section card
+                card.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.addEventListener('input', updateLivePreview);
+                    input.addEventListener('change', updateLivePreview);
+                });
+                
+                // Update preview on section list changes
+                updateLivePreview();
+            };
+
+            const originalReindexSections = reindexSections;
+            reindexSections = function() {
+                originalReindexSections();
+                updateLivePreview();
+            };
+
+            // Trigger initial preview load
+            setTimeout(updateLivePreview, 1000);
         });
 
         function initializeProductImageUpload({ inputId, previewId, previewContainerId, helperId, emptyMessage }) {

@@ -50,144 +50,56 @@
                     </div>
                 @endif
 
-                <form action="{{ route('ecommerce.admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+                <!-- Tab Navigation Links -->
+                <ul class="nav nav-tabs nav-tabs-solid nav-justified mb-4" id="productFormTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="general-tab" data-bs-toggle="tab" href="#general-pane" role="tab" aria-controls="general-pane" aria-selected="true">
+                            <i class="fas fa-info-circle me-1"></i> General Info
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pricing-tab" data-bs-toggle="tab" href="#pricing-pane" role="tab" aria-controls="pricing-pane" aria-selected="false">
+                            <i class="fas fa-coins me-1"></i> Pricing & Stock
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="landing-tab" data-bs-toggle="tab" href="#landing-pane" role="tab" aria-controls="landing-pane" aria-selected="false">
+                            <i class="fas fa-layer-group me-1"></i> Landing Page Builder
+                        </a>
+                    </li>
+                </ul>
+
+                <form action="{{ route('ecommerce.admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" id="productMainForm">
                     @csrf
                     @method('PUT')
-                    <div class="row form-row">
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Product Name</label>
-                                <input type="text" name="name" class="form-control" value="{{ old('name', $product->name) }}" required>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Category</label>
-                                <select name="product_category_id" class="form-control" required>
-                                    <option value="">Select Category</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('product_category_id', $product->product_category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                                        @foreach($category->children as $child)
-                                            <option value="{{ $child->id }}" {{ old('product_category_id', $product->product_category_id) == $child->id ? 'selected' : '' }}>
-                                                &nbsp;&nbsp;&mdash;&nbsp;{{ $child->name }}
-                                            </option>
-                                            @foreach($child->children as $grandchild)
-                                                <option value="{{ $grandchild->id }}" {{ old('product_category_id', $product->product_category_id) == $grandchild->id ? 'selected' : '' }}>
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;&mdash;&nbsp;&mdash;&nbsp;{{ $grandchild->name }}
-                                                </option>
-                                            @endforeach
-                                        @endforeach
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Price</label>
-                                <input type="number" step="0.01" name="price" class="form-control" value="{{ old('price', $product->price) }}" required>
-                            </div>
-                        </div>
-                         <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Sale Price (Optional)</label>
-                                <input type="number" step="0.01" name="sale_price" class="form-control" value="{{ old('sale_price', $product->sale_price) }}">
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Stock</label>
-                                <input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" required>
-                                <small class="text-muted d-block mt-1">Used for simple products. Active variants below will control stock automatically.</small>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 d-flex align-items-center">
-                            <div class="form-group mb-0">
-                                <div class="form-check form-switch mt-3">
-                                    <input class="form-check-input" type="checkbox" id="has_variants_toggle" name="has_variants" value="1" {{ old('has_variants', $product->variants->where('is_active', true)->isNotEmpty()) ? 'checked' : '' }}>
-                                    <label class="form-check-label fw-bold" for="has_variants_toggle">This product has variants (Variable Product)</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label for="productImageInput">Primary Image</label>
-                                <input type="file" name="image" class="form-control" id="productImageInput" accept="image/*">
-                                <small id="productImageHelper" class="form-text text-muted">
-                                    {{ $product->image ? 'Choose a new main image to replace the current one. Selected image will preview instantly and be compressed before upload.' : 'Select the main product image. Large files will be compressed automatically before upload.' }}
-                                </small>
-                                <div class="image-manager-shell mt-2 single-image-preview" id="productImagePreviewContainer" style="{{ $product->image ? '' : 'display: none;' }}">
-                                    <img id="productImagePreview"
-                                        src="{{ $product->image ? (\Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset($product->image)) : '#' }}"
-                                        alt="Product Preview" class="img-thumbnail">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label>Gallery Images</label>
-                                <small class="form-text text-muted mb-2 d-block">
-                                    Select gallery images one by one. Click the "Add Image" box to select a file. These will appear as thumbnails on the product details page. Existing gallery images can be removed below.
-                                </small>
-
-                                <div class="image-manager-shell mt-2">
-                                    <!-- Container for hidden dynamic file inputs -->
-                                    <div id="galleryInputsContainer" style="display: none;"></div>
-
-                                    @if($existingGalleryImages->isNotEmpty())
-                                        <div class="gallery-preview-group mb-4" id="existingGallerySection">
-                                            <span class="gallery-preview-label">Current Gallery</span>
-                                            <div id="existingGalleryGrid" class="gallery-preview-grid">
-                                                @foreach($existingGalleryImages as $imagePath)
-                                                    <div class="gallery-preview-card" data-gallery-path="{{ $imagePath }}">
-                                                        <img src="{{ \Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset($imagePath) }}"
-                                                            alt="Gallery image {{ $loop->iteration }}">
-                                                        <div class="gallery-preview-meta">
-                                                            <strong>Gallery image {{ $loop->iteration }}</strong>
-                                                        </div>
-                                                        <div class="gallery-preview-actions">
-                                                            <button type="button" class="btn btn-sm btn-outline-danger w-100 js-remove-existing-gallery" data-path="{{ $imagePath }}">
-                                                                Remove
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    <div class="gallery-preview-group">
-                                        <span class="gallery-preview-label">New Gallery Uploads</span>
-                                        <div id="interactiveGalleryGrid" class="gallery-preview-grid">
-                                            <!-- "+" card is added by Javascript -->
-                                        </div>
+                    <div class="tab-content" id="productFormTabsContent">
+                        
+                        <!-- Tab 1: General Info -->
+                        <div class="tab-pane fade show active" id="general-pane" role="tabpanel" aria-labelledby="general-tab">
+                            <div class="row form-row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Product Name</label>
+                                        <input type="text" name="name" id="productNameInput" class="form-control" value="{{ old('name', $product->name) }}" required>
                                     </div>
                                 </div>
-
-                                <div id="removedGalleryInputs"></div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="is_active">
-                                        Is Active
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="is_featured">
-                                        Featured Product
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 mt-4 mb-4">
-                            <div class="card border-primary shadow-sm" style="border-radius: 12px; overflow: hidden; border-left: 5px solid #007bff;">
-                                <div class="card-header bg-light d-flex align-items-center justify-content-between py-3">
-                                    <h4 class="card-title mb-0 text-primary fw-bold" style="font-size: 18px;">
-                                        <i class="fas fa-magic me-2"></i> Landing Page Customization (সীমিত সময়ের অফার ও ট্রাস্ট ইনফো)
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Category</label>
+                                        <select name="product_category_id" class="form-control" required>
+                                            <option value="">Select Category</option>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}" {{ old('product_category_id', $product->product_category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                @foreach($category->children as $child)
+                                                    <option value="{{ $child->id }}" {{ old('product_category_id', $product->product_category_id) == $child->id ? 'selected' : '' }}>
+                                                        &nbsp;&nbsp;&mdash;&nbsp;{{ $child->name }}
+                                                    </option>
+                                                    @foreach($child->children as $grandchild)
+                                                        <option value="{{ $grandchild->id }}" {{ old('product_category_id', $product->product_category_id) == $grandchild->id ? 'selected' : '' }}>
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;&mdash;&nbsp;&mdash;&nbsp;{{ $grandchild->name }}
+                                                        </option>
+                                                    @endforeach
+                                                @endforeach
                                     </h4>
                                     <span class="badge bg-primary text-white">Dynamic Content</span>
                                 </div>
