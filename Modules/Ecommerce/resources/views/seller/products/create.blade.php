@@ -97,7 +97,9 @@
                                                     @endforeach
                                                 @endforeach
                                             @endforeach
-                                                @php
+                                        </select>
+                                    </div>
+                                </div>
                                                     $defaultBadges = [];
                                                     $defaultIcons = [1 => 'fas fa-undo-alt', 2 => 'fas fa-hand-holding-usd', 3 => 'fas fa-headset', 4 => 'fas fa-shipping-fast'];
                                                     $defaultTitles = [1 => '৭ দিনের রিটার্ন', 2 => 'হাতে পেয়ে পেমেন্ট', 3 => 'অনলাইন সাপোর্ট', 4 => 'সারাদেশে ডেলিভারি'];

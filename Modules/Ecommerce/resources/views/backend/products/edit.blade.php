@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @include('ecommerce::backend.products.partials.image-manager-styles')
+@include('ecommerce::backend.products.partials.product-manager-styles')
 
 @section('title', 'Edit Product - abcsheba Admin')
 
@@ -100,7 +101,10 @@
                                                         </option>
                                                     @endforeach
                                                 @endforeach
-                                    </h4>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                                     <span class="badge bg-primary text-white">Dynamic Content</span>
                                 </div>
                                 <div class="card-body">

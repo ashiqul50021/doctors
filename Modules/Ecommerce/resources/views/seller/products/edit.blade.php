@@ -577,6 +577,182 @@
                                                                 if (!empty(trim($ft))) {
                                                                     $trustFeatures[] = ['title' => $ft, 'desc' => $fd];
                                                                 }
+                                                            }
+                                                        }
+                                                        if (!empty($trustFeatures)) {
+                                                            $sections[] = [
+                                                                'type' => 'trust',
+                                                                'title' => $product->landing_settings['trust_title'] ?? 'কেন আমাদের থেকে সংগ্রহ করবেন?',
+                                                                'tag' => 'Trust',
+                                                                'trust_features' => $trustFeatures
+                                                            ];
+                                                        }
+
+                                                        // FAQ
+                                                        $faqs = [];
+                                                        if (isset($product->landing_settings['faqs']) && is_array($product->landing_settings['faqs'])) {
+                                                            $faqs = $product->landing_settings['faqs'];
+                                                        } else {
+                                                            for ($i = 1; $i <= 4; $i++) {
+                                                                $q = $product->landing_settings["faq_q_{$i}"] ?? '';
+                                                                $a = $product->landing_settings["faq_a_{$i}"] ?? '';
+                                                                if (!empty(trim((string)$q)) && !empty(trim((string)$a))) {
+                                                                    $faqs[] = ['q' => $q, 'a' => $a];
+                                                                }
+                                                            }
+                                                        }
+                                                        if (!empty($faqs)) {
+                                                            $sections[] = [
+                                                                'type' => 'faq',
+                                                                'title' => $product->landing_settings['faqs_title'] ?? 'কিছু সাধারণ প্রশ্ন',
+                                                                'tag' => 'FAQs',
+                                                                'style' => 'faq-accordion',
+                                                                'faqs' => $faqs
+                                                            ];
+                                                        }
+
+                                                        // Custom Sections
+                                                        if (isset($product->landing_settings['custom_sections']) && is_array($product->landing_settings['custom_sections'])) {
+                                                            foreach ($product->landing_settings['custom_sections'] as $cs) {
+                                                                $sections[] = [
+                                                                    'type' => 'custom',
+                                                                    'title' => $cs['title'] ?? '',
+                                                                    'tag' => $cs['tag'] ?? 'INFO',
+                                                                    'style' => $cs['style'] ?? 'blue-check',
+                                                                    'items' => $cs['items'] ?? []
+                                                                ];
+                                                            }
+                                                        }
+                                                    }
+                                                @endphp
+
+                                                @foreach($sections as $secIdx => $sec)
+                                                    @php
+                                                        $secType = $sec['type'] ?? 'custom';
+                                                        $secTitle = $sec['title'] ?? '';
+                                                        $secTag = $sec['tag'] ?? '';
+                                                        $secStyle = $sec['style'] ?? 'blue-check';
+                                                    @endphp
+                                                    <div class="section-card card p-3 mb-3 border shadow-sm" data-section-type="{{ $secType }}" style="border-radius: 12px; border: 1px solid #cbd5e1 !important; background-color: #f8fafc;">
+                                                        <input type="hidden" name="landing_settings[sections][{{ $secIdx }}][type]" value="{{ $secType }}">
+                                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <span class="badge bg-dark text-white p-2">সেকশন #<span class="sec-number">{{ $secIdx + 1 }}</span></span>
+                                                                <span class="badge bg-info text-white p-2">{{ strtoupper($secType) }}</span>
+                                                            </div>
+                                                            <div class="d-flex align-items-center gap-1">
+                                                                <button type="button" class="btn btn-xs btn-outline-secondary move-up-btn" title="উপরে তুলুন"><i class="fas fa-arrow-up"></i></button>
+                                                                <button type="button" class="btn btn-xs btn-outline-secondary move-down-btn" title="নিচে নামান"><i class="fas fa-arrow-down"></i></button>
+                                                                <button type="button" class="btn btn-xs btn-danger remove-section-btn ms-2" title="ডিলিট"><i class="fas fa-trash"></i> ডিলিট</button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row g-2 mb-2">
+                                                            <div class="col-md-6 col-12">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
+                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][title]" class="form-control form-control-sm" value="{{ $secTitle }}" placeholder="টাইটেল লিখুন">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3 col-6">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small fw-bold">সেকশন ট্যাগ (Tag)</label>
+                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][tag]" class="form-control form-control-sm" value="{{ $secTag }}" placeholder="ট্যাগ লিখুন">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3 col-6">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small fw-bold">স্টাইল / লেআউট (Style)</label>
+                                                                    <select name="landing_settings[sections][{{ $secIdx }}][style]" class="form-control form-control-sm form-select">
+                                                                        <option value="blue-check" {{ $secStyle === 'blue-check' ? 'selected' : '' }}>Blue Check Square</option>
+                                                                        <option value="green-check" {{ $secStyle === 'green-check' ? 'selected' : '' }}>Green Check Circle</option>
+                                                                        <option value="red-cross" {{ $secStyle === 'red-cross' ? 'selected' : '' }}>Red Cross</option>
+                                                                        <option value="yellow-star" {{ $secStyle === 'yellow-star' ? 'selected' : '' }}>Yellow Star</option>
+                                                                        <option value="orange-info" {{ $secStyle === 'orange-info' ? 'selected' : '' }}>Orange Info</option>
+                                                                        <option value="package-box" {{ $secStyle === 'package-box' ? 'selected' : '' }}>Package Box Style</option>
+                                                                        <option value="faq-accordion" {{ $secStyle === 'faq-accordion' ? 'selected' : '' }}>FAQ Accordion</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="section-content-container mt-2 border-top pt-2" style="{{ in_array($secType, ['video', 'gallery']) ? 'display: none;' : '' }}">
+                                                            @if($secType === 'faq')
+                                                                <label class="small fw-bold mb-2">প্রশ্ন ও উত্তরসমূহ (FAQs)</label>
+                                                                <div class="items-list">
+                                                                    @php
+                                                                        $faqItems = $sec['faqs'] ?? [];
+                                                                    @endphp
+                                                                    @foreach($faqItems as $itemIdx => $faq)
+                                                                        <div class="faq-item-row border p-2 mb-2 bg-white rounded shadow-sm">
+                                                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                                <span class="small fw-bold text-muted">প্রশ্ন ও উত্তর #{{ $itemIdx + 1 }}</span>
+                                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
+                                                                            </div>
+                                                                            <div class="form-group mb-1">
+                                                                                <input type="text" name="landing_settings[sections][{{ $secIdx }}][faqs][{{ $itemIdx }}][q]" class="form-control form-control-sm" value="{{ $faq['q'] ?? '' }}" placeholder="প্রশ্ন লিখুন">
+                                                                            </div>
+                                                                            <div class="form-group mb-0">
+                                                                                <textarea name="landing_settings[sections][{{ $secIdx }}][faqs][{{ $itemIdx }}][a]" class="form-control form-control-sm" rows="2" placeholder="উত্তর লিখুন">{{ $faq['a'] ?? '' }}</textarea>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)</button>
+                                                            @elseif($secType === 'badges')
+                                                                <label class="small fw-bold mb-2">পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)</label>
+                                                                <div class="items-list">
+                                                                    @php
+                                                                        $secBadges = $sec['badges'] ?? [];
+                                                                    @endphp
+                                                                    @foreach($secBadges as $itemIdx => $badge)
+                                                                        <div class="badge-item-row border p-2 mb-2 bg-white rounded shadow-sm">
+                                                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                                <span class="small fw-bold text-muted">ব্যাজ #{{ $itemIdx + 1 }}</span>
+                                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
+                                                                            </div>
+                                                                            <div class="row g-1">
+                                                                                <div class="col-4">
+                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][icon]" class="form-control form-control-sm" value="{{ $badge['icon'] ?? '' }}" placeholder="আইকন ক্লাস">
+                                                                                </div>
+                                                                                <div class="col-4">
+                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][title]" class="form-control form-control-sm" value="{{ $badge['title'] ?? '' }}" placeholder="টাইটেল">
+                                                                                </div>
+                                                                                <div class="col-4">
+                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][desc]" class="form-control form-control-sm" value="{{ $badge['desc'] ?? '' }}" placeholder="বর্ণনা">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> ব্যাজ যোগ করুন (Add Badge)</button>
+                                                            @elseif($secType === 'trust')
+                                                                <label class="small fw-bold mb-2">কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)</label>
+                                                                <div class="items-list">
+                                                                    @php
+                                                                        $secTrustFeatures = $sec['trust_features'] ?? [];
+                                                                    @endphp
+                                                                    @foreach($secTrustFeatures as $itemIdx => $feat)
+                                                                        <div class="trust-feature-item-row border p-2 mb-2 bg-white rounded shadow-sm">
+                                                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                                <span class="small fw-bold text-muted">ফিচার #{{ $itemIdx + 1 }}</span>
+                                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
+                                                                            </div>
+                                                                            <div class="form-group mb-1">
+                                                                                <input type="text" name="landing_settings[sections][{{ $secIdx }}][trust_features][{{ $itemIdx }}][title]" class="form-control form-control-sm" value="{{ $feat['title'] ?? '' }}" placeholder="টাইটেল লিখুন">
+                                                                            </div>
+                                                                            <div class="form-group mb-0">
+                                                                                <textarea name="landing_settings[sections][{{ $secIdx }}][trust_features][{{ $itemIdx }}][desc]" class="form-control form-control-sm" rows="2" placeholder="বর্ণনা লিখুন">{{ $feat['desc'] ?? '' }}</textarea>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> ফিচার যোগ করুন (Add Feature)</button>
+                                                            @else
+                                                                <label class="small fw-bold mb-2">সেকশন আইটেমসমূহ (Items)</label>
+                                                                <div class="items-list">
+                                                                    @php
+                                                                        $secItems = $sec['items'] ?? [];
                                                                     @endphp
                                                                     @foreach($secItems as $itemText)
                                                                         <div class="item-row d-flex align-items-center gap-2 mb-2">

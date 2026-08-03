@@ -65,28 +65,28 @@
                     <li class="menu-title">
                         <span>Ecommerce</span>
                     </li>
-                    <li class="{{ request()->routeIs('ecommerce.admin.sellers.*') ? 'active' : '' }}">
-                        <a href="{{ route('ecommerce.admin.sellers.index') }}"><i class="fe fe-users"></i> <span>Sellers List</span></a>
-                    </li>
-                    <li class="{{ request()->routeIs('ecommerce.admin.seller-payouts.*') ? 'active' : '' }}">
-                        <a href="{{ route('ecommerce.admin.seller-payouts.index') }}"><i class="fe fe-credit-card"></i> <span>Seller Payouts</span></a>
+                    <li class="{{ request()->routeIs('ecommerce.admin.products.*') ? 'active' : '' }}">
+                        <a href="{{ route('ecommerce.admin.products.index') }}"><i class="fe fe-shopping-cart"></i>
+                            <span>Products</span></a>
                     </li>
                     <li class="{{ request()->routeIs('ecommerce.admin.product-categories.*') ? 'active' : '' }}">
                         <a href="{{ route('ecommerce.admin.product-categories.index') }}"><i class="fe fe-layout"></i> <span>Product
                                 Categories</span></a>
                     </li>
-                    <li class="{{ request()->routeIs('ecommerce.admin.products.*') ? 'active' : '' }}">
-                        <a href="{{ route('ecommerce.admin.products.index') }}"><i class="fe fe-shopping-cart"></i>
-                            <span>Products</span></a>
+                    <li class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.orders.index') }}"><i class="fe fe-cart"></i> <span>Orders</span></a>
                     </li>
                     <li class="{{ request()->routeIs('ecommerce.admin.product-reviews.*') ? 'active' : '' }}">
                         <a href="{{ route('ecommerce.admin.product-reviews.index') }}"><i class="fe fe-star-o"></i> <span>Product Reviews</span></a>
                     </li>
-                    <li class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-                        <a href="{{ route('admin.orders.index') }}"><i class="fe fe-cart"></i> <span>Orders</span></a>
-                    </li>
                     <li class="{{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
                         <a href="{{ route('admin.coupons.index') }}"><i class="fe fe-star"></i> <span>Coupons</span></a>
+                    </li>
+                    <li class="{{ request()->routeIs('ecommerce.admin.sellers.*') ? 'active' : '' }}">
+                        <a href="{{ route('ecommerce.admin.sellers.index') }}"><i class="fe fe-users"></i> <span>Sellers List</span></a>
+                    </li>
+                    <li class="{{ request()->routeIs('ecommerce.admin.seller-payouts.*') ? 'active' : '' }}">
+                        <a href="{{ route('ecommerce.admin.seller-payouts.index') }}"><i class="fe fe-credit-card"></i> <span>Seller Payouts</span></a>
                     </li>
 
                     @if(Route::has('admin.advertisements.index'))
