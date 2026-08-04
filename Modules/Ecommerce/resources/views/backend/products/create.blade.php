@@ -438,6 +438,136 @@
             }
 
             // Live Preview Updates
+            function updateSimSections() {
+                const simContainer = document.getElementById('simSectionsContainer');
+                if (!simContainer) return;
+                
+                simContainer.innerHTML = '';
+                
+                const sectionCards = document.querySelectorAll('.section-card');
+                sectionCards.forEach(card => {
+                    const secType = card.getAttribute('data-section-type') || 'custom';
+                    const titleInput = card.querySelector('input[name*="[title]"]');
+                    const tagInput = card.querySelector('input[name*="[tag]"]');
+                    const styleSelect = card.querySelector('select[name*="[style]"]');
+                    
+                    const title = titleInput ? titleInput.value : '';
+                    const tag = tagInput ? tagInput.value : '';
+                    const style = styleSelect ? styleSelect.value : 'blue-check';
+                    
+                    let iconHtml = '<i class="fas fa-check-square text-primary"></i>';
+                    if (style === 'green-check') iconHtml = '<i class="fas fa-check-circle text-success"></i>';
+                    else if (style === 'red-cross') iconHtml = '<i class="fas fa-times-circle text-danger"></i>';
+                    else if (style === 'yellow-star') iconHtml = '<i class="fas fa-star text-warning"></i>';
+                    else if (style === 'orange-info') iconHtml = '<i class="fas fa-info-circle text-warning"></i>';
+                    else if (style === 'package-box') iconHtml = '<i class="fas fa-box-open text-primary"></i>';
+
+                    const simCard = document.createElement('div');
+                    simCard.className = 'sim-section-card';
+                    
+                    let headerHtml = '';
+                    if (tag || title) {
+                        headerHtml = `<div class="sim-section-header">
+                            ${tag ? `<span class="sim-section-tag bg-light text-primary border">${tag}</span>` : ''}
+                            ${title ? `<h6 class="sim-section-title">${title}</h6>` : ''}
+                        </div>`;
+                    }
+                    
+                    let contentHtml = '';
+                    
+                    if (secType === 'faq') {
+                        const faqRows = card.querySelectorAll('.faq-item-row');
+                        faqRows.forEach(row => {
+                            const qInput = row.querySelector('input[name*="[q]"]');
+                            const aTextarea = row.querySelector('textarea[name*="[a]"]');
+                            const q = qInput ? qInput.value : '';
+                            const a = aTextarea ? aTextarea.value : '';
+                            if (q || a) {
+                                contentHtml += `
+                                    <div class="sim-faq-item">
+                                        <div class="sim-faq-q"><i class="fas fa-question-circle text-primary me-1"></i>${q}</div>
+                                        ${a ? `<div class="sim-faq-a">${a}</div>` : ''}
+                                    </div>
+                                `;
+                            }
+                        });
+                    } else if (secType === 'badges') {
+                        const badgeRows = card.querySelectorAll('.badge-item-row');
+                        let badgeItemsHtml = '';
+                        badgeRows.forEach(row => {
+                            const iconInput = row.querySelector('input[name*="[icon]"]');
+                            const titleInput = row.querySelector('input[name*="[title]"]');
+                            const descInput = row.querySelector('input[name*="[desc]"]');
+                            const icon = iconInput ? (iconInput.value || 'fas fa-shield-alt') : 'fas fa-shield-alt';
+                            const bTitle = titleInput ? titleInput.value : '';
+                            const bDesc = descInput ? descInput.value : '';
+                            if (bTitle) {
+                                badgeItemsHtml += `
+                                    <div class="sim-badge-item">
+                                        <i class="${icon} text-primary"></i>
+                                        <div class="sim-badge-title">${bTitle}</div>
+                                        ${bDesc ? `<div class="sim-badge-desc">${bDesc}</div>` : ''}
+                                    </div>
+                                `;
+                            }
+                        });
+                        if (badgeItemsHtml) {
+                            contentHtml = `<div class="sim-badge-grid">${badgeItemsHtml}</div>`;
+                        }
+                    } else if (secType === 'trust') {
+                        const trustRows = card.querySelectorAll('.trust-feature-item-row');
+                        trustRows.forEach(row => {
+                            const tTitleInput = row.querySelector('input[name*="[title]"]');
+                            const tDescTextarea = row.querySelector('textarea[name*="[desc]"]');
+                            const tTitle = tTitleInput ? tTitleInput.value : '';
+                            const tDesc = tDescTextarea ? tDescTextarea.value : '';
+                            if (tTitle) {
+                                contentHtml += `
+                                    <div class="sim-item-row">
+                                        <i class="fas fa-shield-alt text-success"></i>
+                                        <div>
+                                            <strong style="font-size:11px;">${tTitle}</strong>
+                                            ${tDesc ? `<div style="font-size:9px; color:#64748b;">${tDesc}</div>` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                    } else if (secType === 'video') {
+                        contentHtml = `
+                            <div class="text-center p-2 bg-light rounded border">
+                                <i class="fab fa-youtube text-danger fa-2x mb-1"></i>
+                                <div style="font-size:10px; font-weight:bold;">Video Showcase</div>
+                            </div>
+                        `;
+                    } else if (secType === 'gallery') {
+                        contentHtml = `
+                            <div class="d-flex gap-1 overflow-hidden rounded p-1 bg-light border">
+                                <div style="width:33%; height:45px; background:#cbd5e1; border-radius:4px;"></div>
+                                <div style="width:33%; height:45px; background:#cbd5e1; border-radius:4px;"></div>
+                                <div style="width:33%; height:45px; background:#cbd5e1; border-radius:4px;"></div>
+                            </div>
+                        `;
+                    } else {
+                        const itemTextareas = card.querySelectorAll('.item-row textarea');
+                        itemTextareas.forEach(textarea => {
+                            const val = textarea.value;
+                            if (val && val.trim()) {
+                                contentHtml += `
+                                    <div class="sim-item-row">
+                                        ${iconHtml}
+                                        <span>${val}</span>
+                                    </div>
+                                `;
+                            }
+                        });
+                    }
+                    
+                    simCard.innerHTML = headerHtml + contentHtml;
+                    simContainer.appendChild(simCard);
+                });
+            }
+
             function updateLivePreview() {
                 const nameInput = document.getElementById('productNameInput');
                 const simName = document.getElementById('simProductName');
@@ -499,6 +629,8 @@
                     }
                     reader.readAsDataURL(imageInput.files[0]);
                 }
+
+                updateSimSections();
             }
 
             const previewSelectors = [
@@ -518,8 +650,15 @@
                 }
             });
 
+            const builderContainer = document.getElementById('landing-sections-builder-container');
+            if (builderContainer) {
+                builderContainer.addEventListener('input', updateLivePreview);
+                builderContainer.addEventListener('change', updateLivePreview);
+                builderContainer.addEventListener('click', updateLivePreview);
+            }
+
             document.getElementById('productImageInput')?.addEventListener('change', updateLivePreview);
-            setTimeout(updateLivePreview, 1000);
+            setTimeout(updateLivePreview, 500);
         });
 
         function initializeProductImageUpload({ inputId, previewId, previewContainerId, helperId, emptyMessage }) {

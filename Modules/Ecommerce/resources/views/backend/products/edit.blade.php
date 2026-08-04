@@ -105,52 +105,158 @@
                                         </select>
                                     </div>
                                 </div>
-                                    <span class="badge bg-primary text-white">Dynamic Content</span>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="productImageInput">Primary Image</label>
+                                        <input type="file" name="image" class="form-control" id="productImageInput" accept="image/*">
+                                        <small id="productImageHelper" class="form-text text-muted">Choose a new main image to replace the current one. Selected image will preview instantly and be compressed before upload.</small>
+                                        <div class="image-manager-shell mt-2 single-image-preview" id="productImagePreviewContainer" style="{{ $product->image ? '' : 'display: none;' }}">
+                                            <img id="productImagePreview" src="{{ $product->image ? asset($product->image) : '#' }}" alt="Product Preview" class="img-thumbnail">
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <!-- Countdown Banner -->
-                                    <h5 class="fw-bold mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-clock text-danger me-1"></i> ১. জরুরী অফার কাউন্টডাউন (Urgency Countdown Banner)</h5>
-                                    <div class="row">
-                                        <div class="col-md-6 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">অফার টাইটেল (Countdown Title)</label>
-                                                <input type="text" name="landing_settings[countdown_title]" class="form-control" value="{{ old('landing_settings.countdown_title', $product->landing_settings['countdown_title'] ?? 'আজকের বিশেষ ছাড় অফার!') }}" placeholder="আজকের বিশেষ ছাড় অফার!">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">অফার সাবটাইটেল (Countdown Subtitle)</label>
-                                                <input type="text" name="landing_settings[countdown_subtitle]" class="form-control" value="{{ old('landing_settings.countdown_subtitle', $product->landing_settings['countdown_subtitle'] ?? 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:') }}" placeholder="অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">অফার সময় - ঘণ্টায় (Countdown Hours)</label>
-                                                <input type="number" name="landing_settings[countdown_hours]" class="form-control" value="{{ old('landing_settings.countdown_hours', $product->landing_settings['countdown_hours'] ?? 3) }}" placeholder="3">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">কাউন্টডাউন স্ট্যাটাস (Countdown Status)</label>
-                                                <select name="landing_settings[show_countdown]" class="form-control">
-                                                    <option value="1" {{ old('landing_settings.show_countdown', $product->landing_settings['show_countdown'] ?? '1') == '1' ? 'selected' : '' }}>Active (সক্রিয়)</option>
-                                                    <option value="0" {{ old('landing_settings.show_countdown', $product->landing_settings['show_countdown'] ?? '1') == '0' ? 'selected' : '' }}>Inactive (নিষ্ক্রিয়)</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Gallery Images</label>
+                                        <small class="form-text text-muted mb-2 d-block">Select gallery images one by one. Click the "Add Image" box to select a file. These will appear as thumbnails on the product details page.</small>
 
-                                    <!-- Product Video -->
-                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fab fa-youtube text-danger me-1"></i> ১.৫. প্রোডাক্ট ভিডিও (Product Video - Optional)</h5>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">ইউটিউব ভিডিও লিংক (YouTube Video URL)</label>
-                                                <input type="text" name="landing_settings[youtube_video_url]" class="form-control" value="{{ old('landing_settings.youtube_video_url', $product->landing_settings['youtube_video_url'] ?? '') }}" placeholder="যেমন: https://www.youtube.com/watch?v=xxxxxx">
-                                                <small class="text-muted d-block mt-1">প্রোডাক্টের ব্যবহারবিধি বা রিভিউ ভিডিওর ইউটিউব লিংক এখানে দিন।</small>
+                                        @if($existingGalleryImages->count() > 0)
+                                            <div id="existingGallerySection" class="gallery-preview-group mb-3">
+                                                <span class="gallery-preview-label">Existing Gallery Images</span>
+                                                <div id="existingGalleryGrid" class="gallery-preview-grid">
+                                                    @foreach($existingGalleryImages as $img)
+                                                        <div class="gallery-preview-card" data-gallery-path="{{ $img }}">
+                                                            <img src="{{ asset($img) }}" alt="Gallery Image">
+                                                            <div class="gallery-preview-actions">
+                                                                <button type="button" class="btn btn-sm btn-outline-danger w-100 js-remove-existing-gallery" data-path="{{ $img }}">
+                                                                    Remove
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <div id="removedGalleryInputs" style="display: none;"></div>
+
+                                        <div class="image-manager-shell mt-2">
+                                            <!-- Container for hidden dynamic file inputs -->
+                                            <div id="galleryInputsContainer" style="display: none;"></div>
+
+                                            <div class="gallery-preview-group">
+                                                <span class="gallery-preview-label">New Gallery Uploads</span>
+                                                <div id="interactiveGalleryGrid" class="gallery-preview-grid">
+                                                    <!-- "+" card is added by Javascript -->
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="is_featured">
+                                                Featured Product
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Pricing & Stock -->
+                        <div class="tab-pane fade" id="pricing-pane" role="tabpanel" aria-labelledby="pricing-tab">
+                            <div class="row form-row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Price</label>
+                                        <input type="number" step="0.01" name="price" id="productPriceInput" class="form-control" value="{{ old('price', $product->price) }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Sale Price (Optional)</label>
+                                        <input type="number" step="0.01" name="sale_price" id="productSalePriceInput" class="form-control" value="{{ old('sale_price', $product->sale_price) }}">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Stock</label>
+                                        <input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock ?? 0) }}" required>
+                                        <small class="text-muted d-block mt-1">Used for simple products. Active variants below will control stock automatically.</small>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 d-flex align-items-center">
+                                    <div class="form-group mb-0">
+                                        <div class="form-check form-switch mt-3">
+                                            <input class="form-check-input" type="checkbox" id="has_variants" name="has_variants" value="1" {{ old('has_variants', $product->has_variants) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="has_variants">This product has variants (Variable Product)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                @include('ecommerce::backend.products.partials.variant-manager', ['variantRows' => $variantRows])
+                            </div>
+                        </div>
+
+                        <!-- Tab 3: Landing Page Layout -->
+                        <div class="tab-pane fade" id="landing-pane" role="tabpanel" aria-labelledby="landing-tab">
+                            <div class="row">
+                                <div class="col-lg-7 col-12">
+                                    <div class="card border-primary shadow-sm" style="border-radius: 12px; overflow: hidden; border-left: 5px solid #007bff;">
+                                        <div class="card-header bg-light d-flex align-items-center justify-content-between py-3">
+                                            <h4 class="card-title mb-0 text-primary fw-bold" style="font-size: 16px;">
+                                                <i class="fas fa-magic me-2"></i> Landing Page Customization (সীমিত সময়ের অফার ও ট্রাস্ট ইনফো)
+                                            </h4>
+                                            <span class="badge bg-primary text-white">Dynamic Content</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- Countdown Banner -->
+                                            <h5 class="fw-bold mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-clock text-danger me-1"></i> ১. জরুরী অফার কাউন্টডাউন (Urgency Countdown Banner)</h5>
+                                            <div class="row">
+                                                <div class="col-md-6 col-12">
+                                                    <div class="form-group">
+                                                        <label class="fw-bold">অফার টাইটেল (Countdown Title)</label>
+                                                        <input type="text" name="landing_settings[countdown_title]" id="countdownTitleInput" class="form-control" value="{{ old('landing_settings.countdown_title', $product->landing_settings['countdown_title'] ?? 'আজকের বিশেষ ছাড় অফার!') }}" placeholder="আজকের বিশেষ ছাড় অফার!">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 col-12">
+                                                    <div class="form-group">
+                                                        <label class="fw-bold">অফার সাবটাইটেল (Countdown Subtitle)</label>
+                                                        <input type="text" name="landing_settings[countdown_subtitle]" id="countdownSubtitleInput" class="form-control" value="{{ old('landing_settings.countdown_subtitle', $product->landing_settings['countdown_subtitle'] ?? 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:') }}" placeholder="অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-12">
+                                                    <div class="form-group">
+                                                        <label class="fw-bold">অফার সময় - ঘণ্টায় (Countdown Hours)</label>
+                                                        <input type="number" name="landing_settings[countdown_hours]" id="countdownHoursInput" class="form-control" value="{{ old('landing_settings.countdown_hours', $product->landing_settings['countdown_hours'] ?? 3) }}" placeholder="3">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-12">
+                                                    <div class="form-group">
+                                                        <label class="fw-bold">কাউন্টডাউন স্ট্যাটাস (Countdown Status)</label>
+                                                        <select name="landing_settings[show_countdown]" id="countdownStatusSelect" class="form-control">
+                                                            <option value="1" {{ old('landing_settings.show_countdown', $product->landing_settings['show_countdown'] ?? '1') == '1' ? 'selected' : '' }}>Active (সক্রিয়)</option>
+                                                            <option value="0" {{ old('landing_settings.show_countdown', $product->landing_settings['show_countdown'] ?? '1') == '0' ? 'selected' : '' }}>Inactive (নিষ্ক্রিয়)</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Product Video -->
+                                            <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fab fa-youtube text-danger me-1"></i> ১.৫. প্রোডাক্ট ভিডিও (Product Video - Optional)</h5>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label class="fw-bold">ইউটিউব ভিডিও লিংক (YouTube Video URL)</label>
+                                                        <input type="text" name="landing_settings[youtube_video_url]" id="youtubeVideoUrlInput" class="form-control" value="{{ old('landing_settings.youtube_video_url', $product->landing_settings['youtube_video_url'] ?? '') }}" placeholder="যেমন: https://www.youtube.com/watch?v=xxxxxx">
+                                                        <small class="text-muted d-block mt-1">প্রোডাক্টের ব্যবহারবিধি বা রিভিউ ভিডিওর ইউটিউব লিংক এখানে দিন।</small>
+                                                    </div>
+                                                </div>
+                                            </div>
 
                                     <!-- Unified Landing Sections Builder -->
                                     <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-layer-group text-primary me-1"></i> ২. ল্যান্ডিং পেজ সেকশন বিল্ডার (Landing Page Sections Builder)</h5>
@@ -520,10 +626,58 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-lg-5 col-12 d-none d-lg-block">
+                                    <!-- Mobile Live Preview -->
+                                    <div class="device-container shadow">
+                                        <div class="device-header-notch"></div>
+                                        <div class="device-screen">
+                                            <div class="sim-app-header">
+                                                <span class="brand">ABCSheba</span>
+                                                <div>
+                                                    <i class="fas fa-search me-2"></i>
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="sim-product-image" id="simProductImage" style="background-image: url('{{ $product->image ? asset($product->image) : asset('assets/img/products/product.jpg') }}');"></div>
+                                            
+                                            <div class="sim-product-info-card">
+                                                <div class="sim-product-name" id="simProductName">{{ $product->name ?? 'Product Title Preview' }}</div>
+                                                <div class="sim-pricing-row">
+                                                    <span class="sim-current-price" id="simCurrentPrice">৳{{ number_format($product->sale_price ?: $product->price, 2) }}</span>
+                                                    <span class="sim-old-price" id="simOldPrice" style="{{ $product->sale_price && $product->sale_price < $product->price ? '' : 'display:none;' }}">৳{{ number_format($product->price, 2) }}</span>
+                                                    <span class="sim-discount-badge" id="simDiscountBadge" style="{{ $product->sale_price && $product->sale_price < $product->price ? '' : 'display:none;' }}">{{ ($product->price > 0 && $product->sale_price) ? round((($product->price - $product->sale_price) / $product->price) * 100) : 0 }}% OFF</span>
+                                                </div>
+                                            </div>
 
-                        @include('ecommerce::backend.products.partials.variant-manager', ['variantRows' => $variantRows])
+                                            <div class="sim-countdown-banner" id="simCountdownBanner" style="{{ ($product->landing_settings['show_countdown'] ?? '1') == '1' ? '' : 'display:none;' }}">
+                                                <div class="sim-countdown-title" id="simCountdownTitle">{{ $product->landing_settings['countdown_title'] ?? 'আজকের বিশেষ ছাড় অফার!' }}</div>
+                                                <div class="sim-countdown-subtitle" id="simCountdownSubtitle">{{ $product->landing_settings['countdown_subtitle'] ?? 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:' }}</div>
+                                                <div class="sim-countdown-timer">
+                                                    <div class="sim-timer-box">02</div>
+                                                    <div class="sim-timer-box">45</div>
+                                                    <div class="sim-timer-box">30</div>
+                                                </div>
+                                            </div>
+
+                                            <div id="simSectionsContainer"></div>
+
+                                            <div class="sim-buy-button-wrapper">
+                                                <div class="sim-buy-button">Buy Now</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+
+                    <!-- Tab Footer Wizard Controls -->
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" id="prevTabBtn" style="display: none;"><i class="fas fa-arrow-left me-1"></i> Previous</button>
+                        <button type="button" class="btn btn-primary ms-auto" id="nextTabBtn">Next <i class="fas fa-arrow-right ms-1"></i></button>
+                        <button type="submit" class="btn btn-success ms-auto" id="submitProductBtn" style="display: none;"><i class="fas fa-check-circle me-1"></i> Save Changes</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -1014,6 +1168,281 @@
                     if (titleInput) titleInput.focus();
                 });
             }
+
+            // Tab Wizard Controls
+            const tabLinks = ['general-tab', 'pricing-tab', 'landing-tab'];
+            let currentTabIdx = 0;
+
+            const prevBtn = document.getElementById('prevTabBtn');
+            const nextBtn = document.getElementById('nextTabBtn');
+            const submitBtn = document.getElementById('submitProductBtn');
+
+            function updateWizardButtons() {
+                if (currentTabIdx === 0) {
+                    prevBtn.style.display = 'none';
+                } else {
+                    prevBtn.style.display = 'block';
+                }
+
+                if (currentTabIdx === tabLinks.length - 1) {
+                    nextBtn.style.display = 'none';
+                    submitBtn.style.display = 'block';
+                } else {
+                    nextBtn.style.display = 'block';
+                    submitBtn.style.display = 'none';
+                }
+            }
+
+            if (nextBtn && prevBtn && submitBtn) {
+                nextBtn.addEventListener('click', function() {
+                    if (currentTabIdx < tabLinks.length - 1) {
+                        currentTabIdx++;
+                        document.getElementById(tabLinks[currentTabIdx]).click();
+                        updateWizardButtons();
+                    }
+                });
+
+                prevBtn.addEventListener('click', function() {
+                    if (currentTabIdx > 0) {
+                        currentTabIdx--;
+                        document.getElementById(tabLinks[currentTabIdx]).click();
+                        updateWizardButtons();
+                    }
+                });
+
+                tabLinks.forEach((id, idx) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.addEventListener('click', function() {
+                            currentTabIdx = idx;
+                            updateWizardButtons();
+                        });
+                    }
+                });
+            }
+
+            // Live Preview Updates
+            function updateSimSections() {
+                const simContainer = document.getElementById('simSectionsContainer');
+                if (!simContainer) return;
+                
+                simContainer.innerHTML = '';
+                
+                const sectionCards = document.querySelectorAll('.section-card');
+                sectionCards.forEach(card => {
+                    const secType = card.getAttribute('data-section-type') || 'custom';
+                    const titleInput = card.querySelector('input[name*="[title]"]');
+                    const tagInput = card.querySelector('input[name*="[tag]"]');
+                    const styleSelect = card.querySelector('select[name*="[style]"]');
+                    
+                    const title = titleInput ? titleInput.value : '';
+                    const tag = tagInput ? tagInput.value : '';
+                    const style = styleSelect ? styleSelect.value : 'blue-check';
+                    
+                    let iconHtml = '<i class="fas fa-check-square text-primary"></i>';
+                    if (style === 'green-check') iconHtml = '<i class="fas fa-check-circle text-success"></i>';
+                    else if (style === 'red-cross') iconHtml = '<i class="fas fa-times-circle text-danger"></i>';
+                    else if (style === 'yellow-star') iconHtml = '<i class="fas fa-star text-warning"></i>';
+                    else if (style === 'orange-info') iconHtml = '<i class="fas fa-info-circle text-warning"></i>';
+                    else if (style === 'package-box') iconHtml = '<i class="fas fa-box-open text-primary"></i>';
+
+                    const simCard = document.createElement('div');
+                    simCard.className = 'sim-section-card';
+                    
+                    let headerHtml = '';
+                    if (tag || title) {
+                        headerHtml = `<div class="sim-section-header">
+                            ${tag ? `<span class="sim-section-tag bg-light text-primary border">${tag}</span>` : ''}
+                            ${title ? `<h6 class="sim-section-title">${title}</h6>` : ''}
+                        </div>`;
+                    }
+                    
+                    let contentHtml = '';
+                    
+                    if (secType === 'faq') {
+                        const faqRows = card.querySelectorAll('.faq-item-row');
+                        faqRows.forEach(row => {
+                            const qInput = row.querySelector('input[name*="[q]"]');
+                            const aTextarea = row.querySelector('textarea[name*="[a]"]');
+                            const q = qInput ? qInput.value : '';
+                            const a = aTextarea ? aTextarea.value : '';
+                            if (q || a) {
+                                contentHtml += `
+                                    <div class="sim-faq-item">
+                                        <div class="sim-faq-q"><i class="fas fa-question-circle text-primary me-1"></i>${q}</div>
+                                        ${a ? `<div class="sim-faq-a">${a}</div>` : ''}
+                                    </div>
+                                `;
+                            }
+                        });
+                    } else if (secType === 'badges') {
+                        const badgeRows = card.querySelectorAll('.badge-item-row');
+                        let badgeItemsHtml = '';
+                        badgeRows.forEach(row => {
+                            const iconInput = row.querySelector('input[name*="[icon]"]');
+                            const titleInput = row.querySelector('input[name*="[title]"]');
+                            const descInput = row.querySelector('input[name*="[desc]"]');
+                            const icon = iconInput ? (iconInput.value || 'fas fa-shield-alt') : 'fas fa-shield-alt';
+                            const bTitle = titleInput ? titleInput.value : '';
+                            const bDesc = descInput ? descInput.value : '';
+                            if (bTitle) {
+                                badgeItemsHtml += `
+                                    <div class="sim-badge-item">
+                                        <i class="${icon} text-primary"></i>
+                                        <div class="sim-badge-title">${bTitle}</div>
+                                        ${bDesc ? `<div class="sim-badge-desc">${bDesc}</div>` : ''}
+                                    </div>
+                                `;
+                            }
+                        });
+                        if (badgeItemsHtml) {
+                            contentHtml = `<div class="sim-badge-grid">${badgeItemsHtml}</div>`;
+                        }
+                    } else if (secType === 'trust') {
+                        const trustRows = card.querySelectorAll('.trust-feature-item-row');
+                        trustRows.forEach(row => {
+                            const tTitleInput = row.querySelector('input[name*="[title]"]');
+                            const tDescTextarea = row.querySelector('textarea[name*="[desc]"]');
+                            const tTitle = tTitleInput ? tTitleInput.value : '';
+                            const tDesc = tDescTextarea ? tDescTextarea.value : '';
+                            if (tTitle) {
+                                contentHtml += `
+                                    <div class="sim-item-row">
+                                        <i class="fas fa-shield-alt text-success"></i>
+                                        <div>
+                                            <strong style="font-size:11px;">${tTitle}</strong>
+                                            ${tDesc ? `<div style="font-size:9px; color:#64748b;">${tDesc}</div>` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                    } else if (secType === 'video') {
+                        contentHtml = `
+                            <div class="text-center p-2 bg-light rounded border">
+                                <i class="fab fa-youtube text-danger fa-2x mb-1"></i>
+                                <div style="font-size:10px; font-weight:bold;">Video Showcase</div>
+                            </div>
+                        `;
+                    } else if (secType === 'gallery') {
+                        contentHtml = `
+                            <div class="d-flex gap-1 overflow-hidden rounded p-1 bg-light border">
+                                <div style="width:33%; height:45px; background:#cbd5e1; border-radius:4px;"></div>
+                                <div style="width:33%; height:45px; background:#cbd5e1; border-radius:4px;"></div>
+                                <div style="width:33%; height:45px; background:#cbd5e1; border-radius:4px;"></div>
+                            </div>
+                        `;
+                    } else {
+                        const itemTextareas = card.querySelectorAll('.item-row textarea');
+                        itemTextareas.forEach(textarea => {
+                            const val = textarea.value;
+                            if (val && val.trim()) {
+                                contentHtml += `
+                                    <div class="sim-item-row">
+                                        ${iconHtml}
+                                        <span>${val}</span>
+                                    </div>
+                                `;
+                            }
+                        });
+                    }
+                    
+                    simCard.innerHTML = headerHtml + contentHtml;
+                    simContainer.appendChild(simCard);
+                });
+            }
+
+            function updateLivePreview() {
+                const nameInput = document.getElementById('productNameInput');
+                const simName = document.getElementById('simProductName');
+                if (nameInput && simName) {
+                    simName.textContent = nameInput.value || 'Product Title Preview';
+                }
+
+                const priceInput = document.getElementById('productPriceInput');
+                const salePriceInput = document.getElementById('productSalePriceInput');
+                const simCurrentPrice = document.getElementById('simCurrentPrice');
+                const simOldPrice = document.getElementById('simOldPrice');
+                const simDiscountBadge = document.getElementById('simDiscountBadge');
+
+                if (priceInput && simCurrentPrice) {
+                    const price = parseFloat(priceInput.value) || 0;
+                    const salePrice = parseFloat(salePriceInput ? salePriceInput.value : '0') || 0;
+
+                    if (salePrice > 0 && salePrice < price) {
+                        simCurrentPrice.textContent = '৳' + salePrice.toFixed(2);
+                        if (simOldPrice) {
+                            simOldPrice.textContent = '৳' + price.toFixed(2);
+                            simOldPrice.style.display = 'inline';
+                        }
+                        if (simDiscountBadge) {
+                            const discount = Math.round(((price - salePrice) / price) * 100);
+                            simDiscountBadge.textContent = discount + '% OFF';
+                            simDiscountBadge.style.display = 'inline';
+                        }
+                    } else {
+                        simCurrentPrice.textContent = '৳' + price.toFixed(2);
+                        if (simOldPrice) simOldPrice.style.display = 'none';
+                        if (simDiscountBadge) simDiscountBadge.style.display = 'none';
+                    }
+                }
+
+                const countdownStatus = document.getElementById('countdownStatusSelect');
+                const simCountdownBanner = document.getElementById('simCountdownBanner');
+                if (countdownStatus && simCountdownBanner) {
+                    if (countdownStatus.value === '1') {
+                        simCountdownBanner.style.display = 'block';
+                        const titleInput = document.getElementById('countdownTitleInput');
+                        const subtitleInput = document.getElementById('countdownSubtitleInput');
+                        const simTitle = document.getElementById('simCountdownTitle');
+                        const simSubtitle = document.getElementById('simCountdownSubtitle');
+                        
+                        if (titleInput && simTitle) simTitle.textContent = titleInput.value || 'আজকের বিশেষ ছাড় অফার!';
+                        if (subtitleInput && simSubtitle) simSubtitle.textContent = subtitleInput.value || 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:';
+                    } else {
+                        simCountdownBanner.style.display = 'none';
+                    }
+                }
+
+                const imageInput = document.getElementById('productImageInput');
+                const simProductImage = document.getElementById('simProductImage');
+                if (imageInput && simProductImage && imageInput.files && imageInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        simProductImage.style.backgroundImage = `url('${e.target.result}')`;
+                    }
+                    reader.readAsDataURL(imageInput.files[0]);
+                }
+
+                updateSimSections();
+            }
+
+            const previewSelectors = [
+                '#productNameInput',
+                '#productPriceInput',
+                '#productSalePriceInput',
+                '#countdownTitleInput',
+                '#countdownSubtitleInput',
+                '#countdownStatusSelect'
+            ];
+            
+            previewSelectors.forEach(selector => {
+                const el = document.querySelector(selector);
+                if (el) {
+                    el.addEventListener('input', updateLivePreview);
+                    el.addEventListener('change', updateLivePreview);
+                }
+            });
+
+            const builderContainer = document.getElementById('landing-sections-builder-container');
+            if (builderContainer) {
+                builderContainer.addEventListener('input', updateLivePreview);
+                builderContainer.addEventListener('change', updateLivePreview);
+                builderContainer.addEventListener('click', updateLivePreview);
+            }
+
+            document.getElementById('productImageInput')?.addEventListener('change', updateLivePreview);
+            setTimeout(updateLivePreview, 500);
         });
 
         function initializeProductImageUpload({ inputId, previewId, previewContainerId, helperId, emptyMessage }) {
