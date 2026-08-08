@@ -39,6 +39,7 @@ Route::get('/api/products/filter', [ProductController::class, 'filter'])->name('
 */
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('ecommerce.admin.')->group(function () {
+    Route::patch('products/{product}/toggle-status', [AdminProductController::class, 'toggleStatus'])->name('products.toggle-status');
     Route::resource('products', AdminProductController::class)->except(['show']);
     Route::resource('product-categories', AdminProductCategoryController::class)->except(['show']);
     Route::resource('product-reviews', \Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class)->except(['show']);
@@ -75,6 +76,7 @@ Route::middleware(['auth', \Modules\Ecommerce\Http\Middleware\SellerMiddleware::
         Route::put('/profile', [\Modules\Ecommerce\Http\Controllers\Seller\ProfileController::class, 'update'])->name('profile.update');
 
         // Products Management
+        Route::patch('products/{product}/toggle-status', [\Modules\Ecommerce\Http\Controllers\Seller\ProductController::class, 'toggleStatus'])->name('products.toggle-status');
         Route::resource('products', \Modules\Ecommerce\Http\Controllers\Seller\ProductController::class);
 
         // Orders Management

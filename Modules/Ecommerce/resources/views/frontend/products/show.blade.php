@@ -508,30 +508,41 @@
             @php
                 $secType = $section['type'] ?? 'custom';
                 $secTitle = $section['title'] ?? '';
-                $secTag = $section['tag'] ?? 'INFO';
+                $secTag = $section['tag'] ?? '';
                 $secStyle = $section['style'] ?? 'blue-check';
+
+                $cfg = $styleMap[$secStyle] ?? $styleMap['blue-check'];
+
+                $bgColor = !empty($section['bg_color']) ? $section['bg_color'] : ($cfg['bg'] ?? '#ffffff');
+                $textColor = !empty($section['text_color']) ? $section['text_color'] : '#333333';
+                $accentColor = !empty($section['accent_color']) ? $section['accent_color'] : ($cfg['accent'] ?? '#007bff');
+                $fontWeight = !empty($section['font_weight']) ? $section['font_weight'] : '400';
+
+                $secShowBtn = isset($section['show_button']) ? (string)$section['show_button'] : '1';
+                $secBtnText = !empty($section['button_text']) ? $section['button_text'] : 'অর্ডার করতে ক্লিক করুন';
             @endphp
 
             @if($secType === 'features')
                 @php
                     $featItems = $section['items'] ?? [];
-                    $cfg = $styleMap[$secStyle] ?? $styleMap['blue-check'];
                 @endphp
                 @if(!empty($featItems))
                     <section class="landing-features-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $cfg['border'] }} !important; background-color: {{ $cfg['bg'] }} !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
                             <div class="section-heading text-center mb-4">
-                                <span class="section-tag" style="background: {{ $cfg['tag_bg'] }} !important; color: {{ $cfg['accent'] }} !important;">{{ $secTag }}</span>
-                                <h3 class="fw-bold mt-2" style="color: {{ $cfg['accent'] }} !important;">{{ $secTitle }}</h3>
+                                @if(!empty($secTag))
+                                    <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                @endif
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
                             </div>
                             <div class="features-list-wrapper mx-auto" style="max-width: 800px;">
                                 <ul class="features-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
                                     @foreach($featItems as $featureText)
-                                        <li class="features-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid {{ $cfg['border'] }}; transition: all 0.2s ease; border-left: 4px solid {{ $cfg['accent'] }};">
-                                            <span class="features-icon-list-icon fs-4" style="color: {{ $cfg['accent'] }} !important; line-height: 1;">
+                                        <li class="features-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: rgba(255,255,255,0.85); border: 1px solid {{ $accentColor }}; transition: all 0.2s ease; border-left: 4px solid {{ $accentColor }};">
+                                            <span class="features-icon-list-icon fs-4" style="color: {{ $accentColor }} !important; line-height: 1;">
                                                 <i class="{{ $cfg['icon'] }}"></i>
                                             </span>
-                                            <span class="features-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $featureText }}</span>
+                                            <span class="features-icon-list-text text-start" style="font-size: 15px; line-height: 1.5; text-align: left; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $featureText }}</span>
                                         </li>
                                     @endforeach
                                 </ul>
@@ -546,22 +557,24 @@
                 @endphp
                 @if(!empty($secBadges))
                     <section class="landing-badges-section mb-4">
-                        <!-- Trust Highlights Grid Title -->
-                        <div class="text-center mb-4 mt-5">
-                            <h3 class="fw-bold" style="color: var(--primary-blue) !important; font-size: 24px;">{{ $secTitle }}</h3>
-                        </div>
-
-                        <!-- Trust Highlights Grid -->
-                        <div class="row g-3 mb-4 mt-2">
-                            @foreach($secBadges as $badge)
-                                <div class="col-6 col-md-3">
-                                    <div class="landing-badge-card">
-                                        <i class="{{ $badge['icon'] ?? 'fas fa-check-circle' }} d-block mb-2 fs-3" style="color: var(--primary-blue) !important;"></i>
-                                        <h5 class="fw-bold mb-1">{{ $badge['title'] ?? '' }}</h5>
-                                        <p class="text-muted small mb-0">{{ $badge['desc'] ?? '' }}</p>
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
+                            <div class="text-center mb-4">
+                                @if(!empty($secTag))
+                                    <span class="section-tag mb-2 d-inline-block" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                @endif
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important; font-size: 24px;">{{ $secTitle }}</h3>
+                            </div>
+                            <div class="row g-3 mb-2 mt-2">
+                                @foreach($secBadges as $badge)
+                                    <div class="col-6 col-md-3">
+                                        <div class="landing-badge-card p-3 rounded-3 text-center border h-100" style="background: rgba(255,255,255,0.85); border-color: {{ $accentColor }} !important;">
+                                            <i class="{{ $badge['icon'] ?? 'fas fa-check-circle' }} d-block mb-2 fs-3" style="color: {{ $accentColor }} !important;"></i>
+                                            <h5 class="mb-1" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important; font-size: 16px;">{{ $badge['title'] ?? '' }}</h5>
+                                            <p class="small mb-0" style="color: {{ $textColor }} !important; opacity: 0.85; font-size: 13px;">{{ $badge['desc'] ?? '' }}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
                     </section>
                 @endif
@@ -577,12 +590,14 @@
                     @endphp
                     @if($videoId)
                         <section class="landing-video-section mb-4">
-                            <div class="info-card p-4 rounded-3 bg-white border" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                            <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
                                 <div class="section-heading text-center mb-4">
-                                    <span class="section-tag" style="background: rgba(29, 78, 216, 0.1) !important; color: var(--primary-blue) !important;">{{ $secTag }}</span>
-                                    <h3 class="fw-bold text-dark mt-2">{{ $secTitle }}</h3>
+                                    @if(!empty($secTag))
+                                        <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                    @endif
+                                    <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
                                 </div>
-                                <div class="video-container-wrapper mx-auto" style="max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;">
+                                <div class="video-container-wrapper mx-auto" style="max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 16px; overflow: hidden; border: 1px solid {{ $accentColor }};">
                                     <div class="ratio ratio-16x9">
                                         <iframe src="https://www.youtube.com/embed/{{ $videoId }}" 
                                                 title="Product Video" 
@@ -598,23 +613,24 @@
             @elseif($secType === 'problems')
                 @php
                     $probItems = $section['items'] ?? [];
-                    $cfg = $styleMap[$secStyle] ?? $styleMap['red-cross'];
                 @endphp
                 @if(!empty($probItems))
                     <section class="landing-problems-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $cfg['border'] }} !important; background-color: {{ $cfg['bg'] }} !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
                             <div class="section-heading text-center mb-4">
-                                <span class="section-tag" style="background: {{ $cfg['tag_bg'] }} !important; color: {{ $cfg['accent'] }} !important;">{{ $secTag }}</span>
-                                <h3 class="fw-bold mt-2" style="color: {{ $cfg['accent'] }} !important;">{{ $secTitle }}</h3>
+                                @if(!empty($secTag))
+                                    <span class="section-tag" style="background: rgba(239, 68, 68, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                @endif
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
                             </div>
                             <div class="problems-list-wrapper mx-auto" style="max-width: 800px;">
                                 <ul class="problems-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
                                     @foreach($probItems as $problemText)
-                                        <li class="problems-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid {{ $cfg['border'] }}; transition: all 0.2s ease; border-left: 4px solid {{ $cfg['accent'] }};">
-                                            <span class="problems-icon-list-icon fs-4" style="color: {{ $cfg['accent'] }} !important; line-height: 1;">
+                                        <li class="problems-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: rgba(255,255,255,0.85); border: 1px solid {{ $accentColor }}; transition: all 0.2s ease; border-left: 4px solid {{ $accentColor }};">
+                                            <span class="problems-icon-list-icon fs-4" style="color: {{ $accentColor }} !important; line-height: 1;">
                                                 <i class="{{ $cfg['icon'] }}"></i>
                                             </span>
-                                            <span class="problems-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $problemText }}</span>
+                                            <span class="problems-icon-list-text text-start" style="font-size: 15px; line-height: 1.5; text-align: left; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $problemText }}</span>
                                         </li>
                                     @endforeach
                                 </ul>
@@ -626,23 +642,24 @@
             @elseif($secType === 'benefits')
                 @php
                     $benefitItems = $section['items'] ?? [];
-                    $cfg = $styleMap[$secStyle] ?? $styleMap['green-check'];
                 @endphp
                 @if(!empty($benefitItems))
                     <section class="landing-benefits-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $cfg['border'] }} !important; background-color: {{ $cfg['bg'] }} !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
                             <div class="section-heading text-center mb-4">
-                                <span class="section-tag" style="background: {{ $cfg['tag_bg'] }} !important; color: {{ $cfg['accent'] }} !important;">{{ $secTag }}</span>
-                                <h3 class="fw-bold mt-2" style="color: {{ $cfg['accent'] }} !important;">{{ $secTitle }}</h3>
+                                @if(!empty($secTag))
+                                    <span class="section-tag" style="background: rgba(16, 185, 129, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                @endif
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
                             </div>
                             <div class="benefits-list-wrapper mx-auto" style="max-width: 800px;">
                                 <ul class="benefits-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
                                     @foreach($benefitItems as $benefitText)
-                                        <li class="benefits-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid {{ $cfg['border'] }}; transition: all 0.2s ease; border-left: 4px solid {{ $cfg['accent'] }};">
-                                            <span class="benefits-icon-list-icon fs-4" style="color: {{ $cfg['accent'] }} !important; line-height: 1;">
+                                        <li class="benefits-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: rgba(255,255,255,0.85); border: 1px solid {{ $accentColor }}; transition: all 0.2s ease; border-left: 4px solid {{ $accentColor }};">
+                                            <span class="benefits-icon-list-icon fs-4" style="color: {{ $accentColor }} !important; line-height: 1;">
                                                 <i class="{{ $cfg['icon'] }}"></i>
                                             </span>
-                                            <span class="benefits-icon-list-text text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $benefitText }}</span>
+                                            <span class="benefits-icon-list-text text-start" style="font-size: 15px; line-height: 1.5; text-align: left; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $benefitText }}</span>
                                         </li>
                                     @endforeach
                                 </ul>
@@ -652,26 +669,31 @@
                 @endif
 
             @elseif($secType === 'gallery')
-                @if($galleryImages->count() > 1)
-                    <section class="landing-gallery-section my-5">
-                        <div class="section-heading text-center mb-3">
-                            <span class="section-tag">{{ $secTag }}</span>
-                            <h3 class="fw-bold">{{ $secTitle }}</h3>
-                            <button class="btn btn-outline-primary btn-sm mt-2" id="galleryToggleBtn"
-                                onclick="toggleGallerySection()">
-                                <i class="fas fa-images me-1"></i> View All Photos ({{ $galleryImages->count() }})
-                            </button>
-                        </div>
-                        <div id="realGalleryGrid" style="display:none;">
-                            <div class="row g-3 justify-content-center">
-                                @foreach($galleryImages as $image)
-                                    <div class="col-md-6 col-lg-4">
-                                        <div class="gallery-image-wrapper card border-0 shadow-sm overflow-hidden p-2 bg-white">
-                                            <img src="{{ $image }}" class="img-fluid rounded"
-                                                alt="Gallery image" style="height: 220px; object-fit: cover; width: 100%;">
+                @php
+                    $secGalleryImages = !empty($section['images']) && is_array($section['images']) && count(array_filter($section['images'])) > 0
+                        ? collect(array_filter($section['images']))
+                        : $galleryImages;
+                @endphp
+                @if($secGalleryImages->count() > 0)
+                    <section class="landing-gallery-section my-4">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
+                            <div class="section-heading text-center mb-4">
+                                @if(!empty($secTag))
+                                    <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                @endif
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
+                            </div>
+                            <div id="realGalleryGrid">
+                                <div class="row g-3 justify-content-center">
+                                    @foreach($secGalleryImages as $image)
+                                        <div class="col-md-6 col-lg-4">
+                                            <div class="gallery-image-wrapper card border-0 shadow-sm overflow-hidden p-2 bg-white" style="border-radius: 14px; border: 1px solid {{ $accentColor }} !important;">
+                                                <img src="{{ Str::startsWith($image, ['http://', 'https://', 'data:']) ? $image : asset($image) }}" class="img-fluid rounded"
+                                                    alt="Gallery image" style="height: 220px; object-fit: cover; width: 100%;">
+                                            </div>
                                         </div>
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -680,21 +702,22 @@
             @elseif($secType === 'package')
                 @php
                     $packageItems = $section['items'] ?? [];
-                    $cfg = $styleMap[$secStyle] ?? $styleMap['package-box'];
                 @endphp
                 @if(!empty($packageItems))
                     <section class="landing-package-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $cfg['border'] }} !important; background-color: {{ $cfg['bg'] }} !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
                             <div class="section-heading text-center mb-4">
-                                <span class="section-tag" style="background: {{ $cfg['tag_bg'] }} !important; color: {{ $cfg['accent'] }} !important;">{{ $secTag }}</span>
-                                <h3 class="fw-bold mt-2" style="color: {{ $cfg['accent'] }} !important;">{{ $secTitle }}</h3>
+                                @if(!empty($secTag))
+                                    <span class="section-tag" style="background: rgba(245, 158, 11, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                @endif
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
                             </div>
                             <div class="package-list-wrapper mx-auto" style="max-width: 800px;">
-                                <div class="p-3 rounded-3 bg-light border d-flex flex-column gap-3">
+                                <div class="p-3 rounded-3 border d-flex flex-column gap-3" style="background: rgba(255,255,255,0.85); border-color: {{ $accentColor }} !important;">
                                     @foreach($packageItems as $includeText)
-                                        <div class="d-flex align-items-center gap-3 p-2 bg-white rounded border-start border-3" style="border-left-color: {{ $cfg['accent'] }} !important;">
-                                            <span class="fs-5" style="color: {{ $cfg['accent'] }} !important;"><i class="{{ $cfg['icon'] }}"></i></span>
-                                            <span class="text-dark fw-semibold" style="font-size: 15px;">{{ $includeText }}</span>
+                                        <div class="d-flex align-items-center gap-3 p-2 rounded border-start border-3" style="border-left-color: {{ $accentColor }} !important; background: #ffffff;">
+                                            <span class="fs-5" style="color: {{ $accentColor }} !important;"><i class="{{ $cfg['icon'] }}"></i></span>
+                                            <span class="fw-semibold" style="font-size: 15px; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $includeText }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -708,16 +731,19 @@
                     $secTrustFeatures = $section['trust_features'] ?? $trustFeatures;
                 @endphp
                 <section class="landing-trust-section mb-4">
-                    <div class="info-card p-4 text-center rounded-3" style="background: #f0f7ff; border: 1px solid #dbeafe;">
-                        <h3 class="mb-4 fw-bold" style="color: var(--primary-blue) !important;">{{ $secTitle }}</h3>
+                    <div class="info-card p-4 text-center rounded-3 border shadow-sm" style="border-radius: 20px !important; background: {{ $bgColor }} !important; border: 1px solid {{ $accentColor }} !important; color: {{ $textColor }} !important;">
+                        @if(!empty($secTag))
+                            <span class="section-tag mb-2 d-inline-block" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                        @endif
+                        <h3 class="mb-4" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
                         <div class="row g-4 text-start">
                             @foreach($secTrustFeatures as $feature)
                                 <div class="col-md-6">
-                                    <div class="d-flex align-items-start gap-2 mb-2">
-                                        <span class="fs-5" style="color: var(--primary-blue) !important;"><i class="fas fa-check-circle"></i></span>
+                                    <div class="d-flex align-items-start gap-2 mb-2 p-3 rounded-3" style="background: rgba(255,255,255,0.85); border: 1px solid {{ $accentColor }};">
+                                        <span class="fs-5" style="color: {{ $accentColor }} !important;"><i class="fas fa-check-circle"></i></span>
                                         <div>
-                                            <strong class="text-dark d-block mb-1">{{ $feature['title'] ?? '' }}</strong>
-                                            <span class="text-muted small">{{ $feature['desc'] ?? '' }}</span>
+                                            <strong class="d-block mb-1" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $feature['title'] ?? '' }}</strong>
+                                            <span class="small" style="color: {{ $textColor }} !important; opacity: 0.85;">{{ $feature['desc'] ?? '' }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -732,21 +758,23 @@
                 @endphp
                 @if(!empty($faqItems))
                     <section class="landing-faqs-section mb-4">
-                        <div class="info-card p-4 rounded-3 bg-white border shadow-sm" style="border-radius: 20px !important; border: 1px solid #dbeafe !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
                             <div class="section-heading text-center mb-4">
-                                <span class="section-tag" style="background: rgba(59, 130, 246, 0.1) !important; color: #3b82f6 !important;">{{ $secTag }}</span>
-                                <h3 class="fw-bold text-dark mt-2">{{ $secTitle }}</h3>
+                                @if(!empty($secTag))
+                                    <span class="section-tag" style="background: rgba(59, 130, 246, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                @endif
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
                             </div>
-                            <div class="accordion accordion-flush mx-auto" id="landingFAQAccordion" style="max-width: 800px;">
+                            <div class="accordion accordion-flush mx-auto" id="landingFAQAccordion{{ $loop->index }}" style="max-width: 800px;">
                                 @foreach($faqItems as $faqIndex => $faq)
-                                    <div class="accordion-item border rounded-3 mb-2 overflow-hidden shadow-sm" style="border: 1px solid #e2e8f0 !important;">
-                                        <h2 class="accordion-header" id="faqHeading{{ $faqIndex }}">
-                                            <button class="accordion-button collapsed fw-bold text-dark fs-6" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faqIndex }}" aria-expanded="false" aria-controls="faqCollapse{{ $faqIndex }}" style="background: #f8fafc; outline: none; box-shadow: none;">
+                                    <div class="accordion-item border rounded-3 mb-2 overflow-hidden shadow-sm" style="border: 1px solid {{ $accentColor }} !important;">
+                                        <h2 class="accordion-header" id="faqHeading{{ $loop->parent->index }}_{{ $faqIndex }}">
+                                            <button class="accordion-button collapsed fs-6" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $loop->parent->index }}_{{ $faqIndex }}" aria-expanded="false" aria-controls="faqCollapse{{ $loop->parent->index }}_{{ $faqIndex }}" style="background: rgba(255,255,255,0.9); color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important; outline: none; box-shadow: none;">
                                                 {{ $faq['q'] }}
                                             </button>
                                         </h2>
-                                        <div id="faqCollapse{{ $faqIndex }}" class="accordion-collapse collapse" aria-labelledby="faqHeading{{ $faqIndex }}" data-bs-parent="#landingFAQAccordion">
-                                            <div class="accordion-body text-muted text-start" style="line-height: 1.6; font-size: 14px; background: #fff; text-align: left;">
+                                        <div id="faqCollapse{{ $loop->parent->index }}_{{ $faqIndex }}" class="accordion-collapse collapse" aria-labelledby="faqHeading{{ $loop->parent->index }}_{{ $faqIndex }}" data-bs-parent="#landingFAQAccordion{{ $loop->index }}">
+                                            <div class="accordion-body text-start" style="line-height: 1.6; font-size: 14px; background: #fff; text-align: left; color: {{ $textColor }} !important;">
                                                 {{ $faq['a'] }}
                                             </div>
                                         </div>
@@ -760,23 +788,24 @@
             @elseif($secType === 'custom')
                 @php
                     $customItems = $section['items'] ?? [];
-                    $cfg = $styleMap[$secStyle] ?? $styleMap['blue-check'];
                 @endphp
-                @if(!empty($customItems) && !empty($secTitle))
+                @if(!empty($customItems) || !empty($secTitle))
                     <section class="landing-custom-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $cfg['border'] }} !important; background-color: {{ $cfg['bg'] }} !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
                             <div class="section-heading text-center mb-4">
-                                <span class="section-tag" style="background: {{ $cfg['tag_bg'] }} !important; color: {{ $cfg['accent'] }} !important;">{{ $secTag }}</span>
-                                <h3 class="fw-bold mt-2" style="color: {{ $cfg['accent'] }} !important;">{{ $secTitle }}</h3>
+                                @if(!empty($secTag))
+                                    <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                @endif
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
                             </div>
                             <div class="custom-list-wrapper mx-auto" style="max-width: 800px;">
                                 <ul class="list-unstyled ps-0 d-flex flex-column gap-3">
                                     @foreach($customItems as $itemText)
-                                        <li class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: #ffffff; border: 1px solid {{ $cfg['border'] }}; transition: all 0.2s ease; border-left: 4px solid {{ $cfg['accent'] }};">
-                                            <span class="fs-4" style="color: {{ $cfg['accent'] }} !important; line-height: 1;">
+                                        <li class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: rgba(255,255,255,0.85); border: 1px solid {{ $accentColor }}; transition: all 0.2s ease; border-left: 4px solid {{ $accentColor }};">
+                                            <span class="fs-4" style="color: {{ $accentColor }} !important; line-height: 1;">
                                                 <i class="{{ $cfg['icon'] }}"></i>
                                             </span>
-                                            <span class="text-dark fw-semibold text-start" style="font-size: 15px; line-height: 1.5; text-align: left;">{{ $itemText }}</span>
+                                            <span class="text-start" style="font-size: 15px; line-height: 1.5; text-align: left; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $itemText }}</span>
                                         </li>
                                     @endforeach
                                 </ul>
@@ -784,40 +813,52 @@
                         </div>
                     </section>
                 @endif
+
             @elseif($secType === 'rich_text')
                 @php
-                    $bgColor = $section['bg_color'] ?? '#ffffff';
-                    $textColor = $section['text_color'] ?? '#333333';
-                    $accentColor = $section['accent_color'] ?? '#007bff';
                     $content = $section['content'] ?? '';
-                    $tag = $section['tag'] ?? '';
                 @endphp
                 @if(!empty($content) || !empty($secTitle))
                     <section class="landing-rich-text-section mb-4">
                         <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
-                            @if(!empty($secTitle) || !empty($tag))
+                            @if(!empty($secTitle) || !empty($secTag))
                                 <div class="section-heading text-center mb-4">
-                                    @if(!empty($tag))
-                                        <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $tag }}</span>
+                                    @if(!empty($secTag))
+                                        <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
                                     @endif
                                     @if(!empty($secTitle))
-                                        <h3 class="fw-bold mt-2" style="color: {{ $accentColor }} !important;">{{ $secTitle }}</h3>
+                                        <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
                                     @endif
                                 </div>
                             @endif
-                            <div class="rich-text-content mx-auto" style="max-width: 800px; font-size: 16px; line-height: 1.8;">
+                            <div class="rich-text-content mx-auto" style="max-width: 800px; font-size: 16px; line-height: 1.8; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">
                                 {!! nl2br($content) !!}
                             </div>
                         </div>
                     </section>
                 @endif
+
+            @elseif($secType === 'cta')
+                <section class="landing-cta-section my-4">
+                    <div class="info-card p-4 text-center rounded-3 border shadow-sm" style="border-radius: 20px !important; background-color: {{ $bgColor }} !important; border: 1px solid {{ $accentColor }} !important; color: {{ $textColor }} !important;">
+                        @if(!empty($secTitle))
+                            <h3 class="mb-3" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
+                        @endif
+                        @if($stockQty > 0)
+                            <a href="#order-form" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 12px 40px; background-color: {{ $accentColor }} !important; border-color: {{ $accentColor }} !important;">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                <span>{{ $secBtnText }}</span>
+                            </a>
+                        @endif
+                    </div>
+                </section>
             @endif
 
-            @if(in_array($secType, ['features', 'problems', 'benefits', 'package', 'faq', 'custom', 'rich_text']) && $stockQty > 0)
+            @if(!in_array($secType, ['video', 'gallery', 'cta']) && ($secShowBtn === '1' || $secShowBtn === 1 || $secShowBtn === 'true') && $stockQty > 0)
                 <div class="text-center my-4">
-                    <a href="#" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 0 40px;">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Buy Now</span>
+                    <a href="#order-form" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 12px 40px; background-color: {{ $accentColor }} !important; border-color: {{ $accentColor }} !important;">
+                        <i class="fas fa-shopping-cart me-2"></i>
+                        <span>{{ $secBtnText }}</span>
                     </a>
                 </div>
             @endif

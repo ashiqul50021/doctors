@@ -346,4 +346,26 @@ class ProductController extends Controller
 
         $this->stockService->syncAggregateStock($product->id);
     }
+
+    public function toggleStatus(Product $product)
+    {
+        $sellerId = auth()->id();
+        if ($product->seller_id && $product->seller_id != $sellerId) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $product->update([
+            'is_active' => !$product->is_active
+        ]);
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'is_active' => (bool) $product->is_active,
+                'message' => 'Product status updated successfully.'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Product status updated successfully.');
+    }
 }

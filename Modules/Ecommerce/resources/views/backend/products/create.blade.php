@@ -240,24 +240,12 @@
                                                         <!-- Sections are generated dynamically in JS -->
                                                     </div>
 
-                                                    <div class="card p-3 mt-3 border bg-light shadow-sm" style="border-radius: 12px; border: 1px solid #cbd5e1 !important;">
-                                                        <label class="fw-bold mb-2 text-dark">নতুন সেকশন যোগ করুন (Add New Section)</label>
-                                                        <div class="d-flex gap-2">
-                                                            <select id="new-section-type" class="form-control form-control-sm form-select" style="max-width: 250px;">
-                                                                <option value="features">Product Features (ফিচারসমূহ)</option>
-                                                                <option value="badges">Trust Badges (পণ্যের ট্রাস্ট ব্যাজসমূহ)</option>
-                                                                <option value="problems">User Problems (সমস্যাসমূহ)</option>
-                                                                <option value="benefits">Product Benefits (সুবিধাসমূহ)</option>
-                                                                <option value="package">Package Includes (প্যাকেজে কী পাবেন)</option>
-                                                                <option value="faq">FAQ (প্রশ্ন ও উত্তর)</option>
-                                                                <option value="video">Showcase Video (ইউটিউব ভিডিও)</option>
-                                                                <option value="gallery">Gallery Showcase (বাস্তব ছবি গ্যালারি)</option>
-                                                                <option value="trust">Why Choose Us (কেন আমাদের থেকে কিনবেন)</option>
-                                                                <option value="cta">Buy Now Button (অর্ডার বাটন)</option>
-                                                                <option value="custom">Custom Section (কাস্টম সেকশন)</option>
-                                                                <option value="rich_text">Custom Rich Text (কালার, এইচটিএমএল সহ)</option>
-                                                            </select>
-                                                            <button type="button" id="add-section-btn" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i> সেকশন যোগ করুন (Add Section)</button>
+                                                    <div class="card p-3 mt-3 border text-center shadow-sm" style="border-radius: 12px; border: 1px dashed #cbd5e1 !important; background-color: #f8fafc;">
+                                                        <p class="text-muted small mb-2">আপনার ল্যান্ডিং পেজে নতুন সেকশন যোগ করতে নিচের বাটনে ক্লিক করুন</p>
+                                                        <div>
+                                                            <button type="button" id="openSectionPickerModalBtn" class="btn btn-primary px-4 py-2 fw-semibold" style="border-radius: 8px; background-color: #2563eb;">
+                                                                <i class="fas fa-plus-circle me-2"></i> সেকশন যোগ করুন (Add Section)
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -513,6 +501,47 @@
                 });
             }
 
+            function createGalleryImageRow(secIndex, imgUrl = '') {
+                const div = document.createElement('div');
+                div.className = 'gallery-image-row d-flex align-items-center gap-2 mb-2 p-2 rounded border bg-white';
+                div.innerHTML = `
+                    <div class="preview-box flex-shrink-0" style="width: 50px; height: 50px; background: #cbd5e1; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                        <img src="${imgUrl || ''}" class="img-preview" style="width: 100%; height: 100%; object-fit: cover; ${imgUrl ? '' : 'display: none;'}" />
+                        <i class="fas fa-image text-muted placeholder-icon" style="${imgUrl ? 'display: none;' : ''}"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <input type="text" name="landing_settings[sections][${secIndex}][images][]" class="form-control form-control-sm gallery-url-input" value="${imgUrl}" placeholder="ছবির ইউআরএল/লিংক লিখুন (যেমন: https://... বা /uploads/...)">
+                    </div>
+                    <button type="button" class="btn btn-xs btn-danger remove-item-btn" title="মুছে ফেলুন"><i class="fas fa-trash"></i></button>
+                `;
+
+                const input = div.querySelector('.gallery-url-input');
+                const imgPreview = div.querySelector('.img-preview');
+                const placeholder = div.querySelector('.placeholder-icon');
+                if (input) {
+                    input.addEventListener('input', function() {
+                        const val = input.value.trim();
+                        if (val !== '') {
+                            imgPreview.src = val;
+                            imgPreview.style.display = 'block';
+                            if (placeholder) placeholder.style.display = 'none';
+                        } else {
+                            imgPreview.style.display = 'none';
+                            if (placeholder) placeholder.style.display = 'block';
+                        }
+                    });
+                }
+
+                const removeBtn = div.querySelector('.remove-item-btn');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', function() {
+                        div.remove();
+                    });
+                }
+
+                return div;
+            }
+
             function createSectionCard(type, index) {
                 const card = document.createElement('div');
                 card.className = 'section-card card p-3 mb-3 border shadow-sm';
@@ -579,48 +608,168 @@
                         </div>
                     </div>
 
-                    <div class="row g-2 mb-2">
-                        <div class="col-md-6 col-12">
-                            <div class="form-group mb-2">
-                                <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
-                                <input type="text" name="landing_settings[sections][${index}][title]" class="form-control form-control-sm" value="${titles[type] || 'নতুন সেকশন'}" placeholder="টাইটেল লিখুন">
+                    ${type === 'cta' ? `
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6 col-12">
+                                <div class="form-group mb-2">
+                                    <label class="small fw-bold">কল টু অ্যাকশন টাইটেল (CTA Title)</label>
+                                    <input type="text" name="landing_settings[sections][${index}][title]" class="form-control form-control-sm" value="${titles[type] || ''}" placeholder="যেমন: অর্ডার করতে এখানে ক্লিক করুন">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="form-group mb-2">
+                                    <label class="small fw-bold">বাটন টেক্সট (Button Text)</label>
+                                    <input type="text" name="landing_settings[sections][${index}][button_text]" class="form-control form-control-sm" value="অর্ডার করতে ক্লিক করুন" placeholder="যেমন: অর্ডার করতে ক্লিক করুন">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-3 col-6">
-                            <div class="form-group mb-2">
-                                <label class="small fw-bold">সেকশন ট্যাগ (Tag)</label>
-                                <input type="text" name="landing_settings[sections][${index}][tag]" class="form-control form-control-sm" value="${tags[type] || 'Section'}" placeholder="ট্যাগ লিখুন">
+                        <div class="row g-2 mb-2 p-2 rounded border bg-light">
+                            <div class="col-md-4 col-6">
+                                <div class="form-group mb-1">
+                                    <label class="small fw-bold">ব্যাকগ্রাউন্ড (Background)</label>
+                                    <input type="color" name="landing_settings[sections][${index}][bg_color]" class="form-control form-control-sm form-control-color w-100" value="#ffffff">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-group mb-1">
+                                    <label class="small fw-bold">টেক্সট কালার (Text Color)</label>
+                                    <input type="color" name="landing_settings[sections][${index}][text_color]" class="form-control form-control-sm form-control-color w-100" value="#333333">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group mb-1">
+                                    <label class="small fw-bold">বাটন কালার (Button Color)</label>
+                                    <input type="color" name="landing_settings[sections][${index}][accent_color]" class="form-control form-control-sm form-control-color w-100" value="#007bff">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-3 col-6">
-                            <div class="form-group mb-2">
-                                <label class="small fw-bold">স্টাইল / লেআউট (Style)</label>
-                                <select name="landing_settings[sections][${index}][style]" class="form-control form-control-sm form-select">
-                                    <option value="blue-check" ${styles[type] === 'blue-check' ? 'selected' : ''}>Blue Check Square</option>
-                                    <option value="green-check" ${styles[type] === 'green-check' ? 'selected' : ''}>Green Check Circle</option>
-                                    <option value="red-cross" ${styles[type] === 'red-cross' ? 'selected' : ''}>Red Cross</option>
-                                    <option value="yellow-star" ${styles[type] === 'yellow-star' ? 'selected' : ''}>Yellow Star</option>
-                                    <option value="orange-info" ${styles[type] === 'orange-info' ? 'selected' : ''}>Orange Info</option>
-                                    <option value="package-box" ${styles[type] === 'package-box' ? 'selected' : ''}>Package Box Style</option>
-                                    <option value="faq-accordion" ${styles[type] === 'faq-accordion' ? 'selected' : ''}>FAQ Accordion</option>
-                                </select>
+                    ` : `
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6 col-12">
+                                <div class="form-group mb-2">
+                                    <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
+                                    <input type="text" name="landing_settings[sections][${index}][title]" class="form-control form-control-sm" value="${titles[type] || ''}" placeholder="টাইটেল লিখুন">
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="form-group mb-2">
+                                    <label class="small fw-bold">সেকশন ট্যাগ (Tag)</label>
+                                    <input type="text" name="landing_settings[sections][${index}][tag]" class="form-control form-control-sm" value="${tags[type] || ''}" placeholder="ট্যাগ লিখুন">
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6" style="${['video', 'gallery', 'faq', 'badges', 'trust'].includes(type) ? 'display: none;' : ''}">
+                                <div class="form-group mb-2">
+                                    <label class="small fw-bold">স্টাইল / লেআউট (Style)</label>
+                                    <select name="landing_settings[sections][${index}][style]" class="form-control form-control-sm form-select">
+                                        <option value="blue-check" ${styles[type] === 'blue-check' ? 'selected' : ''}>Blue Check Square</option>
+                                        <option value="green-check" ${styles[type] === 'green-check' ? 'selected' : ''}>Green Check Circle</option>
+                                        <option value="red-cross" ${styles[type] === 'red-cross' ? 'selected' : ''}>Red Cross</option>
+                                        <option value="yellow-star" ${styles[type] === 'yellow-star' ? 'selected' : ''}>Yellow Star</option>
+                                        <option value="orange-info" ${styles[type] === 'orange-info' ? 'selected' : ''}>Orange Info</option>
+                                        <option value="package-box" ${styles[type] === 'package-box' ? 'selected' : ''}>Package Box Style</option>
+                                        <option value="faq-accordion" ${styles[type] === 'faq-accordion' ? 'selected' : ''}>FAQ Accordion</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="section-content-container mt-2 border-top pt-2" style="${['video', 'gallery', 'cta'].includes(type) ? 'display: none;' : ''}">
-                        <label class="small fw-bold mb-2">
-                            ${type === 'faq' ? 'প্রশ্ন ও উত্তরসমূহ (FAQs)' : (type === 'badges' ? 'পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)' : (type === 'trust' ? 'কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)' : 'সেকশন আইটেমসমূহ (Items)'))}
-                        </label>
-                        <div class="items-list"></div>
-                        <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
-                            <i class="fas fa-plus me-1"></i>
-                            ${type === 'faq' ? 'প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)' : (type === 'badges' ? 'ব্যাজ যোগ করুন (Add Badge)' : (type === 'trust' ? 'ফিচার যোগ করুন (Add Feature)' : 'আইটেম যোগ করুন (Add Item)'))}
-                        </button>
-                    </div>
+                        <div class="row g-2 mb-2 p-2 rounded border bg-light">
+                            <div class="col-md-3 col-6">
+                                <div class="form-group mb-1">
+                                    <label class="small fw-bold">ব্যাকগ্রাউন্ড (Background)</label>
+                                    <input type="color" name="landing_settings[sections][${index}][bg_color]" class="form-control form-control-sm form-control-color w-100" value="#ffffff">
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="form-group mb-1">
+                                    <label class="small fw-bold">টেক্সট কালার (Text Color)</label>
+                                    <input type="color" name="landing_settings[sections][${index}][text_color]" class="form-control form-control-sm form-control-color w-100" value="#333333">
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="form-group mb-1">
+                                    <label class="small fw-bold">বর্ডার/অ্যাকসেন্ট (Accent)</label>
+                                    <input type="color" name="landing_settings[sections][${index}][accent_color]" class="form-control form-control-sm form-control-color w-100" value="#007bff">
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6" style="${['video', 'gallery'].includes(type) ? 'display: none;' : ''}">
+                                <div class="form-group mb-1">
+                                    <label class="small fw-bold">ফন্ট ওয়েট (Font Weight)</label>
+                                    <select name="landing_settings[sections][${index}][font_weight]" class="form-control form-control-sm form-select">
+                                        <option value="400">চিকন (Normal - 400)</option>
+                                        <option value="500">মাঝারি (Medium - 500)</option>
+                                        <option value="600">সেমি-বোল্ড (Semi-Bold - 600)</option>
+                                        <option value="700">মোটা (Bold - 700)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12" style="${['video', 'gallery'].includes(type) ? 'display: none;' : ''}">
+                                <div class="form-group mb-1">
+                                    <label class="small fw-bold">বাই নাও বাটন (Show Button)</label>
+                                    <select name="landing_settings[sections][${index}][show_button]" class="form-control form-control-sm form-select">
+                                        <option value="1">সক্রিয় (Active)</option>
+                                        <option value="0">নিষ্ক্রিয় (Inactive)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-8 col-12" style="${['video', 'gallery'].includes(type) ? 'display: none;' : ''}">
+                                <div class="form-group mb-1">
+                                    <label class="small fw-bold">কাস্টম বাটন টেক্সট (Button Text)</label>
+                                    <input type="text" name="landing_settings[sections][${index}][button_text]" class="form-control form-control-sm" value="অর্ডার করতে ক্লিক করুন" placeholder="যেমন: অর্ডার করতে ক্লিক করুন">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-content-container mt-2 border-top pt-2" style="${['video'].includes(type) ? 'display: none;' : ''}">
+                            ${type === 'gallery' ? `
+                                <label class="small fw-bold mb-2">গ্যালারি ছবিসমূহ (Gallery Image Links / URLs)</label>
+                                <div class="gallery-items-list border rounded p-2 bg-white"></div>
+                                <button type="button" class="btn btn-xs btn-outline-primary add-gallery-item-btn mt-2">
+                                    <i class="fas fa-plus me-1"></i> ছবি যোগ করুন (Add Photo URL)
+                                </button>
+                            ` : type === 'rich_text' ? `
+                                <div class="form-group mb-2">
+                                    <label class="small fw-bold">সেকশন কন্টেন্ট / বিবরণী (Custom HTML or Text Content)</label>
+                                    <textarea name="landing_settings[sections][${index}][content]" class="form-control form-control-sm" rows="6" placeholder="এখানে আপনার কাস্টম টেক্সট বা এইচটিএমএল কন্টেন্ট লিখুন..."></textarea>
+                                </div>
+                            ` : `
+                                <label class="small fw-bold mb-2">
+                                    ${type === 'faq' ? 'প্রশ্ন ও উত্তরসমূহ (FAQs)' : (type === 'badges' ? 'পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)' : (type === 'trust' ? 'কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)' : 'সেকশন আইটেমসমূহ (Items)'))}
+                                </label>
+                                <div class="items-list"></div>
+                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
+                                    <i class="fas fa-plus me-1"></i>
+                                    ${type === 'faq' ? 'প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)' : (type === 'badges' ? 'ব্যাজ যোগ করুন (Add Badge)' : (type === 'trust' ? 'ফিচার যোগ করুন (Add Feature)' : 'আইটেম যোগ করুন (Add Item)'))}
+                                </button>
+                            `}
+                        </div>
+                    `}
                 `;
 
                 bindSectionCardEvents(card);
+
+                if (type === 'gallery') {
+                    const list = card.querySelector('.gallery-items-list');
+                    if (list) {
+                        list.appendChild(createGalleryImageRow(index, 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500'));
+                        list.appendChild(createGalleryImageRow(index, 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'));
+                        list.appendChild(createGalleryImageRow(index, 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500'));
+                    }
+                } else {
+                    const itemsList = card.querySelector('.items-list');
+                    if (itemsList) {
+                        if (type === 'faq') {
+                            itemsList.appendChild(createFAQItemRow(index, 0));
+                        } else if (type === 'badges') {
+                            itemsList.appendChild(createBadgeItemRow(index, 0, 'fas fa-shield-alt', '100% কোয়ালিটি', 'সেরা কোয়ালিটির নিশ্চয়তা'));
+                        } else if (type === 'trust') {
+                            itemsList.appendChild(createTrustFeatureItemRow(index, 0, 'দ্রুত ডেলিভারি', 'সারা বাংলাদেশে ক্যাশ অন ডেলিভারি'));
+                        } else if (!['video', 'gallery', 'cta', 'rich_text'].includes(type)) {
+                            itemsList.appendChild(createSectionItemRow(index));
+                        }
+                    }
+                }
+
                 return card;
             }
 
@@ -656,6 +805,20 @@
                         if (next) {
                             card.parentNode.insertBefore(next, card);
                             reindexSections();
+                        }
+                    });
+                }
+
+                // Add gallery image
+                const addGalleryBtn = card.querySelector('.add-gallery-item-btn');
+                if (addGalleryBtn) {
+                    addGalleryBtn.addEventListener('click', function() {
+                        const secIndex = parseInt(card.getAttribute('data-section-index') || '0');
+                        const galleryList = card.querySelector('.gallery-items-list');
+                        if (galleryList) {
+                            galleryList.appendChild(createGalleryImageRow(secIndex));
+                            const input = galleryList.lastElementChild.querySelector('input');
+                            if (input) input.focus();
                         }
                     });
                 }
@@ -729,6 +892,24 @@
                     const styleSelect = card.querySelector('select[name*="[style]"]');
                     if (styleSelect) styleSelect.name = `landing_settings[sections][${index}][style]`;
 
+                    const bgColorInput = card.querySelector('input[name*="[bg_color]"]');
+                    if (bgColorInput) bgColorInput.name = `landing_settings[sections][${index}][bg_color]`;
+
+                    const textColorInput = card.querySelector('input[name*="[text_color]"]');
+                    if (textColorInput) textColorInput.name = `landing_settings[sections][${index}][text_color]`;
+
+                    const accentColorInput = card.querySelector('input[name*="[accent_color]"]');
+                    if (accentColorInput) accentColorInput.name = `landing_settings[sections][${index}][accent_color]`;
+
+                    const fontWeightSelect = card.querySelector('select[name*="[font_weight]"]');
+                    if (fontWeightSelect) fontWeightSelect.name = `landing_settings[sections][${index}][font_weight]`;
+
+                    const showButtonSelect = card.querySelector('select[name*="[show_button]"]');
+                    if (showButtonSelect) showButtonSelect.name = `landing_settings[sections][${index}][show_button]`;
+
+                    const buttonTextInput = card.querySelector('input[name*="[button_text]"]');
+                    if (buttonTextInput) buttonTextInput.name = `landing_settings[sections][${index}][button_text]`;
+
                     const type = card.getAttribute('data-section-type');
                     if (type === 'faq') {
                         reindexFAQItems(card);
@@ -736,6 +917,13 @@
                         reindexBadgeItems(card);
                     } else if (type === 'trust') {
                         reindexTrustFeatureItems(card);
+                    } else if (type === 'gallery') {
+                        card.querySelectorAll('.gallery-url-input').forEach(input => {
+                            input.name = `landing_settings[sections][${index}][images][]`;
+                        });
+                    } else if (type === 'rich_text') {
+                        const contentTextarea = card.querySelector('textarea[name*="[content]"]');
+                        if (contentTextarea) contentTextarea.name = `landing_settings[sections][${index}][content]`;
                     } else {
                         card.querySelectorAll('.item-row textarea').forEach(textarea => {
                             textarea.name = `landing_settings[sections][${index}][items][]`;
@@ -786,16 +974,44 @@
             });
             reindexSections();
 
-            if (addSectionBtn && sectionsContainer) {
-                addSectionBtn.addEventListener('click', function() {
-                    const type = newSectionTypeSelect.value;
-                    const index = getSectionCounter();
-                    const newCard = createSectionCard(type, index);
-                    sectionsContainer.appendChild(newCard);
-                    reindexSections();
-                    const titleInput = newCard.querySelector('input[type="text"]');
-                    if (titleInput) titleInput.focus();
+            // Modal controller for visual section selector
+            const openPickerBtn = document.getElementById('openSectionPickerModalBtn');
+            const sectionModalEl = document.getElementById('sectionPickerModal');
+            const confirmAddBtn = document.getElementById('confirmAddSectionBtn');
+            let selectedType = null;
+
+            if (openPickerBtn && sectionModalEl) {
+                const pickerModal = new bootstrap.Modal(sectionModalEl);
+
+                openPickerBtn.addEventListener('click', function() {
+                    selectedType = null;
+                    if (confirmAddBtn) confirmAddBtn.disabled = true;
+                    document.querySelectorAll('.section-picker-card').forEach(c => c.classList.remove('active-selected'));
+                    pickerModal.show();
                 });
+
+                document.querySelectorAll('.section-picker-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        document.querySelectorAll('.section-picker-card').forEach(c => c.classList.remove('active-selected'));
+                        card.classList.add('active-selected');
+                        selectedType = card.getAttribute('data-type');
+                        if (confirmAddBtn) confirmAddBtn.disabled = !selectedType;
+                    });
+                });
+
+                if (confirmAddBtn) {
+                    confirmAddBtn.addEventListener('click', function() {
+                        if (!selectedType || !sectionsContainer) return;
+                        const index = getSectionCounter();
+                        const newCard = createSectionCard(selectedType, index);
+                        sectionsContainer.appendChild(newCard);
+                        reindexSections();
+                        pickerModal.hide();
+                        newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        const titleInput = newCard.querySelector('input[type="text"]');
+                        if (titleInput) titleInput.focus();
+                    });
+                }
             }
 
             // Tab Wizard Controls
@@ -946,6 +1162,15 @@
                                 `;
                             }
                         });
+                    } else if (secType === 'rich_text') {
+                        const bg = card.querySelector('input[name*="[bg_color]"]')?.value || '#ffffff';
+                        const text = card.querySelector('input[name*="[text_color]"]')?.value || '#333333';
+                        const accent = card.querySelector('input[name*="[accent_color]"]')?.value || '#007bff';
+                        const content = card.querySelector('textarea[name*="[content]"]')?.value || '';
+                        simCard.style.backgroundColor = bg;
+                        simCard.style.color = text;
+                        simCard.style.borderColor = accent;
+                        contentHtml = `<div style="font-size:11px; line-height:1.4;">${content.replace(/\n/g, '<br>')}</div>`;
                     } else if (secType === 'video') {
                         contentHtml = `
                             <div class="text-center p-2 bg-light rounded border">
@@ -1167,4 +1392,186 @@
             grid.appendChild(createAddCard());
         }
     </script>
+
+<!-- Select a Section to Add Modal -->
+<div class="modal fade" id="sectionPickerModal" tabindex="-1" aria-labelledby="sectionPickerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: 0; box-shadow: 0 20px 40px rgba(0,0,0,0.15); overflow: hidden;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="modal-title fw-bold text-dark fs-5" id="sectionPickerModalLabel">Select a Section to Add</h5>
+                    <p class="text-muted small mb-0">Choose a section layout template for your landing page</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
+                <div class="row g-3" id="sectionPickerCardsGrid">
+                    <!-- Hero Section -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="video">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-play-circle fs-1 text-primary"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Hero Section</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Image or video with CTA</p>
+                        </div>
+                    </div>
+
+                    <!-- Features Grid -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="features">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-th-large fs-1 text-info"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Features Grid</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Highlight key benefits</p>
+                        </div>
+                    </div>
+
+                    <!-- Trust Badges -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="badges">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-shield-alt fs-1 text-success"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Trust Badges</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Security & quality badges</p>
+                        </div>
+                    </div>
+
+                    <!-- Customer Pain Points -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="problems">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-exclamation-triangle fs-1 text-warning"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Testimonials / Pain Points</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Customer issues & reviews</p>
+                        </div>
+                    </div>
+
+                    <!-- Benefits -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="benefits">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-check-double fs-1 text-success"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Product Benefits</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Key advantages list</p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Section -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="faq">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-question-circle fs-1" style="color: #8b5cf6;"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">FAQ Section</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Common questions</p>
+                        </div>
+                    </div>
+
+                    <!-- Package Includes -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="package">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-box-open fs-1 text-warning"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Pricing / Package Table</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Compare plans & contents</p>
+                        </div>
+                    </div>
+
+                    <!-- Real Photo Gallery -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="gallery">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-images fs-1 text-danger"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Real Photo Gallery</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Real product photos</p>
+                        </div>
+                    </div>
+
+                    <!-- Why Choose Us -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="trust">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-award fs-1 text-primary"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Why Choose Us</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Merchant assurances</p>
+                        </div>
+                    </div>
+
+                    <!-- Call to Action (CTA) -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="cta">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-mouse-pointer fs-1 text-success"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Buy Now Button (CTA)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">High converting action</p>
+                        </div>
+                    </div>
+
+                    <!-- Custom Section -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="custom">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-sliders-h fs-1 text-secondary"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Custom Section</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Background & font styling</p>
+                        </div>
+                    </div>
+
+                    <!-- Rich Text / HTML -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="rich_text">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-file-alt fs-1 text-dark"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Rich Text / HTML</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Custom HTML content</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex justify-content-between">
+                <button type="button" class="btn btn-light px-4 text-secondary fw-semibold" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
+                <button type="button" class="btn btn-primary px-4 fw-bold" id="confirmAddSectionBtn" style="border-radius: 8px; background-color: #2563eb;" disabled>Add Section</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.section-picker-card {
+    border: 1.5px solid #e2e8f0 !important;
+    transition: all 0.2s ease-in-out;
+}
+.section-picker-card .section-card-icon-box {
+    height: 90px;
+    background: #f8fafc;
+    transition: all 0.2s ease-in-out;
+}
+.section-picker-card:hover {
+    border-color: #3b82f6 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.12) !important;
+}
+.section-picker-card.active-selected {
+    border: 2.5px solid #2563eb !important;
+    background-color: #eff6ff !important;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.2) !important;
+}
+.section-picker-card.active-selected .section-card-icon-box {
+    background-color: #dbeafe !important;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+</style>
 @endpush

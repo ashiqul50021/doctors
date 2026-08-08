@@ -95,7 +95,7 @@
                                 </td>
                                 <td>
                                     <div class="status-toggle">
-                                        <input type="checkbox" id="status_{{ $product->id }}" class="check" {{ $product->is_active ? 'checked' : '' }} disabled>
+                                        <input type="checkbox" id="status_{{ $product->id }}" class="check status-toggle-btn" data-id="{{ $product->id }}" {{ $product->is_active ? 'checked' : '' }}>
                                         <label for="status_{{ $product->id }}" class="checktoggle">checkbox</label>
                                     </div>
                                 </td>
@@ -123,3 +123,32 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $(document).on('change', '.status-toggle-btn', function() {
+            const checkbox = $(this);
+            const productId = checkbox.data('id');
+            const isChecked = checkbox.is(':checked');
+
+            $.ajax({
+                url: "{{ route('ecommerce.admin.products.index') }}/" + productId + "/toggle-status",
+                type: 'PATCH',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (!response.success) {
+                        checkbox.prop('checked', !isChecked);
+                    }
+                },
+                error: function() {
+                    checkbox.prop('checked', !isChecked);
+                    alert('Status toggle failed.');
+                }
+            });
+        });
+    });
+</script>
+@endpush

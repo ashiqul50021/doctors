@@ -38,6 +38,7 @@
                                 <th>Category</th>
                                 <th>Price</th>
                                 <th>Stock</th>
+                                <th>Status</th>
                                 <th class="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -95,6 +96,12 @@
                                         </small>
                                     </div>
                                 </td>
+                                <td>
+                                    <div class="status-toggle">
+                                        <input type="checkbox" id="status_{{ $product->id }}" class="check seller-status-toggle-btn" data-id="{{ $product->id }}" {{ $product->is_active ? 'checked' : '' }}>
+                                        <label for="status_{{ $product->id }}" class="checktoggle">checkbox</label>
+                                    </div>
+                                </td>
                                 <td class="text-right">
                                     <div class="actions">
                                         <a class="btn btn-sm bg-success-light me-2" href="{{ route('ecommerce.seller.products.edit', $product->id) }}">
@@ -112,7 +119,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted">No products found.</td>
+                                <td colspan="7" class="text-center text-muted">No products found.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -123,3 +130,32 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $(document).on('change', '.seller-status-toggle-btn', function() {
+            const checkbox = $(this);
+            const productId = checkbox.data('id');
+            const isChecked = checkbox.is(':checked');
+
+            $.ajax({
+                url: "{{ route('ecommerce.seller.products.index') }}/" + productId + "/toggle-status",
+                type: 'PATCH',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (!response.success) {
+                        checkbox.prop('checked', !isChecked);
+                    }
+                },
+                error: function() {
+                    checkbox.prop('checked', !isChecked);
+                    alert('Status toggle failed.');
+                }
+            });
+        });
+    });
+</script>
+@endpush

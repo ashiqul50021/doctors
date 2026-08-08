@@ -327,4 +327,21 @@ class ProductController extends Controller
 
         $this->stockService->syncAggregateStock($product->id);
     }
+
+    public function toggleStatus(Product $product)
+    {
+        $product->update([
+            'is_active' => !$product->is_active
+        ]);
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'is_active' => (bool) $product->is_active,
+                'message' => 'Product status updated successfully.'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Product status updated successfully.');
+    }
 }
