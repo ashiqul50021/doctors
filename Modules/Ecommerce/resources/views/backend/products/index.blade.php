@@ -4,16 +4,18 @@
 
 @section('content')
 <div class="page-header">
-    <div class="row">
-        <div class="col-sm-7 col-auto">
+    <div class="row align-items-center">
+        <div class="col">
             <h3 class="page-title">Products</h3>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                 <li class="breadcrumb-item active">Products</li>
             </ul>
         </div>
-        <div class="col-sm-5 col">
-            <a href="{{ route('ecommerce.admin.products.create') }}" class="btn btn-primary float-right mt-2">Add Product</a>
+        <div class="col-auto">
+            <a href="{{ route('ecommerce.admin.products.create') }}" class="btn btn-primary">
+                <i class="fe fe-plus me-1"></i> Add Product
+            </a>
         </div>
     </div>
 </div>
@@ -23,7 +25,10 @@
         <div class="card">
             <div class="card-body">
                 @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
 
                 <div class="table-responsive">
@@ -36,7 +41,7 @@
                                 <th>Price</th>
                                 <th>Stock</th>
                                 <th>Status</th>
-                                <th class="text-right">Actions</th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,20 +51,20 @@
                                 $activeVariantCount = $product->activeVariantItems()->count();
 
                                 if ($availableStock < 1) {
-                                    $stockBadgeClass = 'bg-danger-light text-danger';
+                                    $stockBadgeClass = 'bg-danger-light';
                                     $stockLabel = 'Out of Stock';
                                 } elseif ($availableStock <= 10) {
-                                    $stockBadgeClass = 'bg-warning-light text-warning';
+                                    $stockBadgeClass = 'bg-warning-light';
                                     $stockLabel = 'Low Stock';
                                 } else {
-                                    $stockBadgeClass = 'bg-success-light text-success';
+                                    $stockBadgeClass = 'bg-success-light';
                                     $stockLabel = 'In Stock';
                                 }
                             @endphp
                             <tr>
-                                <td>#PRO{{ $product->id }}</td>
+                                <td><span class="product-code-badge">#PRO{{ $product->id }}</span></td>
                                 <td>
-                                    <h2 class="table-avatar">
+                                    <div class="table-avatar">
                                         @php
                                             $productImage = $product->image;
 
@@ -68,27 +73,27 @@
                                             }
                                         @endphp
                                         @if($productImage)
-                                            <a href="#" class="avatar avatar-sm me-2">
+                                            <a href="#" class="avatar avatar-sm me-3">
                                                 <img class="avatar-img" src="{{ \Illuminate\Support\Str::startsWith($productImage, ['http://', 'https://']) ? $productImage : asset($productImage) }}" alt="Product">
                                             </a>
                                         @else
-                                            <span class="avatar avatar-sm me-2 d-inline-flex align-items-center justify-content-center bg-light text-muted border"
+                                            <span class="avatar avatar-sm me-3 d-inline-flex align-items-center justify-content-center bg-light text-muted border"
                                                 style="font-size: 9px; font-weight: 600;">
                                                 No Image
                                             </span>
                                         @endif
-                                        <a href="#" style="text-decoration: none; color: #333;">{{ $product->name }}</a>
-                                    </h2>
+                                        <a href="#">{{ $product->name }}</a>
+                                    </div>
                                 </td>
-                                <td>{{ $product->category->name ?? 'N/A' }}</td>
-                                <td>${{ number_format($product->price, 2) }}</td>
+                                <td><span class="text-secondary fw-semibold">{{ $product->category->name ?? 'N/A' }}</span></td>
+                                <td><span class="price-text">${{ number_format($product->price, 2) }}</span></td>
                                 <td>
                                     <div class="d-flex flex-column">
-                                        <span class="font-weight-bold">{{ $availableStock }}</span>
+                                        <span class="fw-bold text-dark">{{ $availableStock }}</span>
                                         <span class="badge {{ $stockBadgeClass }} mt-1" style="width: fit-content;">
                                             {{ $stockLabel }}
                                         </span>
-                                        <small class="text-muted mt-1">
+                                        <small class="text-muted mt-1" style="font-size: 11px;">
                                             {{ $activeVariantCount > 0 ? $activeVariantCount . ' variant(s)' : 'Simple product' }}
                                         </small>
                                     </div>
@@ -99,15 +104,15 @@
                                         <label for="status_{{ $product->id }}" class="checktoggle">checkbox</label>
                                     </div>
                                 </td>
-                                <td class="text-right">
+                                <td class="text-end">
                                     <div class="actions">
-                                        <a class="btn btn-sm bg-success-light" href="{{ route('ecommerce.admin.products.edit', $product->id) }}">
+                                        <a class="btn-action-edit" href="{{ route('ecommerce.admin.products.edit', $product->id) }}">
                                             <i class="fe fe-pencil"></i> Edit
                                         </a>
                                         <form action="{{ route('ecommerce.admin.products.destroy', $product->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm bg-danger-light">
+                                            <button type="submit" class="btn-action-delete">
                                                 <i class="fe fe-trash"></i> Delete
                                             </button>
                                         </form>

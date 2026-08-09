@@ -251,6 +251,7 @@
                 chart: {
                     height: 350,
                     type: 'area',
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
                     toolbar: {
                         show: false
                     }
@@ -259,24 +260,32 @@
                     enabled: false
                 },
                 stroke: {
-                    curve: 'smooth'
+                    curve: 'smooth',
+                    width: 3
                 },
                 xaxis: {
                     type: 'datetime',
-                    categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
+                    categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"],
+                    axisBorder: { show: false },
+                    axisTicks: { show: false }
+                },
+                grid: {
+                    borderColor: '#F1F5F9',
+                    strokeDashArray: 4
                 },
                 tooltip: {
                     x: {
                         format: 'dd/MM/yy HH:mm'
                     },
+                    theme: 'light'
                 },
-                colors: ['#1E40AF', '#00D0F1'], // Premium Blue & Cyan
+                colors: ['#4F46E5', '#06B6D4'], // Indigo & Cyan Gradient Accent
                 fill: {
                     type: 'gradient',
                     gradient: {
                         shadeIntensity: 1,
-                        opacityFrom: 0.7,
-                        opacityTo: 0.9,
+                        opacityFrom: 0.45,
+                        opacityTo: 0.05,
                         stops: [0, 90, 100]
                     }
                 }
@@ -287,13 +296,34 @@
 
             // Users Chart (Donut)
             var optionsUsers = {
-                series: [{{ $doctorCount }}, {{ $patientCount }}, 25], // Added mock 'Others' for visual balance
+                series: [{{ $doctorCount }}, {{ $patientCount }}, 25],
                 chart: {
                     type: 'donut',
                     height: 350,
+                    fontFamily: "'Plus Jakarta Sans', sans-serif"
                 },
                 labels: ['Doctors', 'Patients', 'Staff'],
-                colors: ['#1E40AF', '#10B981', '#F59E0B'], // Blue, Green, Amber
+                colors: ['#4F46E5', '#10B981', '#F59E0B'],
+                stroke: {
+                    width: 2,
+                    colors: ['#ffffff']
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '70%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: 'Total Users',
+                                    fontWeight: 700,
+                                    color: '#0F172A'
+                                }
+                            }
+                        }
+                    }
+                },
                 responsive: [{
                     breakpoint: 480,
                     options: {

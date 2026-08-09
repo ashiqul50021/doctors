@@ -132,16 +132,15 @@
                         <a href="{{ route('admin.banners.index') }}"><i class="fe fe-star"></i> <span>Banners</span></a>
                     </li>
                     <li class="{{ request()->routeIs('admin.profile') ? 'active' : '' }}">
-                        <a href="{{ route('admin.profile') }}"><i class="fe fe-user-plus"></i> <span>Profile</span></a>
+                        <a href="{{ route('admin.profile') }}"><i class="fe fe-user"></i> <span>Profile</span></a>
                     </li>
-
-                    <li class="submenu">
+                    <li class="submenu {{ request()->routeIs('admin.invoice.report') ? 'active' : '' }}">
                         <a href="#"><i class="fe fe-document"></i> <span> Reports</span> <span
-                                class="menu-arrow"></span></a>
+                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             <li><a href="{{ route('admin.invoice.report') }}">Invoice Reports</a></li>
                         </ul>
-                    </li
+                    </li>
                 </ul>
             </div>
         </div>
