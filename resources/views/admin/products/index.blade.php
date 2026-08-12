@@ -57,7 +57,7 @@
                                             </h2>
                                         </td>
                                         <td>{{ $product->category->name ?? 'N/A' }}</td>
-                                        <td>${{ number_format($product->price, 2) }}</td>
+                                        <td>৳{{ number_format($product->price, 2) }}</td>
                                         <td>{{ $product->stock }}</td>
                                         <td>
                                             <div class="status-toggle">

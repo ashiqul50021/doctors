@@ -98,88 +98,103 @@
 
             <!-- Search Section -->
             <div class="hero-search-section">
-                <h5 class="search-box-title"><i class="fas fa-user-md"></i> Search by Doctor</h5>
-                <!-- Normal Search Bar (Doctor Name/Code) -->
-                <div class="hero-search-bar" id="normal-search-form">
-                    <form action="{{ route('doctors.search') }}" class="hero-search-form" id="normalSearchForm">
-                        <div class="search-field search-keyword-full">
-                            <i class="fas fa-user-md"></i>
-                            <input type="text" name="keywords" placeholder="Search by doctor name/code" class="form-control">
-                        </div>
-                        <button type="submit" class="btn-hero-search">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
+                <!-- Card 1: Search by Doctor -->
+                <div class="search-card-wrapper mb-3 p-3 bg-white rounded-4 shadow-sm" style="box-shadow: 0 2px 15px rgba(0,0,0,0.05) !important;">
+                    <h5 class="search-box-title d-flex align-items-center gap-2 mb-3 font-weight-bold" style="font-size: 16px; color: #1e3a8a !important;">
+                        <span class="icon-circle rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background: #dbeafe !important; color: #3b82f6 !important;">
+                            <i class="fas fa-user-md" style="font-size: 13px;"></i>
+                        </span> 
+                        Search by Doctor
+                    </h5>
+                    <!-- Normal Search Bar (Doctor Name/Code) -->
+                    <div class="hero-search-bar border rounded-3 p-1" style="background: #f8fafc; border-color: #e2e8f0 !important;" id="normal-search-form">
+                        <form action="{{ route('doctors.search') }}" class="hero-search-form d-flex align-items-center" id="normalSearchForm">
+                            <div class="search-field search-keyword-full flex-grow-1 d-flex align-items-center px-3">
+                                <i class="fas fa-user-md text-muted me-2"></i>
+                                <input type="text" name="keywords" placeholder="Search by doctor name/code" class="form-control border-0 bg-transparent shadow-none" style="font-size: 14px; color: #334155;">
+                            </div>
+                            <button type="submit" class="btn text-white rounded-3 px-3 py-2" style="background: #3b82f6 !important; border: none !important;">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
-                <h5 class="search-box-title"><i class="fas fa-stethoscope"></i> Search by Speciality</h5>
-                <!-- Filter Search Bar (Location & Speciality) -->
-                <div class="hero-search-bar" id="filter-search-form">
-                    <form action="{{ route('doctors.search') }}" class="hero-search-form" id="filterSearchForm">
-                        <!-- District - Custom Searchable Dropdown -->
-                        <div class="search-field search-select">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <div class="custom-dropdown" id="districtDropdown">
-                                <input type="hidden" name="district_id" id="district_value">
-                                <input type="text" class="dropdown-search" placeholder="District"
-                                    data-default-placeholder="District" readonly id="district_display">
-                                <i class="fas fa-chevron-down dropdown-arrow"></i>
-                                <div class="dropdown-menu">
-                                    <input type="text" class="dropdown-filter" placeholder="Search district...">
-                                    <div class="dropdown-list">
-                                        <div class="dropdown-item" data-value="">All Districts</div>
-                                        @foreach($districts as $district)
-                                            <div class="dropdown-item" data-value="{{ $district->id }}">{{ $district->name }}
-                                            </div>
-                                        @endforeach
+                <!-- Card 2: Search by Speciality -->
+                <div class="search-card-wrapper p-3 bg-white rounded-4 shadow-sm" style="box-shadow: 0 2px 15px rgba(0,0,0,0.05) !important;">
+                    <h5 class="search-box-title d-flex align-items-center gap-2 mb-3 font-weight-bold" style="font-size: 16px; color: #1e3a8a !important;">
+                        <span class="icon-circle rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background: #dbeafe !important; color: #3b82f6 !important;">
+                            <i class="fas fa-stethoscope" style="font-size: 13px;"></i>
+                        </span> 
+                        Search by Speciality
+                    </h5>
+                    <!-- Filter Search Bar (Location & Speciality) -->
+                    <div class="hero-search-bar border rounded-3 p-1" style="background: #f8fafc; border-color: #e2e8f0 !important;" id="filter-search-form">
+                        <form action="{{ route('doctors.search') }}" class="hero-search-form d-flex align-items-center" id="filterSearchForm">
+                            <!-- Speciality - Custom Searchable Dropdown -->
+                            <div class="search-field search-select flex-grow-1 border-end px-3 position-relative" style="border-color: #e2e8f0 !important; overflow: visible !important;">
+                                <i class="fas fa-stethoscope text-muted me-2"></i>
+                                <div class="custom-dropdown w-100 position-relative" id="specialityDropdown" style="position: relative !important;">
+                                    <input type="hidden" name="speciality_id" id="speciality_value">
+                                    <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Speciality"
+                                        data-default-placeholder="Speciality" readonly id="speciality_display" style="font-size: 14px; color: #334155;">
+                                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                                    <div class="dropdown-menu">
+                                        <input type="text" class="dropdown-filter" placeholder="Search speciality...">
+                                        <div class="dropdown-list">
+                                            <div class="dropdown-item" data-value="">All Specialities</div>
+                                            @foreach($searchSpecialities as $speciality)
+                                                <div class="dropdown-item" data-value="{{ $speciality->id }}">{{ $speciality->name }}
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Area - Custom Searchable Dropdown -->
-                        <div class="search-field search-select">
-                            <i class="fas fa-location-arrow"></i>
-                            <div class="custom-dropdown" id="areaDropdown">
-                                <input type="hidden" name="area_id" id="area_value">
-                                <input type="text" class="dropdown-search" placeholder="Area"
-                                    data-default-placeholder="Area" readonly id="area_display" disabled>
-                                <i class="fas fa-chevron-down dropdown-arrow"></i>
-                                <div class="dropdown-menu">
-                                    <input type="text" class="dropdown-filter" placeholder="Search area...">
-                                    <div class="dropdown-list" id="area_list">
-                                        <div class="dropdown-item" data-value="">Select district first</div>
+                            <!-- District - Custom Searchable Dropdown -->
+                            <div class="search-field search-select flex-grow-1 border-end px-3 position-relative" style="border-color: #e2e8f0 !important; overflow: visible !important;">
+                                <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                                <div class="custom-dropdown w-100 position-relative" id="districtDropdown" style="position: relative !important;">
+                                    <input type="hidden" name="district_id" id="district_value">
+                                    <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="District"
+                                        data-default-placeholder="District" readonly id="district_display" style="font-size: 14px; color: #334155;">
+                                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                                    <div class="dropdown-menu">
+                                        <input type="text" class="dropdown-filter" placeholder="Search district...">
+                                        <div class="dropdown-list">
+                                            <div class="dropdown-item" data-value="">All Districts</div>
+                                            @foreach($districts as $district)
+                                                <div class="dropdown-item" data-value="{{ $district->id }}">{{ $district->name }}
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Speciality - Custom Searchable Dropdown -->
-                        <div class="search-field search-select" style="border-right: none;">
-                            <i class="fas fa-stethoscope"></i>
-                            <div class="custom-dropdown" id="specialityDropdown">
-                                <input type="hidden" name="speciality_id" id="speciality_value">
-                                <input type="text" class="dropdown-search" placeholder="Speciality"
-                                    data-default-placeholder="Speciality" readonly id="speciality_display">
-                                <i class="fas fa-chevron-down dropdown-arrow"></i>
-                                <div class="dropdown-menu">
-                                    <input type="text" class="dropdown-filter" placeholder="Search speciality...">
-                                    <div class="dropdown-list">
-                                        <div class="dropdown-item" data-value="">All Specialities</div>
-                                        @foreach($searchSpecialities as $speciality)
-                                            <div class="dropdown-item" data-value="{{ $speciality->id }}">
-                                                {{ $speciality->name }}
-                                            </div>
-                                        @endforeach
+                            <!-- Area - Custom Searchable Dropdown -->
+                            <div class="search-field search-select flex-grow-1 px-3 position-relative" style="overflow: visible !important;">
+                                <i class="fas fa-location-arrow text-muted me-2"></i>
+                                <div class="custom-dropdown w-100 position-relative" id="areaDropdown" style="position: relative !important;">
+                                    <input type="hidden" name="area_id" id="area_value">
+                                    <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Area"
+                                        data-default-placeholder="Area" readonly id="area_display" disabled style="font-size: 14px; color: #334155;">
+                                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                                    <div class="dropdown-menu">
+                                        <input type="text" class="dropdown-filter" placeholder="Search area...">
+                                        <div class="dropdown-list" id="area_list">
+                                            <div class="dropdown-item" data-value="">Select district first</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <button type="submit" class="btn-hero-search">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
+                            <button type="submit" class="btn text-white rounded-3 px-3 py-2 ms-2" style="background: #3b82f6 !important; border: none !important;">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -398,7 +413,7 @@
 
                                         <!-- Title -->
                                         <h4 class="product-name">
-                                            <a href="{{ route('ecommerce.products.show', $product->id) }}">{{ $product->name }}</a>
+                                            <a href="{{ route('ecommerce.products.show', $product->id) }}" wire:navigate>{{ $product->name }}</a>
                                         </h4>
 
                                         <!-- Price & Actions -->
@@ -3243,14 +3258,14 @@
         }
 
         .section-hero-doctime {
-            padding-bottom: 280px !important;
+            padding-bottom: 150px !important;
         }
 
         .hero-search-section {
             position: absolute !important;
             left: 12px !important;
             right: 12px !important;
-            bottom: -220px !important;
+            bottom: -110px !important;
             transform: none !important;
             margin: 0 !important;
             z-index: 500 !important;
@@ -3582,61 +3597,51 @@
             }
         }
 
+            .custom-dropdown {
+                position: relative !important;
+            }
+
             .custom-dropdown .dropdown-menu {
-                position: fixed !important;
-                top: 50% !important;
-                left: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                width: 90% !important;
-                max-width: 350px !important;
-                max-height: 80vh !important;
-                /* Dynamic height */
-                z-index: 10001 !important;
-                background: #fff !important;
-                /* Darker backdrop to hide background lines/text */
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 0 100vmax rgba(0, 0, 0, 0.85) !important;
-                border-radius: 15px !important;
-                padding: 15px !important;
-
-                /* Blur effect for better focus */
-                backdrop-filter: blur(5px);
-                -webkit-backdrop-filter: blur(5px);
-
-                /* Default hidden if not toggled by JS */
+                position: absolute !important;
+                top: calc(100% + 6px) !important;
+                left: 0 !important;
+                transform: none !important;
+                width: 100% !important;
+                min-width: 220px !important;
+                max-height: 300px !important;
+                z-index: 1050 !important;
+                background: #ffffff !important;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 10px !important;
+                padding: 10px !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
                 display: none;
-
-                /* Always enforce clipping and column layout */
                 overflow: hidden !important;
                 flex-direction: column !important;
             }
 
-            /* Only apply flex layout when JS sets display: block */
+            .custom-dropdown.open .dropdown-menu,
             .custom-dropdown .dropdown-menu[style*="block"] {
                 display: flex !important;
             }
 
             .dropdown-search {
                 flex: 0 0 auto;
-                /* Search bar fixed */
-                margin-bottom: 10px;
+                margin-bottom: 6px;
             }
 
             .dropdown-list {
                 flex: 1 1 auto;
-                /* List takes remaining space */
                 overflow-y: auto;
-                /* Fallback calculation for reliable scrolling */
-                max-height: calc(80vh - 80px) !important;
-                padding-bottom: 50px;
-                /* Extra padding */
+                max-height: 220px !important;
+                padding-bottom: 0 !important;
                 position: relative !important;
                 min-height: 0;
-                /* Soft scrolling for iOS */
                 -webkit-overflow-scrolling: touch;
                 overscroll-behavior: contain;
-                /* Prevent background scroll */
             }
-        }
     </style>
 @endpush
 

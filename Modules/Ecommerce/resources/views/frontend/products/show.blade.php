@@ -122,11 +122,11 @@
         @endif
 
         <nav class="product-breadcrumb">
-            <a href="{{ route('home') }}">Home</a>
+            <a href="{{ route('home') }}" wire:navigate>Home</a>
             <span><i class="fas fa-angle-right"></i></span>
-            <a href="{{ route('ecommerce.products') }}">Products</a>
+            <a href="{{ route('ecommerce.products') }}" wire:navigate>Products</a>
             <span><i class="fas fa-angle-right"></i></span>
-            <a href="{{ route('ecommerce.products', ['category' => $product->product_category_id]) }}">
+            <a href="{{ route('ecommerce.products', ['category' => $product->product_category_id]) }}" wire:navigate>
                 {{ $product->category->name ?? 'General' }}
             </a>
             <span><i class="fas fa-angle-right"></i></span>
@@ -217,10 +217,20 @@
                             </div>
                         @endif
 
-                        <div class="product-brand">{{ $brandName }}</div>
+                        <div class="product-brand d-flex align-items-center gap-2 mb-2">
+                            <span>{{ $brandName }}</span>
+                            @if($product->is_medical)
+                                <span class="badge bg-danger rounded-pill px-3 py-1"><i class="fas fa-prescription me-1"></i> Rx Medical Item</span>
+                            @else
+                                <span class="badge bg-success rounded-pill px-3 py-1"><i class="fas fa-check-circle me-1"></i> General Product</span>
+                            @endif
+                        </div>
 
                         <div class="summary-head">
-                            <h1>{{ $product->name }}</h1>
+                            <h1 class="fw-bold mb-1">{{ $product->name }}</h1>
+                            @if($product->generic_name)
+                                <p class="text-primary font-weight-bold italic mb-2"><i class="fas fa-capsules me-1"></i> Generic Name: {{ $product->generic_name }}</p>
+                            @endif
                             <p class="summary-copy">{{ $summaryCopy }}</p>
                         </div>
 
@@ -946,6 +956,35 @@
 
                         <div class="col-lg-7">
                             <div class="info-card review-list-card">
+                                @if(!empty($product->custom_sections))
+                                    <div class="product-custom-sections-wrap mb-5">
+                                        <div class="section-heading mb-4">
+                                            <span class="section-tag">Highlights & Features</span>
+                                            <h2>Product Specifications & Guide</h2>
+                                        </div>
+                                        <div class="row g-4">
+                                            @foreach($product->custom_sections as $sec)
+                                                <div class="col-12">
+                                                    <div class="p-4 bg-light rounded-3 border shadow-sm">
+                                                        @if($sec['type'] === 'faq')
+                                                            <h4 class="fw-bold text-primary mb-2"><i class="fas fa-question-circle me-2"></i>{{ $sec['question'] }}</h4>
+                                                            <p class="mb-0 text-secondary fs-6">{{ $sec['answer'] }}</p>
+                                                        @elseif($sec['type'] === 'video')
+                                                            <h4 class="fw-bold text-dark mb-3"><i class="fas fa-play-circle me-2 text-danger"></i>{{ $sec['title'] }}</h4>
+                                                            <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm">
+                                                                <iframe src="{{ $sec['video_url'] }}" allowfullscreen></iframe>
+                                                            </div>
+                                                        @elseif($sec['type'] === 'steps')
+                                                            <h4 class="fw-bold text-dark mb-2"><i class="fas fa-list-ol me-2 text-success"></i>{{ $sec['title'] }}</h4>
+                                                            <p class="mb-0 text-secondary fs-6">{{ $sec['description'] }}</p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+
                                 <div class="section-heading">
                                     <span class="section-tag">Feedback</span>
                                     <h2>What customers say</h2>
@@ -1026,7 +1065,7 @@
                                 </div>
 
                                 <div class="product-image-container">
-                                    <a href="{{ route('ecommerce.products.show', $relProduct->id) }}" class="product-image-link">
+                                    <a href="{{ route('ecommerce.products.show', $relProduct->id) }}" wire:navigate class="product-image-link">
                                         <img src="{{ asset($relatedImage) }}"
                                             class="product-main-img"
                                             alt="{{ $relProduct->name }}"
@@ -1044,7 +1083,7 @@
                                     <div class="product-brand">{{ $relProduct->category->name ?? 'Healthcare' }}</div>
 
                                     <h3 class="product-name">
-                                        <a href="{{ route('ecommerce.products.show', $relProduct->id) }}">{{ $relProduct->name }}</a>
+                                        <a href="{{ route('ecommerce.products.show', $relProduct->id) }}" wire:navigate>{{ $relProduct->name }}</a>
                                     </h3>
 
                                     <div class="product-footer">
@@ -1056,7 +1095,7 @@
                                         </div>
 
                                         @if($relatedHasVariants)
-                                            <a href="{{ route('ecommerce.products.show', $relProduct->id) }}" class="btn-buy-modern btn-link-modern">
+                                            <a href="{{ route('ecommerce.products.show', $relProduct->id) }}" wire:navigate class="btn-buy-modern btn-link-modern">
                                                 Select Options
                                             </a>
                                         @else

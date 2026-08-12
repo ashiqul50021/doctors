@@ -35,6 +35,20 @@
 
     <!-- Mobile Bottom Nav CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/mobile-nav.css') }}">
+
+    @livewireStyles
+    <style>
+        /* Livewire SPA Top Loading Bar */
+        .livewire-progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background-color: #2563eb;
+            z-index: 9999;
+            transition: width 200ms ease-in-out;
+        }
+    </style>
 </head>
 
 <body class="@yield('body_class')">
@@ -254,6 +268,16 @@
 
     <!-- Custom JS -->
     <script src="{{ asset('assets/js/script.js') }}"></script>
+    @livewireScripts
+
+    <script>
+        document.addEventListener('livewire:navigated', () => {
+            // Re-initialize scripts or sliders after Livewire navigate swaps page content
+            if (typeof $.fn.select2 !== 'undefined' && $('.select').length > 0) {
+                $('.select').select2({ minimumResultsForSearch: -1, width: '100%' });
+            }
+        });
+    </script>
 </body>
 
 </html>

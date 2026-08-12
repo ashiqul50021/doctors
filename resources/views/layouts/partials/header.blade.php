@@ -94,14 +94,14 @@
                         <span></span>
                     </span>
                 </a>
-                <a href="{{ route('home') }}" class="navbar-brand logo">
+                <a href="{{ route('home') }}" wire:navigate class="navbar-brand logo">
                     <img src="{{ !empty($siteSettings['logo']) ? asset($siteSettings['logo']) : asset('assets/img/logo.png') }}"
                         class="img-fluid" alt="Logo">
                 </a>
             </div>
             <div class="main-menu-wrapper">
                 <div class="menu-header">
-                    <a href="{{ route('home') }}" class="menu-logo">
+                    <a href="{{ route('home') }}" wire:navigate class="menu-logo">
                         <img src="{{ !empty($siteSettings['logo']) ? asset($siteSettings['logo']) : asset('assets/img/logo.png') }}"
                             class="img-fluid" alt="Logo">
                     </a>
@@ -146,7 +146,7 @@
                             @else
                                 {{-- Single menu item --}}
                                 <li class="{{ request()->url() == $menu->getUrl() ? 'active' : '' }}">
-                                    <a href="{{ $menu->getUrl() }}" @if($menu->open_in_new_tab) target="_blank" @endif>
+                                    <a href="{{ $menu->getUrl() }}" wire:navigate @if($menu->open_in_new_tab) target="_blank" @endif>
                                         @if($menu->icon)<i class="{{ $menu->icon }}"></i> @endif
                                         {{ $menu->title }}
                                     </a>
@@ -156,16 +156,16 @@
                     @else
                         {{-- Default menu if no database menus --}}
                         <li class="{{ request()->routeIs('home') ? 'active' : '' }}">
-                            <a href="{{ route('home') }}">Home</a>
+                            <a href="{{ route('home') }}" wire:navigate>Home</a>
                         </li>
-                        <li class="{{ request()->routeIs('doctors.search') ? 'active' : '' }}">
-                            <a href="{{ route('doctors.search') }}">Doctors</a>
+                        <li class="{{ request()->routeIs('doctors.*') ? 'active' : '' }}">
+                            <a href="{{ route('doctors.search') }}" wire:navigate>Doctors</a>
                         </li>
-                        <li class="{{ request()->routeIs('ecommerce.products*') ? 'active' : '' }}">
-                            <a href="{{ route('ecommerce.products') }}" style="text-transform: capitalize;">Products</a>
+                        <li class="{{ request()->routeIs('ecommerce.*') ? 'active' : '' }}">
+                            <a href="{{ route('ecommerce.products') }}" wire:navigate style="text-transform: capitalize;">Products</a>
                         </li>
                         <li class="{{ request()->routeIs('courses.*') ? 'active' : '' }}">
-                            <a href="{{ route('courses.index') }}">Courses</a>
+                            <a href="{{ route('courses.index') }}" wire:navigate>Courses</a>
                         </li>
                     @endif
                 </ul>
@@ -207,11 +207,11 @@
                 </li>
                 @guest
                     <li class="nav-item dropdown doctor-entry">
-                        <a class="nav-link btn btn-outline-primary rounded-pill dropdown-toggle d-inline-flex align-items-center gap-2 px-3 py-2 ms-2" href="#" id="doctorMenuDropdown"
-                            data-bs-toggle="dropdown" aria-expanded="false" style="border: 1px solid #2563eb; color: #2563eb !important;">
+                        <a class="nav-link btn d-inline-flex align-items-center gap-1 px-3 py-2 ms-2" href="#" id="doctorMenuDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false" style="border: 1.5px solid #2563eb !important; color: #2563eb !important; border-radius: 4px !important; font-size: 14px; font-weight: 600; background: #ffffff !important;">
                             <i class="fas fa-stethoscope"></i> For Doctors
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="doctorMenuDropdown">
+                        <div class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="doctorMenuDropdown">
                             <a class="dropdown-item" href="{{ route('doctor.login') }}">
                                 <i class="fas fa-sign-in-alt me-2"></i>Doctor Login
                             </a>
@@ -221,10 +221,10 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-primary rounded-pill px-4 py-2 text-white ms-2" href="{{ route('register') }}" style="background: #2563eb; border: none;">Sign Up</a>
+                        <a class="nav-link btn text-white ms-2 px-3 py-2" href="{{ route('register') }}" style="background: #2563eb !important; border: 1.5px solid #2563eb !important; border-radius: 4px !important; font-size: 14px; font-weight: 600; box-shadow: 0 4px 10px rgba(37,99,235,0.2) !important;">Sign Up</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-primary rounded-pill px-4 py-2 ms-2" href="{{ route('login') }}" style="border: 1px solid #2563eb; color: #2563eb !important;">Login</a>
+                        <a class="nav-link btn ms-2 px-3 py-2" href="{{ route('login') }}" style="border: 1.5px solid #2563eb !important; color: #2563eb !important; border-radius: 4px !important; font-size: 14px; font-weight: 600; background: #ffffff !important;">Login</a>
                     </li>
                 @else
                     <li class="nav-item dropdown has-arrow logged-item">

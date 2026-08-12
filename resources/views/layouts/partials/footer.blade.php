@@ -77,14 +77,14 @@
                     <div class="footer-widget footer-menu">
                         <h2 class="footer-title">For Patients</h2>
                         <ul>
-                            <li><a href="{{ route('doctors.search') }}"><i class="fas fa-angle-double-right"></i> Search for
+                            <li><a href="{{ route('doctors.search') }}" wire:navigate><i class="fas fa-angle-double-right"></i> Search for
                                     Doctors</a></li>
-                            <li><a href="{{ route('login') }}"><i class="fas fa-angle-double-right"></i> Login</a></li>
-                            <li><a href="{{ route('register') }}"><i class="fas fa-angle-double-right"></i> Register</a>
+                            <li><a href="{{ route('login') }}" wire:navigate><i class="fas fa-angle-double-right"></i> Login</a></li>
+                            <li><a href="{{ route('register') }}" wire:navigate><i class="fas fa-angle-double-right"></i> Register</a>
                             </li>
-                            <li><a href="{{ route('doctors.search') }}"><i class="fas fa-angle-double-right"></i> Booking</a>
+                            <li><a href="{{ route('doctors.search') }}" wire:navigate><i class="fas fa-angle-double-right"></i> Booking</a>
                             </li>
-                            <li><a href="{{ route('patient.dashboard') }}"><i class="fas fa-angle-double-right"></i>
+                            <li><a href="{{ route('patient.dashboard') }}" wire:navigate><i class="fas fa-angle-double-right"></i>
                                     Patient Dashboard</a></li>
                         </ul>
                     </div>

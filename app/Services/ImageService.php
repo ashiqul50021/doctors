@@ -107,6 +107,11 @@ class ImageService
             $sourceImage = $resizedImage;
         }
 
+        // Ensure image is truecolor before WebP conversion (Palette images are not supported by imagewebp)
+        if (function_exists('imageistruecolor') && !imageistruecolor($sourceImage)) {
+            imagepalettetotruecolor($sourceImage);
+        }
+
         // Save as WebP with compression
         $saved = function_exists('imagewebp') && imagewebp($sourceImage, $fullPath, $quality);
         imagedestroy($sourceImage);

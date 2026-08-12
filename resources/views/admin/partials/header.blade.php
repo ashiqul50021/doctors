@@ -3,11 +3,11 @@
 
     <!-- Logo -->
     <div class="header-left">
-        <a href="{{ route('admin.dashboard') }}" class="logo">
+        <a href="{{ route('admin.dashboard') }}" wire:navigate class="logo">
             <img src="{{ !empty($siteSettings['logo']) ? asset($siteSettings['logo']) : asset('backend/img/logo.png') }}"
                 alt="Logo">
         </a>
-        <a href="{{ route('admin.dashboard') }}" class="logo logo-small">
+        <a href="{{ route('admin.dashboard') }}" wire:navigate class="logo logo-small">
             <img src="{{ !empty($siteSettings['favicon']) ? asset($siteSettings['favicon']) : asset('backend/img/logo-small.png') }}"
                 alt="Logo" width="30" height="30">
         </a>

@@ -38,6 +38,15 @@
 
     <!-- Custom Admin CSS -->
     <link rel="stylesheet" href="{{ asset('backend/css/admin-custom.css') }}?v={{ @filemtime(base_path('backend/css/admin-custom.css')) }}">
+
+    <style>
+        .livewire-progress-bar {
+            background-color: #3b82f6 !important;
+            height: 3px !important;
+        }
+    </style>
+
+    @livewireStyles
 </head>
 
 <body>
@@ -94,6 +103,16 @@
 
     <!-- Custom JS -->
     <script src="{{ asset('backend/js/script.js') }}?v={{ @filemtime(base_path('backend/js/script.js')) }}"></script>
+    @livewireScripts
+    <script>
+        document.addEventListener('livewire:navigated', () => {
+            if (window.jQuery && $.fn.DataTable) {
+                $('.datatable:not(.dataTable)').DataTable({
+                    bFilter: false,
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

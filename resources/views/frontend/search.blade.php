@@ -35,6 +35,24 @@
                     <!-- Filter Body -->
                     <div class="filter-body">
 
+                        <!-- Speciality Section -->
+                        <div class="filter-section">
+                            <div class="filter-section-header" onclick="toggleSection(this)">
+                                <h5>SPECIALITY</h5>
+                                <i class="fas fa-chevron-down toggle-icon"></i>
+                            </div>
+                            <div class="filter-section-content" style="max-height: 240px; overflow-y: auto; padding-right: 4px;">
+                                @foreach($specialities as $speciality)
+                                <label class="custom-filter-check">
+                                    <input type="checkbox" name="select_specialist[]" value="{{ $speciality->id }}"
+                                        {{ in_array($speciality->id, (array)request('select_specialist')) ? 'checked' : '' }}>
+                                    <span class="check-box"></span>
+                                    <span class="check-label">{{ $speciality->name }}</span>
+                                </label>
+                                @endforeach
+                            </div>
+                        </div>
+
                         <!-- Location Section -->
                         <div class="filter-section">
                             <div class="filter-section-header" onclick="toggleSection(this)">
@@ -55,24 +73,6 @@
                                         <option value="">Select Area</option>
                                     </select>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Speciality Section -->
-                        <div class="filter-section">
-                            <div class="filter-section-header" onclick="toggleSection(this)">
-                                <h5>SPECIALITY</h5>
-                                <i class="fas fa-chevron-down toggle-icon"></i>
-                            </div>
-                            <div class="filter-section-content" style="max-height: 240px; overflow-y: auto; padding-right: 4px;">
-                                @foreach($specialities as $speciality)
-                                <label class="custom-filter-check">
-                                    <input type="checkbox" name="select_specialist[]" value="{{ $speciality->id }}"
-                                        {{ in_array($speciality->id, (array)request('select_specialist')) ? 'checked' : '' }}>
-                                    <span class="check-box"></span>
-                                    <span class="check-label">{{ $speciality->name }}</span>
-                                </label>
-                                @endforeach
                             </div>
                         </div>
 

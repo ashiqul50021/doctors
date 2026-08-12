@@ -86,7 +86,7 @@
                                     </div>
                                 </td>
                                 <td><span class="text-secondary fw-semibold">{{ $product->category->name ?? 'N/A' }}</span></td>
-                                <td><span class="price-text">${{ number_format($product->price, 2) }}</span></td>
+                                <td><span class="price-text">৳{{ number_format($product->price, 2) }}</span></td>
                                 <td>
                                     <div class="d-flex flex-column">
                                         <span class="fw-bold text-dark">{{ $availableStock }}</span>
