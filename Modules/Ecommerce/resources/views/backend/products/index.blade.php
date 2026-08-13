@@ -32,7 +32,7 @@
                 @endif
 
                 <div class="table-responsive">
-                    <table class="datatable table table-hover table-center mb-0">
+                    <table class="table table-hover table-center mb-0 w-100" id="yajra-products-table">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -44,83 +44,7 @@
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach($products as $product)
-                            @php
-                                $availableStock = $product->availableStock();
-                                $activeVariantCount = $product->activeVariantItems()->count();
-
-                                if ($availableStock < 1) {
-                                    $stockBadgeClass = 'bg-danger-light';
-                                    $stockLabel = 'Out of Stock';
-                                } elseif ($availableStock <= 10) {
-                                    $stockBadgeClass = 'bg-warning-light';
-                                    $stockLabel = 'Low Stock';
-                                } else {
-                                    $stockBadgeClass = 'bg-success-light';
-                                    $stockLabel = 'In Stock';
-                                }
-                            @endphp
-                            <tr>
-                                <td><span class="product-code-badge">#PRO{{ $product->id }}</span></td>
-                                <td>
-                                    <div class="table-avatar">
-                                        @php
-                                            $productImage = $product->image;
-
-                                            if (! $productImage && !empty($product->gallery) && is_array($product->gallery)) {
-                                                $productImage = $product->gallery[0] ?? null;
-                                            }
-                                        @endphp
-                                        @if($productImage)
-                                            <a href="#" class="avatar avatar-sm me-3">
-                                                <img class="avatar-img" src="{{ \Illuminate\Support\Str::startsWith($productImage, ['http://', 'https://']) ? $productImage : asset($productImage) }}" alt="Product">
-                                            </a>
-                                        @else
-                                            <span class="avatar avatar-sm me-3 d-inline-flex align-items-center justify-content-center bg-light text-muted border"
-                                                style="font-size: 9px; font-weight: 600;">
-                                                No Image
-                                            </span>
-                                        @endif
-                                        <a href="#">{{ $product->name }}</a>
-                                    </div>
-                                </td>
-                                <td><span class="text-secondary fw-semibold">{{ $product->category->name ?? 'N/A' }}</span></td>
-                                <td><span class="price-text">৳{{ number_format($product->price, 2) }}</span></td>
-                                <td>
-                                    <div class="d-flex flex-column">
-                                        <span class="fw-bold text-dark">{{ $availableStock }}</span>
-                                        <span class="badge {{ $stockBadgeClass }} mt-1" style="width: fit-content;">
-                                            {{ $stockLabel }}
-                                        </span>
-                                        <small class="text-muted mt-1" style="font-size: 11px;">
-                                            {{ $activeVariantCount > 0 ? $activeVariantCount . ' variant(s)' : 'Simple product' }}
-                                        </small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="status-toggle">
-                                        <input type="checkbox" id="status_{{ $product->id }}" class="check status-toggle-btn" data-id="{{ $product->id }}" {{ $product->is_active ? 'checked' : '' }}>
-                                        <label for="status_{{ $product->id }}" class="checktoggle">checkbox</label>
-                                    </div>
-                                </td>
-                                <td class="text-end">
-                                    <div class="actions">
-                                        <a class="btn-action-edit" href="{{ route('ecommerce.admin.products.edit', $product->id) }}">
-                                            <i class="fe fe-pencil"></i> Edit
-                                        </a>
-                                        <form action="{{ route('ecommerce.admin.products.destroy', $product->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn-action-delete">
-                                                <i class="fe fe-trash"></i> Delete
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -132,6 +56,26 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+        if ($.fn.DataTable.isDataTable('#yajra-products-table')) {
+            $('#yajra-products-table').DataTable().destroy();
+        }
+
+        const productsTable = $('#yajra-products-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('ecommerce.admin.products.index') }}",
+            columns: [
+                { data: 'code', name: 'id' },
+                { data: 'name', name: 'name' },
+                { data: 'category', name: 'category.name', defaultContent: 'N/A' },
+                { data: 'price', name: 'price' },
+                { data: 'stock', name: 'stock', orderable: false, searchable: false },
+                { data: 'status', name: 'is_active', orderable: false, searchable: false },
+                { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' }
+            ],
+            order: [[0, 'desc']]
+        });
+
         $(document).on('change', '.status-toggle-btn', function() {
             const checkbox = $(this);
             const productId = checkbox.data('id');

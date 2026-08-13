@@ -12,14 +12,88 @@ use App\Services\ImageService;
 use Modules\Ecommerce\Models\Product;
 use Modules\Ecommerce\Models\ProductCategory;
 
+use Yajra\DataTables\Facades\DataTables;
+
 class ProductController extends Controller
 {
     public function __construct(protected ProductStockService $stockService)
     {
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->ajax()) {
+            $products = Product::with(['category', 'variants'])->select('products.*');
+
+            return DataTables::of($products)
+                ->addIndexColumn()
+                ->editColumn('code', function ($row) {
+                    return '<span class="product-code-badge">#PRO' . $row->id . '</span>';
+                })
+                ->editColumn('name', function ($row) {
+                    $image = $row->image;
+                    if (!$image && !empty($row->gallery) && is_array($row->gallery)) {
+                        $image = $row->gallery[0] ?? null;
+                    }
+                    $imgUrl = $image ? (Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image)) : null;
+
+                    $avatarHtml = $imgUrl 
+                        ? '<a href="#" class="avatar avatar-sm me-2"><img class="avatar-img" src="' . $imgUrl . '" alt="Product"></a>'
+                        : '<span class="avatar avatar-sm me-2 d-inline-flex align-items-center justify-content-center bg-light text-muted border" style="font-size: 9px; font-weight: 600;">No Image</span>';
+
+                    return '<div class="table-avatar">' . $avatarHtml . '<a href="#" class="fw-semibold text-dark">' . e($row->name) . '</a></div>';
+                })
+                ->editColumn('category', function ($row) {
+                    return '<span class="text-secondary fw-semibold">' . e($row->category->name ?? 'N/A') . '</span>';
+                })
+                ->editColumn('price', function ($row) {
+                    return '<span class="price-text">৳' . number_format($row->price, 2) . '</span>';
+                })
+                ->editColumn('stock', function ($row) {
+                    $availableStock = $row->availableStock();
+                    $activeVariantCount = $row->activeVariantItems()->count();
+                    if ($availableStock < 1) {
+                        $stockBadgeClass = 'bg-danger-light';
+                        $stockLabel = 'Out of Stock';
+                    } elseif ($availableStock <= 10) {
+                        $stockBadgeClass = 'bg-warning-light';
+                        $stockLabel = 'Low Stock';
+                    } else {
+                        $stockBadgeClass = 'bg-success-light';
+                        $stockLabel = 'In Stock';
+                    }
+                    $variantText = $activeVariantCount > 0 ? $activeVariantCount . ' variant(s)' : 'Simple product';
+                    return '<div class="d-flex flex-column">
+                        <span class="fw-bold text-dark">' . $availableStock . '</span>
+                        <span class="badge ' . $stockBadgeClass . ' mt-1" style="width: fit-content;">' . $stockLabel . '</span>
+                        <small class="text-muted mt-1" style="font-size: 11px;">' . $variantText . '</small>
+                    </div>';
+                })
+                ->editColumn('status', function ($row) {
+                    $checked = $row->is_active ? 'checked' : '';
+                    return '<div class="status-toggle">
+                        <input type="checkbox" id="status_' . $row->id . '" class="check status-toggle-btn" data-id="' . $row->id . '" ' . $checked . '>
+                        <label for="status_' . $row->id . '" class="checktoggle">checkbox</label>
+                    </div>';
+                })
+                ->addColumn('action', function ($row) {
+                    $editUrl = route('ecommerce.admin.products.edit', $row->id);
+                    $destroyUrl = route('ecommerce.admin.products.destroy', $row->id);
+                    $csrf = csrf_field();
+                    $method = method_field('DELETE');
+                    return '<div class="actions text-end">
+                        <a class="btn-action-edit" href="' . $editUrl . '"><i class="fe fe-pencil"></i> Edit</a>
+                        <form action="' . $destroyUrl . '" method="POST" style="display:inline-block;" onsubmit="return confirm(\'Are you sure?\');">
+                            ' . $csrf . '
+                            ' . $method . '
+                            <button type="submit" class="btn-action-delete"><i class="fe fe-trash"></i> Delete</button>
+                        </form>
+                    </div>';
+                })
+                ->rawColumns(['code', 'name', 'category', 'price', 'stock', 'status', 'action'])
+                ->make(true);
+        }
+
         $products = Product::with(['category', 'variants'])->latest()->get();
         return view('ecommerce::backend.products.index', compact('products'));
     }
