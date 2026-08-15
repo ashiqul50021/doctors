@@ -48,6 +48,47 @@
             z-index: 9999;
             transition: width 200ms ease-in-out;
         }
+
+        /* Universal Plain/Crisp Button Radius (4px) */
+        button,
+        .btn,
+        .btn-primary,
+        .btn-secondary,
+        .btn-success,
+        .btn-danger,
+        .btn-warning,
+        .btn-info,
+        .btn-light,
+        .btn-dark,
+        .btn-outline-primary,
+        .btn-outline-secondary,
+        .btn-signup,
+        .header-login,
+        .btn-for-doctors,
+        .btn-buy-modern,
+        .btn-cart-modern,
+        .btn-view-details,
+        .btn-book-appointment,
+        .btn-view-all-arrow,
+        .btn-hero-cta,
+        .ref-btn-buy-now,
+        .ref-btn-cart,
+        .detail-buy-btn,
+        .detail-cart-btn,
+        .btn-package,
+        .btn-enroll,
+        .btn-filter,
+        .btn-clear,
+        .badge,
+        .chip,
+        .section-tag,
+        input[type="submit"],
+        input[type="button"],
+        input[type="reset"],
+        a.btn,
+        a[class*="btn-"] {
+            border-radius: 4px !important;
+        }
     </style>
 </head>
 
