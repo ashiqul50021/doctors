@@ -1183,9 +1183,16 @@
                 observer.observe(statsSection);
             }
 
-            // Hero Slider Initialization - Explicit Call
-            if ($('.hero-slider').length > 0) {
-                $('.hero-slider').slick({
+            // Hero Slider Initialization Function
+            function initHeroSlider() {
+                var $slider = $('.hero-slider');
+                if ($slider.length === 0) return;
+
+                if ($slider.hasClass('slick-initialized')) {
+                    $slider.slick('unslick');
+                }
+
+                $slider.slick({
                     dots: false,
                     autoplay: true,
                     autoplaySpeed: 4000,
@@ -1205,8 +1212,21 @@
                         }
                     }]
                 });
-                console.log('Hero Slider Initialized Successfully');
+
+                setTimeout(function () {
+                    if ($slider.hasClass('slick-initialized')) {
+                        $slider.slick('setPosition');
+                    }
+                }, 100);
             }
+
+            // Initialize on Document Ready
+            initHeroSlider();
+
+            // Re-initialize on Livewire SPA Navigation
+            $(document).on('livewire:navigated', function () {
+                initHeroSlider();
+            });
 
             // =====================================
             // CUSTOM SEARCHABLE DROPDOWN JS

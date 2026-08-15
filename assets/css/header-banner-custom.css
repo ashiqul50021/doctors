@@ -3962,7 +3962,12 @@ body {
 
 /* Critical Fix: Hide all slides except first one until Slick initializes */
 .hero-slider:not(.slick-initialized) .hero-slide-item:not(:first-child) {
-    display: none;
+    display: none !important;
+}
+
+.hero-slider:not(.slick-initialized) .hero-slide-item:first-child {
+    display: block !important;
+    width: 100% !important;
 }
 
 /* Ensure images cover full width of the container/slider */
@@ -4028,42 +4033,49 @@ body {
 /* Slick Arrows - Position text-white inside the banner */
 .hero-slider .slick-prev,
 .hero-slider .slick-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.8) !important;
-    /* Semi-transparent */
-    border: none;
-    border-radius: 50%;
-    color: #2563eb;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    color: #2563eb !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
     z-index: 1000 !important;
-    /* High z-index */
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    line-height: 1 !important;
+}
+
+.hero-slider .slick-prev:before,
+.hero-slider .slick-next:before {
+    display: none !important;
+    content: '' !important;
 }
 
 .hero-slider .slick-prev {
     left: 20px !important;
-    /* Force Inside left */
+    right: auto !important;
 }
 
 .hero-slider .slick-next {
     right: 20px !important;
-    /* Force Inside right */
+    left: auto !important;
 }
-
 
 .hero-slider .slick-prev:hover,
 .hero-slider .slick-next:hover {
-    background: #ffffff;
-    color: #2563eb;
-    transform: translateY(-50%) scale(1.1);
+    background: #ffffff !important;
+    color: #2563eb !important;
+    transform: translateY(-50%) scale(1.1) !important;
 }
 
 /* Fix Search Bar Width to match Container/Banner */

@@ -271,11 +271,59 @@
     @livewireScripts
 
     <script>
+        function runGlobalSliderInit() {
+            if (typeof $ !== 'undefined' && typeof $.fn.slick !== 'undefined') {
+                var $slider = $('.hero-slider');
+                if ($slider.length > 0) {
+                    if ($slider.hasClass('slick-initialized')) {
+                        try {
+                            $slider.slick('unslick');
+                        } catch (e) {}
+                    }
+                    $slider.slick({
+                        dots: false,
+                        autoplay: true,
+                        autoplaySpeed: 4000,
+                        infinite: true,
+                        speed: 500,
+                        fade: true,
+                        cssEase: 'linear',
+                        slidesToShow: 1,
+                        slidesToScroll: 1,
+                        arrows: true,
+                        prevArrow: '<button type="button" class="slick-prev"><i class="fas fa-chevron-left"></i></button>',
+                        nextArrow: '<button type="button" class="slick-next"><i class="fas fa-chevron-right"></i></button>',
+                        responsive: [{
+                            breakpoint: 768,
+                            settings: {
+                                arrows: false
+                            }
+                        }]
+                    });
+                    setTimeout(function () {
+                        if ($slider.hasClass('slick-initialized')) {
+                            $slider.slick('setPosition');
+                        }
+                    }, 50);
+                    setTimeout(function () {
+                        if ($slider.hasClass('slick-initialized')) {
+                            $slider.slick('setPosition');
+                        }
+                    }, 250);
+                }
+            }
+        }
+
         document.addEventListener('livewire:navigated', () => {
-            // Re-initialize scripts or sliders after Livewire navigate swaps page content
-            if (typeof $.fn.select2 !== 'undefined' && $('.select').length > 0) {
+            // Re-initialize select2 if needed
+            if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined' && $('.select').length > 0) {
                 $('.select').select2({ minimumResultsForSearch: -1, width: '100%' });
             }
+
+            // Re-initialize hero slider
+            requestAnimationFrame(() => {
+                runGlobalSliderInit();
+            });
         });
     </script>
 </body>
