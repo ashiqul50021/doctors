@@ -16,6 +16,17 @@
         <div class="hero-wave-pattern"></div>
 
         <div class="container">
+            <!-- Hero Banner Skeleton (Hidden when Slick initializes) -->
+            <div class="hero-banner-skeleton d-none" id="heroBannerSkeleton">
+                <div class="skeleton-hero-left">
+                    <div class="skeleton-hero-title-1 skeleton-shimmer"></div>
+                    <div class="skeleton-hero-title-2 skeleton-shimmer"></div>
+                    <div class="skeleton-hero-badge skeleton-shimmer"></div>
+                    <div class="skeleton-hero-btn skeleton-shimmer"></div>
+                </div>
+                <div class="skeleton-hero-right skeleton-shimmer"></div>
+            </div>
+
             <!-- Hero Slider -->
             <div class="hero-slider">
                 @if(isset($banners) && $banners->count() > 0)
@@ -1359,9 +1370,48 @@
             // Product filtering functionality
             var searchTimeout;
 
+            function renderProductSkeletons(count = 6) {
+                var grid = $('#productsGrid');
+                grid.empty();
+                var skeletonHtml = '';
+                for (var i = 0; i < count; i++) {
+                    skeletonHtml += `
+                        <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-4 product-skeleton-item">
+                            <div class="product-card-skeleton">
+                                <div class="skeleton-img-wrap">
+                                    <div class="skeleton-badge skeleton-shimmer"></div>
+                                </div>
+                                <div class="skeleton-details">
+                                    <div class="skeleton-rating-row">
+                                        <div class="skeleton-rating-stars skeleton-shimmer"></div>
+                                        <div class="skeleton-rating-text skeleton-shimmer"></div>
+                                    </div>
+                                    <div class="skeleton-brand skeleton-shimmer"></div>
+                                    <div class="skeleton-title-1 skeleton-shimmer"></div>
+                                    <div class="skeleton-title-2 skeleton-shimmer"></div>
+                                    <div class="skeleton-footer">
+                                        <div class="skeleton-price-block">
+                                            <div class="skeleton-price-main skeleton-shimmer"></div>
+                                            <div class="skeleton-price-sub skeleton-shimmer"></div>
+                                        </div>
+                                        <div class="skeleton-btn-group">
+                                            <div class="skeleton-btn-cart skeleton-shimmer"></div>
+                                            <div class="skeleton-btn-buy skeleton-shimmer"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                grid.html(skeletonHtml);
+            }
+
             function filterProducts() {
                 var category = $('input[name="product_category"]:checked').val();
                 var search = $('#productSearchInput').val();
+
+                renderProductSkeletons(6);
 
                 $.ajax({
                     url: '/api/products/filter',
@@ -1369,6 +1419,9 @@
                     data: { category: category, search: search },
                     success: function (products) {
                         renderProducts(products);
+                    },
+                    error: function () {
+                        $('#productsGrid').html('<div class="col-12"><div class="alert alert-danger text-center">Failed to load products. Please try again.</div></div>');
                     }
                 });
             }
@@ -1512,9 +1565,40 @@
             // Doctor filtering functionality
             var doctorSearchTimeout;
 
+            function renderDoctorSkeletons(count = 6) {
+                var grid = $('#doctorsGrid');
+                grid.empty();
+                var skeletonHtml = '';
+                for (var i = 0; i < count; i++) {
+                    skeletonHtml += `
+                        <div class="col-lg-4 col-md-6 col-sm-6 mb-4 doctor-skeleton-item">
+                            <div class="doctor-card-skeleton">
+                                <div class="skeleton-doc-img-wrap">
+                                    <div class="skeleton-doc-fee skeleton-shimmer"></div>
+                                    <div class="skeleton-doc-fav skeleton-shimmer"></div>
+                                </div>
+                                <div class="skeleton-doc-info">
+                                    <div class="skeleton-doc-speciality skeleton-shimmer"></div>
+                                    <div class="skeleton-doc-name skeleton-shimmer"></div>
+                                    <div class="skeleton-doc-rating skeleton-shimmer"></div>
+                                    <div class="skeleton-doc-location skeleton-shimmer"></div>
+                                    <div class="skeleton-doc-buttons">
+                                        <div class="skeleton-doc-btn skeleton-shimmer"></div>
+                                        <div class="skeleton-doc-btn skeleton-shimmer"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                grid.html(skeletonHtml);
+            }
+
             function filterDoctors() {
                 var speciality = $('#doctorSpecialitySelect').val();
                 var search = $('#doctorSearchInput').val();
+
+                renderDoctorSkeletons(6);
 
                 $.ajax({
                     url: '{{ route('api.doctors.filter') }}',
@@ -1524,7 +1608,7 @@
                         renderDoctors(doctors);
                     },
                     error: function () {
-                        $('#doctorsGrid').html('<div class="col-12"><div class="alert alert-danger text-center">Failed to load doctors.</div></div>');
+                        $('#doctorsGrid').html('<div class="col-12"><div class="alert alert-danger text-center">Failed to load doctors. Please try again.</div></div>');
                     }
                 });
             }
@@ -1607,6 +1691,7 @@
 @endpush
 
 @push('styles')
+    @include('ecommerce::components.skeletons.styles')
     <style>
         /* Modern styled dropdown select */
         .select-modern {

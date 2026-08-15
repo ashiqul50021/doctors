@@ -107,7 +107,7 @@
                     <div class="alert alert-danger shadow-sm border-0">{{ session('error') }}</div>
                 @endif
 
-                @if($errors->any())
+                @if(isset($errors) && $errors->any())
                     <div class="alert alert-danger shadow-sm border-0">
                         <ul class="mb-0">
                             @foreach($errors->all() as $error)
@@ -128,7 +128,7 @@
                     </div>
                 @endif
 
-                <div class="row">
+                <div class="row" id="catalogProductsGrid">
                     @forelse($products as $product)
                         @php
                             $availableStock = $product->availableStock();
@@ -227,6 +227,7 @@
 @endsection
 
 @push('styles')
+@include('ecommerce::components.skeletons.styles')
 <style>
     .product-page-wrap {
         background: radial-gradient(circle at top right, #eaf4ff 0%, #f7fbff 45%, #ffffff 100%);
@@ -737,6 +738,43 @@
             return normalizedUrl;
         }
 
+        function showCatalogSkeletons(count = 6) {
+            const grid = document.getElementById('catalogProductsGrid');
+            if (!grid) return;
+            let skeletonHtml = '';
+            for (let i = 0; i < count; i++) {
+                skeletonHtml += `
+                    <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-skeleton-item">
+                        <div class="product-card-skeleton">
+                            <div class="skeleton-img-wrap">
+                                <div class="skeleton-badge skeleton-shimmer"></div>
+                            </div>
+                            <div class="skeleton-details">
+                                <div class="skeleton-rating-row">
+                                    <div class="skeleton-rating-stars skeleton-shimmer"></div>
+                                    <div class="skeleton-rating-text skeleton-shimmer"></div>
+                                </div>
+                                <div class="skeleton-brand skeleton-shimmer"></div>
+                                <div class="skeleton-title-1 skeleton-shimmer"></div>
+                                <div class="skeleton-title-2 skeleton-shimmer"></div>
+                                <div class="skeleton-footer">
+                                    <div class="skeleton-price-block">
+                                        <div class="skeleton-price-main skeleton-shimmer"></div>
+                                        <div class="skeleton-price-sub skeleton-shimmer"></div>
+                                    </div>
+                                    <div class="skeleton-btn-group">
+                                        <div class="skeleton-btn-cart skeleton-shimmer"></div>
+                                        <div class="skeleton-btn-buy skeleton-shimmer"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            grid.innerHTML = skeletonHtml;
+        }
+
         function submitFilters() {
             const nextUrl = buildFilterUrl();
             const currentUrl = getCurrentUrl();
@@ -746,6 +784,7 @@
             }
 
             form.classList.add('is-filtering');
+            showCatalogSkeletons(6);
             window.location.assign(nextUrl.toString());
         }
 
