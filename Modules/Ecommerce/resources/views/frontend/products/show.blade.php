@@ -101,7 +101,7 @@
     }
 @endphp
 
-<div class="content product-single-page">
+<div class="content product-single-page" style="background-color: {{ $landingSettings['page_bg_color'] ?? '#ffffff' }} !important; color: {{ $landingSettings['page_text_color'] ?? '#1e293b' }} !important;">
     <div class="container">
         @if(session('success'))
             <div class="alert alert-success border-0 shadow-sm">{{ session('success') }}</div>
@@ -132,35 +132,6 @@
             <span><i class="fas fa-angle-right"></i></span>
             <span>{{ $product->name }}</span>
         </nav>
-
-        <!-- Urgency Countdown & Pricing Banner -->
-        @if($showCountdown)
-        <div class="landing-urgency-banner mb-4">
-            <div class="row align-items-center g-3">
-                <div class="col-md-7 text-center text-md-start">
-                    <span class="offer-badge-pill">সীমিত সময়ের অফার! (Limited Time Offer)</span>
-                    <h3 class="mb-1 text-white fw-bold">{{ $countdownTitle }}</h3>
-                    <p class="text-white-50 mb-0">{{ $countdownSubtitle }}</p>
-                </div>
-                <div class="col-md-5 d-flex justify-content-center justify-content-md-end">
-                    <div class="countdown-timer-wrapper" id="landingCountdown">
-                        <div class="time-block">
-                            <span class="time-val" id="timer-hours">02</span>
-                            <span class="time-lbl">Hours</span>
-                        </div>
-                        <div class="time-block">
-                            <span class="time-val" id="timer-minutes">45</span>
-                            <span class="time-lbl">Min</span>
-                        </div>
-                        <div class="time-block">
-                            <span class="time-val" id="timer-seconds">30</span>
-                            <span class="time-lbl">Sec</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
 
         <section class="product-hero-card">
             <div class="row g-4 align-items-start">
@@ -269,9 +240,9 @@
                         <div class="ref-description-block">
                             <h5 class="ref-desc-title">Description:</h5>
                             <div class="ref-desc-content" id="refDescContent">
-                                <p class="ref-desc-text">
-                                    {{ $product->description ?: 'High-quality healthcare and wellness formulation. Please consume or use strictly according to instructions or professional healthcare advice.' }}
-                                </p>
+                                <div class="ref-desc-text rich-description-area">
+                                    {!! $product->description ?: 'High-quality healthcare and wellness formulation. Please consume or use strictly according to instructions or professional healthcare advice.' !!}
+                                </div>
                             </div>
                         </div>
 
@@ -369,257 +340,51 @@
 
         <!-- Dynamic Layout Sections -->
         @php
-            $sections = $landingSettings['sections'] ?? null;
+            $sections = $landingSettings['sections'] ?? [];
             if (!is_array($sections)) {
                 $sections = [];
-
-                // 1. Features
-                $features = [];
-                if (isset($landingSettings['product_features'])) {
-                    $features = $landingSettings['product_features'];
-                } else {
-                    for ($i = 1; $i <= 6; $i++) {
-                        $val = $landingSettings["product_feature_{$i}"] ?? '';
-                        if (!empty(trim((string)$val))) $features[] = $val;
-                    }
-                }
-                if (!empty($features)) {
-                    $sections[] = [
-                        'type' => 'features',
-                        'title' => $landingSettings['product_features_title'] ?? 'আমাদের প্রোডাক্টের বৈশিষ্ট্য',
-                        'tag' => 'Product Features',
-                        'style' => 'blue-check',
-                        'items' => $features
-                    ];
-                }
-
-                // 1.5. Badges Section
-                if (!empty($badges)) {
-                    $sections[] = [
-                        'type' => 'badges',
-                        'title' => $landingSettings['trust_badges_title'] ?? 'আমাদের থেকে কেন কিনবেন?',
-                        'tag' => 'Trust Badges',
-                        'badges' => array_values($badges)
-                    ];
-                }
-
-                // 2. Video
-                if (!empty($landingSettings['youtube_video_url'])) {
-                    $sections[] = [
-                        'type' => 'video',
-                        'title' => 'পণ্যটির বিবরণী ও ব্যবহারবিধি ভিডিও',
-                        'tag' => 'Showcase Video'
-                    ];
-                }
-
-                // 3. Problems
-                $problems = [];
-                if (isset($landingSettings['product_problems'])) {
-                    $problems = $landingSettings['product_problems'];
-                } else {
-                    for ($i = 1; $i <= 6; $i++) {
-                        $val = $landingSettings["problem_{$i}"] ?? '';
-                        if (!empty(trim((string)$val))) $problems[] = $val;
-                    }
-                }
-                if (!empty($problems)) {
-                    $sections[] = [
-                        'type' => 'problems',
-                        'title' => $landingSettings['problems_title'] ?? 'এই সমস্যাগুলো কি আপনারও আছে?',
-                        'tag' => 'Common Issues',
-                        'style' => 'red-cross',
-                        'items' => $problems
-                    ];
-                }
-
-                // 4. Benefits
-                $benefits = [];
-                if (isset($landingSettings['product_benefits'])) {
-                    $benefits = $landingSettings['product_benefits'];
-                } else {
-                    for ($i = 1; $i <= 6; $i++) {
-                        $val = $landingSettings["benefit_{$i}"] ?? '';
-                        if (!empty(trim((string)$val))) $benefits[] = $val;
-                    }
-                }
-                if (!empty($benefits)) {
-                    $sections[] = [
-                        'type' => 'benefits',
-                        'title' => $landingSettings['benefits_title'] ?? 'বৈশিষ্ট্যগুলো কি কি জানতে চান?',
-                        'tag' => 'Benefits',
-                        'style' => 'green-check',
-                        'items' => $benefits
-                    ];
-                }
-
-                // 5. Gallery
-                if ($galleryImages->count() > 1) {
-                    $sections[] = [
-                        'type' => 'gallery',
-                        'title' => 'পণ্যটির কিছু বাস্তব ছবি (Real Gallery)',
-                        'tag' => 'Showcase'
-                    ];
-                }
-
-                // 6. Package Includes
-                $package = [];
-                if (isset($landingSettings['package_includes'])) {
-                    $package = $landingSettings['package_includes'];
-                } else {
-                    for ($i = 1; $i <= 6; $i++) {
-                        $val = $landingSettings["package_include_{$i}"] ?? '';
-                        if (!empty(trim((string)$val))) $package[] = $val;
-                    }
-                }
-                if (!empty($package)) {
-                    $sections[] = [
-                        'type' => 'package',
-                        'title' => $landingSettings['package_includes_title'] ?? 'প্যাকেজের সাথে যা যা পাবেন',
-                        'tag' => 'Package Contents',
-                        'style' => 'package-box',
-                        'items' => $package
-                    ];
-                }
-
-                // 7. Why Choose Us
-                $sections[] = [
-                    'type' => 'trust',
-                    'title' => $trustTitle ?? 'কেন আমাদের থেকে অর্ডার করবেন?',
-                    'tag' => 'Trust',
-                    'trust_features' => array_values($trustFeatures)
-                ];
-
-                // 8. FAQ
-                $faqs = [];
-                if (isset($landingSettings['faqs']) && is_array($landingSettings['faqs'])) {
-                    $faqs = $landingSettings['faqs'];
-                } else {
-                    for ($i = 1; $i <= 4; $i++) {
-                        $q = $landingSettings["faq_q_{$i}"] ?? '';
-                        $a = $landingSettings["faq_a_{$i}"] ?? '';
-                        if (!empty(trim((string)$q)) && !empty(trim((string)$a))) {
-                            $faqs[] = ['q' => $q, 'a' => $a];
-                        }
-                    }
-                }
-                if (!empty($faqs)) {
-                    $sections[] = [
-                        'type' => 'faq',
-                        'title' => $landingSettings['faqs_title'] ?? 'কিছু সাধারণ প্রশ্ন',
-                        'tag' => 'FAQs',
-                        'style' => 'faq-accordion',
-                        'faqs' => $faqs
-                    ];
-                }
-
-                // 9. Custom Sections
-                if (isset($landingSettings['custom_sections']) && is_array($landingSettings['custom_sections'])) {
-                    foreach ($landingSettings['custom_sections'] as $cs) {
-                        $sections[] = [
-                            'type' => 'custom',
-                            'title' => $cs['title'] ?? '',
-                            'tag' => $cs['tag'] ?? 'INFO',
-                            'style' => $cs['style'] ?? 'blue-check',
-                            'items' => $cs['items'] ?? []
-                        ];
-                    }
-                }
             }
-        @endphp
-
-        @php
-            $styleMap = [
-                'blue-check' => [
-                    'border' => '#dbeafe', 'bg' => '#fff', 'accent' => 'var(--primary-blue)', 'icon' => 'fas fa-check-square', 'tag_bg' => 'rgba(29, 78, 216, 0.1)'
-                ],
-                'green-check' => [
-                    'border' => '#dbeafe', 'bg' => '#fff', 'accent' => '#10b981', 'icon' => 'fas fa-check-circle', 'tag_bg' => 'rgba(16, 185, 129, 0.1)'
-                ],
-                'red-cross' => [
-                    'border' => '#fee2e2', 'bg' => '#fffafb', 'accent' => '#ef4444', 'icon' => 'fas fa-times-circle', 'tag_bg' => 'rgba(239, 68, 68, 0.1)'
-                ],
-                'yellow-star' => [
-                    'border' => '#fef3c7', 'bg' => '#fffdfa', 'accent' => '#f59e0b', 'icon' => 'fas fa-star', 'tag_bg' => 'rgba(245, 158, 11, 0.1)'
-                ],
-                'orange-info' => [
-                    'border' => '#ffedd5', 'bg' => '#fffbfa', 'accent' => '#f97316', 'icon' => 'fas fa-info-circle', 'tag_bg' => 'rgba(249, 115, 22, 0.1)'
-                ],
-                'package-box' => [
-                    'border' => '#ffedd5', 'bg' => '#fffbfa', 'accent' => '#f59e0b', 'icon' => 'fas fa-box-open', 'tag_bg' => 'rgba(245, 158, 11, 0.1)'
-                ],
-                'faq-accordion' => [
-                    'border' => '#dbeafe', 'bg' => '#fff', 'accent' => 'var(--primary-blue)', 'icon' => 'fas fa-question-circle', 'tag_bg' => 'rgba(59, 130, 246, 0.1)'
-                ]
-            ];
         @endphp
 
         @foreach($sections as $section)
             @php
+                $secIsActive = isset($section['is_active']) ? (string)$section['is_active'] : '1';
+                if ($secIsActive !== '1' && $secIsActive !== 'true' && $secIsActive !== 1) {
+                    continue;
+                }
+
                 $secType = $section['type'] ?? 'custom';
                 $secTitle = $section['title'] ?? '';
                 $secTag = $section['tag'] ?? '';
-                $secStyle = $section['style'] ?? 'blue-check';
+                $bgColor = !empty($section['bg_color']) ? $section['bg_color'] : '#ffffff';
+                $textColor = !empty($section['text_color']) ? $section['text_color'] : '#1e293b';
+                $fontSize = !empty($section['font_size']) ? $section['font_size'] : '16px';
+                $lineHeight = !empty($section['line_height']) ? $section['line_height'] : '1.6';
 
-                $cfg = $styleMap[$secStyle] ?? $styleMap['blue-check'];
-
-                $bgColor = !empty($section['bg_color']) ? $section['bg_color'] : ($cfg['bg'] ?? '#ffffff');
-                $textColor = !empty($section['text_color']) ? $section['text_color'] : '#333333';
-                $accentColor = !empty($section['accent_color']) ? $section['accent_color'] : ($cfg['accent'] ?? '#007bff');
-                $fontWeight = !empty($section['font_weight']) ? $section['font_weight'] : '400';
-
-                $secShowBtn = isset($section['show_button']) ? (string)$section['show_button'] : '1';
+                $secShowBtn = isset($section['show_button']) ? (string)$section['show_button'] : '0';
                 $secBtnText = !empty($section['button_text']) ? $section['button_text'] : 'অর্ডার করতে ক্লিক করুন';
             @endphp
 
-            @if($secType === 'features')
-                @php
-                    $featItems = $section['items'] ?? [];
-                @endphp
-                @if(!empty($featItems))
-                    <section class="landing-features-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
-                            <div class="section-heading text-center mb-4">
-                                @if(!empty($secTag))
-                                    <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
-                                @endif
-                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
-                            </div>
-                            <div class="features-list-wrapper mx-auto" style="max-width: 800px;">
-                                <ul class="features-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
-                                    @foreach($featItems as $featureText)
-                                        <li class="features-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: rgba(255,255,255,0.85); border: 1px solid {{ $accentColor }}; transition: all 0.2s ease; border-left: 4px solid {{ $accentColor }};">
-                                            <span class="features-icon-list-icon fs-4" style="color: {{ $accentColor }} !important; line-height: 1;">
-                                                <i class="{{ $cfg['icon'] }}"></i>
-                                            </span>
-                                            <span class="features-icon-list-text text-start" style="font-size: 15px; line-height: 1.5; text-align: left; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $featureText }}</span>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
-                @endif
-
-            @elseif($secType === 'badges')
+            @if($secType === 'badges')
                 @php
                     $secBadges = $section['badges'] ?? $badges;
                 @endphp
                 @if(!empty($secBadges))
                     <section class="landing-badges-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important; font-size: {{ $fontSize }} !important; line-height: {{ $lineHeight }} !important;">
                             <div class="text-center mb-4">
                                 @if(!empty($secTag))
-                                    <span class="section-tag mb-2 d-inline-block" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                    <span class="section-tag mb-2 d-inline-block">{{ $secTag }}</span>
                                 @endif
-                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important; font-size: 24px;">{{ $secTitle }}</h3>
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-size: 24px; font-weight: 700;">{{ $secTitle }}</h3>
                             </div>
                             <div class="row g-3 mb-2 mt-2">
                                 @foreach($secBadges as $badge)
                                     <div class="col-6 col-md-3">
-                                        <div class="landing-badge-card p-3 rounded-3 text-center border h-100" style="background: rgba(255,255,255,0.85); border-color: {{ $accentColor }} !important;">
-                                            <i class="{{ $badge['icon'] ?? 'fas fa-check-circle' }} d-block mb-2 fs-3" style="color: {{ $accentColor }} !important;"></i>
-                                            <h5 class="mb-1" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important; font-size: 16px;">{{ $badge['title'] ?? '' }}</h5>
-                                            <p class="small mb-0" style="color: {{ $textColor }} !important; opacity: 0.85; font-size: 13px;">{{ $badge['desc'] ?? '' }}</p>
+                                        <div class="landing-badge-card p-3 rounded-3 text-center border h-100" style="background: rgba(255,255,255,0.9); border-color: rgba(0,0,0,0.08) !important;">
+                                            <i class="{{ $badge['icon'] ?? 'fas fa-check-circle' }} d-block mb-2 fs-3 text-primary"></i>
+                                            <h5 class="mb-1 fw-bold" style="color: {{ $textColor }} !important; font-size: 15px;">{{ $badge['title'] ?? '' }}</h5>
+                                            <p class="small mb-0 opacity-75" style="color: {{ $textColor }} !important; font-size: 13px;">{{ $badge['desc'] ?? '' }}</p>
                                         </div>
                                     </div>
                                 @endforeach
@@ -628,90 +393,34 @@
                     </section>
                 @endif
 
-            @elseif($secType === 'video')
-                @if(!empty($landingSettings['youtube_video_url']))
-                    @php
-                        $videoUrl = $landingSettings['youtube_video_url'];
-                        $videoId = null;
-                        if (preg_match('%(?:youtube(?:-nocookie)?\\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|win/.+|watch\\?v=)|youtu\\.be/)([^"&?/\\s]{11})%i', $videoUrl, $match)) {
-                            $videoId = $match[1];
-                        }
-                    @endphp
-                    @if($videoId)
-                        <section class="landing-video-section mb-4">
-                            <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
-                                <div class="section-heading text-center mb-4">
-                                    @if(!empty($secTag))
-                                        <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
-                                    @endif
-                                    <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
-                                </div>
-                                <div class="video-container-wrapper mx-auto" style="max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 16px; overflow: hidden; border: 1px solid {{ $accentColor }};">
-                                    <div class="ratio ratio-16x9">
-                                        <iframe src="https://www.youtube.com/embed/{{ $videoId }}" 
-                                                title="Product Video" 
-                                                allowfullscreen 
-                                                style="border: 0;"></iframe>
+            @elseif($secType === 'faq')
+                @php
+                    $faqItems = $section['faqs'] ?? [];
+                @endphp
+                @if(!empty($faqItems))
+                    <section class="landing-faqs-section mb-4">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important; font-size: {{ $fontSize }} !important; line-height: {{ $lineHeight }} !important;">
+                            <div class="section-heading text-center mb-4">
+                                @if(!empty($secTag))
+                                    <span class="section-tag">{{ $secTag }}</span>
+                                @endif
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-size: 24px; font-weight: 700;">{{ $secTitle }}</h3>
+                            </div>
+                            <div class="accordion accordion-flush mx-auto" id="landingFAQAccordion{{ $loop->index }}" style="max-width: 800px;">
+                                @foreach($faqItems as $faqIndex => $faq)
+                                    <div class="accordion-item border rounded-3 mb-2 overflow-hidden shadow-sm">
+                                        <h2 class="accordion-header" id="faqHeading{{ $loop->parent->index }}_{{ $faqIndex }}">
+                                            <button class="accordion-button collapsed fs-6" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $loop->parent->index }}_{{ $faqIndex }}" aria-expanded="false" aria-controls="faqCollapse{{ $loop->parent->index }}_{{ $faqIndex }}" style="background: rgba(255,255,255,0.95); color: {{ $textColor }} !important; font-weight: 600; outline: none; box-shadow: none;">
+                                                <i class="fas fa-question-circle text-primary me-2"></i> {{ $faq['q'] ?? '' }}
+                                            </button>
+                                        </h2>
+                                        <div id="faqCollapse{{ $loop->parent->index }}_{{ $faqIndex }}" class="accordion-collapse collapse" aria-labelledby="faqHeading{{ $loop->parent->index }}_{{ $faqIndex }}" data-bs-parent="#landingFAQAccordion{{ $loop->index }}">
+                                            <div class="accordion-body text-start" style="font-size: {{ $fontSize }}; line-height: {{ $lineHeight }}; background: #fff; text-align: left; color: {{ $textColor }} !important;">
+                                                {{ $faq['a'] ?? '' }}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </section>
-                    @endif
-                @endif
-
-            @elseif($secType === 'problems')
-                @php
-                    $probItems = $section['items'] ?? [];
-                @endphp
-                @if(!empty($probItems))
-                    <section class="landing-problems-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
-                            <div class="section-heading text-center mb-4">
-                                @if(!empty($secTag))
-                                    <span class="section-tag" style="background: rgba(239, 68, 68, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
-                                @endif
-                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
-                            </div>
-                            <div class="problems-list-wrapper mx-auto" style="max-width: 800px;">
-                                <ul class="problems-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
-                                    @foreach($probItems as $problemText)
-                                        <li class="problems-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: rgba(255,255,255,0.85); border: 1px solid {{ $accentColor }}; transition: all 0.2s ease; border-left: 4px solid {{ $accentColor }};">
-                                            <span class="problems-icon-list-icon fs-4" style="color: {{ $accentColor }} !important; line-height: 1;">
-                                                <i class="{{ $cfg['icon'] }}"></i>
-                                            </span>
-                                            <span class="problems-icon-list-text text-start" style="font-size: 15px; line-height: 1.5; text-align: left; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $problemText }}</span>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
-                @endif
-
-            @elseif($secType === 'benefits')
-                @php
-                    $benefitItems = $section['items'] ?? [];
-                @endphp
-                @if(!empty($benefitItems))
-                    <section class="landing-benefits-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
-                            <div class="section-heading text-center mb-4">
-                                @if(!empty($secTag))
-                                    <span class="section-tag" style="background: rgba(16, 185, 129, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
-                                @endif
-                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
-                            </div>
-                            <div class="benefits-list-wrapper mx-auto" style="max-width: 800px;">
-                                <ul class="benefits-icon-list-items list-unstyled ps-0 d-flex flex-column gap-3">
-                                    @foreach($benefitItems as $benefitText)
-                                        <li class="benefits-icon-list-item d-flex align-items-start gap-3 p-3 rounded-3" style="background: rgba(255,255,255,0.85); border: 1px solid {{ $accentColor }}; transition: all 0.2s ease; border-left: 4px solid {{ $accentColor }};">
-                                            <span class="benefits-icon-list-icon fs-4" style="color: {{ $accentColor }} !important; line-height: 1;">
-                                                <i class="{{ $cfg['icon'] }}"></i>
-                                            </span>
-                                            <span class="benefits-icon-list-text text-start" style="font-size: 15px; line-height: 1.5; text-align: left; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $benefitText }}</span>
-                                        </li>
-                                    @endforeach
-                                </ul>
+                                @endforeach
                             </div>
                         </div>
                     </section>
@@ -725,18 +434,18 @@
                 @endphp
                 @if($secGalleryImages->count() > 0)
                     <section class="landing-gallery-section my-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
                             <div class="section-heading text-center mb-4">
                                 @if(!empty($secTag))
-                                    <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                    <span class="section-tag">{{ $secTag }}</span>
                                 @endif
-                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-size: 24px; font-weight: 700;">{{ $secTitle }}</h3>
                             </div>
-                            <div id="realGalleryGrid">
+                            <div id="realGalleryGrid{{ $loop->index }}">
                                 <div class="row g-3 justify-content-center">
                                     @foreach($secGalleryImages as $image)
                                         <div class="col-md-6 col-lg-4">
-                                            <div class="gallery-image-wrapper card border-0 shadow-sm overflow-hidden p-2 bg-white" style="border-radius: 14px; border: 1px solid {{ $accentColor }} !important;">
+                                            <div class="gallery-image-wrapper card border-0 shadow-sm overflow-hidden p-2 bg-white" style="border-radius: 14px;">
                                                 <img src="{{ Str::startsWith($image, ['http://', 'https://', 'data:']) ? $image : asset($image) }}" class="img-fluid rounded"
                                                     alt="Gallery image" style="height: 220px; object-fit: cover; width: 100%;">
                                             </div>
@@ -748,87 +457,30 @@
                     </section>
                 @endif
 
-            @elseif($secType === 'package')
+            @elseif($secType === 'video')
                 @php
-                    $packageItems = $section['items'] ?? [];
+                    $videoUrl = $section['youtube_video_url'] ?? ($landingSettings['youtube_video_url'] ?? '');
+                    $videoId = null;
+                    if (preg_match('%(?:youtube(?:-nocookie)?\\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|win/.+|watch\\?v=)|youtu\\.be/)([^"&?/\\s]{11})%i', $videoUrl, $match)) {
+                        $videoId = $match[1];
+                    }
                 @endphp
-                @if(!empty($packageItems))
-                    <section class="landing-package-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
+                @if($videoId)
+                    <section class="landing-video-section mb-4">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
                             <div class="section-heading text-center mb-4">
                                 @if(!empty($secTag))
-                                    <span class="section-tag" style="background: rgba(245, 158, 11, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                    <span class="section-tag">{{ $secTag }}</span>
                                 @endif
-                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-size: 24px; font-weight: 700;">{{ $secTitle }}</h3>
                             </div>
-                            <div class="package-list-wrapper mx-auto" style="max-width: 800px;">
-                                <div class="p-3 rounded-3 border d-flex flex-column gap-3" style="background: rgba(255,255,255,0.85); border-color: {{ $accentColor }} !important;">
-                                    @foreach($packageItems as $includeText)
-                                        <div class="d-flex align-items-center gap-3 p-2 rounded border-start border-3" style="border-left-color: {{ $accentColor }} !important; background: #ffffff;">
-                                            <span class="fs-5" style="color: {{ $accentColor }} !important;"><i class="{{ $cfg['icon'] }}"></i></span>
-                                            <span class="fw-semibold" style="font-size: 15px; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $includeText }}</span>
-                                        </div>
-                                    @endforeach
+                            <div class="video-container-wrapper mx-auto" style="max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 16px; overflow: hidden;">
+                                <div class="ratio ratio-16x9">
+                                    <iframe src="https://www.youtube.com/embed/{{ $videoId }}" 
+                                            title="Product Video" 
+                                            allowfullscreen 
+                                            style="border: 0;"></iframe>
                                 </div>
-                            </div>
-                        </div>
-                    </section>
-                @endif
-
-            @elseif($secType === 'trust')
-                @php
-                    $secTrustFeatures = $section['trust_features'] ?? $trustFeatures;
-                @endphp
-                <section class="landing-trust-section mb-4">
-                    <div class="info-card p-4 text-center rounded-3 border shadow-sm" style="border-radius: 20px !important; background: {{ $bgColor }} !important; border: 1px solid {{ $accentColor }} !important; color: {{ $textColor }} !important;">
-                        @if(!empty($secTag))
-                            <span class="section-tag mb-2 d-inline-block" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
-                        @endif
-                        <h3 class="mb-4" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
-                        <div class="row g-4 text-start">
-                            @foreach($secTrustFeatures as $feature)
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-start gap-2 mb-2 p-3 rounded-3" style="background: rgba(255,255,255,0.85); border: 1px solid {{ $accentColor }};">
-                                        <span class="fs-5" style="color: {{ $accentColor }} !important;"><i class="fas fa-check-circle"></i></span>
-                                        <div>
-                                            <strong class="d-block mb-1" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $feature['title'] ?? '' }}</strong>
-                                            <span class="small" style="color: {{ $textColor }} !important; opacity: 0.85;">{{ $feature['desc'] ?? '' }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </section>
-
-            @elseif($secType === 'faq')
-                @php
-                    $faqItems = $section['faqs'] ?? [];
-                @endphp
-                @if(!empty($faqItems))
-                    <section class="landing-faqs-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
-                            <div class="section-heading text-center mb-4">
-                                @if(!empty($secTag))
-                                    <span class="section-tag" style="background: rgba(59, 130, 246, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
-                                @endif
-                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
-                            </div>
-                            <div class="accordion accordion-flush mx-auto" id="landingFAQAccordion{{ $loop->index }}" style="max-width: 800px;">
-                                @foreach($faqItems as $faqIndex => $faq)
-                                    <div class="accordion-item border rounded-3 mb-2 overflow-hidden shadow-sm" style="border: 1px solid {{ $accentColor }} !important;">
-                                        <h2 class="accordion-header" id="faqHeading{{ $loop->parent->index }}_{{ $faqIndex }}">
-                                            <button class="accordion-button collapsed fs-6" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $loop->parent->index }}_{{ $faqIndex }}" aria-expanded="false" aria-controls="faqCollapse{{ $loop->parent->index }}_{{ $faqIndex }}" style="background: rgba(255,255,255,0.9); color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important; outline: none; box-shadow: none;">
-                                                {{ $faq['q'] }}
-                                            </button>
-                                        </h2>
-                                        <div id="faqCollapse{{ $loop->parent->index }}_{{ $faqIndex }}" class="accordion-collapse collapse" aria-labelledby="faqHeading{{ $loop->parent->index }}_{{ $faqIndex }}" data-bs-parent="#landingFAQAccordion{{ $loop->index }}">
-                                            <div class="accordion-body text-start" style="line-height: 1.6; font-size: 14px; background: #fff; text-align: left; color: {{ $textColor }} !important;">
-                                                {{ $faq['a'] }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
                             </div>
                         </div>
                     </section>
@@ -837,120 +489,237 @@
             @elseif($secType === 'custom')
                 @php
                     $customItems = $section['items'] ?? [];
+                    $shortDesc = $section['short_desc'] ?? '';
                 @endphp
-                @if(!empty($customItems) || !empty($secTitle))
+                @if(!empty($customItems) || !empty($secTitle) || !empty($shortDesc))
                     <section class="landing-custom-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
+                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important; font-size: {{ $fontSize }} !important; line-height: {{ $lineHeight }} !important;">
                             <div class="section-heading text-center mb-4">
                                 @if(!empty($secTag))
-                                    <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
+                                    <span class="section-tag">{{ $secTag }}</span>
                                 @endif
-                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
+                                <h3 class="mt-2" style="color: {{ $textColor }} !important; font-size: 24px; font-weight: 700;">{{ $secTitle }}</h3>
                             </div>
-                            <div class="custom-list-wrapper mx-auto" style="max-width: 800px;">
-                                <ul class="list-unstyled ps-0 d-flex flex-column gap-3">
-                                    @foreach($customItems as $itemText)
-                                        <li class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: rgba(255,255,255,0.85); border: 1px solid {{ $accentColor }}; transition: all 0.2s ease; border-left: 4px solid {{ $accentColor }};">
-                                            <span class="fs-4" style="color: {{ $accentColor }} !important; line-height: 1;">
-                                                <i class="{{ $cfg['icon'] }}"></i>
-                                            </span>
-                                            <span class="text-start" style="font-size: 15px; line-height: 1.5; text-align: left; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $itemText }}</span>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
-                @endif
 
-            @elseif($secType === 'rich_text')
-                @php
-                    $content = $section['content'] ?? '';
-                @endphp
-                @if(!empty($content) || !empty($secTitle))
-                    <section class="landing-rich-text-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; border: 1px solid {{ $accentColor }} !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
-                            @if(!empty($secTitle) || !empty($secTag))
-                                <div class="section-heading text-center mb-4">
-                                    @if(!empty($secTag))
-                                        <span class="section-tag" style="background: rgba(13, 110, 253, 0.1) !important; color: {{ $accentColor }} !important; border: 1px solid {{ $accentColor }} !important;">{{ $secTag }}</span>
-                                    @endif
-                                    @if(!empty($secTitle))
-                                        <h3 class="mt-2" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
-                                    @endif
+                            @if(!empty($shortDesc))
+                                <div class="custom-short-desc text-center mx-auto mb-4" style="max-width: 800px; font-size: {{ $fontSize }}; line-height: {{ $lineHeight }}; color: {{ $textColor }} !important; opacity: 0.9;">
+                                    {!! nl2br(e($shortDesc)) !!}
                                 </div>
                             @endif
-                            <div class="rich-text-content mx-auto" style="max-width: 800px; font-size: 16px; line-height: 1.8; color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">
-                                {!! nl2br($content) !!}
-                            </div>
+
+                            @if(!empty($customItems))
+                                <div class="custom-list-wrapper mx-auto" style="max-width: 800px;">
+                                    <ul class="list-unstyled ps-0 d-flex flex-column gap-3">
+                                        @foreach($customItems as $itemText)
+                                            <li class="d-flex align-items-start gap-3 p-3 rounded-3 shadow-sm border" style="background: rgba(255,255,255,0.9); border-left: 4px solid var(--primary-blue) !important;">
+                                                <span class="fs-5 text-primary" style="line-height: 1.2;">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </span>
+                                                <span class="text-start" style="font-size: {{ $fontSize }}; line-height: {{ $lineHeight }}; color: {{ $textColor }} !important;">{{ $itemText }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
                         </div>
                     </section>
                 @endif
 
-            @elseif($secType === 'cta')
-                <section class="landing-cta-section my-4">
-                    <div class="info-card p-4 text-center rounded-3 border shadow-sm" style="border-radius: 20px !important; background-color: {{ $bgColor }} !important; border: 1px solid {{ $accentColor }} !important; color: {{ $textColor }} !important;">
-                        @if(!empty($secTitle))
-                            <h3 class="mb-3" style="color: {{ $textColor }} !important; font-weight: {{ $fontWeight }} !important;">{{ $secTitle }}</h3>
-                        @endif
-                        @if($stockQty > 0)
-                            <a href="#order-form" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 12px 40px; background-color: {{ $accentColor }} !important; border-color: {{ $accentColor }} !important;">
-                                <i class="fas fa-shopping-cart me-2"></i>
-                                <span>{{ $secBtnText }}</span>
-                            </a>
-                        @endif
+            @elseif($secType === 'order_form')
+                <!-- Custom Order Form Section -->
+                <section class="landing-order-form-section my-5" id="order-form">
+                    <div class="info-card p-4 p-md-5 rounded-4 shadow-sm border" style="background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important; font-size: {{ $fontSize }} !important; line-height: {{ $lineHeight }} !important;">
+                        <div class="section-heading text-center mb-4">
+                            @if(!empty($secTag))
+                                <span class="section-tag">{{ $secTag }}</span>
+                            @endif
+                            <h2 class="mt-2 fw-bold" style="color: {{ $textColor }} !important;">{{ $secTitle ?: 'অর্ডার করতে আপনার সঠিক তথ্য দিয়ে ফর্মটি পূরণ করুন' }}</h2>
+                            <p class="text-muted small">ক্যাশ অন ডেলিভারিতে পণ্য বুঝে পেয়ে মূল্য পরিশোধ করুন।</p>
+                        </div>
+
+                        <form action="{{ route('ecommerce.order.place') }}" method="POST" id="landingDirectCheckoutForm" class="mx-auto" style="max-width: 900px;">
+                            @csrf
+                            <input type="hidden" name="direct_order" value="1">
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" name="variant_id" id="directFormVariantId" value="{{ $selectedVariant ? $selectedVariant->id : '' }}">
+                            <input type="hidden" name="quantity" id="directFormQuantity" value="1">
+                            <input type="hidden" name="shipping_charge" id="directFormShippingCharge" value="130">
+                            <input type="hidden" name="coupon_code" id="directAppliedCouponCode" value="">
+
+                            <div class="row g-4">
+                                <!-- Customer Billing Information -->
+                                <div class="col-lg-6">
+                                    <div class="p-3 p-md-4 rounded-3 border bg-light h-100">
+                                        <h5 class="fw-bold mb-3 text-dark border-bottom pb-2">
+                                            <i class="fas fa-user-circle me-2 text-primary"></i>গ্রাহকের তথ্য
+                                        </h5>
+
+                                        <div class="form-group mb-3">
+                                            <label class="form-label small fw-bold text-dark">আপনার সম্পূর্ণ নাম <span class="text-danger">*</span></label>
+                                            <input type="text" name="name" class="form-control" placeholder="যেমন: মোঃ আশিকুল ইসলাম" value="{{ old('name', Auth::user()->name ?? '') }}" required>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label class="form-label small fw-bold text-dark">মোবাইল নম্বর <span class="text-danger">*</span></label>
+                                            <input type="text" name="phone" id="directFormPhone" class="form-control" placeholder="যেমন: 017xxxxxxxx" value="{{ old('phone', Auth::user()->patient->phone ?? '') }}" required>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label class="form-label small fw-bold text-dark">সম্পূর্ণ ঠিকানা (বাসা/রোড/এলাকা/জেলা) <span class="text-danger">*</span></label>
+                                            <textarea name="address" class="form-control" rows="2" placeholder="আপনার বিস্তারিত ঠিকানা লিখুন..." required>{{ old('address', Auth::user()->patient->address ?? '') }}</textarea>
+                                        </div>
+
+                                        <!-- Hidden dummy email field if guest -->
+                                        <input type="hidden" name="email" id="directFormEmail" value="{{ Auth::user()->email ?? '' }}">
+
+                                        <!-- Delivery Area Selector -->
+                                        <div class="form-group mb-3">
+                                            <label class="form-label small fw-bold text-dark mb-2">ডেলিভারি লোকেশন নির্বাচন করুন <span class="text-danger">*</span></label>
+                                            <div class="delivery-options-grid">
+                                                <label class="delivery-radio-card">
+                                                    <input type="radio" name="delivery_area" value="inside">
+                                                    <div class="delivery-radio-content">
+                                                        <span class="delivery-title">ঢাকার ভিতরে</span>
+                                                        <span class="delivery-price">৳৮০</span>
+                                                    </div>
+                                                </label>
+                                                <label class="delivery-radio-card active">
+                                                    <input type="radio" name="delivery_area" value="outside" checked>
+                                                    <div class="delivery-radio-content">
+                                                        <span class="delivery-title">ঢাকার বাইরে</span>
+                                                        <span class="delivery-price">৳১৩০</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Order Summary & Confirmation -->
+                                <div class="col-lg-6">
+                                    <div class="p-3 p-md-4 rounded-3 border bg-white shadow-sm h-100 d-flex flex-column justify-content-between">
+                                        <div>
+                                            <h5 class="fw-bold mb-3 text-dark border-bottom pb-2">
+                                                <i class="fas fa-shopping-bag me-2 text-primary"></i>অর্ডার সামারি
+                                            </h5>
+
+                                            <!-- Product overview in order form -->
+                                            <div class="d-flex align-items-center gap-3 p-2 rounded border bg-light mb-3">
+                                                <div class="direct-checkout-thumb rounded border bg-white">
+                                                    <img src="{{ $mainImage }}" alt="{{ $product->name }}">
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1 fw-bold text-dark fs-6">{{ Str::limit($product->name, 35) }}</h6>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="badge bg-primary" id="directFormVariantLabel" style="{{ $selectedVariant ? '' : 'display:none;' }}">
+                                                            {{ $selectedVariant ? $selectedVariant->display_label : '' }}
+                                                        </span>
+                                                        <strong class="text-primary fs-6" id="directFormPriceDisplay">৳{{ number_format($displayPrice, 0) }}</strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Quantity selector in order form -->
+                                            <div class="d-flex align-items-center justify-content-between p-2 rounded border mb-3">
+                                                <span class="small fw-bold text-dark">পরিমাণ (Quantity):</span>
+                                                <div class="qty-changer-widget d-flex align-items-center gap-2">
+                                                    <button type="button" class="btn btn-sm btn-light border-0 py-0 px-2" id="directQtyDec">-</button>
+                                                    <span class="fw-bold px-2" id="directQtyDisplay">1</span>
+                                                    <button type="button" class="btn btn-sm btn-light border-0 py-0 px-2" id="directQtyInc">+</button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Variant Selector in Order Form if Variants Exist -->
+                                            @if($hasVariants)
+                                                <div class="mb-3">
+                                                    <label class="small fw-bold text-dark mb-1">ভ্যারিয়েন্ট নির্বাচন করুন:</label>
+                                                    <div class="variant-options-grid">
+                                                        @foreach($activeVariants as $vItem)
+                                                            <label class="variant-radio-card {{ $selectedVariant && $selectedVariant->id === $vItem->id ? 'active' : '' }}">
+                                                                <input type="radio" name="direct_variant_select" value="{{ $vItem->id }}" data-price="{{ $vItem->currentPrice() }}" data-label="{{ $vItem->display_label }}" {{ $selectedVariant && $selectedVariant->id === $vItem->id ? 'checked' : '' }}>
+                                                                <div class="d-flex justify-content-between w-100 align-items-center">
+                                                                    <span class="fw-semibold text-dark">{{ $vItem->display_label }}</span>
+                                                                    <strong class="text-primary">৳{{ number_format($vItem->currentPrice(), 0) }}</strong>
+                                                                </div>
+                                                            </label>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            <!-- Coupon Form Box -->
+                                            <div class="input-group input-group-sm mb-3">
+                                                <input type="text" class="form-control" id="directCouponInput" placeholder="কুপন কোড (যদি থাকে)">
+                                                <button class="btn btn-outline-primary" type="button" id="applyDirectCouponBtn">প্রয়োগ করুন</button>
+                                            </div>
+                                            <div id="directCouponMessage" style="display: none;"></div>
+
+                                            <!-- Cost Breakdown -->
+                                            <div class="border-top pt-2 mt-2">
+                                                <div class="d-flex justify-content-between mb-1 small">
+                                                    <span class="text-muted">সাবটোটাল:</span>
+                                                    <strong class="text-dark" id="directSubtotal">৳{{ number_format($displayPrice, 0) }}</strong>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-1 small text-success" id="directDiscountRow" style="display: none !important;">
+                                                    <span>ডিসকাউন্ট <span id="directCouponCodeDisplay"></span>:</span>
+                                                    <strong>-৳<span id="directDiscount">0</span></strong>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2 small">
+                                                    <span class="text-muted">ডেলিভারি চার্জ:</span>
+                                                    <strong class="text-dark" id="directShipping">৳১৩০</strong>
+                                                </div>
+                                                <div class="d-flex justify-content-between border-top pt-2 mb-3">
+                                                    <span class="h6 mb-0 fw-bold text-dark">সর্বমোট প্রদেয়:</span>
+                                                    <span class="h5 mb-0 fw-bold text-primary" id="directTotal">৳{{ number_format($displayPrice + 130, 0) }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Place Order Button -->
+                                        <button type="submit" id="directSubmitBtn" class="btn btn-primary btn-lg w-100 fw-bold py-3 shadow hover-grow" {{ $stockQty < 1 ? 'disabled' : '' }}>
+                                            <i class="fas fa-shopping-cart me-2"></i> অর্ডার কনফার্ম করুন
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </section>
-            @endif
 
-            @if(!in_array($secType, ['video', 'gallery', 'cta']) && ($secShowBtn === '1' || $secShowBtn === 1 || $secShowBtn === 'true') && $stockQty > 0)
-                <div class="text-center my-4">
-                    <a href="#order-form" class="btn-buy-modern detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto" style="width: auto !important; min-width: 250px; padding: 12px 40px; background-color: {{ $accentColor }} !important; border-color: {{ $accentColor }} !important;">
-                        <i class="fas fa-shopping-cart me-2"></i>
-                        <span>{{ $secBtnText }}</span>
-                    </a>
-                </div>
-            @endif
-
-        @endforeach
-        <section class="product-reviews-section">
-            <div class="row g-4">
-                <div class="col-lg-5">
-                    <div class="info-card review-form-card">
-                        <div class="section-heading">
-                            <span class="section-tag">Customer Reviews</span>
-                            <h2>Share your experience</h2>
-                        </div>
-
-                        <div class="review-score-card">
-                            <strong>{{ number_format($averageRating, 1) }}</strong>
-                            <div>
-                                <div class="review-stars">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <i class="fas fa-star {{ $i <= round($averageRating) ? 'is-filled' : '' }}"></i>
-                                    @endfor
+            @elseif($secType === 'reviews')
+                <!-- Product Reviews Section -->
+                <section class="product-reviews-section my-5">
+                    <div class="row g-4">
+                        <div class="col-lg-5">
+                            <div class="info-card review-form-card p-4 rounded-4 shadow-sm border" style="background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
+                                <div class="section-heading">
+                                    <span class="section-tag">{{ $secTag ?: 'Customer Reviews' }}</span>
+                                    <h3 class="fw-bold mt-2" style="color: {{ $textColor }} !important;">{{ $secTitle ?: 'আপনার মতামত ও রিভিউ দিন' }}</h3>
                                 </div>
-                                <span>{{ $reviewCount }} customer {{ $reviewCount === 1 ? 'review' : 'reviews' }}</span>
-                            </div>
-                        </div>
+
+                                <div class="review-score-card">
+                                    <strong>{{ number_format($averageRating, 1) }}</strong>
+                                    <div>
+                                        <div class="review-stars">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star {{ $i <= round($averageRating) ? 'is-filled' : '' }}"></i>
+                                            @endfor
+                                        </div>
+                                        <span>{{ $reviewCount }} customer {{ $reviewCount === 1 ? 'review' : 'reviews' }}</span>
+                                    </div>
+                                </div>
 
                                 <form action="{{ route('ecommerce.products.reviews.store', $product->id) }}" method="POST" class="review-form">
                                     @csrf
                                     @if(!auth()->check() || !auth()->user()->patient)
                                         <div class="form-group">
-                                            <label for="reviewerName">Your Name <span class="text-danger">*</span></label>
-                                            <input id="reviewerName"
-                                                type="text"
-                                                name="reviewer_name"
-                                                class="form-control"
-                                                required
-                                                value="{{ old('reviewer_name', auth()->check() ? auth()->user()->name : '') }}"
-                                                placeholder="Enter your name">
+                                            <label for="reviewerName" class="small fw-bold">আপনার নাম <span class="text-danger">*</span></label>
+                                            <input id="reviewerName" type="text" name="reviewer_name" class="form-control" required value="{{ old('reviewer_name', auth()->check() ? auth()->user()->name : '') }}" placeholder="আপনার নাম লিখুন">
                                         </div>
                                     @endif
 
                                     <div class="form-group">
-                                        <label>Your rating</label>
+                                        <label class="small fw-bold">রেটিং নির্বাচন করুন</label>
                                         <div class="review-rating-options">
                                             @for($rating = 5; $rating >= 1; $rating--)
                                                 <label class="review-rating-choice">
@@ -967,66 +736,27 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="reviewTitle">Review title</label>
-                                        <input id="reviewTitle"
-                                            type="text"
-                                            name="title"
-                                            class="form-control"
-                                            value="{{ old('title', $currentUserReview->title ?? '') }}"
-                                            placeholder="Short summary (optional)">
+                                        <label for="reviewTitle" class="small fw-bold">রিভিউ শিরোনাম</label>
+                                        <input id="reviewTitle" type="text" name="title" class="form-control" value="{{ old('title', $currentUserReview->title ?? '') }}" placeholder="সংক্ষিপ্ত শিরোনাম (ঐচ্ছিক)">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="reviewComment">Your review</label>
-                                        <textarea id="reviewComment"
-                                            name="comment"
-                                            class="form-control"
-                                            rows="5"
-                                            required
-                                            placeholder="Write what was helpful, quality, delivery, or usage experience...">{{ old('comment', $currentUserReview->comment ?? '') }}</textarea>
+                                        <label for="reviewComment" class="small fw-bold">আপনার বিস্তারিত রিভিউ</label>
+                                        <textarea id="reviewComment" name="comment" class="form-control" rows="4" required placeholder="পণ্যের মান, ডেলিভারি ও ব্যবহার অভিজ্ঞতা সম্পর্কে লিখুন...">{{ old('comment', $currentUserReview->comment ?? '') }}</textarea>
                                     </div>
 
-                                    <button type="submit" class="btn-buy-modern review-submit-btn">
-                                        {{ $currentUserReview ? 'Update Review' : 'Submit Review' }}
+                                    <button type="submit" class="btn btn-primary w-100 review-submit-btn fw-bold">
+                                        {{ $currentUserReview ? 'রিভিউ আপডেট করুন' : 'রিভিউ জমা দিন' }}
                                     </button>
                                 </form>
                             </div>
                         </div>
 
                         <div class="col-lg-7">
-                            <div class="info-card review-list-card">
-                                @if(!empty($product->custom_sections))
-                                    <div class="product-custom-sections-wrap mb-5">
-                                        <div class="section-heading mb-4">
-                                            <span class="section-tag">Highlights & Features</span>
-                                            <h2>Product Specifications & Guide</h2>
-                                        </div>
-                                        <div class="row g-4">
-                                            @foreach($product->custom_sections as $sec)
-                                                <div class="col-12">
-                                                    <div class="p-4 bg-light rounded-3 border shadow-sm">
-                                                        @if($sec['type'] === 'faq')
-                                                            <h4 class="fw-bold text-primary mb-2"><i class="fas fa-question-circle me-2"></i>{{ $sec['question'] }}</h4>
-                                                            <p class="mb-0 text-secondary fs-6">{{ $sec['answer'] }}</p>
-                                                        @elseif($sec['type'] === 'video')
-                                                            <h4 class="fw-bold text-dark mb-3"><i class="fas fa-play-circle me-2 text-danger"></i>{{ $sec['title'] }}</h4>
-                                                            <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm">
-                                                                <iframe src="{{ $sec['video_url'] }}" allowfullscreen></iframe>
-                                                            </div>
-                                                        @elseif($sec['type'] === 'steps')
-                                                            <h4 class="fw-bold text-dark mb-2"><i class="fas fa-list-ol me-2 text-success"></i>{{ $sec['title'] }}</h4>
-                                                            <p class="mb-0 text-secondary fs-6">{{ $sec['description'] }}</p>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
-
-                                <div class="section-heading">
+                            <div class="info-card review-list-card p-4 rounded-4 shadow-sm border" style="background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
+                                <div class="section-heading mb-4">
                                     <span class="section-tag">Feedback</span>
-                                    <h2>What customers say</h2>
+                                    <h3 class="fw-bold mt-2" style="color: {{ $textColor }} !important;">গ্রাহকদের রিভিউসমূহ</h3>
                                 </div>
 
                                 <div class="review-list">
@@ -1035,44 +765,57 @@
                                             $reviewerName = $review->reviewer_name ?? ($review->patient?->user?->name ?? 'Customer');
                                             $reviewerInitial = !empty($reviewerName) ? strtoupper(substr($reviewerName, 0, 1)) : 'C';
                                         @endphp
-                                <article class="review-item-card">
-                                    <div class="review-avatar">{{ $reviewerInitial }}</div>
-                                    <div class="review-content">
-                                        <div class="review-meta-row">
-                                            <div>
-                                                <strong>{{ $reviewerName }}</strong>
-                                                <span>{{ $review->created_at->diffForHumans() }}</span>
+                                        <article class="review-item-card">
+                                            <div class="review-avatar">{{ $reviewerInitial }}</div>
+                                            <div class="review-content">
+                                                <div class="review-meta-row">
+                                                    <div>
+                                                        <strong>{{ $reviewerName }}</strong>
+                                                        <span>{{ $review->created_at->diffForHumans() }}</span>
+                                                    </div>
+                                                    @if($review->is_verified_purchase)
+                                                        <em class="review-verified-badge">Verified purchase</em>
+                                                    @endif
+                                                </div>
+
+                                                <div class="review-stars">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <i class="fas fa-star {{ $i <= $review->rating ? 'is-filled' : '' }}"></i>
+                                                    @endfor
+                                                </div>
+
+                                                @if($review->title)
+                                                    <h5 class="fw-bold mt-2 mb-1">{{ $review->title }}</h5>
+                                                @endif
+
+                                                <p class="mb-0">{{ $review->comment }}</p>
                                             </div>
-                                            @if($review->is_verified_purchase)
-                                                <em class="review-verified-badge">Verified purchase</em>
-                                            @endif
+                                        </article>
+                                    @empty
+                                        <div class="review-empty-state text-center py-5">
+                                            <i class="far fa-star fs-1 text-muted mb-2"></i>
+                                            <strong>কোন রিভিউ পাওয়া যায়নি</strong>
+                                            <span class="text-muted d-block">এই পণ্যটি অর্ডার করে আপনার মতামত প্রথম শেয়ার করুন।</span>
                                         </div>
-
-                                        <div class="review-stars">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                <i class="fas fa-star {{ $i <= $review->rating ? 'is-filled' : '' }}"></i>
-                                            @endfor
-                                        </div>
-
-                                        @if($review->title)
-                                            <h3>{{ $review->title }}</h3>
-                                        @endif
-
-                                        <p>{{ $review->comment }}</p>
-                                    </div>
-                                </article>
-                            @empty
-                                <div class="review-empty-state">
-                                    <i class="far fa-star"></i>
-                                    <strong>No reviews yet</strong>
-                                    <span>Be the first patient to review this product.</span>
+                                    @endforelse
                                 </div>
-                            @endforelse
+                            </div>
                         </div>
                     </div>
+                </section>
+            @endif
+
+            <!-- Add Buy Now Button if enabled for this section -->
+            @if(!in_array($secType, ['order_form', 'reviews']) && ($secShowBtn === '1' || $secShowBtn === 1 || $secShowBtn === 'true') && $stockQty > 0)
+                <div class="text-center my-4">
+                    <a href="#order-form" class="btn btn-primary btn-lg detail-buy-btn text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto shadow" style="min-width: 250px; padding: 12px 36px; border-radius: 8px;">
+                        <i class="fas fa-bolt me-2"></i>
+                        <span>{{ $secBtnText }}</span>
+                    </a>
                 </div>
-            </div>
-        </section>
+            @endif
+
+        @endforeach
 
         @if($relatedProducts->count() > 0)
             <section class="related-products-section">
@@ -3459,7 +3202,6 @@
             submitButtons.forEach((button) => {
                 button.disabled = disabled;
             });
-        }
 
             if (variantSelect) {
                 const selectedOpt = variantSelect.options[variantSelect.selectedIndex];

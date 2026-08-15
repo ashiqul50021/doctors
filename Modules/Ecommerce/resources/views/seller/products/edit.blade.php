@@ -1,5 +1,14 @@
 @extends('layouts.admin')
 
+@push('styles')
+    <style>
+        .ck-editor__editable_inline {
+            min-height: 220px;
+            max-height: 500px;
+        }
+    </style>
+@endpush
+
 @include('ecommerce::backend.products.partials.image-manager-styles')
 @include('ecommerce::backend.products.partials.product-manager-styles')
 
@@ -38,199 +47,6 @@
                 ->reject(fn ($path) => collect(old('removed_gallery', []))->contains($path))
                 ->filter()
                 ->values();
-
-            $sections = $product->landing_settings['sections'] ?? null;
-            if (!is_array($sections)) {
-                $sections = [];
-
-                // Features
-                $features = [];
-                if (isset($product->landing_settings['product_features'])) {
-                    $features = $product->landing_settings['product_features'];
-                } else {
-                    for ($i = 1; $i <= 6; $i++) {
-                        $val = $product->landing_settings["product_feature_{$i}"] ?? '';
-                        if (!empty(trim((string)$val))) $features[] = $val;
-                    }
-                }
-                if (!empty($features)) {
-                    $sections[] = [
-                        'type' => 'features',
-                        'title' => $product->landing_settings['product_features_title'] ?? 'আমাদের প্রোডাক্টের বৈশিষ্ট্য',
-                        'tag' => 'Product Features',
-                        'style' => 'blue-check',
-                        'items' => $features
-                    ];
-                }
-
-                // Badges
-                $trustBadges = $product->landing_settings['trust_badges'] ?? [];
-                if (empty($trustBadges)) {
-                    $defaultIcons = [1 => 'fas fa-undo-alt', 2 => 'fas fa-hand-holding-usd', 3 => 'fas fa-headset', 4 => 'fas fa-shipping-fast'];
-                    $defaultTitles = [1 => '৭ দিনের রিটার্ন', 2 => 'হাতে পেয়ে পেমেন্ট', 3 => 'অনলাইন সাপোর্ট', 4 => 'সারাদেশে ডেলিভারি'];
-                    $defaultDescs = [1 => 'সহজ এক্সচেঞ্জ সুবিধা', 2 => 'ক্যাশ অন ডেলিভারি', 3 => '২৪/৭ কাস্টমার কেয়ার', 4 => 'দ্রুত ও নিরাপদ ডেলিভারি'];
-                    for ($i = 1; $i <= 4; $i++) {
-                        $bi = $product->landing_settings["badge_{$i}_icon"] ?? $defaultIcons[$i];
-                        $bt = $product->landing_settings["badge_{$i}_title"] ?? $defaultTitles[$i];
-                        $bd = $product->landing_settings["badge_{$i}_desc"] ?? $defaultDescs[$i];
-                        if (!empty(trim($bt))) {
-                            $trustBadges[] = ['icon' => $bi, 'title' => $bt, 'desc' => $bd];
-                        }
-                    }
-                }
-                if (!empty($trustBadges)) {
-                    $sections[] = [
-                        'type' => 'badges',
-                        'title' => $product->landing_settings['trust_badges_title'] ?? 'আমাদের থেকে কেন কিনবেন?',
-                        'tag' => 'Trust Badges',
-                        'badges' => $trustBadges
-                    ];
-                }
-
-                // Video
-                if (!empty($product->landing_settings['youtube_video_url'])) {
-                    $sections[] = [
-                        'type' => 'video',
-                        'title' => 'পণ্যটির বিবরণী ও ব্যবহারবিধি ভিডিও',
-                        'tag' => 'Showcase Video'
-                    ];
-                }
-
-                // Problems
-                $problems = [];
-                if (isset($product->landing_settings['product_problems'])) {
-                    $problems = $product->landing_settings['product_problems'];
-                } else {
-                    for ($i = 1; $i <= 6; $i++) {
-                        $val = $product->landing_settings["problem_{$i}"] ?? '';
-                        if (!empty(trim((string)$val))) $problems[] = $val;
-                    }
-                }
-                if (!empty($problems)) {
-                    $sections[] = [
-                        'type' => 'problems',
-                        'title' => $product->landing_settings['problems_title'] ?? 'এই সমস্যাগুলো কি আপনারও আছে?',
-                        'tag' => 'Common Issues',
-                        'style' => 'red-cross',
-                        'items' => $problems
-                    ];
-                }
-
-                // Benefits
-                $benefits = [];
-                if (isset($product->landing_settings['product_benefits'])) {
-                    $benefits = $product->landing_settings['product_benefits'];
-                } else {
-                    for ($i = 1; $i <= 6; $i++) {
-                        $val = $product->landing_settings["benefit_{$i}"] ?? '';
-                        if (!empty(trim((string)$val))) $benefits[] = $val;
-                    }
-                }
-                if (!empty($benefits)) {
-                    $sections[] = [
-                        'type' => 'benefits',
-                        'title' => $product->landing_settings['benefits_title'] ?? 'বৈশিষ্ট্যগুলো কি কি জানতে চান?',
-                        'tag' => 'Benefits',
-                        'style' => 'green-check',
-                        'items' => $benefits
-                    ];
-                }
-
-                // Gallery
-                $sections[] = [
-                    'type' => 'gallery',
-                    'title' => 'পণ্যটির কিছু বাস্তব ছবি (Real Gallery)',
-                    'tag' => 'Showcase'
-                ];
-
-                // Package Includes
-                $package = [];
-                if (isset($product->landing_settings['package_includes'])) {
-                    $package = $product->landing_settings['package_includes'];
-                } else {
-                    for ($i = 1; $i <= 6; $i++) {
-                        $val = $product->landing_settings["package_include_{$i}"] ?? '';
-                        if (!empty(trim((string)$val))) $package[] = $val;
-                    }
-                }
-                if (!empty($package)) {
-                    $sections[] = [
-                        'type' => 'package',
-                        'title' => $product->landing_settings['package_includes_title'] ?? 'প্যাকেজের সাথে যা যা পাবেন',
-                        'tag' => 'Package Contents',
-                        'style' => 'package-box',
-                        'items' => $package
-                    ];
-                }
-
-                // Why Choose Us
-                $trustFeatures = $product->landing_settings['trust_features'] ?? [];
-                if (empty($trustFeatures)) {
-                    $defaultFeatureTitles = [
-                        1 => '১০০% আসল প্রোডাক্ট (100% Original)',
-                        2 => 'নিরাপদ প্যাকেজিং ও ডেলিভারি (Secure Shipping)',
-                        3 => 'সহজ রিটার্ন পলিসি (Easy Returns)',
-                        4 => '২৪/৭ কাস্টমার সাপোর্ট (Dedicated Hotline)'
-                    ];
-                    $defaultFeatureDescs = [
-                        1 => 'আমরা কোনো নকল পণ্য বিক্রি করি না। সরাসরি ভেরিফাইড ব্র্যান্ড ও ইমপোর্টার থেকে পণ্য সংগ্রহ করি।',
-                        2 => 'আপনার পণ্যটি যাতে অক্ষত অবস্থায় পৌঁছায়, সেজন্য আমাদের রয়েছে নিখুঁত বাবল-র‍্যাপড প্যাকেজিং ব্যবস্থা।',
-                        3 => 'পণ্য গ্রহণের পর কোনো ত্রুটি পেলে ৭ দিনের মধ্যে আমাদের সাথে যোগাযোগ করে রিফান্ড বা এক্সচেঞ্জ করতে পারবেন।',
-                        4 => 'অर्डर করার আগে বা পরে যেকোনো গাইডলাইনের জন্য আমাদের কাস্টমার কেয়ার হেল্পলাইন সর্বদা উন্মুক্ত।'
-                    ];
-                    for ($i = 1; $i <= 4; $i++) {
-                        $ft = $product->landing_settings["feature_{$i}_title"] ?? $defaultFeatureTitles[$i];
-                        $fd = $product->landing_settings["feature_{$i}_desc"] ?? $defaultFeatureDescs[$i];
-                        if (!empty(trim($ft))) {
-                            $trustFeatures[] = ['title' => $ft, 'desc' => $fd];
-                        }
-                    }
-                }
-                if (!empty($trustFeatures)) {
-                    $sections[] = [
-                        'type' => 'trust',
-                        'title' => $product->landing_settings['trust_title'] ?? 'কেন আমাদের থেকে সংগ্রহ করবেন?',
-                        'tag' => 'Trust',
-                        'trust_features' => $trustFeatures
-                    ];
-                }
-
-                // FAQ
-                $faqs = [];
-                if (isset($product->landing_settings['faqs']) && is_array($product->landing_settings['faqs'])) {
-                    $faqs = $product->landing_settings['faqs'];
-                } else {
-                    for ($i = 1; $i <= 4; $i++) {
-                        $q = $product->landing_settings["faq_q_{$i}"] ?? '';
-                        $a = $product->landing_settings["faq_a_{$i}"] ?? '';
-                        if (!empty(trim((string)$q)) && !empty(trim((string)$a))) {
-                            $faqs[] = ['q' => $q, 'a' => $a];
-                        }
-                    }
-                }
-                if (!empty($faqs)) {
-                    $sections[] = [
-                        'type' => 'faq',
-                        'title' => $product->landing_settings['faqs_title'] ?? 'কিছু সাধারণ প্রশ্ন',
-                        'tag' => 'FAQs',
-                        'style' => 'faq-accordion',
-                        'faqs' => $faqs
-                    ];
-                }
-
-                // Custom Sections
-                if (isset($product->landing_settings['custom_sections']) && is_array($product->landing_settings['custom_sections'])) {
-                    foreach ($product->landing_settings['custom_sections'] as $cs) {
-                        $sections[] = [
-                            'type' => 'custom',
-                            'title' => $cs['title'] ?? '',
-                            'tag' => $cs['tag'] ?? 'INFO',
-                            'style' => $cs['style'] ?? 'blue-check',
-                            'items' => $cs['items'] ?? []
-                        ];
-                    }
-                }
-            }
         @endphp
         <div class="card">
             <div class="card-body">
@@ -244,615 +60,501 @@
                     </div>
                 @endif
 
-                <form action="{{ route('ecommerce.seller.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+                <!-- Tab Navigation Links -->
+                <ul class="nav nav-tabs nav-tabs-solid nav-justified mb-4" id="productFormTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="general-tab" data-bs-toggle="tab" href="#general-pane" role="tab" aria-controls="general-pane" aria-selected="true">
+                            <i class="fas fa-info-circle me-1"></i> General Info
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pricing-tab" data-bs-toggle="tab" href="#pricing-pane" role="tab" aria-controls="pricing-pane" aria-selected="false">
+                            <i class="fas fa-coins me-1"></i> Pricing & Stock
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="landing-tab" data-bs-toggle="tab" href="#landing-pane" role="tab" aria-controls="landing-pane" aria-selected="false">
+                            <i class="fas fa-layer-group me-1"></i> Landing Page Builder
+                        </a>
+                    </li>
+                </ul>
+
+                <form action="{{ route('ecommerce.seller.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" id="productMainForm">
                     @csrf
                     @method('PUT')
-                    <div class="row form-row">
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Product Name</label>
-                                <input type="text" name="name" class="form-control" value="{{ old('name', $product->name) }}" required>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Category</label>
-                                <select name="product_category_id" class="form-control" required>
-                                    <option value="">Select Category</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('product_category_id', $product->product_category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                                        @foreach($category->children as $child)
-                                            <option value="{{ $child->id }}" {{ old('product_category_id', $product->product_category_id) == $child->id ? 'selected' : '' }}>
-                                                &nbsp;&nbsp;&mdash;&nbsp;{{ $child->name }}
-                                            </option>
-                                            @foreach($child->children as $grandchild)
-                                                <option value="{{ $grandchild->id }}" {{ old('product_category_id', $product->product_category_id) == $grandchild->id ? 'selected' : '' }}>
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;&mdash;&nbsp;&mdash;&nbsp;{{ $grandchild->name }}
-                                                </option>
+                    <div class="tab-content" id="productFormTabsContent">
+                        
+                        <!-- Tab 1: General Info -->
+                        <div class="tab-pane fade show active" id="general-pane" role="tabpanel" aria-labelledby="general-tab">
+                            <div class="row form-row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Product Name</label>
+                                        <input type="text" name="name" id="productNameInput" class="form-control" value="{{ old('name', $product->name) }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Category</label>
+                                        <select name="product_category_id" class="form-control" required>
+                                            <option value="">Select Category</option>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}" {{ old('product_category_id', $product->product_category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                @foreach($category->children as $child)
+                                                    <option value="{{ $child->id }}" {{ old('product_category_id', $product->product_category_id) == $child->id ? 'selected' : '' }}>
+                                                        &nbsp;&nbsp;&mdash;&nbsp;{{ $child->name }}
+                                                    </option>
+                                                    @foreach($child->children as $grandchild)
+                                                        <option value="{{ $grandchild->id }}" {{ old('product_category_id', $product->product_category_id) == $grandchild->id ? 'selected' : '' }}>
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;&mdash;&nbsp;&mdash;&nbsp;{{ $grandchild->name }}
+                                                        </option>
+                                                    @endforeach
+                                                @endforeach
                                             @endforeach
-                                        @endforeach
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Price</label>
-                                <input type="number" step="0.01" name="price" class="form-control" value="{{ old('price', $product->price) }}" required>
-                            </div>
-                        </div>
-                         <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Sale Price (Optional)</label>
-                                <input type="number" step="0.01" name="sale_price" class="form-control" value="{{ old('sale_price', $product->sale_price) }}">
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label>Stock</label>
-                                <input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" required>
-                                <small class="text-muted d-block mt-1">Used for simple products. Active variants below will control stock automatically.</small>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 d-flex align-items-center">
-                            <div class="form-group mb-0">
-                                <div class="form-check form-switch mt-3">
-                                    <input class="form-check-input" type="checkbox" id="has_variants_toggle" name="has_variants" value="1" {{ old('has_variants', $product->variants->where('is_active', true)->isNotEmpty()) ? 'checked' : '' }}>
-                                    <label class="form-check-label fw-bold" for="has_variants_toggle">This product has variants (Variable Product)</label>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label for="productImageInput">Primary Image</label>
-                                <input type="file" name="image" class="form-control" id="productImageInput" accept="image/*">
-                                <small id="productImageHelper" class="form-text text-muted">
-                                    {{ $product->image ? 'Choose a new main image to replace the current one. Selected image will preview instantly and be compressed before upload.' : 'Select the main product image. Large files will be compressed automatically before upload.' }}
-                                </small>
-                                <div class="image-manager-shell mt-2 single-image-preview" id="productImagePreviewContainer" style="{{ $product->image ? '' : 'display: none;' }}">
-                                    <img id="productImagePreview"
-                                        src="{{ $product->image ? (\Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset($product->image)) : '#' }}"
-                                        alt="Product Preview" class="img-thumbnail">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label>Gallery Images</label>
-                                <small class="form-text text-muted mb-2 d-block">
-                                    Select gallery images one by one. Click the "Add Image" box to select a file. These will appear as thumbnails on the product details page. Existing gallery images can be removed below.
-                                </small>
-
-                                <div class="image-manager-shell mt-2">
-                                    <!-- Container for hidden dynamic file inputs -->
-                                    <div id="galleryInputsContainer" style="display: none;"></div>
-
-                                    @if($existingGalleryImages->isNotEmpty())
-                                        <div class="gallery-preview-group mb-4" id="existingGallerySection">
-                                            <span class="gallery-preview-label">Current Gallery</span>
-                                            <div id="existingGalleryGrid" class="gallery-preview-grid">
-                                                @foreach($existingGalleryImages as $imagePath)
-                                                    <div class="gallery-preview-card" data-gallery-path="{{ $imagePath }}">
-                                                        <img src="{{ \Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset($imagePath) }}"
-                                                            alt="Gallery image {{ $loop->iteration }}">
-                                                        <div class="gallery-preview-meta">
-                                                            <strong>Gallery image {{ $loop->iteration }}</strong>
-                                                        </div>
-                                                        <div class="gallery-preview-actions">
-                                                            <button type="button" class="btn btn-sm btn-outline-danger w-100 js-remove-existing-gallery" data-path="{{ $imagePath }}">
-                                                                Remove
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    <div class="gallery-preview-group">
-                                        <span class="gallery-preview-label">New Gallery Uploads</span>
-                                        <div id="interactiveGalleryGrid" class="gallery-preview-grid">
-                                            <!-- "+" card is added by Javascript -->
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="productImageInput">Primary Image</label>
+                                        <input type="file" name="image" class="form-control" id="productImageInput" accept="image/*">
+                                        <small id="productImageHelper" class="form-text text-muted">Choose a new main image to replace the current one. Selected image will preview instantly and be compressed before upload.</small>
+                                        <div class="image-manager-shell mt-2 single-image-preview" id="productImagePreviewContainer" style="{{ $product->image ? '' : 'display: none;' }}">
+                                            <img id="productImagePreview" src="{{ $product->image ? (\Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset($product->image)) : '#' }}" alt="Product Preview" class="img-thumbnail">
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Gallery Images</label>
+                                        <small class="form-text text-muted mb-2 d-block">Select gallery images one by one. Click the "Add Image" box to select a file. These will appear as thumbnails on the product details page.</small>
 
-                                <div id="removedGalleryInputs"></div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="is_active">
-                                        Is Active
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 mt-4 mb-4">
-                            <div class="card border-primary shadow-sm" style="border-radius: 12px; overflow: hidden; border-left: 5px solid #007bff;">
-                                <div class="card-header bg-light d-flex align-items-center justify-content-between py-3">
-                                    <h4 class="card-title mb-0 text-primary fw-bold" style="font-size: 18px;">
-                                        <i class="fas fa-magic me-2"></i> Landing Page Customization (সীমিত সময়ের অফার ও ট্রাস্ট ইনফো)
-                                    </h4>
-                                    <span class="badge bg-primary text-white">Dynamic Content</span>
-                                </div>
-                                <div class="card-body">
-                                    <!-- Countdown Banner -->
-                                    <h5 class="fw-bold mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-clock text-danger me-1"></i> ১. জরুরী অফার কাউন্টডাউন (Urgency Countdown Banner)</h5>
-                                    <div class="row">
-                                        <div class="col-md-6 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">অফার টাইটেল (Countdown Title)</label>
-                                                <input type="text" name="landing_settings[countdown_title]" class="form-control" value="{{ old('landing_settings.countdown_title', $product->landing_settings['countdown_title'] ?? 'আজকের বিশেষ ছাড় অফার!') }}" placeholder="আজকের বিশেষ ছাড় অফার!">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">অফার সাবটাইটেল (Countdown Subtitle)</label>
-                                                <input type="text" name="landing_settings[countdown_subtitle]" class="form-control" value="{{ old('landing_settings.countdown_subtitle', $product->landing_settings['countdown_subtitle'] ?? 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:') }}" placeholder="অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">অফার সময় - ঘণ্টায় (Countdown Hours)</label>
-                                                <input type="number" name="landing_settings[countdown_hours]" class="form-control" value="{{ old('landing_settings.countdown_hours', $product->landing_settings['countdown_hours'] ?? 3) }}" placeholder="3">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">কাউন্টডাউন স্ট্যাটাস (Countdown Status)</label>
-                                                <select name="landing_settings[show_countdown]" class="form-control">
-                                                    <option value="1" {{ old('landing_settings.show_countdown', $product->landing_settings['show_countdown'] ?? '1') == '1' ? 'selected' : '' }}>Active (সক্রিয়)</option>
-                                                    <option value="0" {{ old('landing_settings.show_countdown', $product->landing_settings['show_countdown'] ?? '1') == '0' ? 'selected' : '' }}>Inactive (নিষ্ক্রিয়)</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Product Video -->
-                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fab fa-youtube text-danger me-1"></i> ১.৫. প্রোডাক্ট ভিডিও (Product Video - Optional)</h5>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label class="fw-bold">ইউটিউব ভিডিও লিংক (YouTube Video URL)</label>
-                                                <input type="text" name="landing_settings[youtube_video_url]" class="form-control" value="{{ old('landing_settings.youtube_video_url', $product->landing_settings['youtube_video_url'] ?? '') }}" placeholder="যেমন: https://www.youtube.com/watch?v=xxxxxx">
-                                                <small class="text-muted d-block mt-1">প্রোডাক্টের ব্যবহারবিধি বা রিভিউ ভিডিওর ইউটিউব লিংক এখানে দিন।</small>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Unified Landing Sections Builder -->
-                                    <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;"><i class="fas fa-layer-group text-primary me-1"></i> ২. ল্যান্ডিং পেজ সেকশন বিল্ডার (Landing Page Sections Builder)</h5>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <p class="text-muted small">এখানে আপনি ল্যান্ডিং পেজের সেকশনগুলোর ক্রম পরিবর্তন (Up/Down), নতুন সেকশন যোগ বা ডিলিট করতে পারবেন।</p>
-                                            
-                                            <div id="landing-sections-builder-container">
-                                                @php
-                                                    $sections = $product->landing_settings['sections'] ?? null;
-                                                    if (!is_array($sections)) {
-                                                        $sections = [];
-
-                                                        // Features
-                                                        $features = [];
-                                                        if (isset($product->landing_settings['product_features'])) {
-                                                            $features = $product->landing_settings['product_features'];
-                                                        } else {
-                                                            for ($i = 1; $i <= 6; $i++) {
-                                                                $val = $product->landing_settings["product_feature_{$i}"] ?? '';
-                                                                if (!empty(trim((string)$val))) $features[] = $val;
-                                                            }
-                                                        }
-                                                        if (!empty($features)) {
-                                                            $sections[] = [
-                                                                'type' => 'features',
-                                                                'title' => $product->landing_settings['product_features_title'] ?? 'আমাদের প্রোডাক্টের বৈশিষ্ট্য',
-                                                                'tag' => 'Product Features',
-                                                                'style' => 'blue-check',
-                                                                'items' => $features
-                                                            ];
-                                                        }
-
-                                                        // Badges
-                                                        $trustBadges = $product->landing_settings['trust_badges'] ?? [];
-                                                        if (empty($trustBadges)) {
-                                                            $defaultIcons = [1 => 'fas fa-undo-alt', 2 => 'fas fa-hand-holding-usd', 3 => 'fas fa-headset', 4 => 'fas fa-shipping-fast'];
-                                                            $defaultTitles = [1 => '৭ দিনের রিটার্ন', 2 => 'হাতে পেয়ে পেমেন্ট', 3 => 'অনলাইন সাপোর্ট', 4 => 'সারাদেশে ডেলিভারি'];
-                                                            $defaultDescs = [1 => 'সহজ এক্সচেঞ্জ সুবিধা', 2 => 'ক্যাশ অন ডেলিভারি', 3 => '২৪/৭ কাস্টমার কেয়ার', 4 => 'দ্রুত ও নিরাপদ ডেলিভারি'];
-                                                            for ($i = 1; $i <= 4; $i++) {
-                                                                $bi = $product->landing_settings["badge_{$i}_icon"] ?? $defaultIcons[$i];
-                                                                $bt = $product->landing_settings["badge_{$i}_title"] ?? $defaultTitles[$i];
-                                                                $bd = $product->landing_settings["badge_{$i}_desc"] ?? $defaultDescs[$i];
-                                                                if (!empty(trim($bt))) {
-                                                                    $trustBadges[] = ['icon' => $bi, 'title' => $bt, 'desc' => $bd];
-                                                                }
-                                                            }
-                                                        }
-                                                        if (!empty($trustBadges)) {
-                                                            $sections[] = [
-                                                                'type' => 'badges',
-                                                                'title' => $product->landing_settings['trust_badges_title'] ?? 'আমাদের থেকে কেন কিনবেন?',
-                                                                'tag' => 'Trust Badges',
-                                                                'badges' => $trustBadges
-                                                            ];
-                                                        }
-
-                                                        // Video
-                                                        if (!empty($product->landing_settings['youtube_video_url'])) {
-                                                            $sections[] = [
-                                                                'type' => 'video',
-                                                                'title' => 'পণ্যটির বিবরণী ও ব্যবহারবিধি ভিডিও',
-                                                                'tag' => 'Showcase Video'
-                                                            ];
-                                                        }
-
-                                                        // Problems
-                                                        $problems = [];
-                                                        if (isset($product->landing_settings['product_problems'])) {
-                                                            $problems = $product->landing_settings['product_problems'];
-                                                        } else {
-                                                            for ($i = 1; $i <= 6; $i++) {
-                                                                $val = $product->landing_settings["problem_{$i}"] ?? '';
-                                                                if (!empty(trim((string)$val))) $problems[] = $val;
-                                                            }
-                                                        }
-                                                        if (!empty($problems)) {
-                                                            $sections[] = [
-                                                                'type' => 'problems',
-                                                                'title' => $product->landing_settings['problems_title'] ?? 'এই সমস্যাগুলো কি আপনারও আছে?',
-                                                                'tag' => 'Common Issues',
-                                                                'style' => 'red-cross',
-                                                                'items' => $problems
-                                                            ];
-                                                        }
-
-                                                        // Benefits
-                                                        $benefits = [];
-                                                        if (isset($product->landing_settings['product_benefits'])) {
-                                                            $benefits = $product->landing_settings['product_benefits'];
-                                                        } else {
-                                                            for ($i = 1; $i <= 6; $i++) {
-                                                                $val = $product->landing_settings["benefit_{$i}"] ?? '';
-                                                                if (!empty(trim((string)$val))) $benefits[] = $val;
-                                                            }
-                                                        }
-                                                        if (!empty($benefits)) {
-                                                            $sections[] = [
-                                                                'type' => 'benefits',
-                                                                'title' => $product->landing_settings['benefits_title'] ?? 'বৈশিষ্ট্যগুলো কি কি জানতে চান?',
-                                                                'tag' => 'Benefits',
-                                                                'style' => 'green-check',
-                                                                'items' => $benefits
-                                                            ];
-                                                        }
-
-                                                        // Gallery
-                                                        $sections[] = [
-                                                            'type' => 'gallery',
-                                                            'title' => 'পণ্যটির কিছু বাস্তব ছবি (Real Gallery)',
-                                                            'tag' => 'Showcase'
-                                                        ];
-
-                                                        // Package Includes
-                                                        $package = [];
-                                                        if (isset($product->landing_settings['package_includes'])) {
-                                                            $package = $product->landing_settings['package_includes'];
-                                                        } else {
-                                                            for ($i = 1; $i <= 6; $i++) {
-                                                                $val = $product->landing_settings["package_include_{$i}"] ?? '';
-                                                                if (!empty(trim((string)$val))) $package[] = $val;
-                                                            }
-                                                        }
-                                                        if (!empty($package)) {
-                                                            $sections[] = [
-                                                                'type' => 'package',
-                                                                'title' => $product->landing_settings['package_includes_title'] ?? 'প্যাকেজের সাথে যা যা পাবেন',
-                                                                'tag' => 'Package Contents',
-                                                                'style' => 'package-box',
-                                                                'items' => $package
-                                                            ];
-                                                        }
-
-                                                        // Why Choose Us
-                                                        $trustFeatures = $product->landing_settings['trust_features'] ?? [];
-                                                        if (empty($trustFeatures)) {
-                                                            $defaultFeatureTitles = [
-                                                                1 => '১০০% আসল প্রোডাক্ট (100% Original)',
-                                                                2 => 'নিরাপদ প্যাকেজিং ও ডেলিভারি (Secure Shipping)',
-                                                                3 => 'সহজ রিটার্ন পলিসি (Easy Returns)',
-                                                                4 => '২৪/৭ কাস্টমার সাপোর্ট (Dedicated Hotline)'
-                                                            ];
-                                                            $defaultFeatureDescs = [
-                                                                1 => 'আমরা কোনো নকল পণ্য বিক্রি করি না। সরাসরি ভেরিফাইড ব্র্যান্ড ও ইমপোর্টার থেকে পণ্য সংগ্রহ করি।',
-                                                                2 => 'আপনার পণ্যটি যাতে অক্ষত অবস্থায় পৌঁছায়, সেজন্য আমাদের রয়েছে নিখুঁত বাবল-র‍্যাপড প্যাকেজিং ব্যবস্থা।',
-                                                                3 => 'পণ্য গ্রহণের পর কোনো ত্রুটি পেলে ৭ দিনের মধ্যে আমাদের সাথে যোগাযোগ করে রিফান্ড বা এক্সচেঞ্জ করতে পারবেন।',
-                                                                4 => 'অর্ডার করার আগে বা পরে যেকোনো গাইডলাইনের জন্য আমাদের কাস্টমার কেয়ার হেল্পলাইন সর্বদা উন্মুক্ত।'
-                                                            ];
-                                                            for ($i = 1; $i <= 4; $i++) {
-                                                                $ft = $product->landing_settings["feature_{$i}_title"] ?? $defaultFeatureTitles[$i];
-                                                                $fd = $product->landing_settings["feature_{$i}_desc"] ?? $defaultFeatureDescs[$i];
-                                                                if (!empty(trim($ft))) {
-                                                                    $trustFeatures[] = ['title' => $ft, 'desc' => $fd];
-                                                                }
-                                                            }
-                                                        }
-                                                        if (!empty($trustFeatures)) {
-                                                            $sections[] = [
-                                                                'type' => 'trust',
-                                                                'title' => $product->landing_settings['trust_title'] ?? 'কেন আমাদের থেকে সংগ্রহ করবেন?',
-                                                                'tag' => 'Trust',
-                                                                'trust_features' => $trustFeatures
-                                                            ];
-                                                        }
-
-                                                        // FAQ
-                                                        $faqs = [];
-                                                        if (isset($product->landing_settings['faqs']) && is_array($product->landing_settings['faqs'])) {
-                                                            $faqs = $product->landing_settings['faqs'];
-                                                        } else {
-                                                            for ($i = 1; $i <= 4; $i++) {
-                                                                $q = $product->landing_settings["faq_q_{$i}"] ?? '';
-                                                                $a = $product->landing_settings["faq_a_{$i}"] ?? '';
-                                                                if (!empty(trim((string)$q)) && !empty(trim((string)$a))) {
-                                                                    $faqs[] = ['q' => $q, 'a' => $a];
-                                                                }
-                                                            }
-                                                        }
-                                                        if (!empty($faqs)) {
-                                                            $sections[] = [
-                                                                'type' => 'faq',
-                                                                'title' => $product->landing_settings['faqs_title'] ?? 'কিছু সাধারণ প্রশ্ন',
-                                                                'tag' => 'FAQs',
-                                                                'style' => 'faq-accordion',
-                                                                'faqs' => $faqs
-                                                            ];
-                                                        }
-
-                                                        // Custom Sections
-                                                        if (isset($product->landing_settings['custom_sections']) && is_array($product->landing_settings['custom_sections'])) {
-                                                            foreach ($product->landing_settings['custom_sections'] as $cs) {
-                                                                $sections[] = [
-                                                                    'type' => 'custom',
-                                                                    'title' => $cs['title'] ?? '',
-                                                                    'tag' => $cs['tag'] ?? 'INFO',
-                                                                    'style' => $cs['style'] ?? 'blue-check',
-                                                                    'items' => $cs['items'] ?? []
-                                                                ];
-                                                            }
-                                                        }
-                                                    }
-                                                @endphp
-
-                                                @foreach($sections as $secIdx => $sec)
-                                                    @php
-                                                        $secType = $sec['type'] ?? 'custom';
-                                                        $secTitle = $sec['title'] ?? '';
-                                                        $secTag = $sec['tag'] ?? '';
-                                                        $secStyle = $sec['style'] ?? 'blue-check';
-                                                    @endphp
-                                                    <div class="section-card card p-3 mb-3 border shadow-sm" data-section-type="{{ $secType }}" style="border-radius: 12px; border: 1px solid #cbd5e1 !important; background-color: #f8fafc;">
-                                                        <input type="hidden" name="landing_settings[sections][{{ $secIdx }}][type]" value="{{ $secType }}">
-                                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                                            <div class="d-flex align-items-center gap-2">
-                                                                <span class="badge bg-dark text-white p-2">সেকশন #<span class="sec-number">{{ $secIdx + 1 }}</span></span>
-                                                                <span class="badge bg-info text-white p-2">{{ strtoupper($secType) }}</span>
-                                                            </div>
-                                                            <div class="d-flex align-items-center gap-1">
-                                                                <button type="button" class="btn btn-xs btn-outline-secondary move-up-btn" title="উপরে তুলুন"><i class="fas fa-arrow-up"></i></button>
-                                                                <button type="button" class="btn btn-xs btn-outline-secondary move-down-btn" title="নিচে নামান"><i class="fas fa-arrow-down"></i></button>
-                                                                <button type="button" class="btn btn-xs btn-danger remove-section-btn ms-2" title="ডিলিট"><i class="fas fa-trash"></i> ডিলিট</button>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row g-2 mb-2">
-                                                            <div class="col-md-6 col-12">
-                                                                <div class="form-group mb-2">
-                                                                    <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
-                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][title]" class="form-control form-control-sm" value="{{ $secTitle }}" placeholder="টাইটেল লিখুন">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-3 col-6">
-                                                                <div class="form-group mb-2">
-                                                                    <label class="small fw-bold">সেকশন ট্যাগ (Tag)</label>
-                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][tag]" class="form-control form-control-sm" value="{{ $secTag }}" placeholder="ট্যাগ লিখুন">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-3 col-6">
-                                                                <div class="form-group mb-2">
-                                                                    <label class="small fw-bold">স্টাইল / লেআউট (Style)</label>
-                                                                    <select name="landing_settings[sections][{{ $secIdx }}][style]" class="form-control form-control-sm form-select">
-                                                                        <option value="blue-check" {{ $secStyle === 'blue-check' ? 'selected' : '' }}>Blue Check Square</option>
-                                                                        <option value="green-check" {{ $secStyle === 'green-check' ? 'selected' : '' }}>Green Check Circle</option>
-                                                                        <option value="red-cross" {{ $secStyle === 'red-cross' ? 'selected' : '' }}>Red Cross</option>
-                                                                        <option value="yellow-star" {{ $secStyle === 'yellow-star' ? 'selected' : '' }}>Yellow Star</option>
-                                                                        <option value="orange-info" {{ $secStyle === 'orange-info' ? 'selected' : '' }}>Orange Info</option>
-                                                                        <option value="package-box" {{ $secStyle === 'package-box' ? 'selected' : '' }}>Package Box Style</option>
-                                                                        <option value="faq-accordion" {{ $secStyle === 'faq-accordion' ? 'selected' : '' }}>FAQ Accordion</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row g-2 mb-2 p-2 rounded border bg-light">
-                                                            <div class="col-md-3 col-6">
-                                                                <div class="form-group mb-1">
-                                                                    <label class="small fw-bold">ব্যাকগ্রাউন্ড (Background)</label>
-                                                                    <input type="color" name="landing_settings[sections][{{ $secIdx }}][bg_color]" class="form-control form-control-sm form-control-color w-100" value="{{ $sec['bg_color'] ?? '#ffffff' }}">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-3 col-6">
-                                                                <div class="form-group mb-1">
-                                                                    <label class="small fw-bold">টেক্সট কালার (Text Color)</label>
-                                                                    <input type="color" name="landing_settings[sections][{{ $secIdx }}][text_color]" class="form-control form-control-sm form-control-color w-100" value="{{ $sec['text_color'] ?? '#333333' }}">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-3 col-6">
-                                                                <div class="form-group mb-1">
-                                                                    <label class="small fw-bold">বর্ডার/অ্যাকসেন্ট (Accent)</label>
-                                                                    <input type="color" name="landing_settings[sections][{{ $secIdx }}][accent_color]" class="form-control form-control-sm form-control-color w-100" value="{{ $sec['accent_color'] ?? '#007bff' }}">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-3 col-6">
-                                                                <div class="form-group mb-1">
-                                                                    <label class="small fw-bold">ফন্ট ওয়েট (Font Weight)</label>
-                                                                    <select name="landing_settings[sections][{{ $secIdx }}][font_weight]" class="form-control form-control-sm form-select">
-                                                                        <option value="400" {{ ($sec['font_weight'] ?? '400') == '400' ? 'selected' : '' }}>চিকন (Normal - 400)</option>
-                                                                        <option value="500" {{ ($sec['font_weight'] ?? '400') == '500' ? 'selected' : '' }}>মাঝারি (Medium - 500)</option>
-                                                                        <option value="600" {{ ($sec['font_weight'] ?? '400') == '600' ? 'selected' : '' }}>সেমি-বোল্ড (Semi-Bold - 600)</option>
-                                                                        <option value="700" {{ ($sec['font_weight'] ?? '400') == '700' ? 'selected' : '' }}>মোটা (Bold - 700)</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4 col-12">
-                                                                <div class="form-group mb-1">
-                                                                    <label class="small fw-bold">বাই নাও বাটন (Show Button)</label>
-                                                                    <select name="landing_settings[sections][{{ $secIdx }}][show_button]" class="form-control form-control-sm form-select">
-                                                                        <option value="1" {{ ($sec['show_button'] ?? '1') == '1' ? 'selected' : '' }}>সক্রিয় (Active)</option>
-                                                                        <option value="0" {{ ($sec['show_button'] ?? '1') == '0' ? 'selected' : '' }}>নিষ্ক্রিয় (Inactive)</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-8 col-12">
-                                                                <div class="form-group mb-1">
-                                                                    <label class="small fw-bold">কাস্টম বাটন টেক্সট (Button Text)</label>
-                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][button_text]" class="form-control form-control-sm" value="{{ $sec['button_text'] ?? 'অর্ডার করতে ক্লিক করুন' }}" placeholder="যেমন: অর্ডার করতে ক্লিক করুন">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="section-content-container mt-2 border-top pt-2" style="{{ in_array($secType, ['video']) ? 'display: none;' : '' }}">
-                                                            @if($secType === 'gallery')
-                                                                <label class="small fw-bold mb-2">গ্যালারি ছবিসমূহ (Gallery Image Links / URLs)</label>
-                                                                <div class="gallery-items-list border rounded p-2 bg-white">
-                                                                    @php
-                                                                        $secGalleryImages = $sec['images'] ?? [];
-                                                                    @endphp
-                                                                    @foreach($secGalleryImages as $imgUrl)
-                                                                        <div class="gallery-image-row d-flex align-items-center gap-2 mb-2 p-2 rounded border bg-light">
-                                                                            <div class="preview-box flex-shrink-0" style="width: 50px; height: 50px; background: #cbd5e1; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                                                                                <img src="{{ $imgUrl }}" class="img-preview" style="width: 100%; height: 100%; object-fit: cover;">
-                                                                            </div>
-                                                                            <div class="flex-grow-1">
-                                                                                <input type="text" name="landing_settings[sections][{{ $secIdx }}][images][]" class="form-control form-control-sm gallery-url-input" value="{{ $imgUrl }}" placeholder="ছবির লিংক/ইউআরএল (যেমন: https://... বা /uploads/...)">
-                                                                            </div>
-                                                                            <button type="button" class="btn btn-xs btn-danger remove-item-btn" title="মুছে ফেলুন"><i class="fas fa-trash"></i></button>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                                <button type="button" class="btn btn-xs btn-outline-primary add-gallery-item-btn mt-2">
-                                                                    <i class="fas fa-plus me-1"></i> ছবি যোগ করুন (Add Photo URL)
+                                        @if($existingGalleryImages->count() > 0)
+                                            <div id="existingGallerySection" class="gallery-preview-group mb-3">
+                                                <span class="gallery-preview-label">Existing Gallery Images</span>
+                                                <div id="existingGalleryGrid" class="gallery-preview-grid">
+                                                    @foreach($existingGalleryImages as $img)
+                                                        <div class="gallery-preview-card" data-gallery-path="{{ $img }}">
+                                                            <img src="{{ \Illuminate\Support\Str::startsWith($img, ['http://', 'https://']) ? $img : asset($img) }}" alt="Gallery Image">
+                                                            <div class="gallery-preview-actions">
+                                                                <button type="button" class="btn btn-sm btn-outline-danger w-100 js-remove-existing-gallery" data-path="{{ $img }}">
+                                                                    Remove
                                                                 </button>
-                                                            @elseif($secType === 'faq')
-                                                                <label class="small fw-bold mb-2">প্রশ্ন ও উত্তরসমূহ (FAQs)</label>
-                                                                <div class="items-list">
-                                                                    @php
-                                                                        $faqItems = $sec['faqs'] ?? [];
-                                                                    @endphp
-                                                                    @foreach($faqItems as $itemIdx => $faq)
-                                                                        <div class="faq-item-row border p-2 mb-2 bg-white rounded shadow-sm">
-                                                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                                <span class="small fw-bold text-muted">প্রশ্ন ও উত্তর #{{ $itemIdx + 1 }}</span>
-                                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
-                                                                            </div>
-                                                                            <div class="form-group mb-1">
-                                                                                <input type="text" name="landing_settings[sections][{{ $secIdx }}][faqs][{{ $itemIdx }}][q]" class="form-control form-control-sm" value="{{ $faq['q'] ?? '' }}" placeholder="প্রশ্ন লিখুন">
-                                                                            </div>
-                                                                            <div class="form-group mb-0">
-                                                                                <textarea name="landing_settings[sections][{{ $secIdx }}][faqs][{{ $itemIdx }}][a]" class="form-control form-control-sm" rows="2" placeholder="উত্তর লিখুন">{{ $faq['a'] ?? '' }}</textarea>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)</button>
-                                                            @elseif($secType === 'badges')
-                                                                <label class="small fw-bold mb-2">পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)</label>
-                                                                <div class="items-list">
-                                                                    @php
-                                                                        $secBadges = $sec['badges'] ?? [];
-                                                                    @endphp
-                                                                    @foreach($secBadges as $itemIdx => $badge)
-                                                                        <div class="badge-item-row border p-2 mb-2 bg-white rounded shadow-sm">
-                                                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                                <span class="small fw-bold text-muted">ব্যাজ #{{ $itemIdx + 1 }}</span>
-                                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
-                                                                            </div>
-                                                                            <div class="row g-1">
-                                                                                <div class="col-4">
-                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][icon]" class="form-control form-control-sm" value="{{ $badge['icon'] ?? '' }}" placeholder="আইকন ক্লাস">
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][title]" class="form-control form-control-sm" value="{{ $badge['title'] ?? '' }}" placeholder="টাইটেল">
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][desc]" class="form-control form-control-sm" value="{{ $badge['desc'] ?? '' }}" placeholder="বর্ণনা">
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> ব্যাজ যোগ করুন (Add Badge)</button>
-                                                            @elseif($secType === 'trust')
-                                                                <label class="small fw-bold mb-2">কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)</label>
-                                                                <div class="items-list">
-                                                                    @php
-                                                                        $secTrustFeatures = $sec['trust_features'] ?? [];
-                                                                    @endphp
-                                                                    @foreach($secTrustFeatures as $itemIdx => $feat)
-                                                                        <div class="trust-feature-item-row border p-2 mb-2 bg-white rounded shadow-sm">
-                                                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                                <span class="small fw-bold text-muted">ফিচার #{{ $itemIdx + 1 }}</span>
-                                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
-                                                                            </div>
-                                                                            <div class="form-group mb-1">
-                                                                                <input type="text" name="landing_settings[sections][{{ $secIdx }}][trust_features][{{ $itemIdx }}][title]" class="form-control form-control-sm" value="{{ $feat['title'] ?? '' }}" placeholder="টাইটেল লিখুন">
-                                                                            </div>
-                                                                            <div class="form-group mb-0">
-                                                                                <textarea name="landing_settings[sections][{{ $secIdx }}][trust_features][{{ $itemIdx }}][desc]" class="form-control form-control-sm" rows="2" placeholder="বর্ণনা লিখুন">{{ $feat['desc'] ?? '' }}</textarea>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> ফিচার যোগ করুন (Add Feature)</button>
-                                                            @else
-                                                                <label class="small fw-bold mb-2">সেকশন আইটেমসমূহ (Items)</label>
-                                                                <div class="items-list">
-                                                                    @php
-                                                                        $secItems = $sec['items'] ?? [];
-                                                                    @endphp
-                                                                    @foreach($secItems as $itemText)
-                                                                        <div class="item-row d-flex align-items-center gap-2 mb-2">
-                                                                            <textarea name="landing_settings[sections][{{ $secIdx }}][items][]" class="form-control form-control-sm" rows="2" placeholder="আইটেমের বিবরণ লিখুন">{{ $itemText }}</textarea>
-                                                                            <button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> আইটেম যোগ করুন (Add Item)</button>
-                                                            @endif
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                @endforeach
+                                                    @endforeach
+                                                </div>
                                             </div>
+                                        @endif
+
+                                        <div id="removedGalleryInputs" style="display: none;"></div>
+
+                                        <div class="image-manager-shell mt-2">
+                                            <!-- Container for hidden dynamic file inputs -->
+                                            <div id="galleryInputsContainer" style="display: none;"></div>
+
+                                            <div class="gallery-preview-group">
+                                                <span class="gallery-preview-label">New Gallery Uploads</span>
+                                                <div id="interactiveGalleryGrid" class="gallery-preview-grid">
+                                                    <!-- "+" card is added by Javascript -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label class="fw-bold">Product Description (প্রোডাক্ট বিবরণী - Text Editor)</label>
+                                        <textarea name="description" id="productDescriptionEditor" class="form-control" rows="5" placeholder="প্রোডাক্টের বিস্তারিত বিবরণী লিখুন...">{{ old('description', $product->description) }}</textarea>
+                                        <small class="text-muted">প্রোডাক্টের বিস্তারিত বিবরণ, বৈশিষ্ট্য ও ব্যবহারবিধি টেক্সট এডিটরে সুন্দরভাবে সাজিয়ে লিখুন।</small>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <div class="form-check form-switch mt-2">
+                                            <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="is_active">
+                                                Active Product (সক্রিয় / প্রকাশিত প্রোডাক্ট)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Pricing & Stock -->
+                        <div class="tab-pane fade" id="pricing-pane" role="tabpanel" aria-labelledby="pricing-tab">
+                            <div class="row form-row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Price</label>
+                                        <input type="number" step="0.01" name="price" id="productPriceInput" class="form-control" value="{{ old('price', $product->price) }}" required>
+                                    </div>
+                                </div>
+                                 <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Sale Price (Optional)</label>
+                                        <input type="number" step="0.01" name="sale_price" id="productSalePriceInput" class="form-control" value="{{ old('sale_price', $product->sale_price) }}">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>Stock</label>
+                                        <input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock ?? 0) }}" required>
+                                        <small class="text-muted d-block mt-1">Used for simple products. Active variants below will control stock automatically.</small>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 d-flex align-items-center">
+                                    <div class="form-group mb-0">
+                                        <div class="form-check form-switch mt-3">
+                                            <input class="form-check-input" type="checkbox" id="has_variants" name="has_variants" value="1" {{ old('has_variants', $product->has_variants) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="has_variants">This product has variants (Variable Product)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                @include('ecommerce::backend.products.partials.variant-manager', ['variantRows' => $variantRows])
+                            </div>
+                        </div>
+
+                        <!-- Tab 3: Landing Page Layout -->
+                        <div class="tab-pane fade" id="landing-pane" role="tabpanel" aria-labelledby="landing-tab">
+                            <div class="row">
+                                <div class="col-lg-7 col-12">
+                                    <div class="card border-primary shadow-sm" style="border-radius: 12px; overflow: hidden; border-left: 5px solid #007bff;">
+                                        <div class="card-header bg-light d-flex align-items-center justify-content-between py-3">
+                                            <h4 class="card-title mb-0 text-primary fw-bold" style="font-size: 16px;">
+                                                <i class="fas fa-palette me-2"></i> প্রোডাক্ট পেজ ডিজাইন ও সেকশন বিল্ডার
+                                            </h4>
+                                            <span class="badge bg-primary text-white">Custom Details Page</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- Global Product Details Page Color Settings -->
+                                            <h5 class="fw-bold mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;">
+                                                <i class="fas fa-fill-drip text-primary me-1"></i> ১. সম্পূর্ণ প্রোডাক্ট পেজের কাস্টম কালার (Page Styling)
+                                            </h5>
+                                            <div class="row mb-4 p-3 rounded border bg-light">
+                                                <div class="col-md-6 col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label class="fw-bold small">পুরো পেজের ব্যাকগ্রাউন্ড কালার (Page Background)</label>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <input type="color" name="landing_settings[page_bg_color]" id="pageBgColorInput" class="form-control form-control-color" value="{{ old('landing_settings.page_bg_color', $product->landing_settings['page_bg_color'] ?? '#ffffff') }}" style="width: 60px; height: 38px;">
+                                                            <input type="text" class="form-control form-control-sm" value="{{ old('landing_settings.page_bg_color', $product->landing_settings['page_bg_color'] ?? '#ffffff') }}" onchange="document.getElementById('pageBgColorInput').value=this.value">
+                                                        </div>
+                                                        <small class="text-muted">ডিফল্ট: সাদা (#ffffff) অথবা আপনার পছন্দের যেকোনো ব্যাকগ্রাউন্ড কালার সিলেক্ট করুন।</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label class="fw-bold small">পুরো পেজের মূল টেক্সট কালার (Page Text Color)</label>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <input type="color" name="landing_settings[page_text_color]" id="pageTextColorInput" class="form-control form-control-color" value="{{ old('landing_settings.page_text_color', $product->landing_settings['page_text_color'] ?? '#1e293b') }}" style="width: 60px; height: 38px;">
+                                                            <input type="text" class="form-control form-control-sm" value="{{ old('landing_settings.page_text_color', $product->landing_settings['page_text_color'] ?? '#1e293b') }}" onchange="document.getElementById('pageTextColorInput').value=this.value">
+                                                        </div>
+                                                        <small class="text-muted">ডিফল্ট: ডার্ক স্লেট (#1e293b) অথবা আপনার ব্যাকগ্রাউন্ড অনুযায়ী টেক্সট কালার দিন।</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Unified Dynamic Sections Builder -->
+                                            <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 15px;">
+                                                <i class="fas fa-layer-group text-primary me-1"></i> ২. ডাইনামিক সেকশন বিল্ডার (Dynamic Sections)
+                                            </h5>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <p class="text-muted small">এখানে আপনি ট্রাস্ট ব্যাজ, প্রশ্নোত্তর (QnA), গ্যালারি, ইউটিউব ভিডিও, কাস্টম সেকশন, অর্ডার ফর্ম এবং রিভিউ ফর্ম যোগ, সক্রিয়/নিষ্ক্রিয় ও সাজাতে পারবেন।</p>
+                                                    
+                                                    <div id="landing-sections-builder-container">
+                                                        @php
+                                                            $sections = $product->landing_settings['sections'] ?? [];
+                                                            if (!is_array($sections)) $sections = [];
+                                                            $typeLabels = [
+                                                                'badges' => '🛡️ Trust Badges',
+                                                                'faq' => '❓ QnA / FAQ',
+                                                                'gallery' => '🖼️ Photo Gallery',
+                                                                'video' => '🎥 YouTube Video',
+                                                                'custom' => '📝 Custom Section',
+                                                                'order_form' => '🛒 Custom Order Form',
+                                                                'reviews' => '⭐ Customer Reviews'
+                                                            ];
+                                                        @endphp
+
+                                                        @foreach($sections as $secIdx => $sec)
+                                                            @php
+                                                                $secType = $sec['type'] ?? 'custom';
+                                                                $secTitle = $sec['title'] ?? '';
+                                                                $secTag = $sec['tag'] ?? '';
+                                                                $isActive = $sec['is_active'] ?? '1';
+                                                                $bgColor = $sec['bg_color'] ?? '#ffffff';
+                                                                $textColor = $sec['text_color'] ?? '#1e293b';
+                                                                $fontSize = $sec['font_size'] ?? '16px';
+                                                                $lineHeight = $sec['line_height'] ?? '1.6';
+                                                                $showBtn = $sec['show_button'] ?? '0';
+                                                                $btnText = $sec['button_text'] ?? 'অর্ডার করতে ক্লিক করুন';
+                                                            @endphp
+                                                            <div class="section-card card p-3 mb-3 border shadow-sm" data-section-type="{{ $secType }}" data-section-index="{{ $secIdx }}" style="border-radius: 12px; border: 1px solid #cbd5e1 !important; background-color: #f8fafc;">
+                                                                <input type="hidden" name="landing_settings[sections][{{ $secIdx }}][type]" value="{{ $secType }}">
+                                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                                    <div class="d-flex align-items-center gap-2">
+                                                                        <span class="badge bg-dark text-white p-2">সেকশন #<span class="sec-number">{{ $secIdx + 1 }}</span></span>
+                                                                        <span class="badge bg-primary text-white p-2">{{ $typeLabels[$secType] ?? strtoupper($secType) }}</span>
+                                                                    </div>
+                                                                    <div class="d-flex align-items-center gap-1">
+                                                                        <button type="button" class="btn btn-xs btn-outline-secondary move-up-btn" title="উপরে তুলুন"><i class="fas fa-arrow-up"></i></button>
+                                                                        <button type="button" class="btn btn-xs btn-outline-secondary move-down-btn" title="নিচে নামান"><i class="fas fa-arrow-down"></i></button>
+                                                                        <button type="button" class="btn btn-xs btn-danger remove-section-btn ms-2" title="ডিলিট"><i class="fas fa-trash"></i> ডিলিট</button>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Row 1: Active Status, Title, Tag -->
+                                                                <div class="row g-2 mb-2">
+                                                                    <div class="col-md-3 col-6">
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small fw-bold">সেকশন স্ট্যাটাস (Status)</label>
+                                                                            <select name="landing_settings[sections][{{ $secIdx }}][is_active]" class="form-control form-control-sm form-select">
+                                                                                <option value="1" {{ $isActive == '1' ? 'selected' : '' }}>Active (সক্রিয়)</option>
+                                                                                <option value="0" {{ $isActive == '0' ? 'selected' : '' }}>Inactive (নিষ্ক্রিয়)</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-6 col-12">
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
+                                                                            <input type="text" name="landing_settings[sections][{{ $secIdx }}][title]" class="form-control form-control-sm" value="{{ $secTitle }}" placeholder="টাইটেল লিখুন">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3 col-6">
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small fw-bold">সেকশন ট্যাগ (Tag/Badge)</label>
+                                                                            <input type="text" name="landing_settings[sections][{{ $secIdx }}][tag]" class="form-control form-control-sm" value="{{ $secTag }}" placeholder="যেমন: FAQs / Trust">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Row 2: Background, Text Color, Font Size, Line Height -->
+                                                                <div class="row g-2 mb-2 p-2 rounded border bg-light">
+                                                                    <div class="col-md-3 col-6">
+                                                                        <div class="form-group mb-1">
+                                                                            <label class="small fw-bold">ব্যাকগ্রাউন্ড (Background)</label>
+                                                                            <input type="color" name="landing_settings[sections][{{ $secIdx }}][bg_color]" class="form-control form-control-sm form-control-color w-100" value="{{ $bgColor }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3 col-6">
+                                                                        <div class="form-group mb-1">
+                                                                            <label class="small fw-bold">টেক্সট কালার (Text Color)</label>
+                                                                            <input type="color" name="landing_settings[sections][{{ $secIdx }}][text_color]" class="form-control form-control-sm form-control-color w-100" value="{{ $textColor }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3 col-6">
+                                                                        <div class="form-group mb-1">
+                                                                            <label class="small fw-bold">ফন্ট সাইজ (Font Size)</label>
+                                                                            <select name="landing_settings[sections][{{ $secIdx }}][font_size]" class="form-control form-control-sm form-select">
+                                                                                <option value="14px" {{ $fontSize == '14px' ? 'selected' : '' }}>Small (14px)</option>
+                                                                                <option value="16px" {{ $fontSize == '16px' ? 'selected' : '' }}>Normal (16px)</option>
+                                                                                <option value="18px" {{ $fontSize == '18px' ? 'selected' : '' }}>Medium (18px)</option>
+                                                                                <option value="20px" {{ $fontSize == '20px' ? 'selected' : '' }}>Large (20px)</option>
+                                                                                <option value="24px" {{ $fontSize == '24px' ? 'selected' : '' }}>Extra Large (24px)</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3 col-6">
+                                                                        <div class="form-group mb-1">
+                                                                            <label class="small fw-bold">টেক্সট হাইট (Line Height)</label>
+                                                                            <select name="landing_settings[sections][{{ $secIdx }}][line_height]" class="form-control form-control-sm form-select">
+                                                                                <option value="1.4" {{ $lineHeight == '1.4' ? 'selected' : '' }}>Tight (1.4)</option>
+                                                                                <option value="1.6" {{ $lineHeight == '1.6' ? 'selected' : '' }}>Normal (1.6)</option>
+                                                                                <option value="1.8" {{ $lineHeight == '1.8' ? 'selected' : '' }}>Relaxed (1.8)</option>
+                                                                                <option value="2.0" {{ $lineHeight == '2.0' ? 'selected' : '' }}>Loose (2.0)</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Row 3: Add Buy Now Button Option -->
+                                                                <div class="row g-2 mb-2 p-2 rounded border bg-light">
+                                                                    <div class="col-md-4 col-12">
+                                                                        <div class="form-group mb-1">
+                                                                            <label class="small fw-bold">বাই নাও বাটন যুক্ত করুন (Add Buy Now Button)</label>
+                                                                            <select name="landing_settings[sections][{{ $secIdx }}][show_button]" class="form-control form-control-sm form-select">
+                                                                                <option value="0" {{ $showBtn == '0' ? 'selected' : '' }}>না (No Button)</option>
+                                                                                <option value="1" {{ $showBtn == '1' ? 'selected' : '' }}>হ্যাঁ, বাটন দেখাও (Show Buy Now Button)</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12">
+                                                                        <div class="form-group mb-1">
+                                                                            <label class="small fw-bold">বাটন টেক্সট (Button Text)</label>
+                                                                            <input type="text" name="landing_settings[sections][{{ $secIdx }}][button_text]" class="form-control form-control-sm" value="{{ $btnText }}" placeholder="যেমন: অর্ডার করতে ক্লিক করুন">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Section Content Container -->
+                                                                <div class="section-content-container mt-2 border-top pt-2">
+                                                                    @if($secType === 'gallery')
+                                                                        <label class="small fw-bold mb-2">গ্যালারি ছবিসমূহ (Gallery Image Links / URLs)</label>
+                                                                        <div class="gallery-items-list border rounded p-2 bg-white">
+                                                                            @php
+                                                                                $secGalleryImages = $sec['images'] ?? [];
+                                                                            @endphp
+                                                                            @foreach($secGalleryImages as $imgUrl)
+                                                                                <div class="gallery-image-row d-flex align-items-center gap-2 mb-2 p-2 rounded border bg-light">
+                                                                                    <div class="preview-box flex-shrink-0" style="width: 50px; height: 50px; background: #cbd5e1; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                                                                        <img src="{{ $imgUrl }}" class="img-preview" style="width: 100%; height: 100%; object-fit: cover;">
+                                                                                    </div>
+                                                                                    <div class="flex-grow-1">
+                                                                                        <input type="text" name="landing_settings[sections][{{ $secIdx }}][images][]" class="form-control form-control-sm gallery-url-input" value="{{ $imgUrl }}" placeholder="ছবির লিংক/ইউআরএল (যেমন: https://... বা /uploads/...)">
+                                                                                    </div>
+                                                                                    <button type="button" class="btn btn-xs btn-danger remove-item-btn" title="মুছে ফেলুন"><i class="fas fa-trash"></i></button>
+                                                                                </div>
+                                                                            @endforeach
+                                                                        </div>
+                                                                        <button type="button" class="btn btn-xs btn-outline-primary add-gallery-item-btn mt-2">
+                                                                            <i class="fas fa-plus me-1"></i> ছবি যোগ করুন (Add Photo URL)
+                                                                        </button>
+                                                                    @elseif($secType === 'video')
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small fw-bold">ইউটিউব ভিডিও লিংক (YouTube Video URL)</label>
+                                                                            <input type="text" name="landing_settings[sections][{{ $secIdx }}][youtube_video_url]" class="form-control form-control-sm" value="{{ $sec['youtube_video_url'] ?? '' }}" placeholder="যেমন: https://www.youtube.com/watch?v=xxxxxx">
+                                                                            <small class="text-muted">ইউটিউব ভিডিওর সম্পূর্ণ লিংকটি এখানে দিন।</small>
+                                                                        </div>
+                                                                    @elseif($secType === 'faq')
+                                                                        <label class="small fw-bold mb-2">প্রশ্ন ও উত্তরসমূহ (FAQs)</label>
+                                                                        <div class="items-list">
+                                                                            @php
+                                                                                $faqItems = $sec['faqs'] ?? [];
+                                                                            @endphp
+                                                                            @foreach($faqItems as $itemIdx => $faq)
+                                                                                <div class="faq-item-row border p-2 mb-2 bg-white rounded shadow-sm">
+                                                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                                        <span class="small fw-bold text-muted">প্রশ্ন ও উত্তর #{{ $itemIdx + 1 }}</span>
+                                                                                        <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
+                                                                                    </div>
+                                                                                    <div class="form-group mb-1">
+                                                                                        <input type="text" name="landing_settings[sections][{{ $secIdx }}][faqs][{{ $itemIdx }}][q]" class="form-control form-control-sm" value="{{ $faq['q'] ?? '' }}" placeholder="প্রশ্ন লিখুন">
+                                                                                    </div>
+                                                                                    <div class="form-group mb-0">
+                                                                                        <textarea name="landing_settings[sections][{{ $secIdx }}][faqs][{{ $itemIdx }}][a]" class="form-control form-control-sm" rows="2" placeholder="উত্তর লিখুন">{{ $faq['a'] ?? '' }}</textarea>
+                                                                                    </div>
+                                                                                </div>
+                                                                            @endforeach
+                                                                        </div>
+                                                                        <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)</button>
+                                                                    @elseif($secType === 'badges')
+                                                                        <label class="small fw-bold mb-2">পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)</label>
+                                                                        <div class="items-list">
+                                                                            @php
+                                                                                $secBadges = $sec['badges'] ?? [];
+                                                                            @endphp
+                                                                            @foreach($secBadges as $itemIdx => $badge)
+                                                                                <div class="badge-item-row border p-2 mb-2 bg-white rounded shadow-sm">
+                                                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                                        <span class="small fw-bold text-muted">ব্যাজ #{{ $itemIdx + 1 }}</span>
+                                                                                        <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
+                                                                                    </div>
+                                                                                    <div class="row g-1">
+                                                                                        <div class="col-4">
+                                                                                            <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][icon]" class="form-control form-control-sm" value="{{ $badge['icon'] ?? '' }}" placeholder="আইকন (যেমন: fas fa-shield-alt)">
+                                                                                        </div>
+                                                                                        <div class="col-4">
+                                                                                            <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][title]" class="form-control form-control-sm" value="{{ $badge['title'] ?? '' }}" placeholder="টাইটেল">
+                                                                                        </div>
+                                                                                        <div class="col-4">
+                                                                                            <input type="text" name="landing_settings[sections][{{ $secIdx }}][badges][{{ $itemIdx }}][desc]" class="form-control form-control-sm" value="{{ $badge['desc'] ?? '' }}" placeholder="বর্ণনা">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            @endforeach
+                                                                        </div>
+                                                                        <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> ব্যাজ যোগ করুন (Add Badge)</button>
+                                                                    @elseif($secType === 'custom')
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small fw-bold">সংক্ষিপ্ত বিবরণ (Short Description)</label>
+                                                                            <textarea name="landing_settings[sections][{{ $secIdx }}][short_desc]" class="form-control form-control-sm mb-2" rows="2" placeholder="সেকশনের সংক্ষিপ্ত বিবরণ লিখুন...">{{ $sec['short_desc'] ?? '' }}</textarea>
+                                                                        </div>
+                                                                        <label class="small fw-bold mb-2">পয়েন্ট / আইটেমসমূহ (Item Points)</label>
+                                                                        <div class="items-list">
+                                                                            @php
+                                                                                $secItems = $sec['items'] ?? [];
+                                                                            @endphp
+                                                                            @foreach($secItems as $itemVal)
+                                                                                <div class="item-row d-flex align-items-center gap-2 mb-2">
+                                                                                    <textarea name="landing_settings[sections][{{ $secIdx }}][items][]" class="form-control form-control-sm" rows="2" placeholder="পয়েন্ট / আইটেমের বিবরণ লিখুন">{{ $itemVal }}</textarea>
+                                                                                    <button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
+                                                                                </div>
+                                                                            @endforeach
+                                                                        </div>
+                                                                        <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1"><i class="fas fa-plus me-1"></i> পয়েন্ট যোগ করুন (Add Point)</button>
+                                                                    @elseif($secType === 'order_form')
+                                                                        <div class="alert alert-info py-2 px-3 small mb-0">
+                                                                            <i class="fas fa-info-circle me-1"></i> এই সেকশনটি ফ্রন্টএন্ডে সরাসরি ক্যাশ অন ডেলিভারি (Name, Phone, Address, Delivery Area) অর্ডার ফর্ম হিসেবে রেন্ডার হবে।
+                                                                        </div>
+                                                                    @elseif($secType === 'reviews')
+                                                                        <div class="alert alert-info py-2 px-3 small mb-0">
+                                                                            <i class="fas fa-info-circle me-1"></i> এই সেকশনটি ফ্রন্টএন্ডে কাস্টমারদের রিভিউ ফর্ম এবং অনুমোদিত রিভিউ তালিকা হিসেবে রেন্ডার হবে।
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
 
                                                     <div class="card p-3 mt-3 border text-center shadow-sm" style="border-radius: 12px; border: 1px dashed #cbd5e1 !important; background-color: #f8fafc;">
-                                                        <p class="text-muted small mb-2">আপনার ল্যান্ডিং পেজে নতুন সেকশন যোগ করতে নিচের বাটনে ক্লিক করুন</p>
+                                                        <p class="text-muted small mb-2">আপনার প্রোডাক্ট পেজে নতুন সেকশন যোগ করতে নিচের বাটনে ক্লিক করুন</p>
                                                         <div>
                                                             <button type="button" id="openSectionPickerModalBtn" class="btn btn-primary px-4 py-2 fw-semibold" style="border-radius: 8px; background-color: #2563eb;">
                                                                 <i class="fas fa-plus-circle me-2"></i> সেকশন যোগ করুন (Add Section)
                                                             </button>
                                                         </div>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5 col-12 d-none d-lg-block">
+                                    <!-- Mobile Live Preview -->
+                                    <div class="device-container shadow">
+                                        <div class="device-header-notch"></div>
+                                        <div class="device-screen">
+                                            <div class="sim-app-header">
+                                                <span class="brand">ABCSheba</span>
+                                                <div>
+                                                    <i class="fas fa-search me-2"></i>
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="sim-product-image" id="simProductImage" style="background-image: url('{{ $product->image ? asset($product->image) : asset('assets/img/products/product.jpg') }}');"></div>
+                                            
+                                            <div class="sim-product-info-card">
+                                                <div class="sim-product-name" id="simProductName">{{ $product->name }}</div>
+                                                <div class="sim-pricing-row">
+                                                    <span class="sim-current-price" id="simCurrentPrice">৳{{ number_format($product->sale_price ?? $product->price, 2) }}</span>
+                                                    <span class="sim-old-price" id="simOldPrice" style="{{ $product->sale_price ? '' : 'display:none;' }}">৳{{ number_format($product->price, 2) }}</span>
+                                                    <span class="sim-discount-badge" id="simDiscountBadge" style="{{ $product->sale_price ? '' : 'display:none;' }}">SAVE</span>
+                                                </div>
+                                            </div>
+
+                                            <div id="simSectionsContainer"></div>
+
+                                            <div class="sim-buy-button-wrapper">
+                                                <div class="sim-buy-button">Buy Now</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        @include('ecommerce::backend.products.partials.variant-manager', ['variantRows' => $variantRows])
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+
+                    <!-- Tab Footer Wizard Controls -->
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" id="prevTabBtn" style="display: none;"><i class="fas fa-arrow-left me-1"></i> Previous</button>
+                        <button type="button" class="btn btn-primary ms-auto" id="nextTabBtn">Next <i class="fas fa-arrow-right ms-1"></i></button>
+                        <button type="submit" class="btn btn-success ms-auto" id="submitProductBtn" style="display: none;"><i class="fas fa-check-circle me-1"></i> Save Changes</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -861,8 +563,24 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const descEditorEl = document.querySelector('#productDescriptionEditor');
+            if (descEditorEl) {
+                ClassicEditor
+                    .create(descEditorEl, {
+                        toolbar: [
+                            'heading', '|',
+                            'bold', 'italic', 'underline', 'link', 'bulletedList', 'numberedList', '|',
+                            'blockQuote', 'insertTable', 'undo', 'redo'
+                        ]
+                    })
+                    .catch(error => {
+                        console.error('CKEditor Init Error:', error);
+                    });
+            }
+
             initializeProductImageUpload({
                 inputId: 'productImageInput',
                 previewId: 'productImagePreview',
@@ -871,57 +589,22 @@
                 emptyMessage: 'Choose a new main image to replace the current one. Selected image will preview instantly and be compressed before upload.'
             });
 
-            initializeInteractiveGalleryUploader({
-                gridId: 'interactiveGalleryGrid',
-                inputsContainerId: 'galleryInputsContainer'
-            });
-
             initializeExistingGalleryRemoval({
                 sectionId: 'existingGallerySection',
                 gridId: 'existingGalleryGrid',
                 removedInputsContainerId: 'removedGalleryInputs'
             });
-    
+            initializeInteractiveGalleryUploader({
+                gridId: 'interactiveGalleryGrid',
+                inputsContainerId: 'galleryInputsContainer'
+            });
             initializeVariantManager();
-
-            const hasVariantsToggle = document.getElementById('has_variants');
-            const variantManagerContainer = document.getElementById('variant-manager-container');
-
-            function toggleVariantFields() {
-                const isChecked = hasVariantsToggle.checked;
-                variantManagerContainer.style.display = isChecked ? 'block' : 'none';
-                
-                const variantInputs = variantManagerContainer.querySelectorAll('input, select, textarea');
-                if (isChecked) {
-                    variantInputs.forEach(el => {
-                        el.disabled = false;
-                    });
-                } else {
-                    variantInputs.forEach(el => {
-                        el.disabled = true;
-                    });
-                }
-            }
-
-            if (hasVariantsToggle && variantManagerContainer) {
-                hasVariantsToggle.addEventListener('change', toggleVariantFields);
-                toggleVariantFields();
-            }
-
-            // Unified Sections Builder
-            const sectionsContainer = document.getElementById('landing-sections-builder-container');
-            const addSectionBtn = document.getElementById('add-section-btn');
-            const newSectionTypeSelect = document.getElementById('new-section-type');
-
-            function getSectionCounter() {
-                return document.querySelectorAll('.section-card').length;
-            }
 
             function createSectionItemRow(secIndex, value = '') {
                 const div = document.createElement('div');
                 div.className = 'item-row d-flex align-items-center gap-2 mb-2';
                 div.innerHTML = `
-                    <textarea name="landing_settings[sections][${secIndex}][items][]" class="form-control form-control-sm" rows="2" placeholder="আইটেমের বিবরণ লিখুন">${value}</textarea>
+                    <textarea name="landing_settings[sections][${secIndex}][items][]" class="form-control form-control-sm" rows="2" placeholder="পয়েন্ট / আইটেমের বিবরণ লিখুন">${value}</textarea>
                     <button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
                 `;
                 const removeBtn = div.querySelector('.remove-item-btn');
@@ -961,14 +644,10 @@
 
             function reindexFAQItems(sectionCard) {
                 const secIndex = parseInt(sectionCard.getAttribute('data-section-index') || '0');
-                const faqRows = sectionCard.querySelectorAll('.faq-item-row');
-                faqRows.forEach((row, faqIndex) => {
-                    const textMuted = row.querySelector('.text-muted');
-                    if (textMuted) textMuted.textContent = `প্রশ্ন ও উত্তর #${faqIndex + 1}`;
-                    const qInput = row.querySelector('input');
-                    if (qInput) qInput.name = `landing_settings[sections][${secIndex}][faqs][${faqIndex}][q]`;
-                    const aTextarea = row.querySelector('textarea');
-                    if (aTextarea) aTextarea.name = `landing_settings[sections][${secIndex}][faqs][${faqIndex}][a]`;
+                sectionCard.querySelectorAll('.faq-item-row').forEach((row, faqIndex) => {
+                    row.querySelector('.text-muted').textContent = `প্রশ্ন ও উত্তর #${faqIndex + 1}`;
+                    row.querySelector('input').name = `landing_settings[sections][${secIndex}][faqs][${faqIndex}][q]`;
+                    row.querySelector('textarea').name = `landing_settings[sections][${secIndex}][faqs][${faqIndex}][a]`;
                 });
             }
 
@@ -982,7 +661,7 @@
                     </div>
                     <div class="row g-1">
                         <div class="col-4">
-                            <input type="text" name="landing_settings[sections][${secIndex}][badges][${badgeIndex}][icon]" class="form-control form-control-sm" value="${icon}" placeholder="আইকন ক্লাস">
+                            <input type="text" name="landing_settings[sections][${secIndex}][badges][${badgeIndex}][icon]" class="form-control form-control-sm" value="${icon}" placeholder="আইকন (যেমন: fas fa-shield-alt)">
                         </div>
                         <div class="col-4">
                             <input type="text" name="landing_settings[sections][${secIndex}][badges][${badgeIndex}][title]" class="form-control form-control-sm" value="${title}" placeholder="টাইটেল">
@@ -1005,60 +684,11 @@
 
             function reindexBadgeItems(sectionCard) {
                 const secIndex = parseInt(sectionCard.getAttribute('data-section-index') || '0');
-                const rows = sectionCard.querySelectorAll('.badge-item-row');
-                rows.forEach((row, idx) => {
-                    const textMuted = row.querySelector('.text-muted');
-                    if (textMuted) textMuted.textContent = `ব্যাজ #${idx + 1}`;
-                    
-                    const iconInput = row.querySelector('input[name*="[icon]"]');
-                    if (iconInput) iconInput.name = `landing_settings[sections][${secIndex}][badges][${idx}][icon]`;
-                    
-                    const titleInput = row.querySelector('input[name*="[title]"]');
-                    if (titleInput) titleInput.name = `landing_settings[sections][${secIndex}][badges][${idx}][title]`;
-                    
-                    const descInput = row.querySelector('input[name*="[desc]"]');
-                    if (descInput) descInput.name = `landing_settings[sections][${secIndex}][badges][${idx}][desc]`;
-                });
-            }
-
-            function createTrustFeatureItemRow(secIndex, featureIndex, title = '', desc = '') {
-                const div = document.createElement('div');
-                div.className = 'trust-feature-item-row border p-2 mb-2 bg-white rounded shadow-sm';
-                div.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="small fw-bold text-muted">ফিচার #${featureIndex + 1}</span>
-                        <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="form-group mb-1">
-                        <input type="text" name="landing_settings[sections][${secIndex}][trust_features][${featureIndex}][title]" class="form-control form-control-sm" value="${title}" placeholder="টাইটেল লিখুন">
-                    </div>
-                    <div class="form-group mb-0">
-                        <textarea name="landing_settings[sections][${secIndex}][trust_features][${featureIndex}][desc]" class="form-control form-control-sm" rows="2" placeholder="বর্ণনা লিখুন">${desc}</textarea>
-                    </div>
-                `;
-                const removeBtn = div.querySelector('.remove-item-btn');
-                if (removeBtn) {
-                    removeBtn.addEventListener('click', function() {
-                        div.remove();
-                        const card = div.closest('.section-card');
-                        if (card) reindexTrustFeatureItems(card);
-                    });
-                }
-                return div;
-            }
-
-            function reindexTrustFeatureItems(sectionCard) {
-                const secIndex = parseInt(sectionCard.getAttribute('data-section-index') || '0');
-                const rows = sectionCard.querySelectorAll('.trust-feature-item-row');
-                rows.forEach((row, idx) => {
-                    const textMuted = row.querySelector('.text-muted');
-                    if (textMuted) textMuted.textContent = `ফিচার #${idx + 1}`;
-                    
-                    const titleInput = row.querySelector('input[name*="[title]"]');
-                    if (titleInput) titleInput.name = `landing_settings[sections][${secIndex}][trust_features][${idx}][title]`;
-                    
-                    const descInput = row.querySelector('textarea[name*="[desc]"]');
-                    if (descInput) descInput.name = `landing_settings[sections][${secIndex}][trust_features][${idx}][desc]`;
+                sectionCard.querySelectorAll('.badge-item-row').forEach((row, idx) => {
+                    row.querySelector('.text-muted').textContent = `ব্যাজ #${idx + 1}`;
+                    row.querySelector('input[name*="[icon]"]').name = `landing_settings[sections][${secIndex}][badges][${idx}][icon]`;
+                    row.querySelector('input[name*="[title]"]').name = `landing_settings[sections][${secIndex}][badges][${idx}][title]`;
+                    row.querySelector('input[name*="[desc]"]').name = `landing_settings[sections][${secIndex}][badges][${idx}][desc]`;
                 });
             }
 
@@ -1071,35 +701,11 @@
                         <i class="fas fa-image text-muted placeholder-icon" style="${imgUrl ? 'display: none;' : ''}"></i>
                     </div>
                     <div class="flex-grow-1">
-                        <input type="text" name="landing_settings[sections][${secIndex}][images][]" class="form-control form-control-sm gallery-url-input" value="${imgUrl}" placeholder="ছবির ইউআরএল/লিংক লিখুন (যেমন: https://... বা /uploads/...)">
+                        <input type="text" name="landing_settings[sections][${secIndex}][images][]" class="form-control form-control-sm gallery-url-input" value="${imgUrl}" placeholder="ছবির ইউআরএল/লিংক লিখুন">
                     </div>
                     <button type="button" class="btn btn-xs btn-danger remove-item-btn" title="মুছে ফেলুন"><i class="fas fa-trash"></i></button>
                 `;
-
-                const input = div.querySelector('.gallery-url-input');
-                const imgPreview = div.querySelector('.img-preview');
-                const placeholder = div.querySelector('.placeholder-icon');
-                if (input) {
-                    input.addEventListener('input', function() {
-                        const val = input.value.trim();
-                        if (val !== '') {
-                            imgPreview.src = val;
-                            imgPreview.style.display = 'block';
-                            if (placeholder) placeholder.style.display = 'none';
-                        } else {
-                            imgPreview.style.display = 'none';
-                            if (placeholder) placeholder.style.display = 'block';
-                        }
-                    });
-                }
-
-                const removeBtn = div.querySelector('.remove-item-btn');
-                if (removeBtn) {
-                    removeBtn.addEventListener('click', function() {
-                        div.remove();
-                    });
-                }
-
+                div.querySelector('.remove-item-btn').addEventListener('click', () => div.remove());
                 return div;
             }
 
@@ -1113,46 +719,31 @@
                 card.setAttribute('data-section-index', index);
 
                 const titles = {
-                    features: 'আমাদের প্রোডাক্টের বৈশিষ্ট্য',
                     badges: 'আমাদের থেকে কেন কিনবেন?',
-                    problems: 'এই সমস্যাগুলো কি আপনারও আছে?',
-                    benefits: 'বৈশিষ্ট্যগুলো কি কি জানতে চান?',
-                    package: 'প্যাকেজের সাথে যা যা পাবেন',
-                    faq: 'কিছু সাধারণ প্রশ্ন',
-                    video: 'পণ্যটির বিবরণী ও ব্যবহারবিধি ভিডিও',
-                    gallery: 'পণ্যটির কিছু বাস্তব ছবি (Real Gallery)',
-                    trust: 'কেন আমাদের থেকে অর্ডার করবেন?',
-                    cta: 'অর্ডার করতে এখানে ক্লিক করুন',
-                    custom: 'নতুন কাস্টম সেকশন',
-                    rich_text: 'কাস্টম রিচ টেক্সট (কালার, এইচটিএমএল সহ)'
+                    faq: 'কিছু সাধারণ প্রশ্ন ও উত্তর',
+                    gallery: 'পণ্যটির বাস্তব ছবিসমূহ (Photo Gallery)',
+                    video: 'পণ্যটির রিভিউ ও ব্যবহারবিধি ভিডিও',
+                    custom: 'কাস্টম সেকশন টাইটেল',
+                    order_form: 'অর্ডার করতে নিচের ফর্মটি পূরণ করুন',
+                    reviews: 'কাস্টমার রিভিউ ও রেটিং'
                 };
                 const tags = {
-                    features: 'Product Features',
                     badges: 'Trust Badges',
-                    problems: 'Common Issues',
-                    benefits: 'Benefits',
-                    package: 'Package Contents',
-                    faq: 'FAQs',
+                    faq: 'QnA',
+                    gallery: 'Photo Gallery',
                     video: 'Showcase Video',
-                    gallery: 'Showcase',
-                    trust: 'Trust',
-                    cta: 'Call To Action',
-                    custom: 'INFO',
-                    rich_text: 'Rich Text'
+                    custom: 'Special Info',
+                    order_form: 'Order Form',
+                    reviews: 'Reviews'
                 };
-                const styles = {
-                    features: 'blue-check',
-                    badges: 'blue-check',
-                    problems: 'red-cross',
-                    benefits: 'green-check',
-                    package: 'package-box',
-                    faq: 'faq-accordion',
-                    video: 'blue-check',
-                    gallery: 'blue-check',
-                    trust: 'blue-check',
-                    cta: 'blue-check',
-                    custom: 'blue-check',
-                    rich_text: 'blue-check'
+                const typeLabels = {
+                    badges: '🛡️ Trust Badges',
+                    faq: '❓ QnA / FAQ',
+                    gallery: '🖼️ Photo Gallery',
+                    video: '🎥 YouTube Video',
+                    custom: '📝 Custom Section',
+                    order_form: '🛒 Custom Order Form',
+                    reviews: '⭐ Customer Reviews'
                 };
 
                 card.innerHTML = `
@@ -1160,7 +751,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="d-flex align-items-center gap-2">
                             <span class="badge bg-dark text-white p-2">সেকশন #<span class="sec-number">${index + 1}</span></span>
-                            <span class="badge bg-info text-white p-2">${type.toUpperCase()}</span>
+                            <span class="badge bg-primary text-white p-2">${typeLabels[type] || type.toUpperCase()}</span>
                         </div>
                         <div class="d-flex align-items-center gap-1">
                             <button type="button" class="btn btn-xs btn-outline-secondary move-up-btn" title="উপরে তুলুন"><i class="fas fa-arrow-up"></i></button>
@@ -1169,142 +760,132 @@
                         </div>
                     </div>
 
-                    ${type === 'cta' ? `
-                        <div class="row g-2 mb-2">
-                            <div class="col-md-6 col-12">
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">কল টু অ্যাকশন টাইটেল (CTA Title)</label>
-                                    <input type="text" name="landing_settings[sections][${index}][title]" class="form-control form-control-sm" value="${titles[type] || ''}" placeholder="যেমন: অর্ডার করতে এখানে ক্লিক করুন">
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-12">
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">বাটন টেক্সট (Button Text)</label>
-                                    <input type="text" name="landing_settings[sections][${index}][button_text]" class="form-control form-control-sm" value="অর্ডার করতে ক্লিক করুন" placeholder="যেমন: অর্ডার করতে ক্লিক করুন">
-                                </div>
+                    <!-- Row 1: Active Status, Title, Tag -->
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">সেকশন স্ট্যাটাস (Status)</label>
+                                <select name="landing_settings[sections][${index}][is_active]" class="form-control form-control-sm form-select">
+                                    <option value="1" selected>Active (সক্রিয়)</option>
+                                    <option value="0">Inactive (নিষ্ক্রিয়)</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="row g-2 mb-2 p-2 rounded border bg-light">
-                            <div class="col-md-4 col-6">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">ব্যাকগ্রাউন্ড (Background)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][bg_color]" class="form-control form-control-sm form-control-color w-100" value="#ffffff">
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-6">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">টেক্সট কালার (Text Color)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][text_color]" class="form-control form-control-sm form-control-color w-100" value="#333333">
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-12">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">বাটন কালার (Button Color)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][accent_color]" class="form-control form-control-sm form-control-color w-100" value="#007bff">
-                                </div>
+                        <div class="col-md-6 col-12">
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
+                                <input type="text" name="landing_settings[sections][${index}][title]" class="form-control form-control-sm" value="${titles[type] || ''}" placeholder="টাইটেল লিখুন">
                             </div>
                         </div>
-                    ` : `
-                        <div class="row g-2 mb-2">
-                            <div class="col-md-6 col-12">
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
-                                    <input type="text" name="landing_settings[sections][${index}][title]" class="form-control form-control-sm" value="${titles[type] || ''}" placeholder="টাইটেল লিখুন">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6">
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">সেকশন ট্যাগ (Tag)</label>
-                                    <input type="text" name="landing_settings[sections][${index}][tag]" class="form-control form-control-sm" value="${tags[type] || ''}" placeholder="ট্যাগ লিখুন">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6" style="${['video', 'gallery', 'faq', 'badges', 'trust'].includes(type) ? 'display: none;' : ''}">
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">স্টাইল / লেআউট (Style)</label>
-                                    <select name="landing_settings[sections][${index}][style]" class="form-control form-control-sm form-select">
-                                        <option value="blue-check" ${styles[type] === 'blue-check' ? 'selected' : ''}>Blue Check Square</option>
-                                        <option value="green-check" ${styles[type] === 'green-check' ? 'selected' : ''}>Green Check Circle</option>
-                                        <option value="red-cross" ${styles[type] === 'red-cross' ? 'selected' : ''}>Red Cross</option>
-                                        <option value="yellow-star" ${styles[type] === 'yellow-star' ? 'selected' : ''}>Yellow Star</option>
-                                        <option value="orange-info" ${styles[type] === 'orange-info' ? 'selected' : ''}>Orange Info</option>
-                                        <option value="package-box" ${styles[type] === 'package-box' ? 'selected' : ''}>Package Box Style</option>
-                                        <option value="faq-accordion" ${styles[type] === 'faq-accordion' ? 'selected' : ''}>FAQ Accordion</option>
-                                    </select>
-                                </div>
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">সেকশন ট্যাগ (Tag/Badge)</label>
+                                <input type="text" name="landing_settings[sections][${index}][tag]" class="form-control form-control-sm" value="${tags[type] || ''}" placeholder="যেমন: FAQs / Trust">
                             </div>
                         </div>
+                    </div>
 
-                        <div class="row g-2 mb-2 p-2 rounded border bg-light">
-                            <div class="col-md-3 col-6">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">ব্যাকগ্রাউন্ড (Background)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][bg_color]" class="form-control form-control-sm form-control-color w-100" value="#ffffff">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">টেক্সট কালার (Text Color)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][text_color]" class="form-control form-control-sm form-control-color w-100" value="#333333">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">বর্ডার/অ্যাকসেন্ট (Accent)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][accent_color]" class="form-control form-control-sm form-control-color w-100" value="#007bff">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6" style="${['video', 'gallery'].includes(type) ? 'display: none;' : ''}">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">ফন্ট ওয়েট (Font Weight)</label>
-                                    <select name="landing_settings[sections][${index}][font_weight]" class="form-control form-control-sm form-select">
-                                        <option value="400">চিকন (Normal - 400)</option>
-                                        <option value="500">মাঝারি (Medium - 500)</option>
-                                        <option value="600">সেমি-বোল্ড (Semi-Bold - 600)</option>
-                                        <option value="700">মোটা (Bold - 700)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-12" style="${['video', 'gallery'].includes(type) ? 'display: none;' : ''}">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">বাই নাও বাটন (Show Button)</label>
-                                    <select name="landing_settings[sections][${index}][show_button]" class="form-control form-control-sm form-select">
-                                        <option value="1">সক্রিয় (Active)</option>
-                                        <option value="0">নিষ্ক্রিয় (Inactive)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-8 col-12" style="${['video', 'gallery'].includes(type) ? 'display: none;' : ''}">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">কাস্টম বাটন টেক্সট (Button Text)</label>
-                                    <input type="text" name="landing_settings[sections][${index}][button_text]" class="form-control form-control-sm" value="অর্ডার করতে ক্লিক করুন" placeholder="যেমন: অর্ডার করতে ক্লিক করুন">
-                                </div>
+                    <!-- Row 2: Background, Text Color, Font Size, Line Height -->
+                    <div class="row g-2 mb-2 p-2 rounded border bg-light">
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">ব্যাকগ্রাউন্ড (Background)</label>
+                                <input type="color" name="landing_settings[sections][${index}][bg_color]" class="form-control form-control-sm form-control-color w-100" value="#ffffff">
                             </div>
                         </div>
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">টেক্সট কালার (Text Color)</label>
+                                <input type="color" name="landing_settings[sections][${index}][text_color]" class="form-control form-control-sm form-control-color w-100" value="#1e293b">
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">ফন্ট সাইজ (Font Size)</label>
+                                <select name="landing_settings[sections][${index}][font_size]" class="form-control form-control-sm form-select">
+                                    <option value="14px">Small (14px)</option>
+                                    <option value="16px" selected>Normal (16px)</option>
+                                    <option value="18px">Medium (18px)</option>
+                                    <option value="20px">Large (20px)</option>
+                                    <option value="24px">Extra Large (24px)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">টেক্সট হাইট (Line Height)</label>
+                                <select name="landing_settings[sections][${index}][line_height]" class="form-control form-control-sm form-select">
+                                    <option value="1.4">Tight (1.4)</option>
+                                    <option value="1.6" selected>Normal (1.6)</option>
+                                    <option value="1.8">Relaxed (1.8)</option>
+                                    <option value="2.0">Loose (2.0)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-                        <div class="section-content-container mt-2 border-top pt-2" style="${['video'].includes(type) ? 'display: none;' : ''}">
-                            ${type === 'gallery' ? `
-                                <label class="small fw-bold mb-2">গ্যালারি ছবিসমূহ (Gallery Image Links / URLs)</label>
-                                <div class="gallery-items-list border rounded p-2 bg-white"></div>
-                                <button type="button" class="btn btn-xs btn-outline-primary add-gallery-item-btn mt-2">
-                                    <i class="fas fa-plus me-1"></i> ছবি যোগ করুন (Add Photo URL)
-                                </button>
-                            ` : type === 'rich_text' ? `
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">সেকশন কন্টেন্ট / বিবরণী (Custom HTML or Text Content)</label>
-                                    <textarea name="landing_settings[sections][${index}][content]" class="form-control form-control-sm" rows="6" placeholder="এখানে আপনার কাস্টম টেক্সট বা এইচটিএমএল কন্টেন্ট লিখুন..."></textarea>
-                                </div>
-                            ` : `
-                                <label class="small fw-bold mb-2">
-                                    ${type === 'faq' ? 'প্রশ্ন ও উত্তরসমূহ (FAQs)' : (type === 'badges' ? 'পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)' : (type === 'trust' ? 'কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)' : 'সেকশন আইটেমসমূহ (Items)'))}
-                                </label>
-                                <div class="items-list"></div>
-                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
-                                    <i class="fas fa-plus me-1"></i>
-                                    ${type === 'faq' ? 'প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)' : (type === 'badges' ? 'ব্যাজ যোগ করুন (Add Badge)' : (type === 'trust' ? 'ফিচার যোগ করুন (Add Feature)' : 'আইটেম যোগ করুন (Add Item)'))}
-                                </button>
-                            `}
+                    <!-- Row 3: Add Buy Now Button Option -->
+                    <div class="row g-2 mb-2 p-2 rounded border bg-light">
+                        <div class="col-md-4 col-12">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">বাই নাও বাটন যুক্ত করুন (Add Buy Now Button)</label>
+                                <select name="landing_settings[sections][${index}][show_button]" class="form-control form-control-sm form-select">
+                                    <option value="0" selected>না (No Button)</option>
+                                    <option value="1">হ্যাঁ, বাটন দেখাও (Show Buy Now Button)</option>
+                                </select>
+                            </div>
                         </div>
-                    `}
+                        <div class="col-md-8 col-12">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">বাটন টেক্সট (Button Text)</label>
+                                <input type="text" name="landing_settings[sections][${index}][button_text]" class="form-control form-control-sm" value="অর্ডার করতে ক্লিক করুন" placeholder="যেমন: অর্ডার করতে ক্লিক করুন">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Content Container -->
+                    <div class="section-content-container mt-2 border-top pt-2">
+                        ${type === 'gallery' ? `
+                            <label class="small fw-bold mb-2">গ্যালারি ছবিসমূহ (Gallery Image Links / URLs)</label>
+                            <div class="gallery-items-list border rounded p-2 bg-white"></div>
+                            <button type="button" class="btn btn-xs btn-outline-primary add-gallery-item-btn mt-2">
+                                <i class="fas fa-plus me-1"></i> ছবি যোগ করুন (Add Photo URL)
+                            </button>
+                        ` : type === 'video' ? `
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">ইউটিউব ভিডিও লিংক (YouTube Video URL)</label>
+                                <input type="text" name="landing_settings[sections][${index}][youtube_video_url]" class="form-control form-control-sm" placeholder="যেমন: https://www.youtube.com/watch?v=xxxxxx">
+                                <small class="text-muted">ইউটিউব ভিডিওর সম্পূর্ণ লিংকটি এখানে দিন।</small>
+                            </div>
+                        ` : type === 'custom' ? `
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">সংক্ষিপ্ত বিবরণ (Short Description)</label>
+                                <textarea name="landing_settings[sections][${index}][short_desc]" class="form-control form-control-sm mb-2" rows="2" placeholder="সেকশনের সংক্ষিপ্ত বিবরণ লিখুন..."></textarea>
+                            </div>
+                            <label class="small fw-bold mb-2">পয়েন্ট / আইটেমসমূহ (Item Points)</label>
+                            <div class="items-list"></div>
+                            <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
+                                <i class="fas fa-plus me-1"></i> পয়েন্ট যোগ করুন (Add Point)
+                            </button>
+                        ` : type === 'order_form' ? `
+                            <div class="alert alert-info py-2 px-3 small mb-0">
+                                <i class="fas fa-info-circle me-1"></i> এই সেকশনটি ফ্রন্টএন্ডে সরাসরি ক্যাশ অন ডেলিভারি (Name, Phone, Address, Delivery Area) অর্ডার ফর্ম হিসেবে রেন্ডার হবে।
+                            </div>
+                        ` : type === 'reviews' ? `
+                            <div class="alert alert-info py-2 px-3 small mb-0">
+                                <i class="fas fa-info-circle me-1"></i> এই সেকশনটি ফ্রন্টএন্ডে কাস্টমারদের রিভিউ ফর্ম এবং অনুমোদিত রিভিউ তালিকা হিসেবে রেন্ডার হবে।
+                            </div>
+                        ` : `
+                            <label class="small fw-bold mb-2">
+                                ${type === 'faq' ? 'প্রশ্ন ও উত্তরসমূহ (FAQs)' : 'পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)'}
+                            </label>
+                            <div class="items-list"></div>
+                            <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
+                                <i class="fas fa-plus me-1"></i>
+                                ${type === 'faq' ? 'প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)' : 'ব্যাজ যোগ করুন (Add Badge)'}
+                            </button>
+                        `}
+                    </div>
                 `;
 
                 bindSectionCardEvents(card);
@@ -1316,17 +897,22 @@
                         list.appendChild(createGalleryImageRow(index, 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'));
                         list.appendChild(createGalleryImageRow(index, 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500'));
                     }
+                } else if (type === 'custom') {
+                    const itemsList = card.querySelector('.items-list');
+                    if (itemsList) {
+                        itemsList.appendChild(createSectionItemRow(index, '১০০% প্রিমিয়াম ও অরিজিনাল কোয়ালিটি'));
+                        itemsList.appendChild(createSectionItemRow(index, 'দীর্ঘস্থায়ী ও টেকসই ব্যবহার উপযোগী'));
+                    }
                 } else {
                     const itemsList = card.querySelector('.items-list');
                     if (itemsList) {
                         if (type === 'faq') {
-                            itemsList.appendChild(createFAQItemRow(index, 0));
+                            itemsList.appendChild(createFAQItemRow(index, 0, 'প্রোডাক্টটি পেতে কতদিন সময় লাগবে?', 'ঢাকা সিটিতে ১-২ দিন এবং ঢাকার বাইরে ২-৩ কার্যদিবসের মধ্যে ডেলিভারি পেয়ে যাবেন।'));
                         } else if (type === 'badges') {
-                            itemsList.appendChild(createBadgeItemRow(index, 0, 'fas fa-shield-alt', '100% কোয়ালিটি', 'সেরা কোয়ালিটির নিশ্চয়তা'));
-                        } else if (type === 'trust') {
-                            itemsList.appendChild(createTrustFeatureItemRow(index, 0, 'দ্রুত ডেলিভারি', 'সারা বাংলাদেশে ক্যাশ অন ডেলিভারি'));
-                        } else if (!['video', 'gallery', 'cta', 'rich_text'].includes(type)) {
-                            itemsList.appendChild(createSectionItemRow(index));
+                            itemsList.appendChild(createBadgeItemRow(index, 0, 'fas fa-shield-alt', '১০০% অরিজিনাল', 'সেরা কোয়ালিটির নিশ্চয়তা'));
+                            itemsList.appendChild(createBadgeItemRow(index, 1, 'fas fa-shipping-fast', 'দ্রুত ডেলিভারি', 'সারা বাংলাদেশে ক্যাশ অন ডেলিভারি'));
+                            itemsList.appendChild(createBadgeItemRow(index, 2, 'fas fa-undo-alt', 'সহজ রিটার্ন সুবিধা', '৭ দিনের মধ্যে এক্সচেঞ্জ সুবিধা'));
+                            itemsList.appendChild(createBadgeItemRow(index, 3, 'fas fa-headset', '২৪/৭ সাপোর্ট', 'যেকোনো প্রয়োজনে কল করুন'));
                         }
                     }
                 }
@@ -1402,12 +988,7 @@
                             itemsList.appendChild(createBadgeItemRow(secIndex, badgeIndex));
                             const iconInput = itemsList.lastElementChild.querySelector('input');
                             if (iconInput) iconInput.focus();
-                        } else if (type === 'trust') {
-                            const featureIndex = itemsList.querySelectorAll('.trust-feature-item-row').length;
-                            itemsList.appendChild(createTrustFeatureItemRow(secIndex, featureIndex));
-                            const titleInput = itemsList.lastElementChild.querySelector('input');
-                            if (titleInput) titleInput.focus();
-                        } else {
+                        } else if (type === 'custom') {
                             itemsList.appendChild(createSectionItemRow(secIndex));
                             const textarea = itemsList.lastElementChild.querySelector('textarea');
                             if (textarea) textarea.focus();
@@ -1418,15 +999,13 @@
                 // Bind existing inner delete buttons
                 card.querySelectorAll('.remove-item-btn').forEach((btn) => {
                     btn.addEventListener('click', function() {
-                        const row = btn.closest('.item-row, .faq-item-row, .badge-item-row, .trust-feature-item-row, .gallery-image-row');
+                        const row = btn.closest('.item-row, .faq-item-row, .badge-item-row, .gallery-image-row');
                         if (row) {
                             row.remove();
                             if (type === 'faq') {
                                 reindexFAQItems(card);
                             } else if (type === 'badges') {
                                 reindexBadgeItems(card);
-                            } else if (type === 'trust') {
-                                reindexTrustFeatureItems(card);
                             }
                         }
                     });
@@ -1444,14 +1023,14 @@
                     const typeInput = card.querySelector('input[type="hidden"]');
                     if (typeInput) typeInput.name = `landing_settings[sections][${index}][type]`;
 
+                    const activeSelect = card.querySelector('select[name*="[is_active]"]');
+                    if (activeSelect) activeSelect.name = `landing_settings[sections][${index}][is_active]`;
+
                     const titleInput = card.querySelector('input[name*="[title]"]');
                     if (titleInput) titleInput.name = `landing_settings[sections][${index}][title]`;
 
                     const tagInput = card.querySelector('input[name*="[tag]"]');
                     if (tagInput) tagInput.name = `landing_settings[sections][${index}][tag]`;
-
-                    const styleSelect = card.querySelector('select[name*="[style]"]');
-                    if (styleSelect) styleSelect.name = `landing_settings[sections][${index}][style]`;
 
                     const bgColorInput = card.querySelector('input[name*="[bg_color]"]');
                     if (bgColorInput) bgColorInput.name = `landing_settings[sections][${index}][bg_color]`;
@@ -1459,11 +1038,11 @@
                     const textColorInput = card.querySelector('input[name*="[text_color]"]');
                     if (textColorInput) textColorInput.name = `landing_settings[sections][${index}][text_color]`;
 
-                    const accentColorInput = card.querySelector('input[name*="[accent_color]"]');
-                    if (accentColorInput) accentColorInput.name = `landing_settings[sections][${index}][accent_color]`;
+                    const fontSizeSelect = card.querySelector('select[name*="[font_size]"]');
+                    if (fontSizeSelect) fontSizeSelect.name = `landing_settings[sections][${index}][font_size]`;
 
-                    const fontWeightSelect = card.querySelector('select[name*="[font_weight]"]');
-                    if (fontWeightSelect) fontWeightSelect.name = `landing_settings[sections][${index}][font_weight]`;
+                    const lineHeightSelect = card.querySelector('select[name*="[line_height]"]');
+                    if (lineHeightSelect) lineHeightSelect.name = `landing_settings[sections][${index}][line_height]`;
 
                     const showButtonSelect = card.querySelector('select[name*="[show_button]"]');
                     if (showButtonSelect) showButtonSelect.name = `landing_settings[sections][${index}][show_button]`;
@@ -1471,21 +1050,22 @@
                     const buttonTextInput = card.querySelector('input[name*="[button_text]"]');
                     if (buttonTextInput) buttonTextInput.name = `landing_settings[sections][${index}][button_text]`;
 
+                    const shortDescTextarea = card.querySelector('textarea[name*="[short_desc]"]');
+                    if (shortDescTextarea) shortDescTextarea.name = `landing_settings[sections][${index}][short_desc]`;
+
+                    const videoInput = card.querySelector('input[name*="[youtube_video_url]"]');
+                    if (videoInput) videoInput.name = `landing_settings[sections][${index}][youtube_video_url]`;
+
                     const type = card.getAttribute('data-section-type');
                     if (type === 'faq') {
                         reindexFAQItems(card);
                     } else if (type === 'badges') {
                         reindexBadgeItems(card);
-                    } else if (type === 'trust') {
-                        reindexTrustFeatureItems(card);
                     } else if (type === 'gallery') {
                         card.querySelectorAll('.gallery-url-input').forEach(input => {
                             input.name = `landing_settings[sections][${index}][images][]`;
                         });
-                    } else if (type === 'rich_text') {
-                        const contentTextarea = card.querySelector('textarea[name*="[content]"]');
-                        if (contentTextarea) contentTextarea.name = `landing_settings[sections][${index}][content]`;
-                    } else {
+                    } else if (type === 'custom') {
                         card.querySelectorAll('.item-row textarea').forEach(textarea => {
                             textarea.name = `landing_settings[sections][${index}][items][]`;
                         });
@@ -1509,12 +1089,7 @@
                                 itemsList.appendChild(createBadgeItemRow(index, badgeIndex));
                                 const iconInput = itemsList.lastElementChild.querySelector('input');
                                 if (iconInput) iconInput.focus();
-                            } else if (type === 'trust') {
-                                const featureIndex = itemsList.querySelectorAll('.trust-feature-item-row').length;
-                                itemsList.appendChild(createTrustFeatureItemRow(index, featureIndex));
-                                const titleInput = itemsList.lastElementChild.querySelector('input');
-                                if (titleInput) titleInput.focus();
-                            } else {
+                            } else if (type === 'custom') {
                                 itemsList.appendChild(createSectionItemRow(index));
                                 const textarea = itemsList.lastElementChild.querySelector('textarea');
                                 if (textarea) textarea.focus();
@@ -1534,10 +1109,12 @@
                 bindSectionCardEvents(card);
             });
             reindexSections();
+
             // Modal controller for visual section selector
             const openPickerBtn = document.getElementById('openSectionPickerModalBtn');
             const sectionModalEl = document.getElementById('sectionPickerModal');
             const confirmAddBtn = document.getElementById('confirmAddSectionBtn');
+            const sectionsContainer = document.getElementById('landing-sections-builder-container');
             let selectedType = null;
 
             if (openPickerBtn && sectionModalEl) {
@@ -1562,7 +1139,7 @@
                 if (confirmAddBtn) {
                     confirmAddBtn.addEventListener('click', function() {
                         if (!selectedType || !sectionsContainer) return;
-                        const index = getSectionCounter();
+                        const index = document.querySelectorAll('.section-card').length;
                         const newCard = createSectionCard(selectedType, index);
                         sectionsContainer.appendChild(newCard);
                         reindexSections();
@@ -1615,7 +1192,6 @@
                     }
                 });
 
-                // If user clicks tabs manually, update our index
                 tabLinks.forEach((id, idx) => {
                     const el = document.getElementById(id);
                     if (el) {
@@ -1626,264 +1202,55 @@
                     }
                 });
             }
-
-            // Live Preview Updates
-            function updateLivePreview() {
-                // Name
-                const nameInput = document.getElementById('productNameInput');
-                const simName = document.getElementById('simProductName');
-                if (nameInput && simName) {
-                    simName.textContent = nameInput.value || 'Product Title Preview';
-                }
-
-                // Price
-                const priceInput = document.getElementById('productPriceInput');
-                const salePriceInput = document.getElementById('productSalePriceInput');
-                const simCurrentPrice = document.getElementById('simCurrentPrice');
-                const simOldPrice = document.getElementById('simOldPrice');
-                const simDiscountBadge = document.getElementById('simDiscountBadge');
-
-                if (priceInput && simCurrentPrice) {
-                    const price = parseFloat(priceInput.value) || 0;
-                    const salePrice = parseFloat(salePriceInput ? salePriceInput.value : '0') || 0;
-
-                    if (salePrice > 0 && salePrice < price) {
-                        simCurrentPrice.textContent = '৳' + salePrice.toFixed(2);
-                        if (simOldPrice) {
-                            simOldPrice.textContent = '৳' + price.toFixed(2);
-                            simOldPrice.style.display = 'inline';
-                        }
-                        if (simDiscountBadge) {
-                            const discount = Math.round(((price - salePrice) / price) * 100);
-                            simDiscountBadge.textContent = discount + '% OFF';
-                            simDiscountBadge.style.display = 'inline';
-                        }
-                    } else {
-                        simCurrentPrice.textContent = '৳' + price.toFixed(2);
-                        if (simOldPrice) simOldPrice.style.display = 'none';
-                        if (simDiscountBadge) simDiscountBadge.style.display = 'none';
-                    }
-                }
-
-                // Countdown Urgency
-                const countdownStatus = document.getElementById('countdownStatusSelect');
-                const simCountdownBanner = document.getElementById('simCountdownBanner');
-                if (countdownStatus && simCountdownBanner) {
-                    if (countdownStatus.value === '1') {
-                        simCountdownBanner.style.display = 'block';
-                        const titleInput = document.getElementById('countdownTitleInput');
-                        const subtitleInput = document.getElementById('countdownSubtitleInput');
-                        const simTitle = document.getElementById('simCountdownTitle');
-                        const simSubtitle = document.getElementById('simCountdownSubtitle');
-                        
-                        if (titleInput && simTitle) simTitle.textContent = titleInput.value || 'আজকের বিশেষ ছাড় অফার!';
-                        if (subtitleInput && simSubtitle) simSubtitle.textContent = subtitleInput.value || 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:';
-                    } else {
-                        simCountdownBanner.style.display = 'none';
-                    }
-                }
-
-                // Primary Image Preview
-                const imageInput = document.getElementById('productImageInput');
-                const simProductImage = document.getElementById('simProductImage');
-                if (imageInput && simProductImage && imageInput.files && imageInput.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        simProductImage.style.backgroundImage = `url('${e.target.result}')`;
-                    }
-                    reader.readAsDataURL(imageInput.files[0]);
-                }
-
-                // Sections Preview Generator
-                const simSectionsContainer = document.getElementById('simSectionsContainer');
-                if (simSectionsContainer) {
-                    simSectionsContainer.innerHTML = '';
-                    const sectionCards = document.querySelectorAll('.section-card');
-                    sectionCards.forEach((card) => {
-                        const type = card.getAttribute('data-section-type');
-                        const titleVal = card.querySelector('input[name*="[title]"]')?.value || '';
-                        const tagVal = card.querySelector('input[name*="[tag]"]')?.value || '';
-
-                        const simSecCard = document.createElement('div');
-                        simSecCard.className = 'sim-section-card';
-                        
-                        // Header
-                        let headerHTML = '';
-                        if (tagVal || titleVal) {
-                            headerHTML = `
-                                <div class="sim-section-header">
-                                    ${tagVal ? `<span class="sim-section-tag" style="background:#dbeafe; color:#2563eb;">${tagVal}</span>` : ''}
-                                    ${titleVal ? `<h6 class="sim-section-title">${titleVal}</h6>` : ''}
-                                </div>
-                            `;
-                        }
-
-                        let contentHTML = '';
-                        if (type === 'features' || type === 'problems' || type === 'benefits' || type === 'package') {
-                            let icon = 'fa-check-circle text-success';
-                            if (type === 'features') icon = 'fa-check text-primary';
-                            if (type === 'problems') icon = 'fa-times text-danger';
-                            if (type === 'benefits') icon = 'fa-check-circle text-success';
-                            if (type === 'package') icon = 'fa-box text-warning';
-
-                            const items = Array.from(card.querySelectorAll('textarea')).map(el => el.value);
-                            contentHTML = items.map(item => `
-                                <div class="sim-item-row">
-                                    <i class="fas ${icon}"></i>
-                                    <span>${item}</span>
-                                </div>
-                            `).join('');
-                        } else if (type === 'faq') {
-                            const faqRows = card.querySelectorAll('.faq-item-row');
-                            contentHTML = Array.from(faqRows).map(row => {
-                                const q = row.querySelector('input')?.value || '';
-                                const a = row.querySelector('textarea')?.value || '';
-                                return `
-                                    <div class="sim-faq-item">
-                                        <div class="sim-faq-q">Q: ${q}</div>
-                                        <div class="sim-faq-a">${a}</div>
-                                    </div>
-                                `;
-                            }).join('');
-                        } else if (type === 'badges') {
-                            const badgeRows = card.querySelectorAll('.badge-item-row');
-                            contentHTML = '<div class="sim-badge-grid">' + Array.from(badgeRows).map(row => {
-                                const icon = row.querySelector('input[name*="[icon]"]')?.value || 'fas fa-shield-alt';
-                                const title = row.querySelector('input[name*="[title]"]')?.value || '';
-                                const desc = row.querySelector('input[name*="[desc]"]')?.value || '';
-                                return `
-                                    <div class="sim-badge-item">
-                                        <i class="${icon} text-primary"></i>
-                                        <div class="sim-badge-title">${title}</div>
-                                        <div class="sim-badge-desc">${desc}</div>
-                                    </div>
-                                `;
-                            }).join('') + '</div>';
-                        } else if (type === 'trust') {
-                            const featRows = card.querySelectorAll('.trust-feature-item-row');
-                            contentHTML = Array.from(featRows).map(row => {
-                                const t = row.querySelector('input')?.value || '';
-                                const d = row.querySelector('textarea')?.value || '';
-                                return `
-                                    <div class="sim-faq-item" style="border-bottom:none;">
-                                        <div class="sim-faq-q"><i class="fas fa-check-circle text-success me-1"></i>${t}</div>
-                                        <div class="sim-faq-a" style="margin-left:14px;">${d}</div>
-                                    </div>
-                                `;
-                            }).join('');
-                        } else if (type === 'rich_text') {
-                            const bg = card.querySelector('input[name*="[bg_color]"]')?.value || '#ffffff';
-                            const text = card.querySelector('input[name*="[text_color]"]')?.value || '#333333';
-                            const accent = card.querySelector('input[name*="[accent_color]"]')?.value || '#007bff';
-                            const content = card.querySelector('textarea[name*="[content]"]')?.value || '';
-                            simSecCard.style.backgroundColor = bg;
-                            simSecCard.style.color = text;
-                            simSecCard.style.borderColor = accent;
-                            contentHTML = `<div style="font-size:11px; line-height:1.4;">${content.replace(/\n/g, '<br>')}</div>`;
-                        } else if (type === 'custom') {
-                            const items = Array.from(card.querySelectorAll('textarea')).map(el => el.value);
-                            contentHTML = items.map(item => `<div style="font-size:11px; line-height:1.4; margin-bottom:6px;">${item.replace(/\n/g, '<br>')}</div>`).join('');
-                        } else if (type === 'video') {
-                            contentHTML = `
-                                <div style="background:#e2e8f0; height:120px; display:flex; align-items:center; justify-content:center; border-radius:6px;">
-                                    <i class="fab fa-youtube text-danger" style="font-size:32px;"></i>
-                                </div>
-                            `;
-                        } else if (type === 'gallery') {
-                            contentHTML = `
-                                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:4px;">
-                                    <div style="background:#cbd5e1; height:60px;"></div>
-                                    <div style="background:#cbd5e1; height:60px;"></div>
-                                    <div style="background:#cbd5e1; height:60px;"></div>
-                                </div>
-                            `;
-                        } else if (type === 'cta') {
-                            contentHTML = `
-                                <div class="sim-buy-button" style="padding:6px; font-size:11px; margin-top:4px;">অর্ডার করতে এখানে ক্লিক করুন</div>
-                            `;
-                        }
-
-                        simSecCard.innerHTML = headerHTML + contentHTML;
-                        simSectionsContainer.appendChild(simSecCard);
-                    });
-                }
-            }
-
-            // Register Preview Event Listeners
-            const previewSelectors = [
-                '#productNameInput',
-                '#productPriceInput',
-                '#productSalePriceInput',
-                '#countdownTitleInput',
-                '#countdownSubtitleInput',
-                '#countdownStatusSelect'
-            ];
-            
-            previewSelectors.forEach(selector => {
-                const el = document.querySelector(selector);
-                if (el) {
-                    el.addEventListener('input', updateLivePreview);
-                    el.addEventListener('change', updateLivePreview);
-                }
-            });
-
-            document.getElementById('productImageInput')?.addEventListener('change', updateLivePreview);
-
-            // Hook into Section Card events to trigger preview update
-            const originalBindSectionCardEvents = bindSectionCardEvents;
-            bindSectionCardEvents = function(card) {
-                originalBindSectionCardEvents(card);
-                
-                // Add event listeners for inputs inside the section card
-                card.querySelectorAll('input, select, textarea').forEach(input => {
-                    input.addEventListener('input', updateLivePreview);
-                    input.addEventListener('change', updateLivePreview);
-                });
-                
-                // Update preview on section list changes
-                updateLivePreview();
-            };
-
-            const originalReindexSections = reindexSections;
-            reindexSections = function() {
-                originalReindexSections();
-                updateLivePreview();
-            };
-
-            // Trigger initial preview load
-            setTimeout(updateLivePreview, 1000);
         });
 
+        function initializeExistingGalleryManager() {
+            const section = document.getElementById('existingGallerySection');
+            const grid = document.getElementById('existingGalleryGrid');
+            const removedInputs = document.getElementById('removedGalleryInputs');
+
+            if (!section || !grid || !removedInputs) return;
+
+            grid.addEventListener('click', function (e) {
+                const btn = e.target.closest('.js-remove-existing-gallery');
+                if (!btn) return;
+
+                const path = btn.getAttribute('data-path');
+                const card = btn.closest('.gallery-preview-card');
+
+                if (card) {
+                    card.remove();
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'removed_gallery[]';
+                    input.value = path;
+                    removedInputs.appendChild(input);
+
+                    if (grid.children.length === 0) {
+                        section.style.display = 'none';
+                    }
+                }
+            });
+        }
+
         function initializeProductImageUpload({ inputId, previewId, previewContainerId, helperId, emptyMessage }) {
-            const fileInput = document.getElementById(inputId);
+            const input = document.getElementById(inputId);
             const preview = document.getElementById(previewId);
             const previewContainer = document.getElementById(previewContainerId);
-            const helper = document.getElementById(helperId);
 
-            if (!fileInput || !preview || !previewContainer || !helper) {
-                return;
-            }
+            if (!input || !preview || !previewContainer) return;
 
-            fileInput.addEventListener('change', function (event) {
+            input.addEventListener('change', function (event) {
                 const file = event.target.files[0];
-
-                if (!file) {
-                    preview.src = '#';
-                    previewContainer.style.display = 'none';
-                    helper.textContent = emptyMessage;
-                    return;
-                }
+                if (!file) return;
 
                 if (!file.type.startsWith('image/')) {
-                    helper.textContent = 'Please select a valid image file.';
-                    event.target.value = '';
-                    preview.src = '#';
-                    previewContainer.style.display = 'none';
+                    alert('Please select a valid image file.');
+                    input.value = '';
                     return;
                 }
 
                 updatePreview(preview, previewContainer, file);
-                helper.innerHTML = `<span class="text-success">Image selected. Size: ${(file.size / 1024).toFixed(2)} KB.</span>`;
             });
         }
 
@@ -1975,48 +1342,6 @@
             createAddCard();
         }
 
-        function initializeExistingGalleryRemoval({ sectionId, gridId, removedInputsContainerId }) {
-            const section = document.getElementById(sectionId);
-            const grid = document.getElementById(gridId);
-            const removedInputsContainer = document.getElementById(removedInputsContainerId);
-
-            if (!section || !grid || !removedInputsContainer) {
-                return;
-            }
-
-            grid.addEventListener('click', function (event) {
-                const removeButton = event.target.closest('.js-remove-existing-gallery');
-
-                if (!removeButton) {
-                    return;
-                }
-
-                const path = removeButton.dataset.path;
-                const card = removeButton.closest('[data-gallery-path]');
-
-                if (!path || !card) {
-                    return;
-                }
-
-                const alreadyRemoved = Array.from(removedInputsContainer.querySelectorAll('input[name="removed_gallery[]"]'))
-                    .some((input) => input.value === path);
-
-                if (!alreadyRemoved) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'removed_gallery[]';
-                    input.value = path;
-                    removedInputsContainer.appendChild(input);
-                }
-
-                card.remove();
-
-                if (!grid.children.length) {
-                    section.style.display = 'none';
-                }
-            });
-        }
-
         function initializeVariantManager() {
             const rowsContainer = document.getElementById('variantRows');
             const template = document.getElementById('variantRowTemplate');
@@ -2061,135 +1386,80 @@
             </div>
             <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
                 <div class="row g-3" id="sectionPickerCardsGrid">
-                    <!-- Hero Section -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="video">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-play-circle fs-1 text-primary"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Hero Section</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Image or video with CTA</p>
-                        </div>
-                    </div>
-
-                    <!-- Features Grid -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="features">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-th-large fs-1 text-info"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Features Grid</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Highlight key benefits</p>
-                        </div>
-                    </div>
-
-                    <!-- Trust Badges -->
+                    <!-- 1. Trust Badges -->
                     <div class="col-md-4 col-6">
                         <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="badges">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
                                 <i class="fas fa-shield-alt fs-1 text-success"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Trust Badges</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Security & quality badges</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Trust Badges (ট্রাস্ট ব্যাজ)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">কোয়ালিটি, গ্যারান্টি ও সিকিউরিটি ব্যাজ</p>
                         </div>
                     </div>
 
-                    <!-- Customer Pain Points -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="problems">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-exclamation-triangle fs-1 text-warning"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Testimonials / Pain Points</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Customer issues & reviews</p>
-                        </div>
-                    </div>
-
-                    <!-- Benefits -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="benefits">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-check-double fs-1 text-success"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Product Benefits</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Key advantages list</p>
-                        </div>
-                    </div>
-
-                    <!-- FAQ Section -->
+                    <!-- 2. QnA / FAQ -->
                     <div class="col-md-4 col-6">
                         <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="faq">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
                                 <i class="fas fa-question-circle fs-1" style="color: #8b5cf6;"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">FAQ Section</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Common questions</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">QnA Section (প্রশ্নোত্তর)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">সাধারণ প্রশ্ন ও উত্তর একর্ডিয়ন</p>
                         </div>
                     </div>
 
-                    <!-- Package Includes -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="package">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-box-open fs-1 text-warning"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Pricing / Package Table</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Compare plans & contents</p>
-                        </div>
-                    </div>
-
-                    <!-- Real Photo Gallery -->
+                    <!-- 3. Photo Gallery -->
                     <div class="col-md-4 col-6">
                         <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="gallery">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
                                 <i class="fas fa-images fs-1 text-danger"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Real Photo Gallery</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Real product photos</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Photo Gallery (ছবি গ্যালারি)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">পণ্যের বাস্তব ছবি ও ফটো গ্রিড</p>
                         </div>
                     </div>
 
-                    <!-- Why Choose Us -->
+                    <!-- 4. YouTube Video -->
                     <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="trust">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="video">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-award fs-1 text-primary"></i>
+                                <i class="fab fa-youtube fs-1 text-danger"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Why Choose Us</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Merchant assurances</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">YouTube Video (ভিডিও)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">প্রোডাক্ট রিভিউ বা ডেমো ভিডিও</p>
                         </div>
                     </div>
 
-                    <!-- Call to Action (CTA) -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="cta">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-mouse-pointer fs-1 text-success"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Buy Now Button (CTA)</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">High converting action</p>
-                        </div>
-                    </div>
-
-                    <!-- Custom Section -->
+                    <!-- 5. Custom Section -->
                     <div class="col-md-4 col-6">
                         <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="custom">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-sliders-h fs-1 text-secondary"></i>
+                                <i class="fas fa-list-check fs-1 text-primary"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Custom Section</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Background & font styling</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Custom Section (কাস্টম সেকশন)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">টাইটেল, সংক্ষিপ্ত বিবরণ ও পয়েন্ট তালিকা</p>
                         </div>
                     </div>
 
-                    <!-- Rich Text / HTML -->
+                    <!-- 6. Custom Order Form -->
                     <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="rich_text">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="order_form">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-file-alt fs-1 text-dark"></i>
+                                <i class="fas fa-shopping-bag fs-1 text-warning"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Rich Text / HTML</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Custom HTML content</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Custom Order Form (অর্ডার ফর্ম)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">সরাসরি ক্যাশ অন ডেলিভারি ফর্ম</p>
+                        </div>
+                    </div>
+
+                    <!-- 7. Review Form / Reviews -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="reviews">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-star-half-alt fs-1 text-warning"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Review Section (রিভিউ ফর্ম ও তালিকা)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">কাস্টমার রিভিউ ও মতামত ফর্ম</p>
                         </div>
                     </div>
                 </div>

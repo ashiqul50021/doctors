@@ -2,6 +2,14 @@
 
 @include('ecommerce::backend.products.partials.image-manager-styles')
 @include('ecommerce::backend.products.partials.product-manager-styles')
+@push('styles')
+    <style>
+        .ck-editor__editable_inline {
+            min-height: 220px;
+            max-height: 500px;
+        }
+    </style>
+@endpush
 
 @section('title', 'Add Product - abcsheba Admin')
 
@@ -127,6 +135,13 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group">
+                                        <label class="fw-bold">Product Description (বিস্তারিত বিবরণী)</label>
+                                        <textarea name="description" id="productDescriptionEditor" class="form-control" rows="6">{{ old('description') }}</textarea>
+                                        <small class="text-muted d-block mt-1">প্রোডাক্টের বিবরণ, সাইজ ও অন্যান্য তথ্য সুন্দরভাবে সাজিয়ে লিখুন।</small>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" {{ old('is_featured') ? 'checked' : '' }}>
                                             <label class="form-check-label" for="is_featured">
@@ -181,67 +196,46 @@
                                     <div class="card border-primary shadow-sm" style="border-radius: 12px; overflow: hidden; border-left: 5px solid #007bff;">
                                         <div class="card-header bg-light d-flex align-items-center justify-content-between py-3">
                                             <h4 class="card-title mb-0 text-primary fw-bold" style="font-size: 16px;">
-                                                <i class="fas fa-magic me-2"></i> Landing Page Customization (সীমিত সময়ের অফার ও ট্রাস্ট ইনফো)
+                                                <i class="fas fa-palette me-2"></i> Product Details Page & Section Builder
                                             </h4>
-                                            <span class="badge bg-primary text-white">Dynamic Content</span>
+                                            <span class="badge bg-primary text-white">Custom Design</span>
                                         </div>
                                         <div class="card-body">
-                                            <!-- Countdown Banner -->
-                                            <h5 class="fw-bold mb-3 border-bottom pb-2 text-dark" style="font-size: 14px;"><i class="fas fa-clock text-danger me-1"></i> ১. জরুরী অফার কাউন্টডাউন (Urgency Countdown Banner)</h5>
-                                            <div class="row">
+                                            <!-- Global Details Page Colors -->
+                                            <h5 class="fw-bold mb-3 border-bottom pb-2 text-dark" style="font-size: 14px;">
+                                                <i class="fas fa-fill-drip text-primary me-1"></i> ১. পুরো প্রোডাক্ট ডিটেইলস পেজের কালার (Page Color Theme)
+                                            </h5>
+                                            <div class="row mb-3 p-3 rounded border bg-light">
                                                 <div class="col-md-6 col-12">
-                                                    <div class="form-group">
-                                                        <label class="fw-bold">অফার টাইটেল (Countdown Title)</label>
-                                                        <input type="text" name="landing_settings[countdown_title]" id="countdownTitleInput" class="form-control" value="{{ old('landing_settings.countdown_title', 'আজকের বিশেষ ছাড় অফার!') }}" placeholder="আজকের বিশেষ ছাড় অফার!">
+                                                    <div class="form-group mb-2">
+                                                        <label class="fw-bold small">পেজ ব্যাকগ্রাউন্ড কালার (Page Background Color)</label>
+                                                        <input type="color" name="landing_settings[page_bg_color]" id="pageBgColorInput" class="form-control form-control-color w-100" value="{{ old('landing_settings.page_bg_color', '#ffffff') }}">
+                                                        <small class="text-muted">পুরো প্রোডাক্ট ডিটেইলস পেজের মূল ব্যাকগ্রাউন্ড কালার।</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 col-12">
-                                                    <div class="form-group">
-                                                        <label class="fw-bold">অফার সাবটাইটেল (Countdown Subtitle)</label>
-                                                        <input type="text" name="landing_settings[countdown_subtitle]" id="countdownSubtitleInput" class="form-control" value="{{ old('landing_settings.countdown_subtitle', 'অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:') }}" placeholder="অফারটি শেষ হতে আর মাত্র সময় বাকি আছে:">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6 col-12">
-                                                    <div class="form-group">
-                                                        <label class="fw-bold">অফার সময় - ঘণ্টায় (Countdown Hours)</label>
-                                                        <input type="number" name="landing_settings[countdown_hours]" id="countdownHoursInput" class="form-control" value="{{ old('landing_settings.countdown_hours', 3) }}" placeholder="3">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6 col-12">
-                                                    <div class="form-group">
-                                                        <label class="fw-bold">কাউন্টডাউন স্ট্যাটাস (Countdown Status)</label>
-                                                        <select name="landing_settings[show_countdown]" id="countdownStatusSelect" class="form-control form-select">
-                                                            <option value="1" {{ old('landing_settings.show_countdown', '1') == '1' ? 'selected' : '' }}>Active (সক্রিয়)</option>
-                                                            <option value="0" {{ old('landing_settings.show_countdown', '1') == '0' ? 'selected' : '' }}>Inactive (নিষ্ক্রিয়)</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Product Video -->
-                                            <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 14px;"><i class="fab fa-youtube text-danger me-1"></i> ১.৫. প্রোডাক্ট ভিডিও (Product Video - Optional)</h5>
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="form-group">
-                                                        <label class="fw-bold">ইউটিউব ভিডিও লিংক (YouTube Video URL)</label>
-                                                        <input type="text" name="landing_settings[youtube_video_url]" id="youtubeVideoUrlInput" class="form-control" value="{{ old('landing_settings.youtube_video_url', '') }}" placeholder="যেমন: https://www.youtube.com/watch?v=xxxxxx">
-                                                        <small class="text-muted d-block mt-1">প্রোডাক্টের ব্যবহারবিধি বা রিভিউ ভিডিওর ইউটিউব লিংক এখানে দিন।</small>
+                                                    <div class="form-group mb-2">
+                                                        <label class="fw-bold small">পেজ টেক্সট কালার (Page Text Color)</label>
+                                                        <input type="color" name="landing_settings[page_text_color]" id="pageTextColorInput" class="form-control form-control-color w-100" value="{{ old('landing_settings.page_text_color', '#1e293b') }}">
+                                                        <small class="text-muted">পুরো প্রোডাক্ট ডিটেইলস পেজের মূল লেখার কালার।</small>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <!-- Unified Landing Sections Builder -->
-                                            <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 14px;"><i class="fas fa-layer-group text-primary me-1"></i> ২. ল্যান্ডিং পেজ সেকশন বিল্ডার (Landing Page Sections Builder)</h5>
+                                            <h5 class="fw-bold mt-4 mb-3 border-bottom pb-2 text-dark" style="font-size: 14px;">
+                                                <i class="fas fa-layer-group text-primary me-1"></i> ২. ডাইনামিক কাস্টম সেকশন বিল্ডার (Dynamic Sections Builder)
+                                            </h5>
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <p class="text-muted small">এখানে আপনি ল্যান্ডিং পেজের সেকশনগুলোর ক্রম পরিবর্তন (Up/Down), নতুন সেকশন যোগ বা ডিলিট করতে পারবেন।</p>
+                                                    <p class="text-muted small">এখানে আপনি প্রোডাক্টের নিচের সেকশনগুলো (Trust Badges, QnA, Photo Gallery, YouTube Video, Custom Section, Custom Order Form, Reviews) ইচ্ছামতো যোগ, সাজানো বা স্টাইলিং করতে পারবেন।</p>
                                                     
                                                     <div id="landing-sections-builder-container">
                                                         <!-- Sections are generated dynamically in JS -->
                                                     </div>
 
                                                     <div class="card p-3 mt-3 border text-center shadow-sm" style="border-radius: 12px; border: 1px dashed #cbd5e1 !important; background-color: #f8fafc;">
-                                                        <p class="text-muted small mb-2">আপনার ল্যান্ডিং পেজে নতুন সেকশন যোগ করতে নিচের বাটনে ক্লিক করুন</p>
+                                                        <p class="text-muted small mb-2">আপনার প্রোডাক্ট পেজে নতুন সেকশন যোগ করতে নিচের বাটনে ক্লিক করুন</p>
                                                         <div>
                                                             <button type="button" id="openSectionPickerModalBtn" class="btn btn-primary px-4 py-2 fw-semibold" style="border-radius: 8px; background-color: #2563eb;">
                                                                 <i class="fas fa-plus-circle me-2"></i> সেকশন যোগ করুন (Add Section)
@@ -313,8 +307,24 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const descEditorEl = document.querySelector('#productDescriptionEditor');
+            if (descEditorEl) {
+                ClassicEditor
+                    .create(descEditorEl, {
+                        toolbar: [
+                            'heading', '|',
+                            'bold', 'italic', 'underline', 'link', 'bulletedList', 'numberedList', '|',
+                            'blockQuote', 'insertTable', 'undo', 'redo'
+                        ]
+                    })
+                    .catch(error => {
+                        console.error('CKEditor Init Error:', error);
+                    });
+            }
+
             initializeProductImageUpload({
                 inputId: 'productImageInput',
                 previewId: 'productImagePreview',
@@ -352,15 +362,11 @@
             const addSectionBtn = document.getElementById('add-section-btn');
             const newSectionTypeSelect = document.getElementById('new-section-type');
 
-            function getSectionCounter() {
-                return document.querySelectorAll('.section-card').length;
-            }
-
             function createSectionItemRow(secIndex, value = '') {
                 const div = document.createElement('div');
                 div.className = 'item-row d-flex align-items-center gap-2 mb-2';
                 div.innerHTML = `
-                    <textarea name="landing_settings[sections][${secIndex}][items][]" class="form-control form-control-sm" rows="2" placeholder="আইটেমের বিবরণ লিখুন">${value}</textarea>
+                    <textarea name="landing_settings[sections][${secIndex}][items][]" class="form-control form-control-sm" rows="2" placeholder="পয়েন্ট / আইটেমের বিবরণ লিখুন">${value}</textarea>
                     <button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
                 `;
                 const removeBtn = div.querySelector('.remove-item-btn');
@@ -421,7 +427,7 @@
                     </div>
                     <div class="row g-1">
                         <div class="col-4">
-                            <input type="text" name="landing_settings[sections][${secIndex}][badges][${badgeIndex}][icon]" class="form-control form-control-sm" value="${icon}" placeholder="আইকন ক্লাস">
+                            <input type="text" name="landing_settings[sections][${secIndex}][badges][${badgeIndex}][icon]" class="form-control form-control-sm" value="${icon}" placeholder="আইকন (যেমন: fas fa-shield-alt)">
                         </div>
                         <div class="col-4">
                             <input type="text" name="landing_settings[sections][${secIndex}][badges][${badgeIndex}][title]" class="form-control form-control-sm" value="${title}" placeholder="টাইটেল">
@@ -457,47 +463,6 @@
                     
                     const descInput = row.querySelector('input[name*="[desc]"]');
                     if (descInput) descInput.name = `landing_settings[sections][${secIndex}][badges][${idx}][desc]`;
-                });
-            }
-
-            function createTrustFeatureItemRow(secIndex, featureIndex, title = '', desc = '') {
-                const div = document.createElement('div');
-                div.className = 'trust-feature-item-row border p-2 mb-2 bg-white rounded shadow-sm';
-                div.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="small fw-bold text-muted">ফিচার #${featureIndex + 1}</span>
-                        <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="form-group mb-1">
-                        <input type="text" name="landing_settings[sections][${secIndex}][trust_features][${featureIndex}][title]" class="form-control form-control-sm" value="${title}" placeholder="টাইটেল লিখুন">
-                    </div>
-                    <div class="form-group mb-0">
-                        <textarea name="landing_settings[sections][${secIndex}][trust_features][${featureIndex}][desc]" class="form-control form-control-sm" rows="2" placeholder="বর্ণনা লিখুন">${desc}</textarea>
-                    </div>
-                `;
-                const removeBtn = div.querySelector('.remove-item-btn');
-                if (removeBtn) {
-                    removeBtn.addEventListener('click', function() {
-                        div.remove();
-                        const card = div.closest('.section-card');
-                        if (card) reindexTrustFeatureItems(card);
-                    });
-                }
-                return div;
-            }
-
-            function reindexTrustFeatureItems(sectionCard) {
-                const secIndex = parseInt(sectionCard.getAttribute('data-section-index') || '0');
-                const rows = sectionCard.querySelectorAll('.trust-feature-item-row');
-                rows.forEach((row, idx) => {
-                    const textMuted = row.querySelector('.text-muted');
-                    if (textMuted) textMuted.textContent = `ফিচার #${idx + 1}`;
-                    
-                    const titleInput = row.querySelector('input[name*="[title]"]');
-                    if (titleInput) titleInput.name = `landing_settings[sections][${secIndex}][trust_features][${idx}][title]`;
-                    
-                    const descInput = row.querySelector('textarea[name*="[desc]"]');
-                    if (descInput) descInput.name = `landing_settings[sections][${secIndex}][trust_features][${idx}][desc]`;
                 });
             }
 
@@ -552,46 +517,32 @@
                 card.setAttribute('data-section-index', index);
 
                 const titles = {
-                    features: 'আমাদের প্রোডাক্টের বৈশিষ্ট্য',
                     badges: 'আমাদের থেকে কেন কিনবেন?',
-                    problems: 'এই সমস্যাগুলো কি আপনারও আছে?',
-                    benefits: 'বৈশিষ্ট্যগুলো কি কি জানতে চান?',
-                    package: 'প্যাকেজের সাথে যা যা পাবেন',
-                    faq: 'কিছু সাধারণ প্রশ্ন',
-                    video: 'পণ্যটির বিবরণী ও ব্যবহারবিধি ভিডিও',
-                    gallery: 'পণ্যটির কিছু বাস্তব ছবি (Real Gallery)',
-                    trust: 'কেন আমাদের থেকে অর্ডার করবেন?',
-                    cta: 'অর্ডার করতে এখানে ক্লিক করুন',
-                    custom: 'নতুন কাস্টম সেকশন',
-                    rich_text: 'কাস্টম রিচ টেক্সট (কালার, এইচটিএমএল সহ)'
+                    faq: 'কিছু সাধারণ প্রশ্ন ও উত্তর',
+                    gallery: 'পণ্যটির বাস্তব ছবিসমূহ (Photo Gallery)',
+                    video: 'পণ্যটির রিভিউ ও ব্যবহারবিধি ভিডিও',
+                    custom: 'কাস্টম সেকশন টাইটেল',
+                    order_form: 'অর্ডার করতে নিচের ফর্মটি পূরণ করুন',
+                    reviews: 'কাস্টমার রিভিউ ও রেটিং'
                 };
                 const tags = {
-                    features: 'Product Features',
                     badges: 'Trust Badges',
-                    problems: 'Common Issues',
-                    benefits: 'Benefits',
-                    package: 'Package Contents',
-                    faq: 'FAQs',
+                    faq: 'QnA',
+                    gallery: 'Photo Gallery',
                     video: 'Showcase Video',
-                    gallery: 'Showcase',
-                    trust: 'Trust',
-                    cta: 'Call To Action',
-                    custom: 'INFO',
-                    rich_text: 'Rich Text'
+                    custom: 'Special Info',
+                    order_form: 'Order Form',
+                    reviews: 'Reviews'
                 };
-                const styles = {
-                    features: 'blue-check',
-                    badges: 'blue-check',
-                    problems: 'red-cross',
-                    benefits: 'green-check',
-                    package: 'package-box',
-                    faq: 'faq-accordion',
-                    video: 'blue-check',
-                    gallery: 'blue-check',
-                    trust: 'blue-check',
-                    cta: 'blue-check',
-                    custom: 'blue-check',
-                    rich_text: 'blue-check'
+
+                const typeLabels = {
+                    badges: '🛡️ Trust Badges',
+                    faq: '❓ QnA / FAQ',
+                    gallery: '🖼️ Photo Gallery',
+                    video: '🎥 YouTube Video',
+                    custom: '📝 Custom Section',
+                    order_form: '🛒 Custom Order Form',
+                    reviews: '⭐ Customer Reviews'
                 };
 
                 card.innerHTML = `
@@ -599,7 +550,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="d-flex align-items-center gap-2">
                             <span class="badge bg-dark text-white p-2">সেকশন #<span class="sec-number">${index + 1}</span></span>
-                            <span class="badge bg-info text-white p-2">${type.toUpperCase()}</span>
+                            <span class="badge bg-primary text-white p-2">${typeLabels[type] || type.toUpperCase()}</span>
                         </div>
                         <div class="d-flex align-items-center gap-1">
                             <button type="button" class="btn btn-xs btn-outline-secondary move-up-btn" title="উপরে তুলুন"><i class="fas fa-arrow-up"></i></button>
@@ -608,142 +559,132 @@
                         </div>
                     </div>
 
-                    ${type === 'cta' ? `
-                        <div class="row g-2 mb-2">
-                            <div class="col-md-6 col-12">
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">কল টু অ্যাকশন টাইটেল (CTA Title)</label>
-                                    <input type="text" name="landing_settings[sections][${index}][title]" class="form-control form-control-sm" value="${titles[type] || ''}" placeholder="যেমন: অর্ডার করতে এখানে ক্লিক করুন">
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-12">
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">বাটন টেক্সট (Button Text)</label>
-                                    <input type="text" name="landing_settings[sections][${index}][button_text]" class="form-control form-control-sm" value="অর্ডার করতে ক্লিক করুন" placeholder="যেমন: অর্ডার করতে ক্লিক করুন">
-                                </div>
+                    <!-- Row 1: Active Status, Title, Tag -->
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">সেকশন স্ট্যাটাস (Status)</label>
+                                <select name="landing_settings[sections][${index}][is_active]" class="form-control form-control-sm form-select">
+                                    <option value="1" selected>Active (সক্রিয়)</option>
+                                    <option value="0">Inactive (নিষ্ক্রিয়)</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="row g-2 mb-2 p-2 rounded border bg-light">
-                            <div class="col-md-4 col-6">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">ব্যাকগ্রাউন্ড (Background)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][bg_color]" class="form-control form-control-sm form-control-color w-100" value="#ffffff">
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-6">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">টেক্সট কালার (Text Color)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][text_color]" class="form-control form-control-sm form-control-color w-100" value="#333333">
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-12">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">বাটন কালার (Button Color)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][accent_color]" class="form-control form-control-sm form-control-color w-100" value="#007bff">
-                                </div>
+                        <div class="col-md-6 col-12">
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
+                                <input type="text" name="landing_settings[sections][${index}][title]" class="form-control form-control-sm" value="${titles[type] || ''}" placeholder="টাইটেল লিখুন">
                             </div>
                         </div>
-                    ` : `
-                        <div class="row g-2 mb-2">
-                            <div class="col-md-6 col-12">
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">সেকশন টাইটেল (Title)</label>
-                                    <input type="text" name="landing_settings[sections][${index}][title]" class="form-control form-control-sm" value="${titles[type] || ''}" placeholder="টাইটেল লিখুন">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6">
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">সেকশন ট্যাগ (Tag)</label>
-                                    <input type="text" name="landing_settings[sections][${index}][tag]" class="form-control form-control-sm" value="${tags[type] || ''}" placeholder="ট্যাগ লিখুন">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6" style="${['video', 'gallery', 'faq', 'badges', 'trust'].includes(type) ? 'display: none;' : ''}">
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">স্টাইল / লেআউট (Style)</label>
-                                    <select name="landing_settings[sections][${index}][style]" class="form-control form-control-sm form-select">
-                                        <option value="blue-check" ${styles[type] === 'blue-check' ? 'selected' : ''}>Blue Check Square</option>
-                                        <option value="green-check" ${styles[type] === 'green-check' ? 'selected' : ''}>Green Check Circle</option>
-                                        <option value="red-cross" ${styles[type] === 'red-cross' ? 'selected' : ''}>Red Cross</option>
-                                        <option value="yellow-star" ${styles[type] === 'yellow-star' ? 'selected' : ''}>Yellow Star</option>
-                                        <option value="orange-info" ${styles[type] === 'orange-info' ? 'selected' : ''}>Orange Info</option>
-                                        <option value="package-box" ${styles[type] === 'package-box' ? 'selected' : ''}>Package Box Style</option>
-                                        <option value="faq-accordion" ${styles[type] === 'faq-accordion' ? 'selected' : ''}>FAQ Accordion</option>
-                                    </select>
-                                </div>
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">সেকশন ট্যাগ (Tag/Badge)</label>
+                                <input type="text" name="landing_settings[sections][${index}][tag]" class="form-control form-control-sm" value="${tags[type] || ''}" placeholder="যেমন: FAQs / Trust">
                             </div>
                         </div>
+                    </div>
 
-                        <div class="row g-2 mb-2 p-2 rounded border bg-light">
-                            <div class="col-md-3 col-6">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">ব্যাকগ্রাউন্ড (Background)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][bg_color]" class="form-control form-control-sm form-control-color w-100" value="#ffffff">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">টেক্সট কালার (Text Color)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][text_color]" class="form-control form-control-sm form-control-color w-100" value="#333333">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">বর্ডার/অ্যাকসেন্ট (Accent)</label>
-                                    <input type="color" name="landing_settings[sections][${index}][accent_color]" class="form-control form-control-sm form-control-color w-100" value="#007bff">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6" style="${['video', 'gallery'].includes(type) ? 'display: none;' : ''}">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">ফন্ট ওয়েট (Font Weight)</label>
-                                    <select name="landing_settings[sections][${index}][font_weight]" class="form-control form-control-sm form-select">
-                                        <option value="400">চিকন (Normal - 400)</option>
-                                        <option value="500">মাঝারি (Medium - 500)</option>
-                                        <option value="600">সেমি-বোল্ড (Semi-Bold - 600)</option>
-                                        <option value="700">মোটা (Bold - 700)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-12" style="${['video', 'gallery'].includes(type) ? 'display: none;' : ''}">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">বাই নাও বাটন (Show Button)</label>
-                                    <select name="landing_settings[sections][${index}][show_button]" class="form-control form-control-sm form-select">
-                                        <option value="1">সক্রিয় (Active)</option>
-                                        <option value="0">নিষ্ক্রিয় (Inactive)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-8 col-12" style="${['video', 'gallery'].includes(type) ? 'display: none;' : ''}">
-                                <div class="form-group mb-1">
-                                    <label class="small fw-bold">কাস্টম বাটন টেক্সট (Button Text)</label>
-                                    <input type="text" name="landing_settings[sections][${index}][button_text]" class="form-control form-control-sm" value="অর্ডার করতে ক্লিক করুন" placeholder="যেমন: অর্ডার করতে ক্লিক করুন">
-                                </div>
+                    <!-- Row 2: Background, Text Color, Font Size, Line Height -->
+                    <div class="row g-2 mb-2 p-2 rounded border bg-light">
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">ব্যাকগ্রাউন্ড (Background)</label>
+                                <input type="color" name="landing_settings[sections][${index}][bg_color]" class="form-control form-control-sm form-control-color w-100" value="#ffffff">
                             </div>
                         </div>
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">টেক্সট কালার (Text Color)</label>
+                                <input type="color" name="landing_settings[sections][${index}][text_color]" class="form-control form-control-sm form-control-color w-100" value="#1e293b">
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">ফন্ট সাইজ (Font Size)</label>
+                                <select name="landing_settings[sections][${index}][font_size]" class="form-control form-control-sm form-select">
+                                    <option value="14px">Small (14px)</option>
+                                    <option value="16px" selected>Normal (16px)</option>
+                                    <option value="18px">Medium (18px)</option>
+                                    <option value="20px">Large (20px)</option>
+                                    <option value="24px">Extra Large (24px)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">টেক্সট হাইট (Line Height)</label>
+                                <select name="landing_settings[sections][${index}][line_height]" class="form-control form-control-sm form-select">
+                                    <option value="1.4">Tight (1.4)</option>
+                                    <option value="1.6" selected>Normal (1.6)</option>
+                                    <option value="1.8">Relaxed (1.8)</option>
+                                    <option value="2.0">Loose (2.0)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-                        <div class="section-content-container mt-2 border-top pt-2" style="${['video'].includes(type) ? 'display: none;' : ''}">
-                            ${type === 'gallery' ? `
-                                <label class="small fw-bold mb-2">গ্যালারি ছবিসমূহ (Gallery Image Links / URLs)</label>
-                                <div class="gallery-items-list border rounded p-2 bg-white"></div>
-                                <button type="button" class="btn btn-xs btn-outline-primary add-gallery-item-btn mt-2">
-                                    <i class="fas fa-plus me-1"></i> ছবি যোগ করুন (Add Photo URL)
-                                </button>
-                            ` : type === 'rich_text' ? `
-                                <div class="form-group mb-2">
-                                    <label class="small fw-bold">সেকশন কন্টেন্ট / বিবরণী (Custom HTML or Text Content)</label>
-                                    <textarea name="landing_settings[sections][${index}][content]" class="form-control form-control-sm" rows="6" placeholder="এখানে আপনার কাস্টম টেক্সট বা এইচটিএমএল কন্টেন্ট লিখুন..."></textarea>
-                                </div>
-                            ` : `
-                                <label class="small fw-bold mb-2">
-                                    ${type === 'faq' ? 'প্রশ্ন ও উত্তরসমূহ (FAQs)' : (type === 'badges' ? 'পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)' : (type === 'trust' ? 'কেন আমাদের থেকে সংগ্রহ করবেন (Trust Features)' : 'সেকশন আইটেমসমূহ (Items)'))}
-                                </label>
-                                <div class="items-list"></div>
-                                <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
-                                    <i class="fas fa-plus me-1"></i>
-                                    ${type === 'faq' ? 'প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)' : (type === 'badges' ? 'ব্যাজ যোগ করুন (Add Badge)' : (type === 'trust' ? 'ফিচার যোগ করুন (Add Feature)' : 'আইটেম যোগ করুন (Add Item)'))}
-                                </button>
-                            `}
+                    <!-- Row 3: Add Buy Now Button Option -->
+                    <div class="row g-2 mb-2 p-2 rounded border bg-light">
+                        <div class="col-md-4 col-12">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">বাই নাও বাটন যুক্ত করুন (Add Buy Now Button)</label>
+                                <select name="landing_settings[sections][${index}][show_button]" class="form-control form-control-sm form-select">
+                                    <option value="0" selected>না (No Button)</option>
+                                    <option value="1">হ্যাঁ, বাটন দেখাও (Show Buy Now Button)</option>
+                                </select>
+                            </div>
                         </div>
-                    `}
+                        <div class="col-md-8 col-12">
+                            <div class="form-group mb-1">
+                                <label class="small fw-bold">বাটন টেক্সট (Button Text)</label>
+                                <input type="text" name="landing_settings[sections][${index}][button_text]" class="form-control form-control-sm" value="অর্ডার করতে ক্লিক করুন" placeholder="যেমন: অর্ডার করতে ক্লিক করুন">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Content Container -->
+                    <div class="section-content-container mt-2 border-top pt-2">
+                        ${type === 'gallery' ? `
+                            <label class="small fw-bold mb-2">গ্যালারি ছবিসমূহ (Gallery Image Links / URLs)</label>
+                            <div class="gallery-items-list border rounded p-2 bg-white"></div>
+                            <button type="button" class="btn btn-xs btn-outline-primary add-gallery-item-btn mt-2">
+                                <i class="fas fa-plus me-1"></i> ছবি যোগ করুন (Add Photo URL)
+                            </button>
+                        ` : type === 'video' ? `
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">ইউটিউব ভিডিও লিংক (YouTube Video URL)</label>
+                                <input type="text" name="landing_settings[sections][${index}][youtube_video_url]" class="form-control form-control-sm" placeholder="যেমন: https://www.youtube.com/watch?v=xxxxxx">
+                                <small class="text-muted">ইউটিউব ভিডিওর সম্পূর্ণ লিংকটি এখানে দিন।</small>
+                            </div>
+                        ` : type === 'custom' ? `
+                            <div class="form-group mb-2">
+                                <label class="small fw-bold">সংক্ষিপ্ত বিবরণ (Short Description)</label>
+                                <textarea name="landing_settings[sections][${index}][short_desc]" class="form-control form-control-sm mb-2" rows="2" placeholder="সেকশনের সংক্ষিপ্ত বিবরণ লিখুন..."></textarea>
+                            </div>
+                            <label class="small fw-bold mb-2">পয়েন্ট / আইটেমসমূহ (Item Points)</label>
+                            <div class="items-list"></div>
+                            <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
+                                <i class="fas fa-plus me-1"></i> পয়েন্ট যোগ করুন (Add Point)
+                            </button>
+                        ` : type === 'order_form' ? `
+                            <div class="alert alert-info py-2 px-3 small mb-0">
+                                <i class="fas fa-info-circle me-1"></i> এই সেকশনটি ফ্রন্টএন্ডে সরাসরি ক্যাশ অন ডেলিভারি (Name, Phone, Address, Delivery Area) অর্ডার ফর্ম হিসেবে রেন্ডার হবে।
+                            </div>
+                        ` : type === 'reviews' ? `
+                            <div class="alert alert-info py-2 px-3 small mb-0">
+                                <i class="fas fa-info-circle me-1"></i> এই সেকশনটি ফ্রন্টএন্ডে কাস্টমারদের রিভিউ ফর্ম এবং অনুমোদিত রিভিউ তালিকা হিসেবে রেন্ডার হবে।
+                            </div>
+                        ` : `
+                            <label class="small fw-bold mb-2">
+                                ${type === 'faq' ? 'প্রশ্ন ও উত্তরসমূহ (FAQs)' : 'পণ্যের ট্রাস্ট ব্যাজসমূহ (Badges)'}
+                            </label>
+                            <div class="items-list"></div>
+                            <button type="button" class="btn btn-xs btn-outline-primary add-item-btn mt-1">
+                                <i class="fas fa-plus me-1"></i>
+                                ${type === 'faq' ? 'প্রশ্ন ও উত্তর যোগ করুন (Add FAQ)' : 'ব্যাজ যোগ করুন (Add Badge)'}
+                            </button>
+                        `}
+                    </div>
                 `;
 
                 bindSectionCardEvents(card);
@@ -755,17 +696,22 @@
                         list.appendChild(createGalleryImageRow(index, 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'));
                         list.appendChild(createGalleryImageRow(index, 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500'));
                     }
+                } else if (type === 'custom') {
+                    const itemsList = card.querySelector('.items-list');
+                    if (itemsList) {
+                        itemsList.appendChild(createSectionItemRow(index, '১০০% প্রিমিয়াম ও অরিজিনাল কোয়ালিটি'));
+                        itemsList.appendChild(createSectionItemRow(index, 'দীর্ঘস্থায়ী ও টেকসই ব্যবহার উপযোগী'));
+                    }
                 } else {
                     const itemsList = card.querySelector('.items-list');
                     if (itemsList) {
                         if (type === 'faq') {
-                            itemsList.appendChild(createFAQItemRow(index, 0));
+                            itemsList.appendChild(createFAQItemRow(index, 0, 'প্রোডাক্টটি পেতে কতদিন সময় লাগবে?', 'ঢাকা সিটিতে ১-২ দিন এবং ঢাকার বাইরে ২-৩ কার্যদিবসের মধ্যে ডেলিভারি পেয়ে যাবেন।'));
                         } else if (type === 'badges') {
-                            itemsList.appendChild(createBadgeItemRow(index, 0, 'fas fa-shield-alt', '100% কোয়ালিটি', 'সেরা কোয়ালিটির নিশ্চয়তা'));
-                        } else if (type === 'trust') {
-                            itemsList.appendChild(createTrustFeatureItemRow(index, 0, 'দ্রুত ডেলিভারি', 'সারা বাংলাদেশে ক্যাশ অন ডেলিভারি'));
-                        } else if (!['video', 'gallery', 'cta', 'rich_text'].includes(type)) {
-                            itemsList.appendChild(createSectionItemRow(index));
+                            itemsList.appendChild(createBadgeItemRow(index, 0, 'fas fa-shield-alt', '১০০% অরিজিনাল', 'সেরা কোয়ালিটির নিশ্চয়তা'));
+                            itemsList.appendChild(createBadgeItemRow(index, 1, 'fas fa-shipping-fast', 'দ্রুত ডেলিভারি', 'সারা বাংলাদেশে ক্যাশ অন ডেলিভারি'));
+                            itemsList.appendChild(createBadgeItemRow(index, 2, 'fas fa-undo-alt', 'সহজ রিটার্ন সুবিধা', '৭ দিনের মধ্যে এক্সচেঞ্জ সুবিধা'));
+                            itemsList.appendChild(createBadgeItemRow(index, 3, 'fas fa-headset', '২৪/৭ সাপোর্ট', 'যেকোনো প্রয়োজনে কল করুন'));
                         }
                     }
                 }
@@ -841,11 +787,6 @@
                             itemsList.appendChild(createBadgeItemRow(secIndex, badgeIndex));
                             const iconInput = itemsList.lastElementChild.querySelector('input');
                             if (iconInput) iconInput.focus();
-                        } else if (type === 'trust') {
-                            const featureIndex = itemsList.querySelectorAll('.trust-feature-item-row').length;
-                            itemsList.appendChild(createTrustFeatureItemRow(secIndex, featureIndex));
-                            const titleInput = itemsList.lastElementChild.querySelector('input');
-                            if (titleInput) titleInput.focus();
                         } else {
                             itemsList.appendChild(createSectionItemRow(secIndex));
                             const textarea = itemsList.lastElementChild.querySelector('textarea');
@@ -857,15 +798,13 @@
                 // Bind existing inner delete buttons
                 card.querySelectorAll('.remove-item-btn').forEach((btn) => {
                     btn.addEventListener('click', function() {
-                        const row = btn.closest('.item-row, .faq-item-row, .badge-item-row, .trust-feature-item-row');
+                        const row = btn.closest('.item-row, .faq-item-row, .badge-item-row');
                         if (row) {
                             row.remove();
                             if (type === 'faq') {
                                 reindexFAQItems(card);
                             } else if (type === 'badges') {
                                 reindexBadgeItems(card);
-                            } else if (type === 'trust') {
-                                reindexTrustFeatureItems(card);
                             }
                         }
                     });
@@ -883,14 +822,14 @@
                     const typeInput = card.querySelector('input[type="hidden"]');
                     if (typeInput) typeInput.name = `landing_settings[sections][${index}][type]`;
 
+                    const activeSelect = card.querySelector('select[name*="[is_active]"]');
+                    if (activeSelect) activeSelect.name = `landing_settings[sections][${index}][is_active]`;
+
                     const titleInput = card.querySelector('input[name*="[title]"]');
                     if (titleInput) titleInput.name = `landing_settings[sections][${index}][title]`;
 
                     const tagInput = card.querySelector('input[name*="[tag]"]');
                     if (tagInput) tagInput.name = `landing_settings[sections][${index}][tag]`;
-
-                    const styleSelect = card.querySelector('select[name*="[style]"]');
-                    if (styleSelect) styleSelect.name = `landing_settings[sections][${index}][style]`;
 
                     const bgColorInput = card.querySelector('input[name*="[bg_color]"]');
                     if (bgColorInput) bgColorInput.name = `landing_settings[sections][${index}][bg_color]`;
@@ -898,11 +837,11 @@
                     const textColorInput = card.querySelector('input[name*="[text_color]"]');
                     if (textColorInput) textColorInput.name = `landing_settings[sections][${index}][text_color]`;
 
-                    const accentColorInput = card.querySelector('input[name*="[accent_color]"]');
-                    if (accentColorInput) accentColorInput.name = `landing_settings[sections][${index}][accent_color]`;
+                    const fontSizeSelect = card.querySelector('select[name*="[font_size]"]');
+                    if (fontSizeSelect) fontSizeSelect.name = `landing_settings[sections][${index}][font_size]`;
 
-                    const fontWeightSelect = card.querySelector('select[name*="[font_weight]"]');
-                    if (fontWeightSelect) fontWeightSelect.name = `landing_settings[sections][${index}][font_weight]`;
+                    const lineHeightSelect = card.querySelector('select[name*="[line_height]"]');
+                    if (lineHeightSelect) lineHeightSelect.name = `landing_settings[sections][${index}][line_height]`;
 
                     const showButtonSelect = card.querySelector('select[name*="[show_button]"]');
                     if (showButtonSelect) showButtonSelect.name = `landing_settings[sections][${index}][show_button]`;
@@ -910,21 +849,22 @@
                     const buttonTextInput = card.querySelector('input[name*="[button_text]"]');
                     if (buttonTextInput) buttonTextInput.name = `landing_settings[sections][${index}][button_text]`;
 
+                    const shortDescTextarea = card.querySelector('textarea[name*="[short_desc]"]');
+                    if (shortDescTextarea) shortDescTextarea.name = `landing_settings[sections][${index}][short_desc]`;
+
+                    const videoInput = card.querySelector('input[name*="[youtube_video_url]"]');
+                    if (videoInput) videoInput.name = `landing_settings[sections][${index}][youtube_video_url]`;
+
                     const type = card.getAttribute('data-section-type');
                     if (type === 'faq') {
                         reindexFAQItems(card);
                     } else if (type === 'badges') {
                         reindexBadgeItems(card);
-                    } else if (type === 'trust') {
-                        reindexTrustFeatureItems(card);
                     } else if (type === 'gallery') {
                         card.querySelectorAll('.gallery-url-input').forEach(input => {
                             input.name = `landing_settings[sections][${index}][images][]`;
                         });
-                    } else if (type === 'rich_text') {
-                        const contentTextarea = card.querySelector('textarea[name*="[content]"]');
-                        if (contentTextarea) contentTextarea.name = `landing_settings[sections][${index}][content]`;
-                    } else {
+                    } else if (type === 'custom') {
                         card.querySelectorAll('.item-row textarea').forEach(textarea => {
                             textarea.name = `landing_settings[sections][${index}][items][]`;
                         });
@@ -948,12 +888,7 @@
                                 itemsList.appendChild(createBadgeItemRow(index, badgeIndex));
                                 const iconInput = itemsList.lastElementChild.querySelector('input');
                                 if (iconInput) iconInput.focus();
-                            } else if (type === 'trust') {
-                                const featureIndex = itemsList.querySelectorAll('.trust-feature-item-row').length;
-                                itemsList.appendChild(createTrustFeatureItemRow(index, featureIndex));
-                                const titleInput = itemsList.lastElementChild.querySelector('input');
-                                if (titleInput) titleInput.focus();
-                            } else {
+                            } else if (type === 'custom') {
                                 itemsList.appendChild(createSectionItemRow(index));
                                 const textarea = itemsList.lastElementChild.querySelector('textarea');
                                 if (textarea) textarea.focus();
@@ -1406,135 +1341,80 @@
             </div>
             <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
                 <div class="row g-3" id="sectionPickerCardsGrid">
-                    <!-- Hero Section -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="video">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-play-circle fs-1 text-primary"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Hero Section</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Image or video with CTA</p>
-                        </div>
-                    </div>
-
-                    <!-- Features Grid -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="features">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-th-large fs-1 text-info"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Features Grid</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Highlight key benefits</p>
-                        </div>
-                    </div>
-
-                    <!-- Trust Badges -->
+                    <!-- 1. Trust Badges -->
                     <div class="col-md-4 col-6">
                         <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="badges">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
                                 <i class="fas fa-shield-alt fs-1 text-success"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Trust Badges</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Security & quality badges</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Trust Badges (ট্রাস্ট ব্যাজ)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">কোয়ালিটি, গ্যারান্টি ও সিকিউরিটি ব্যাজ</p>
                         </div>
                     </div>
 
-                    <!-- Customer Pain Points -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="problems">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-exclamation-triangle fs-1 text-warning"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Testimonials / Pain Points</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Customer issues & reviews</p>
-                        </div>
-                    </div>
-
-                    <!-- Benefits -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="benefits">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-check-double fs-1 text-success"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Product Benefits</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Key advantages list</p>
-                        </div>
-                    </div>
-
-                    <!-- FAQ Section -->
+                    <!-- 2. QnA / FAQ -->
                     <div class="col-md-4 col-6">
                         <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="faq">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
                                 <i class="fas fa-question-circle fs-1" style="color: #8b5cf6;"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">FAQ Section</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Common questions</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">QnA Section (প্রশ্নোত্তর)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">সাধারণ প্রশ্ন ও উত্তর একর্ডিয়ন</p>
                         </div>
                     </div>
 
-                    <!-- Package Includes -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="package">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-box-open fs-1 text-warning"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Pricing / Package Table</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Compare plans & contents</p>
-                        </div>
-                    </div>
-
-                    <!-- Real Photo Gallery -->
+                    <!-- 3. Photo Gallery -->
                     <div class="col-md-4 col-6">
                         <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="gallery">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
                                 <i class="fas fa-images fs-1 text-danger"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Real Photo Gallery</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Real product photos</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Photo Gallery (ছবি গ্যালারি)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">পণ্যের বাস্তব ছবি ও ফটো গ্রিড</p>
                         </div>
                     </div>
 
-                    <!-- Why Choose Us -->
+                    <!-- 4. YouTube Video -->
                     <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="trust">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="video">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-award fs-1 text-primary"></i>
+                                <i class="fab fa-youtube fs-1 text-danger"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Why Choose Us</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Merchant assurances</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">YouTube Video (ভিডিও)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">প্রোডাক্ট রিভিউ বা ডেমো ভিডিও</p>
                         </div>
                     </div>
 
-                    <!-- Call to Action (CTA) -->
-                    <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="cta">
-                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-mouse-pointer fs-1 text-success"></i>
-                            </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Buy Now Button (CTA)</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">High converting action</p>
-                        </div>
-                    </div>
-
-                    <!-- Custom Section -->
+                    <!-- 5. Custom Section -->
                     <div class="col-md-4 col-6">
                         <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="custom">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-sliders-h fs-1 text-secondary"></i>
+                                <i class="fas fa-list-check fs-1 text-primary"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Custom Section</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Background & font styling</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Custom Section (কাস্টম সেকশন)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">টাইটেল, সংক্ষিপ্ত বিবরণ ও পয়েন্ট তালিকা</p>
                         </div>
                     </div>
 
-                    <!-- Rich Text / HTML -->
+                    <!-- 6. Custom Order Form -->
                     <div class="col-md-4 col-6">
-                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="rich_text">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="order_form">
                             <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-file-alt fs-1 text-dark"></i>
+                                <i class="fas fa-shopping-bag fs-1 text-warning"></i>
                             </div>
-                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Rich Text / HTML</h6>
-                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">Custom HTML content</p>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Custom Order Form (অর্ডার ফর্ম)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">সরাসরি ক্যাশ অন ডেলিভারি ফর্ম</p>
+                        </div>
+                    </div>
+
+                    <!-- 7. Review Form / Reviews -->
+                    <div class="col-md-4 col-6">
+                        <div class="section-picker-card h-100 p-3 text-center rounded-3 border bg-white shadow-sm position-relative cursor-pointer" data-type="reviews">
+                            <div class="section-card-icon-box rounded-3 mb-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-star-half-alt fs-1 text-warning"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">Review Section (রিভিউ ফর্ম ও তালিকা)</h6>
+                            <p class="text-muted small mb-0" style="font-size: 11px; line-height: 1.3;">কাস্টমার রিভিউ ও মতামত ফর্ম</p>
                         </div>
                     </div>
                 </div>
