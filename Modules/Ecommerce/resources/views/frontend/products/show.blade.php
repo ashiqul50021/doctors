@@ -344,6 +344,7 @@
             if (!is_array($sections)) {
                 $sections = [];
             }
+            $hasReviewsSection = false;
         @endphp
 
         @foreach($sections as $section)
@@ -354,6 +355,9 @@
                 }
 
                 $secType = $section['type'] ?? 'custom';
+                if ($secType === 'reviews') {
+                    $hasReviewsSection = true;
+                }
                 $secTitle = $section['title'] ?? '';
                 $secTag = $section['tag'] ?? '';
                 $bgColor = !empty($section['bg_color']) ? $section['bg_color'] : '#ffffff';
@@ -694,7 +698,7 @@
                             <div class="info-card review-form-card p-4 rounded-4 shadow-sm border" style="background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
                                 <div class="section-heading">
                                     <span class="section-tag">{{ $secTag ?: 'Customer Reviews' }}</span>
-                                    <h3 class="fw-bold mt-2" style="color: {{ $textColor }} !important;">{{ $secTitle ?: 'আপনার মতামত ও রিভিউ দিন' }}</h3>
+                                    <h3 class="fw-bold mt-2" style="color: {{ $textColor }} !important;">{{ $secTitle ?: 'Write a Review' }}</h3>
                                 </div>
 
                                 <div class="review-score-card">
@@ -713,13 +717,13 @@
                                     @csrf
                                     @if(!auth()->check() || !auth()->user()->patient)
                                         <div class="form-group">
-                                            <label for="reviewerName" class="small fw-bold">আপনার নাম <span class="text-danger">*</span></label>
-                                            <input id="reviewerName" type="text" name="reviewer_name" class="form-control" required value="{{ old('reviewer_name', auth()->check() ? auth()->user()->name : '') }}" placeholder="আপনার নাম লিখুন">
+                                            <label for="reviewerName" class="small fw-bold">Your Name <span class="text-danger">*</span></label>
+                                            <input id="reviewerName" type="text" name="reviewer_name" class="form-control" required value="{{ old('reviewer_name', auth()->check() ? auth()->user()->name : '') }}" placeholder="Enter your name">
                                         </div>
                                     @endif
 
                                     <div class="form-group">
-                                        <label class="small fw-bold">রেটিং নির্বাচন করুন</label>
+                                        <label class="small fw-bold">Select Rating</label>
                                         <div class="review-rating-options">
                                             @for($rating = 5; $rating >= 1; $rating--)
                                                 <label class="review-rating-choice">
@@ -736,17 +740,17 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="reviewTitle" class="small fw-bold">রিভিউ শিরোনাম</label>
-                                        <input id="reviewTitle" type="text" name="title" class="form-control" value="{{ old('title', $currentUserReview->title ?? '') }}" placeholder="সংক্ষিপ্ত শিরোনাম (ঐচ্ছিক)">
+                                        <label for="reviewTitle" class="small fw-bold">Review Title</label>
+                                        <input id="reviewTitle" type="text" name="title" class="form-control" value="{{ old('title', $currentUserReview->title ?? '') }}" placeholder="Short headline (Optional)">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="reviewComment" class="small fw-bold">আপনার বিস্তারিত রিভিউ</label>
-                                        <textarea id="reviewComment" name="comment" class="form-control" rows="4" required placeholder="পণ্যের মান, ডেলিভারি ও ব্যবহার অভিজ্ঞতা সম্পর্কে লিখুন...">{{ old('comment', $currentUserReview->comment ?? '') }}</textarea>
+                                        <label for="reviewComment" class="small fw-bold">Your Detailed Review</label>
+                                        <textarea id="reviewComment" name="comment" class="form-control" rows="4" required placeholder="Share your experience about product quality, delivery, etc..."></textarea>
                                     </div>
 
                                     <button type="submit" class="btn btn-primary w-100 review-submit-btn fw-bold">
-                                        {{ $currentUserReview ? 'রিভিউ আপডেট করুন' : 'রিভিউ জমা দিন' }}
+                                        {{ $currentUserReview ? 'Update Review' : 'Submit Review' }}
                                     </button>
                                 </form>
                             </div>
@@ -756,7 +760,7 @@
                             <div class="info-card review-list-card p-4 rounded-4 shadow-sm border" style="background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important;">
                                 <div class="section-heading mb-4">
                                     <span class="section-tag">Feedback</span>
-                                    <h3 class="fw-bold mt-2" style="color: {{ $textColor }} !important;">গ্রাহকদের রিভিউসমূহ</h3>
+                                    <h3 class="fw-bold mt-2" style="color: {{ $textColor }} !important;">Customer Reviews</h3>
                                 </div>
 
                                 <div class="review-list">
@@ -794,8 +798,8 @@
                                     @empty
                                         <div class="review-empty-state text-center py-5">
                                             <i class="far fa-star fs-1 text-muted mb-2"></i>
-                                            <strong>কোন রিভিউ পাওয়া যায়নি</strong>
-                                            <span class="text-muted d-block">এই পণ্যটি অর্ডার করে আপনার মতামত প্রথম শেয়ার করুন।</span>
+                                            <strong>No reviews found</strong>
+                                            <span class="text-muted d-block">Be the first to share your thoughts by reviewing this product.</span>
                                         </div>
                                     @endforelse
                                 </div>
@@ -816,6 +820,125 @@
             @endif
 
         @endforeach
+
+        @if(!$hasReviewsSection)
+            <!-- Default Product Reviews Section -->
+            <section class="product-reviews-section my-5">
+                <div class="row g-4">
+                    <div class="col-lg-5">
+                        <div class="info-card review-form-card p-4 rounded-4 shadow-sm border" style="background-color: #ffffff !important; color: #1e293b !important;">
+                            <div class="section-heading">
+                                <span class="section-tag">Customer Reviews</span>
+                                <h3 class="fw-bold mt-2" style="color: #1e293b !important;">Write a Review</h3>
+                            </div>
+
+                            <div class="review-score-card">
+                                <strong>{{ number_format($averageRating, 1) }}</strong>
+                                <div>
+                                    <div class="review-stars">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="fas fa-star {{ $i <= round($averageRating) ? 'is-filled' : '' }}"></i>
+                                        @endfor
+                                    </div>
+                                    <span>{{ $reviewCount }} customer {{ $reviewCount === 1 ? 'review' : 'reviews' }}</span>
+                                </div>
+                            </div>
+
+                            <form action="{{ route('ecommerce.products.reviews.store', $product->id) }}" method="POST" class="review-form">
+                                @csrf
+                                @if(!auth()->check() || !auth()->user()->patient)
+                                    <div class="form-group">
+                                        <label for="reviewerNameDefault" class="small fw-bold">Your Name <span class="text-danger">*</span></label>
+                                        <input id="reviewerNameDefault" type="text" name="reviewer_name" class="form-control" required value="{{ old('reviewer_name', auth()->check() ? auth()->user()->name : '') }}" placeholder="Enter your name">
+                                    </div>
+                                @endif
+
+                                <div class="form-group">
+                                    <label class="small fw-bold">Select Rating</label>
+                                    <div class="review-rating-options">
+                                        @for($rating = 5; $rating >= 1; $rating--)
+                                            <label class="review-rating-choice">
+                                                <input type="radio" name="rating" value="{{ $rating }}" {{ $selectedReviewRating === $rating ? 'checked' : '' }}>
+                                                <span>
+                                                    @for($star = 1; $star <= 5; $star++)
+                                                        <i class="fas fa-star {{ $star <= $rating ? 'is-filled' : '' }}"></i>
+                                                    @endfor
+                                                    {{ $rating }}/5
+                                                </span>
+                                            </label>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="reviewTitleDefault" class="small fw-bold">Review Title</label>
+                                    <input id="reviewTitleDefault" type="text" name="title" class="form-control" value="{{ old('title', $currentUserReview->title ?? '') }}" placeholder="Short headline (Optional)">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="reviewCommentDefault" class="small fw-bold">Your Detailed Review</label>
+                                    <textarea id="reviewCommentDefault" name="comment" class="form-control" rows="4" required placeholder="Share your experience about product quality, delivery, etc..."></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 review-submit-btn fw-bold">
+                                    {{ $currentUserReview ? 'Update Review' : 'Submit Review' }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-7">
+                        <div class="info-card review-list-card p-4 rounded-4 shadow-sm border" style="background-color: #ffffff !important; color: #1e293b !important;">
+                            <div class="section-heading mb-4">
+                                <span class="section-tag">Feedback</span>
+                                <h3 class="fw-bold mt-2" style="color: #1e293b !important;">Customer Reviews</h3>
+                            </div>
+
+                            <div class="review-list">
+                                @forelse($productReviews as $review)
+                                    @php
+                                        $reviewerName = $review->reviewer_name ?? ($review->patient?->user?->name ?? 'Customer');
+                                        $reviewerInitial = !empty($reviewerName) ? strtoupper(substr($reviewerName, 0, 1)) : 'C';
+                                    @endphp
+                                    <article class="review-item-card">
+                                        <div class="review-avatar">{{ $reviewerInitial }}</div>
+                                        <div class="review-content">
+                                            <div class="review-meta-row">
+                                                <div>
+                                                    <strong>{{ $reviewerName }}</strong>
+                                                    <span>{{ $review->created_at->diffForHumans() }}</span>
+                                                </div>
+                                                @if($review->is_verified_purchase)
+                                                    <em class="review-verified-badge">Verified purchase</em>
+                                                @endif
+                                            </div>
+
+                                            <div class="review-stars">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <i class="fas fa-star {{ $i <= $review->rating ? 'is-filled' : '' }}"></i>
+                                                @endfor
+                                            </div>
+
+                                            @if($review->title)
+                                                <h5 class="fw-bold mt-2 mb-1">{{ $review->title }}</h5>
+                                            @endif
+
+                                            <p class="mb-0">{{ $review->comment }}</p>
+                                        </div>
+                                    </article>
+                                @empty
+                                    <div class="review-empty-state text-center py-5">
+                                        <i class="far fa-star fs-1 text-muted mb-2"></i>
+                                        <strong>No reviews found</strong>
+                                        <span class="text-muted d-block">Be the first to share your thoughts by reviewing this product.</span>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @endif
 
         @if($relatedProducts->count() > 0)
             <section class="related-products-section">
