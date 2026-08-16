@@ -459,7 +459,7 @@
 
     .product-card-modern {
         background: #fff;
-        border-radius: 16px;
+        border-radius: 0;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
         overflow: hidden;
         transition: all 0.3s ease;

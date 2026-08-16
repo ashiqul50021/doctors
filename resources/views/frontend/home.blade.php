@@ -110,45 +110,46 @@
             <!-- Search Section -->
             <div class="hero-search-section">
                 <!-- Card 1: Search by Doctor -->
-                <div class="search-card-wrapper mb-3 p-3 bg-white rounded-4 shadow-sm" style="box-shadow: 0 2px 15px rgba(0,0,0,0.05) !important;">
-                    <h5 class="search-box-title d-flex align-items-center gap-2 mb-3 font-weight-bold" style="font-size: 16px; color: #1e3a8a !important;">
-                        <span class="icon-circle rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background: #dbeafe !important; color: #3b82f6 !important;">
-                            <i class="fas fa-user-md" style="font-size: 13px;"></i>
+                <div class="search-card-wrapper mb-3 p-3 bg-white rounded-3 shadow-sm">
+                    <h5 class="search-box-title d-flex align-items-center gap-2 mb-2 font-weight-bold">
+                        <span class="icon-circle rounded d-inline-flex align-items-center justify-content-center">
+                            <i class="fas fa-user-md"></i>
                         </span> 
-                        Search by Doctor
+                        <span>Search by Doctor</span>
                     </h5>
                     <!-- Normal Search Bar (Doctor Name/Code) -->
-                    <div class="hero-search-bar border rounded-3 p-1" style="background: #f8fafc; border-color: #e2e8f0 !important;" id="normal-search-form">
+                    <div class="hero-search-bar" id="normal-search-form">
                         <form action="{{ route('doctors.search') }}" class="hero-search-form d-flex align-items-center" id="normalSearchForm">
                             <div class="search-field search-keyword-full flex-grow-1 d-flex align-items-center px-3">
-                                <i class="fas fa-user-md text-muted me-2"></i>
-                                <input type="text" name="keywords" placeholder="Search by doctor name/code" class="form-control border-0 bg-transparent shadow-none" style="font-size: 14px; color: #334155;">
+                                <i class="fas fa-search search-lead-icon me-2"></i>
+                                <input type="text" name="keywords" placeholder="Search doctor by name, specialty, or code..." class="form-control border-0 bg-transparent shadow-none">
                             </div>
-                            <button type="submit" class="btn text-white rounded-3 px-3 py-2" style="background: #3b82f6 !important; border: none !important;">
+                            <button type="submit" class="btn btn-search-action text-white" aria-label="Search Doctor">
                                 <i class="fas fa-search"></i>
+                                <span class="d-none d-md-inline ms-1">Search</span>
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <!-- Card 2: Search by Speciality -->
-                <div class="search-card-wrapper p-3 bg-white rounded-4 shadow-sm" style="box-shadow: 0 2px 15px rgba(0,0,0,0.05) !important;">
-                    <h5 class="search-box-title d-flex align-items-center gap-2 mb-3 font-weight-bold" style="font-size: 16px; color: #1e3a8a !important;">
-                        <span class="icon-circle rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background: #dbeafe !important; color: #3b82f6 !important;">
-                            <i class="fas fa-stethoscope" style="font-size: 13px;"></i>
+                <!-- Card 2: Search by Speciality & Location -->
+                <div class="search-card-wrapper p-3 bg-white rounded-3 shadow-sm">
+                    <h5 class="search-box-title d-flex align-items-center gap-2 mb-2 font-weight-bold">
+                        <span class="icon-circle rounded d-inline-flex align-items-center justify-content-center">
+                            <i class="fas fa-stethoscope"></i>
                         </span> 
-                        Search by Speciality
+                        <span>Search by Speciality & Location</span>
                     </h5>
                     <!-- Filter Search Bar (Location & Speciality) -->
-                    <div class="hero-search-bar border rounded-3 p-1" style="background: #f8fafc; border-color: #e2e8f0 !important;" id="filter-search-form">
+                    <div class="hero-search-bar" id="filter-search-form">
                         <form action="{{ route('doctors.search') }}" class="hero-search-form d-flex align-items-center" id="filterSearchForm">
                             <!-- Speciality - Custom Searchable Dropdown -->
-                            <div class="search-field search-select flex-grow-1 border-end px-3 position-relative" style="border-color: #e2e8f0 !important; overflow: visible !important;">
-                                <i class="fas fa-stethoscope text-muted me-2"></i>
-                                <div class="custom-dropdown w-100 position-relative" id="specialityDropdown" style="position: relative !important;">
+                            <div class="search-field search-select flex-grow-1 px-3 position-relative">
+                                <i class="fas fa-stethoscope search-lead-icon me-2"></i>
+                                <div class="custom-dropdown w-100 position-relative" id="specialityDropdown">
                                     <input type="hidden" name="speciality_id" id="speciality_value">
-                                    <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Speciality"
-                                        data-default-placeholder="Speciality" readonly id="speciality_display" style="font-size: 14px; color: #334155;">
+                                    <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Speciality (e.g. Cardiologist)"
+                                        data-default-placeholder="Speciality (e.g. Cardiologist)" readonly id="speciality_display">
                                     <i class="fas fa-chevron-down dropdown-arrow"></i>
                                     <div class="dropdown-menu">
                                         <input type="text" class="dropdown-filter" placeholder="Search speciality...">
@@ -163,13 +164,15 @@
                                 </div>
                             </div>
 
+                            <div class="search-divider-line d-none d-md-block"></div>
+
                             <!-- District - Custom Searchable Dropdown -->
-                            <div class="search-field search-select flex-grow-1 border-end px-3 position-relative" style="border-color: #e2e8f0 !important; overflow: visible !important;">
-                                <i class="fas fa-map-marker-alt text-muted me-2"></i>
-                                <div class="custom-dropdown w-100 position-relative" id="districtDropdown" style="position: relative !important;">
+                            <div class="search-field search-select flex-grow-1 px-3 position-relative">
+                                <i class="fas fa-map-marker-alt search-lead-icon me-2"></i>
+                                <div class="custom-dropdown w-100 position-relative" id="districtDropdown">
                                     <input type="hidden" name="district_id" id="district_value">
-                                    <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="District"
-                                        data-default-placeholder="District" readonly id="district_display" style="font-size: 14px; color: #334155;">
+                                    <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="District (e.g. Dhaka)"
+                                        data-default-placeholder="District (e.g. Dhaka)" readonly id="district_display">
                                     <i class="fas fa-chevron-down dropdown-arrow"></i>
                                     <div class="dropdown-menu">
                                         <input type="text" class="dropdown-filter" placeholder="Search district...">
@@ -184,13 +187,15 @@
                                 </div>
                             </div>
 
+                            <div class="search-divider-line d-none d-md-block"></div>
+
                             <!-- Area - Custom Searchable Dropdown -->
-                            <div class="search-field search-select flex-grow-1 px-3 position-relative" style="overflow: visible !important;">
-                                <i class="fas fa-location-arrow text-muted me-2"></i>
-                                <div class="custom-dropdown w-100 position-relative" id="areaDropdown" style="position: relative !important;">
+                            <div class="search-field search-select flex-grow-1 px-3 position-relative">
+                                <i class="fas fa-location-arrow search-lead-icon me-2"></i>
+                                <div class="custom-dropdown w-100 position-relative" id="areaDropdown">
                                     <input type="hidden" name="area_id" id="area_value">
                                     <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Area"
-                                        data-default-placeholder="Area" readonly id="area_display" disabled style="font-size: 14px; color: #334155;">
+                                        data-default-placeholder="Area" readonly id="area_display" disabled>
                                     <i class="fas fa-chevron-down dropdown-arrow"></i>
                                     <div class="dropdown-menu">
                                         <input type="text" class="dropdown-filter" placeholder="Search area...">
@@ -201,8 +206,9 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn text-white rounded-3 px-3 py-2 ms-2" style="background: #3b82f6 !important; border: none !important;">
+                            <button type="submit" class="btn btn-search-action text-white" aria-label="Search by Filters">
                                 <i class="fas fa-search"></i>
+                                <span class="d-none d-md-inline ms-1">Find</span>
                             </button>
                         </form>
                     </div>
@@ -1721,42 +1727,195 @@
             background-color: #fff;
         }
 
-        /* Stacked Search Bar styles */
-        .hero-search-bar {
-            margin-bottom: 12px;
+        /* ===================================================
+           PREMIUM HERO SEARCH BOX DESIGN SYSTEM
+           =================================================== */
+        .hero-search-section {
+            margin-top: 10px;
+            margin-bottom: 25px;
         }
-        .hero-search-bar:last-child {
-            margin-bottom: 0;
+
+        .search-card-wrapper {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            padding: 16px 20px !important;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+            transition: all 0.25s ease;
+        }
+
+        .search-card-wrapper:hover {
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 8px 26px rgba(37, 99, 235, 0.08) !important;
         }
 
         .search-box-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 10px;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            color: #0f172a !important;
+            letter-spacing: -0.2px;
+            margin-bottom: 12px !important;
         }
-        .search-box-title:first-of-type {
-            margin-top: 0;
+
+        .icon-circle {
+            width: 30px;
+            height: 30px;
+            background: #eff6ff !important;
+            color: #2563eb !important;
+            border-radius: 6px !important;
+            font-size: 14px;
         }
-        .search-box-title i {
+
+        .hero-search-bar {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            padding: 4px 6px !important;
+            transition: all 0.2s ease;
+        }
+
+        .hero-search-bar:focus-within {
+            background: #ffffff !important;
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.12) !important;
+        }
+
+        .search-lead-icon {
+            color: #64748b;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .hero-search-form input.form-control,
+        .hero-search-form .dropdown-search {
+            font-size: 14.5px !important;
+            font-weight: 500 !important;
+            color: #1e293b !important;
+            padding: 10px 0 !important;
+            background: transparent !important;
+            height: 42px !important;
+        }
+
+        .hero-search-form input.form-control::placeholder,
+        .hero-search-form .dropdown-search::placeholder {
+            color: #94a3b8 !important;
+            font-weight: 400 !important;
+        }
+
+        .search-divider-line {
+            width: 1px;
+            height: 26px;
+            background: #e2e8f0;
+            flex-shrink: 0;
+            margin: 0 4px;
+        }
+
+        .custom-dropdown .dropdown-search {
+            cursor: pointer;
+        }
+
+        .custom-dropdown .dropdown-arrow {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 11px;
+            pointer-events: none;
+            transition: transform 0.2s ease;
+        }
+
+        .custom-dropdown.open .dropdown-arrow {
+            transform: translateY(-50%) rotate(180deg);
             color: #2563eb;
-            font-size: 18px;
         }
 
-        /* Responsive styling for normal search keywords input to look modern */
-        .search-field.search-keyword-full {
-            flex: 1;
-            border-right: none !important;
+        .custom-dropdown .dropdown-menu {
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12) !important;
+            padding: 8px !important;
+            margin-top: 8px !important;
+            background: #ffffff !important;
+            min-width: 240px;
         }
 
-        @media (max-width: 991px) {
-            .search-field.search-keyword-full {
-                flex: 1 1 100% !important;
-                border-bottom: none !important;
+        .custom-dropdown .dropdown-filter {
+            width: 100%;
+            height: 38px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            margin-bottom: 6px;
+            outline: none;
+        }
+
+        .custom-dropdown .dropdown-filter:focus {
+            border-color: #2563eb;
+        }
+
+        .custom-dropdown .dropdown-list {
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .custom-dropdown .dropdown-item {
+            padding: 8px 12px !important;
+            font-size: 13.5px !important;
+            color: #334155 !important;
+            border-radius: 6px !important;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .custom-dropdown .dropdown-item:hover,
+        .custom-dropdown .dropdown-item.selected {
+            background: #eff6ff !important;
+            color: #2563eb !important;
+            font-weight: 600;
+        }
+
+        .btn-search-action {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: 1.5px solid #2563eb !important;
+            border-radius: 4px !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            padding: 10px 22px !important;
+            height: 42px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.2s ease !important;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2) !important;
+            flex-shrink: 0;
+        }
+
+        .btn-search-action:hover {
+            background: #1d4ed8 !important;
+            border-color: #1d4ed8 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+            color: #ffffff !important;
+        }
+
+        @media (max-width: 767px) {
+            .hero-search-form {
+                flex-direction: column !important;
+                gap: 8px !important;
+                align-items: stretch !important;
+            }
+            .search-divider-line {
+                display: none !important;
+            }
+            .search-field {
+                border-bottom: 1px solid #e2e8f0;
+                padding-bottom: 4px;
+            }
+            .btn-search-action {
+                width: 100% !important;
             }
         }
 
@@ -1787,7 +1946,7 @@
             position: relative;
             overflow: hidden;
             max-width: 1320px;
-            margin: 20px auto;
+            margin: 0 auto 20px auto;
             border-radius: 20px;
         }
 
@@ -2124,7 +2283,7 @@
         /* Product Filter Card */
         .product-filter-card {
             background: #fff;
-            border-radius: 15px;
+            border-radius: 0;
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
             padding: 25px;
             position: sticky;
@@ -2301,7 +2460,7 @@
 
         .product-card-modern {
             background: #fff;
-            border-radius: 16px;
+            border-radius: 0;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             overflow: hidden;
             transition: all 0.3s ease;
@@ -3363,7 +3522,7 @@
         }
 
         .section-hero-doctime {
-            padding-bottom: 150px !important;
+            padding-bottom: 125px !important;
         }
 
         .hero-search-section {
