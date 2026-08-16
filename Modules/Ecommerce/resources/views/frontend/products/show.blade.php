@@ -386,7 +386,7 @@
                                 @foreach($secBadges as $badge)
                                     <div class="col-6 col-md-3">
                                         <div class="landing-badge-card p-3.5 rounded-3 text-center border h-100 shadow-sm" style="background: #ffffff; border: 1px solid #e2e8f0 !important; border-radius: 12px !important;">
-                                            <i class="{{ $badge['icon'] ?? 'fas fa-check-circle' }} d-block mb-2 fs-3 text-primary"></i>
+                                            <i class="{{ $badge['icon'] ?? 'fas fa-check-circle' }} d-block mb-2 fs-3" style="color: #2563eb !important;"></i>
                                             <h5 class="mb-1 fw-bold" style="color: #1e293b !important; font-size: 15px;">{{ $badge['title'] ?? '' }}</h5>
                                             <p class="small mb-0 text-muted" style="font-size: 13px;">{{ $badge['desc'] ?? '' }}</p>
                                         </div>
@@ -1111,6 +1111,7 @@
     .landing-badge-card i {
         font-size: 28px;
         margin-bottom: 12px;
+        color: #2563eb !important;
     }
 
     .landing-badge-card h5 {
