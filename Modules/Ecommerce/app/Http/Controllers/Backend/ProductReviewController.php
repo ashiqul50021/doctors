@@ -17,8 +17,39 @@ class ProductReviewController extends Controller
 
     public function create()
     {
-        $products = Product::where('is_active', true)->orderBy('name')->get();
+        $products = Product::where('is_active', true)->latest()->take(20)->get();
         return view('ecommerce::backend.product_reviews.create', compact('products'));
+    }
+
+    public function searchProducts(Request $request)
+    {
+        $query = $request->get('q');
+        
+        $products = Product::where('is_active', true)
+            ->when($query, function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                  ->orWhere('sku', 'like', "%{$query}%");
+            })
+            ->select(['id', 'name', 'image', 'gallery'])
+            ->latest()
+            ->take(30)
+            ->get()
+            ->map(function ($product) {
+                $image = $product->image;
+                if (!$image && !empty($product->gallery) && is_array($product->gallery)) {
+                    $image = $product->gallery[0] ?? null;
+                }
+
+                $imageUrl = $image ? asset($image) : asset('assets/img/products/default-product.png');
+
+                return [
+                    'id' => $product->id,
+                    'text' => $product->name,
+                    'image' => $imageUrl,
+                ];
+            });
+
+        return response()->json(['results' => $products]);
     }
 
     public function store(Request $request)

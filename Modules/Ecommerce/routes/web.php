@@ -42,6 +42,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('ecommerce.admi
     Route::patch('products/{product}/toggle-status', [AdminProductController::class, 'toggleStatus'])->name('products.toggle-status');
     Route::resource('products', AdminProductController::class)->except(['show']);
     Route::resource('product-categories', AdminProductCategoryController::class)->except(['show']);
+    Route::get('product-reviews/search-products', [\Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class, 'searchProducts'])->name('product-reviews.search-products');
     Route::resource('product-reviews', \Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class)->except(['show']);
     Route::post('product-reviews/{review}/approve', [\Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class, 'approve'])->name('product-reviews.approve');
     
