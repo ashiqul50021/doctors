@@ -175,6 +175,10 @@ class ProductController extends Controller
             'price' => $validated['price'],
             'sale_price' => $request->sale_price,
             'stock' => (int) ($validated['stock'] ?? 0),
+            'has_variants' => $request->has('has_variants'),
+            'override_shipping' => $request->has('override_shipping'),
+            'inside_dhaka_charge' => $request->has('override_shipping') ? $request->inside_dhaka_charge : null,
+            'outside_dhaka_charge' => $request->has('override_shipping') ? $request->outside_dhaka_charge : null,
             'gallery' => $galleryPaths,
             'landing_settings' => $request->landing_settings,
         ];

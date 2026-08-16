@@ -541,6 +541,15 @@
 
             @elseif($secType === 'order_form')
                 <!-- Custom Order Form Section -->
+                @php
+                    $insideShippingCharge = $product->override_shipping && $product->inside_dhaka_charge !== null
+                        ? (float) $product->inside_dhaka_charge
+                        : (float) (\App\Models\SiteSetting::get('shipping_inside_dhaka', 80));
+
+                    $outsideShippingCharge = $product->override_shipping && $product->outside_dhaka_charge !== null
+                        ? (float) $product->outside_dhaka_charge
+                        : (float) (\App\Models\SiteSetting::get('shipping_outside_dhaka', 130));
+                @endphp
                 <section class="landing-order-form-section my-5" id="order-form">
                     <div class="info-card p-4 p-md-5 rounded-4 shadow-sm border" style="background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important; font-size: {{ $fontSize }} !important; line-height: {{ $lineHeight }} !important;">
                         <div class="section-heading text-center mb-4">
@@ -557,7 +566,7 @@
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <input type="hidden" name="variant_id" id="directFormVariantId" value="{{ $selectedVariant ? $selectedVariant->id : '' }}">
                             <input type="hidden" name="quantity" id="directFormQuantity" value="1">
-                            <input type="hidden" name="shipping_charge" id="directFormShippingCharge" value="130">
+                            <input type="hidden" name="shipping_charge" id="directFormShippingCharge" value="{{ $outsideShippingCharge }}">
                             <input type="hidden" name="coupon_code" id="directAppliedCouponCode" value="">
 
                             <div class="row g-4">
@@ -591,17 +600,17 @@
                                             <label class="form-label small fw-bold text-dark mb-2">ডেলিভারি লোকেশন নির্বাচন করুন <span class="text-danger">*</span></label>
                                             <div class="delivery-options-grid">
                                                 <label class="delivery-radio-card">
-                                                    <input type="radio" name="delivery_area" value="inside">
+                                                    <input type="radio" name="delivery_area" value="inside" data-charge="{{ $insideShippingCharge }}">
                                                     <div class="delivery-radio-content">
-                                                        <span class="delivery-title">ঢাকার ভিতরে</span>
-                                                        <span class="delivery-price">৳৮০</span>
+                                                        <span class="delivery-title">ঢাকার ভেতরে</span>
+                                                        <span class="delivery-price">৳{{ number_format($insideShippingCharge, 0) }}</span>
                                                     </div>
                                                 </label>
                                                 <label class="delivery-radio-card active">
-                                                    <input type="radio" name="delivery_area" value="outside" checked>
+                                                    <input type="radio" name="delivery_area" value="outside" data-charge="{{ $outsideShippingCharge }}" checked>
                                                     <div class="delivery-radio-content">
                                                         <span class="delivery-title">ঢাকার বাইরে</span>
-                                                        <span class="delivery-price">৳১৩০</span>
+                                                        <span class="delivery-price">৳{{ number_format($outsideShippingCharge, 0) }}</span>
                                                     </div>
                                                 </label>
                                             </div>

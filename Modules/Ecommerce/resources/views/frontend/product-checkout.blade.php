@@ -51,6 +51,28 @@
                                         <textarea name="address" class="form-control" rows="3" required>{{ old('address', Auth::user()->patient->address ?? '') }}</textarea>
                                     </div>
                                 </div>
+
+                                <!-- Delivery Location Selector -->
+                                <div class="col-md-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label fw-bold">Delivery Location <span class="text-danger">*</span></label>
+                                        <div class="d-flex gap-3">
+                                            <div class="form-check flex-fill border rounded p-3 bg-light">
+                                                <input class="form-check-input delivery-area-radio" type="radio" name="delivery_area" id="inside_dhaka" value="inside" data-charge="{{ $insideShippingCharge }}">
+                                                <label class="form-check-label fw-bold cursor-pointer" for="inside_dhaka">
+                                                    Inside Dhaka <span class="text-primary float-end">৳{{ number_format($insideShippingCharge, 0) }}</span>
+                                                </label>
+                                            </div>
+                                            <div class="form-check flex-fill border rounded p-3 bg-light">
+                                                <input class="form-check-input delivery-area-radio" type="radio" name="delivery_area" id="outside_dhaka" value="outside" data-charge="{{ $outsideShippingCharge }}" checked>
+                                                <label class="form-check-label fw-bold cursor-pointer" for="outside_dhaka">
+                                                    Outside Dhaka <span class="text-primary float-end">৳{{ number_format($outsideShippingCharge, 0) }}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="col-md-12">
                                     <div class="form-group mb-3">
                                         <label class="form-label">Order Notes (Optional)</label>
@@ -118,21 +140,20 @@
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Shipping</span>
-                                <span class="text-success">Free</span>
+                                <span class="fw-bold text-dark" id="shipping_display">৳{{ number_format($outsideShippingCharge, 2) }}</span>
                             </div>
+                            <input type="hidden" name="shipping_charge" id="shipping_charge_input" value="{{ $outsideShippingCharge }}">
 
                             <div class="d-flex justify-content-between mb-2" id="discount_wrapper" @if(!$autoCoupon) style="display: none !important;" @endif>
                                 <span>Discount <small class="text-muted" id="coupon_info">@if($autoCoupon) ({{ $autoCoupon->code }}) @endif</small></span>
                                 <span class="text-danger">-৳<span id="discount_display">{{ number_format($discount, 2) }}</span></span>
                             </div>
 
-
-
                             <hr>
 
                             <div class="d-flex justify-content-between mb-4">
                                 <span class="h5 mb-0">Total</span>
-                                <span class="h5 mb-0 text-primary fw-bold" id="grand_total">৳{{ number_format($total - $discount, 2) }}</span>
+                                <span class="h5 mb-0 text-primary fw-bold" id="grand_total">৳{{ number_format($total + $outsideShippingCharge - $discount, 2) }}</span>
                             </div>
 
                             <input type="hidden" name="coupon_code" id="coupon_code_input" @if($autoCoupon) value="{{ $autoCoupon->code }}" @endif>
@@ -314,10 +335,31 @@
 <script>
     const subtotal = {{ $total }};
     let currentDiscount = {{ $discount }};
+    let currentShipping = {{ $outsideShippingCharge }};
 
     function formatCurrency(amount) {
         return parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     }
+
+    function updateCalculations() {
+        const selectedRadio = document.querySelector('input[name="delivery_area"]:checked');
+        if (selectedRadio) {
+            currentShipping = parseFloat(selectedRadio.getAttribute('data-charge')) || 0;
+            document.getElementById('shipping_display').innerText = '৳' + formatCurrency(currentShipping);
+            document.getElementById('shipping_charge_input').value = currentShipping;
+        }
+
+        const grandTotal = Math.max(0, subtotal + currentShipping - currentDiscount);
+        document.getElementById('grand_total').innerText = '৳' + formatCurrency(grandTotal);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const radios = document.querySelectorAll('.delivery-area-radio');
+        radios.forEach(radio => {
+            radio.addEventListener('change', updateCalculations);
+        });
+        updateCalculations();
+    });
 
     function applyCoupon() {
         const code = document.getElementById('coupon_code').value;
@@ -346,8 +388,7 @@
                         msgEl.style.setProperty('display', 'none', 'important');
                     }
 
-                    const grandTotal = Math.max(0, subtotal - currentDiscount);
-                    document.getElementById('grand_total').innerText = '৳' + formatCurrency(grandTotal);
+                    updateCalculations();
 
                     Swal.fire('Success', response.message, 'success');
                 } else {

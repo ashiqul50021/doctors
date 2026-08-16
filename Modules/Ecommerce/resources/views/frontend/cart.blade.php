@@ -485,7 +485,7 @@
                     </div>
                     <div class="cart-meta-pill">
                         <i class="fas fa-truck"></i>
-                        <span>Free shipping</span>
+                        <span>Standard shipping</span>
                     </div>
                 </div>
             </div>
@@ -594,7 +594,7 @@
                             </div>
                             <div class="summary-row">
                                 <span>Shipping</span>
-                                <span class="summary-free">Free</span>
+                                <span class="text-muted small">Calculated at checkout (ঢাকার ভেতরে/বাইরে)</span>
                             </div>
                             <div class="summary-row total">
                                 <span>Total</span>

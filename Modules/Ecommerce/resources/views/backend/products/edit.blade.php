@@ -226,6 +226,36 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Custom Shipping Fee Option -->
+                            <div class="row form-row mt-3 pt-3 border-top">
+                                <div class="col-12">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="override_shipping" name="override_shipping" value="1" {{ old('override_shipping', $product->override_shipping) ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-bold text-dark" for="override_shipping">
+                                            <i class="fas fa-truck me-1 text-primary"></i> এই প্রোডাক্টের জন্য কাস্টম শিপিং চার্জ নির্ধারণ করুন (Override Global Shipping)
+                                        </label>
+                                        <small class="text-muted d-block ms-4">সুইচ অফ থাকলে সাইটের গ্লোবাল ডিফল্ট শিপিং চার্জ (ঢাকার ভেতরে ৳৮০, বাইরে ৳১৩০) প্রযোজ্য হবে।</small>
+                                    </div>
+                                </div>
+                                <div class="col-12" id="custom-shipping-container" style="{{ old('override_shipping', $product->override_shipping) ? 'display: block;' : 'display: none;' }}">
+                                    <div class="row bg-light p-3 rounded border">
+                                        <div class="col-12 col-md-6">
+                                            <div class="form-group mb-2 mb-md-0">
+                                                <label class="fw-bold small">ঢাকার ভেতরে শিপিং ফি (Inside Dhaka Charge - ৳)</label>
+                                                <input type="number" step="0.01" name="inside_dhaka_charge" class="form-control" value="{{ old('inside_dhaka_charge', $product->inside_dhaka_charge) }}" placeholder="যেমন: 80 বা 0 (ফ্রি)">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <div class="form-group mb-0">
+                                                <label class="fw-bold small">ঢাকার বাইরে শিপিং ফি (Outside Dhaka Charge - ৳)</label>
+                                                <input type="number" step="0.01" name="outside_dhaka_charge" class="form-control" value="{{ old('outside_dhaka_charge', $product->outside_dhaka_charge) }}" placeholder="যেমন: 130 বা 0 (ফ্রি)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="mt-4">
                                 @include('ecommerce::backend.products.partials.variant-manager', ['variantRows' => $variantRows])
                             </div>
@@ -799,6 +829,21 @@
             if (hasVariantsToggle && variantManagerContainer) {
                 hasVariantsToggle.addEventListener('change', toggleVariantFields);
                 toggleVariantFields();
+            }
+
+            // Custom Shipping Toggle
+            const overrideShippingToggle = document.getElementById('override_shipping');
+            const customShippingContainer = document.getElementById('custom-shipping-container');
+
+            function toggleCustomShippingFields() {
+                if (!overrideShippingToggle || !customShippingContainer) return;
+                const isChecked = overrideShippingToggle.checked;
+                customShippingContainer.style.display = isChecked ? 'block' : 'none';
+            }
+
+            if (overrideShippingToggle && customShippingContainer) {
+                overrideShippingToggle.addEventListener('change', toggleCustomShippingFields);
+                toggleCustomShippingFields();
             }
 
             function createSectionItemRow(secIndex, value = '') {

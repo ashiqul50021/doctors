@@ -544,7 +544,10 @@ class ProductController extends Controller
             }
         }
 
-        return view('ecommerce::frontend.product-checkout', compact('cart', 'total', 'autoCoupon', 'discount'));
+        $insideShippingCharge = (float) (\App\Models\SiteSetting::get('shipping_inside_dhaka', 80));
+        $outsideShippingCharge = (float) (\App\Models\SiteSetting::get('shipping_outside_dhaka', 130));
+
+        return view('ecommerce::frontend.product-checkout', compact('cart', 'total', 'autoCoupon', 'discount', 'insideShippingCharge', 'outsideShippingCharge'));
     }
 
     public function placeOrder(Request $request)
