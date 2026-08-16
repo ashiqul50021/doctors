@@ -193,8 +193,12 @@
                                 </div>
                                  <div class="col-12 col-md-6">
                                     <div class="form-group">
-                                        <label>Sale Price (Optional)</label>
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <label class="mb-0">Sale Price (Optional)</label>
+                                            <span id="liveDiscountBadge" class="badge bg-danger text-white fs-6 px-2 py-1" style="display: none;">0% OFF</span>
+                                        </div>
                                         <input type="number" step="0.01" name="sale_price" id="productSalePriceInput" class="form-control" value="{{ old('sale_price', $product->sale_price) }}">
+                                        <small class="text-muted d-block mt-1">কাস্টমারকে বিশেষ অফার বা ছাড় দিতে নিয়মিত মূল্যের চেয়ে কম ডিসকাউন্ট প্রাইস লিখুন।</small>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
@@ -565,7 +569,33 @@
 @push('scripts')
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
+        // Live Discount Calculator
+        function updateLiveDiscount() {
+            const priceInput = document.getElementById('productPriceInput');
+            const salePriceInput = document.getElementById('productSalePriceInput');
+            const badge = document.getElementById('liveDiscountBadge');
+
+            if (!priceInput || !salePriceInput || !badge) return;
+
+            const price = parseFloat(priceInput.value) || 0;
+            const salePrice = parseFloat(salePriceInput.value) || 0;
+
+            if (price > 0 && salePrice > 0 && salePrice < price) {
+                const discount = Math.round(((price - salePrice) / price) * 100);
+                badge.textContent = `${discount}% OFF`;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
+            const priceInput = document.getElementById('productPriceInput');
+            const salePriceInput = document.getElementById('productSalePriceInput');
+            if (priceInput) priceInput.addEventListener('input', updateLiveDiscount);
+            if (salePriceInput) salePriceInput.addEventListener('input', updateLiveDiscount);
+            updateLiveDiscount();
+
             const descEditorEl = document.querySelector('#productDescriptionEditor');
             if (descEditorEl) {
                 ClassicEditor

@@ -199,9 +199,16 @@
                 <!-- Right: Product Summary & Purchase Form -->
                 <div class="col-lg-6">
                     <aside class="ref-summary-card">
-                        <!-- Brand / Subtitle -->
-                        <div class="ref-brand-label">
-                            {{ $brandName }}
+                        <!-- Category & Seller Badge Row -->
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                            @if(!empty($product->category?->name))
+                                <div class="badge bg-light text-primary border px-2.5 py-1 fw-semibold" style="font-size: 12px; border-radius: 6px;">
+                                    <i class="fas fa-folder me-1"></i> {{ $product->category->name }}
+                                </div>
+                            @endif
+                            <div class="seller-store-badge px-2.5 py-1 rounded bg-light border text-muted small ms-auto">
+                                <i class="fas fa-store text-primary me-1"></i> Sold by: <strong class="text-dark">{{ $product->seller->name ?? 'ABCSheba Official' }}</strong>
+                            </div>
                         </div>
 
                         <!-- Product Title -->
@@ -220,10 +227,9 @@
 
                             <div class="ref-meta-group">
                                 @php
-                                    $soldCount = (int) ($product->orderItems()->sum('quantity') ?? 0);
-                                    if ($soldCount < 15) {
-                                        $soldCount = 120 + ($product->id * 17) % 850;
-                                    }
+                                    $soldCount = (int) ($product->orderItems()->whereHas('order', function($q) {
+                                        $q->whereIn('status', ['completed', 'delivered', 'processing', 'pending']);
+                                    })->sum('quantity') ?? 0);
                                 @endphp
                                 <span class="ref-sold-count">{{ number_format($soldCount) }} Sold</span>
                                 <span class="ref-meta-dot">•</span>
@@ -235,16 +241,6 @@
                         </div>
 
                         <hr class="ref-divider">
-
-                        <!-- Description Block with See More -->
-                        <div class="ref-description-block">
-                            <h5 class="ref-desc-title">Description:</h5>
-                            <div class="ref-desc-content" id="refDescContent">
-                                <div class="ref-desc-text rich-description-area">
-                                    {!! $product->description ?: 'High-quality healthcare and wellness formulation. Please consume or use strictly according to instructions or professional healthcare advice.' !!}
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Purchase Form -->
                         <form action="{{ route('ecommerce.cart.add') }}" method="POST" class="ref-purchase-form">
@@ -337,6 +333,20 @@
                 </div>
             </div>
         </section>
+
+        <!-- Product Full Description Block Section -->
+        @if(!empty($product->description))
+            <section class="product-full-description-section mb-4">
+                <div class="info-card p-4 p-md-5 rounded-4 shadow-sm bg-white border" style="border-radius: 16px !important;">
+                    <h4 class="fw-bold mb-3 text-dark border-bottom pb-2">
+                        <i class="fas fa-align-left me-2 text-primary"></i> Product Description (বিবরণ)
+                    </h4>
+                    <div class="rich-description-area text-secondary" style="font-size: 15px; line-height: 1.7;">
+                        {!! $product->description !!}
+                    </div>
+                </div>
+            </section>
+        @endif
 
         <!-- Dynamic Layout Sections -->
         @php
