@@ -750,6 +750,25 @@
                 initializeVariantManager();
             }
 
+            // Dynamic Variant Fields Toggle
+            const hasVariantsToggle = document.getElementById('has_variants');
+            const variantManagerContainer = document.getElementById('variant-manager-container');
+
+            function toggleVariantFields() {
+                if (!hasVariantsToggle || !variantManagerContainer) return;
+                const isChecked = hasVariantsToggle.checked;
+                variantManagerContainer.style.display = isChecked ? 'block' : 'none';
+                const inputs = variantManagerContainer.querySelectorAll('input, select, button');
+                inputs.forEach(el => {
+                    el.disabled = !isChecked;
+                });
+            }
+
+            if (hasVariantsToggle && variantManagerContainer) {
+                hasVariantsToggle.addEventListener('change', toggleVariantFields);
+                toggleVariantFields();
+            }
+
             function createSectionItemRow(secIndex, value = '') {
                 const div = document.createElement('div');
                 div.className = 'item-row d-flex align-items-center gap-2 mb-2';
@@ -1265,6 +1284,7 @@
             const openPickerBtn = document.getElementById('openSectionPickerModalBtn');
             const sectionModalEl = document.getElementById('sectionPickerModal');
             const confirmAddBtn = document.getElementById('confirmAddSectionBtn');
+            const sectionsContainer = document.getElementById('landing-sections-builder-container');
             let selectedType = null;
 
             if (openPickerBtn && sectionModalEl) {
@@ -1288,10 +1308,12 @@
 
                 if (confirmAddBtn) {
                     confirmAddBtn.addEventListener('click', function() {
-                        if (!selectedType || !sectionsContainer) return;
-                        const index = getSectionCounter();
+                        const targetContainer = sectionsContainer || document.getElementById('landing-sections-builder-container');
+                        if (!selectedType || !targetContainer) return;
+                        const index = document.querySelectorAll('.section-card').length;
                         const newCard = createSectionCard(selectedType, index);
-                        sectionsContainer.appendChild(newCard);
+                        bindSectionCardEvents(newCard);
+                        targetContainer.appendChild(newCard);
                         reindexSections();
                         pickerModal.hide();
                         newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
