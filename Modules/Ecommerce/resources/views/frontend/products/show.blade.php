@@ -375,20 +375,20 @@
                 @endphp
                 @if(!empty($secBadges))
                     <section class="landing-badges-section mb-4">
-                        <div class="info-card p-4 rounded-3 border shadow-sm" style="border-radius: 20px !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important; font-size: {{ $fontSize }} !important; line-height: {{ $lineHeight }} !important;">
+                        <div class="info-card p-4 rounded-4" style="border-radius: 20px !important; background-color: {{ $bgColor }} !important; color: {{ $textColor }} !important; font-size: {{ $fontSize }} !important; line-height: {{ $lineHeight }} !important;">
                             <div class="text-center mb-4">
                                 @if(!empty($secTag))
                                     <span class="section-tag mb-2 d-inline-block">{{ $secTag }}</span>
                                 @endif
                                 <h3 class="mt-2" style="color: {{ $textColor }} !important; font-size: 24px; font-weight: 700;">{{ $secTitle }}</h3>
                             </div>
-                            <div class="row g-3 mb-2 mt-2">
+                            <div class="row g-3 mb-2 mt-2 justify-content-center">
                                 @foreach($secBadges as $badge)
                                     <div class="col-6 col-md-3">
-                                        <div class="landing-badge-card p-3 rounded-3 text-center border h-100" style="background: rgba(255,255,255,0.9); border-color: rgba(0,0,0,0.08) !important;">
+                                        <div class="landing-badge-card p-3.5 rounded-3 text-center border h-100 shadow-sm" style="background: #ffffff; border: 1px solid #e2e8f0 !important; border-radius: 12px !important;">
                                             <i class="{{ $badge['icon'] ?? 'fas fa-check-circle' }} d-block mb-2 fs-3 text-primary"></i>
-                                            <h5 class="mb-1 fw-bold" style="color: {{ $textColor }} !important; font-size: 15px;">{{ $badge['title'] ?? '' }}</h5>
-                                            <p class="small mb-0 opacity-75" style="color: {{ $textColor }} !important; font-size: 13px;">{{ $badge['desc'] ?? '' }}</p>
+                                            <h5 class="mb-1 fw-bold" style="color: #1e293b !important; font-size: 15px;">{{ $badge['title'] ?? '' }}</h5>
+                                            <p class="small mb-0 text-muted" style="font-size: 13px;">{{ $badge['desc'] ?? '' }}</p>
                                         </div>
                                     </div>
                                 @endforeach

@@ -1735,4 +1735,40 @@
 .cursor-pointer {
     cursor: pointer;
 }
+
+/* Section Card Form Control & Select Styles Fix */
+.section-card select.form-select,
+.section-card select.form-control-sm,
+.section-card input.form-control-sm {
+    height: 38px !important;
+    padding: 6px 28px 6px 12px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #1e293b !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    line-height: 1.4 !important;
+    box-sizing: border-box !important;
+}
+
+.section-card select.form-select {
+    background-position: right 10px center !important;
+    background-size: 12px 10px !important;
+}
+
+.section-card select.form-select:focus,
+.section-card input.form-control-sm:focus,
+.section-card textarea.form-control-sm:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    outline: 0 !important;
+}
+
+.section-card input[type="color"].form-control-color {
+    height: 38px !important;
+    padding: 3px 4px !important;
+    border-radius: 6px !important;
+    cursor: pointer;
+}
 </style>
