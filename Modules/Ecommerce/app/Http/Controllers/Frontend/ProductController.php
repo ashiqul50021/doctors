@@ -219,6 +219,15 @@ class ProductController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
+        if ($request->boolean('official')) {
+            $query->where(function ($q) {
+                $q->whereNull('seller_id')
+                  ->orWhereHas('seller', function ($sq) {
+                      $sq->where('role', '!=', 'seller');
+                  });
+            });
+        }
+
         $products = $query->latest()->paginate(12);
         
         $categories = ProductCategory::with([

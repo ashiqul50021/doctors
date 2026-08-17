@@ -18,6 +18,8 @@ Route::prefix('products')->name('ecommerce.')->group(function () {
     Route::get('/{id}', [ProductController::class, 'show'])->name('products.show');
 });
 
+Route::get('/shop/{slug}', [\Modules\Ecommerce\Http\Controllers\Frontend\ShopController::class, 'show'])->name('ecommerce.shop.show');
+
 Route::name('ecommerce.')->group(function () {
     Route::post('/cart/add', [ProductController::class, 'addToCart'])->name('cart.add');
     Route::get('/cart', [ProductController::class, 'cart'])->name('cart');

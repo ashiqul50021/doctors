@@ -206,9 +206,21 @@
                                     <i class="fas fa-folder me-1"></i> {{ $product->category->name }}
                                 </div>
                             @endif
-                            <div class="seller-store-badge px-2.5 py-1 rounded bg-light border text-muted small ms-auto">
-                                <i class="fas fa-store text-primary me-1"></i> Sold by: <strong class="text-dark">{{ $product->seller->name ?? 'ABCSheba Official' }}</strong>
-                            </div>
+                            @if($product->seller && $product->seller->sellerProfile && $product->seller->sellerProfile->status === 'approved')
+                                <a href="{{ route('ecommerce.shop.show', $product->seller->sellerProfile->store_slug) }}" class="seller-store-badge px-2.5 py-1 rounded bg-light border text-decoration-none small ms-auto d-inline-flex align-items-center gap-1.5 transition-all shadow-2xs hover:border-primary">
+                                    <i class="fas fa-store text-primary"></i> 
+                                    <span class="text-muted">Sold by:</span> 
+                                    <strong class="text-primary">{{ $product->seller->sellerProfile->store_name }}</strong>
+                                    <i class="fas fa-arrow-right text-muted" style="font-size: 10px;"></i>
+                                </a>
+                            @else
+                                <a href="{{ route('ecommerce.products', ['official' => 1]) }}" class="seller-store-badge px-2.5 py-1 rounded bg-light border text-decoration-none small ms-auto d-inline-flex align-items-center gap-1.5">
+                                    <i class="fas fa-shield-alt text-success"></i> 
+                                    <span class="text-muted">Sold by:</span> 
+                                    <strong class="text-success">ABCSheba Official Store</strong>
+                                    <span class="badge bg-success-light text-success" style="font-size: 10px;">Verified</span>
+                                </a>
+                            @endif
                         </div>
 
                         <!-- Product Title -->
