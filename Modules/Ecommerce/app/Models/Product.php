@@ -144,10 +144,6 @@ class Product extends Model
             return (float) $value;
         }
 
-        if ($this->relationLoaded('approvedProductReviews')) {
-            return (float) $this->approvedProductReviews->avg('rating');
-        }
-
         return (float) $this->approvedProductReviews()->avg('rating');
     }
 
@@ -163,4 +159,35 @@ class Product extends Model
 
         return $this->approvedProductReviews()->count();
     }
+
+    public function campaigns()
+    {
+        return $this->belongsToMany(Campaign::class, 'campaign_products')
+            ->withPivot('campaign_price')
+            ->withTimestamps();
+    }
+
+    public function activeCampaign()
+    {
+        return $this->campaigns()
+            ->where('campaigns.is_active', true)
+            ->where('campaigns.start_date', '<=', now())
+            ->where('campaigns.end_date', '>=', now())
+            ->latest('campaigns.id')
+            ->first();
+    }
+
+    public function getEffectiveCampaignPrice(): ?float
+    {
+        $activeCampaign = $this->activeCampaign();
+        if (!$activeCampaign) {
+            return null;
+        }
+
+        $pivot = $this->campaigns()->where('campaigns.id', $activeCampaign->id)->first()?->pivot;
+        $customPrice = $pivot?->campaign_price ? (float) $pivot->campaign_price : null;
+
+        return $activeCampaign->calculateCampaignPrice((float) $this->price, $customPrice);
+    }
 }
+

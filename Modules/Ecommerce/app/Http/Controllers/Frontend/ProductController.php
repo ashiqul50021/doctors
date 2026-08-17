@@ -387,14 +387,18 @@ class ProductController extends Controller
         }
 
         $product = $inventory['product'];
-        $variant = $inventory['variant'];
+        $effectivePrice = $variant ? $variant->currentPrice() : ($product->sale_price ?? $product->price);
+        $campaignPrice = $product->getEffectiveCampaignPrice();
+        if ($campaignPrice !== null) {
+            $effectivePrice = $campaignPrice;
+        }
 
         $cart[$cartKey] = [
             'product_id' => $productId,
             'variant_id' => $variant?->id,
             'variant_label' => $variant?->display_label,
             'name' => $product->name,
-            'price' => $variant ? $variant->currentPrice() : ($product->sale_price ?? $product->price),
+            'price' => $effectivePrice,
             'image' => $product->image,
             'quantity' => $newQuantity,
         ];

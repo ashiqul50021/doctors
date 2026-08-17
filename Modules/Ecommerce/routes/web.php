@@ -19,6 +19,8 @@ Route::prefix('products')->name('ecommerce.')->group(function () {
 });
 
 Route::get('/shop/{slug}', [\Modules\Ecommerce\Http\Controllers\Frontend\ShopController::class, 'show'])->name('ecommerce.shop.show');
+Route::get('/campaigns', [\Modules\Ecommerce\Http\Controllers\Frontend\CampaignController::class, 'index'])->name('ecommerce.campaigns.index');
+Route::get('/campaign/{slug}', [\Modules\Ecommerce\Http\Controllers\Frontend\CampaignController::class, 'show'])->name('ecommerce.campaigns.show');
 
 Route::name('ecommerce.')->group(function () {
     Route::post('/cart/add', [ProductController::class, 'addToCart'])->name('cart.add');
@@ -48,6 +50,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('ecommerce.admi
     Route::resource('product-reviews', \Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class)->except(['show']);
     Route::post('product-reviews/{review}/approve', [\Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class, 'approve'])->name('product-reviews.approve');
     
+    // Campaign Management Routes
+    Route::patch('campaigns/{id}/toggle-status', [\Modules\Ecommerce\Http\Controllers\Backend\CampaignController::class, 'toggleStatus'])->name('campaigns.toggle-status');
+    Route::get('campaigns/{id}/products', [\Modules\Ecommerce\Http\Controllers\Backend\CampaignController::class, 'products'])->name('campaigns.products');
+    Route::post('campaigns/{id}/products', [\Modules\Ecommerce\Http\Controllers\Backend\CampaignController::class, 'addProducts'])->name('campaigns.products.add');
+    Route::delete('campaigns/{id}/products/{productId}', [\Modules\Ecommerce\Http\Controllers\Backend\CampaignController::class, 'removeProduct'])->name('campaigns.products.remove');
+    Route::post('campaigns/{id}/products/{productId}/price', [\Modules\Ecommerce\Http\Controllers\Backend\CampaignController::class, 'updateProductPrice'])->name('campaigns.products.price');
+    Route::resource('campaigns', \Modules\Ecommerce\Http\Controllers\Backend\CampaignController::class);
+
     // Seller Management Routes
     Route::get('sellers', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'index'])->name('sellers.index');
     Route::get('sellers/create', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'create'])->name('sellers.create');

@@ -223,6 +223,109 @@
     </section>
     <!-- /Home Banner -->
 
+    @if(!empty($homeCampaign) && $homeCampaign->isRunning())
+        <!-- Live Campaign Flash Deal Section -->
+        <section class="section-home-campaign py-4 my-2">
+            <div class="container">
+                <div class="card border-0 rounded-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #1e1b4b 0%, #31104b 50%, #4c0519 100%); color: #ffffff;">
+                    <div class="p-4 p-md-5">
+                        <div class="row align-items-center g-4">
+                            <div class="col-lg-5">
+                                <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill mb-2 fw-bold">
+                                    <i class="fas fa-bolt me-1"></i> LIVE FLASH DEAL
+                                </span>
+                                <h2 class="fw-bold text-white display-6 mb-2">{{ $homeCampaign->title }}</h2>
+                                <p class="text-light opacity-75 mb-3">{{ $homeCampaign->description ?: 'Exclusive mega discount offers for a limited time. Don’t miss out!' }}</p>
+
+                                <!-- Live Countdown -->
+                                <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-10 backdrop-blur p-2.5 rounded-3 border border-white border-opacity-20 mb-4">
+                                    <span class="text-white small fw-bold me-1"><i class="fas fa-clock me-1"></i> Ends In:</span>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span class="badge bg-danger text-white px-2.5 py-1.5 fs-6" id="homeCampHours">00</span>
+                                        <span class="text-white fw-bold">:</span>
+                                        <span class="badge bg-danger text-white px-2.5 py-1.5 fs-6" id="homeCampMins">00</span>
+                                        <span class="text-white fw-bold">:</span>
+                                        <span class="badge bg-danger text-white px-2.5 py-1.5 fs-6" id="homeCampSecs">00</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <a href="{{ route('ecommerce.campaigns.show', $homeCampaign->slug) }}" class="btn btn-danger btn-lg rounded-pill px-4 fw-bold">
+                                        View All Offers <i class="fas fa-arrow-right ms-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-7">
+                                <div class="row g-3">
+                                    @foreach($homeCampaign->products->take(4) as $campProd)
+                                        @php
+                                            $customP = $campProd->pivot->campaign_price ? (float)$campProd->pivot->campaign_price : null;
+                                            $cPrice = $homeCampaign->calculateCampaignPrice((float)$campProd->price, $customP);
+                                            $rPrice = (float)$campProd->price;
+                                            $dPct = ($rPrice > $cPrice && $rPrice > 0) ? round((($rPrice - $cPrice) / $rPrice) * 100) : 0;
+                                            $pImg = $campProd->image ?: (is_array($campProd->gallery) ? ($campProd->gallery[0] ?? null) : null);
+                                        @endphp
+                                        <div class="col-6 col-md-6">
+                                            <div class="card h-100 border-0 rounded-3 p-2 bg-white text-dark shadow-sm">
+                                                <div class="position-relative bg-light rounded-2 p-2 text-center" style="aspect-ratio: 1/1;">
+                                                    <a href="{{ route('ecommerce.products.show', $campProd->id) }}">
+                                                        <img src="{{ $pImg ? asset($pImg) : asset('assets/img/products/default-product.png') }}" 
+                                                             alt="{{ $campProd->name }}" class="img-fluid h-100 object-fit-contain">
+                                                    </a>
+                                                    @if($dPct > 0)
+                                                        <span class="badge bg-danger position-absolute top-0 start-0 m-2 fw-bold">-{{ $dPct }}%</span>
+                                                    @endif
+                                                </div>
+                                                <div class="pt-2 px-1">
+                                                    <h6 class="text-truncate fw-bold mb-1">
+                                                        <a href="{{ route('ecommerce.products.show', $campProd->id) }}" class="text-dark text-decoration-none">
+                                                            {{ $campProd->name }}
+                                                        </a>
+                                                    </h6>
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <span class="text-danger fw-bold">৳{{ number_format($cPrice, 0) }}</span>
+                                                        @if($cPrice < $rPrice)
+                                                            <span class="text-muted text-decoration-line-through small">৳{{ number_format($rPrice, 0) }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const hCampEnd = new Date("{{ $homeCampaign->end_date->toIso8601String() }}").getTime();
+                function tickHomeCamp() {
+                    const now = new Date().getTime();
+                    const dist = hCampEnd - now;
+                    if (dist < 0) return;
+                    const hrs = Math.floor(dist / (1000 * 60 * 60));
+                    const mns = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+                    const scs = Math.floor((dist % (1000 * 60)) / 1000);
+                    const hE = document.getElementById('homeCampHours');
+                    const mE = document.getElementById('homeCampMins');
+                    const sE = document.getElementById('homeCampSecs');
+                    if (hE) hE.innerText = String(hrs).padStart(2, '0');
+                    if (mE) mE.innerText = String(mns).padStart(2, '0');
+                    if (sE) sE.innerText = String(scs).padStart(2, '0');
+                }
+                tickHomeCamp();
+                setInterval(tickHomeCamp, 1000);
+            });
+        </script>
+        @endpush
+    @endif
+
     <!-- Doctor Registration CTA -->
     <section class="section-doctor-cta">
         <div class="container">

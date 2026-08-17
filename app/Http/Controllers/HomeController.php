@@ -73,6 +73,15 @@ class HomeController extends Controller
         // Get active health packages
         $healthPackages = \App\Models\HealthPackage::active()->ordered()->get();
 
+        // Get live running campaign for homepage
+        $homeCampaign = \Modules\Ecommerce\Models\Campaign::active()
+            ->where('show_on_homepage', true)
+            ->with(['products' => function ($q) {
+                $q->where('is_active', true)->take(8);
+            }])
+            ->latest('id')
+            ->first();
+
         return view('frontend.home', compact(
             'specialities',
             'searchSpecialities',
@@ -83,7 +92,8 @@ class HomeController extends Controller
             'banners',
             'districts',
             'products',
-            'healthPackages'
+            'healthPackages',
+            'homeCampaign'
         ));
     }
 

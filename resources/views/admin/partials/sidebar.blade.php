@@ -79,6 +79,9 @@
                     <li class="{{ request()->routeIs('ecommerce.admin.product-reviews.*') ? 'active' : '' }}">
                         <a href="{{ route('ecommerce.admin.product-reviews.index') }}" wire:navigate><i class="fe fe-star-o"></i> <span>Product Reviews</span></a>
                     </li>
+                    <li class="{{ request()->routeIs('ecommerce.admin.campaigns.*') ? 'active' : '' }}">
+                        <a href="{{ route('ecommerce.admin.campaigns.index') }}" wire:navigate><i class="fe fe-tag"></i> <span>Campaigns / Flash Sale</span></a>
+                    </li>
                     <li class="{{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
                         <a href="{{ route('admin.coupons.index') }}" wire:navigate><i class="fe fe-star"></i> <span>Coupons</span></a>
                     </li>

@@ -9,9 +9,12 @@
     $hasVariants = $product->hasActiveVariants();
     $selectedVariant = $activeVariants->firstWhere('id', (int) old('variant_id'))
         ?: ($activeVariants->first(fn ($variant) => $variant->stock > 0) ?? $activeVariants->first());
+    $activeCampaign = $product->activeCampaign();
+    $campaignPrice = $activeCampaign ? $product->getEffectiveCampaignPrice() : null;
+
     $stockQty = $selectedVariant ? (int) $selectedVariant->stock : $product->availableStock();
     $regularPrice = $selectedVariant ? $selectedVariant->regularPrice() : $product->effectiveRegularPrice();
-    $displayPrice = $selectedVariant ? $selectedVariant->currentPrice() : $product->effectivePrice();
+    $displayPrice = $campaignPrice !== null ? $campaignPrice : ($selectedVariant ? $selectedVariant->currentPrice() : $product->effectivePrice());
     $discountPercentage = $regularPrice > 0 && $displayPrice < $regularPrice
         ? round((($regularPrice - $displayPrice) / $regularPrice) * 100)
         : 0;
@@ -232,9 +235,12 @@
                                 <span id="productOriginalPrice" class="ref-price-original" style="{{ $displayPrice < $regularPrice ? '' : 'display:none;' }}">
                                     ৳{{ number_format($regularPrice, 2) }}
                                 </span>
-                                <span id="productCurrentPrice" class="ref-price-current">
+                                <span id="productCurrentPrice" class="ref-price-current {{ $activeCampaign ? 'text-danger' : '' }}">
                                     ৳{{ number_format($displayPrice, 2) }}
                                 </span>
+                                @if($discountPercentage > 0)
+                                    <span class="badge bg-danger ms-1">{{ $discountPercentage }}% OFF</span>
+                                @endif
                             </div>
 
                             <div class="ref-meta-group">
@@ -251,6 +257,56 @@
                                 </div>
                             </div>
                         </div>
+
+                        @if($activeCampaign)
+                            <!-- Active Campaign Special Live Card -->
+                            <div class="p-3 my-3 rounded-3 border border-danger-subtle" style="background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                                    <div class="d-flex align-items-center gap-1.5">
+                                        <span class="badge bg-danger text-white"><i class="fas fa-bolt"></i> FLASH SALE</span>
+                                        <strong class="text-dark small">{{ $activeCampaign->title }}</strong>
+                                    </div>
+                                    <a href="{{ route('ecommerce.campaigns.show', $activeCampaign->slug) }}" class="text-danger fw-bold small text-decoration-none">
+                                        View All Offers <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
+                                    </a>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2 border-top border-danger-subtle">
+                                    <span class="text-danger-emphasis small fw-semibold"><i class="fas fa-clock me-1"></i> Offer Ends In:</span>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span class="badge bg-danger text-white px-2 py-1" id="prodCampHours">00</span>
+                                        <span class="text-danger fw-bold">:</span>
+                                        <span class="badge bg-danger text-white px-2 py-1" id="prodCampMins">00</span>
+                                        <span class="text-danger fw-bold">:</span>
+                                        <span class="badge bg-danger text-white px-2 py-1" id="prodCampSecs">00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @push('scripts')
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const campEnd = new Date("{{ $activeCampaign->end_date->toIso8601String() }}").getTime();
+                                    function tickCamp() {
+                                        const now = new Date().getTime();
+                                        const dist = campEnd - now;
+                                        if (dist < 0) return;
+                                        const hrs = Math.floor(dist / (1000 * 60 * 60));
+                                        const mns = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+                                        const scs = Math.floor((dist % (1000 * 60)) / 1000);
+                                        const hEl = document.getElementById('prodCampHours');
+                                        const mEl = document.getElementById('prodCampMins');
+                                        const sEl = document.getElementById('prodCampSecs');
+                                        if (hEl) hEl.innerText = String(hrs).padStart(2, '0');
+                                        if (mEl) mEl.innerText = String(mns).padStart(2, '0');
+                                        if (sEl) sEl.innerText = String(scs).padStart(2, '0');
+                                    }
+                                    tickCamp();
+                                    setInterval(tickCamp, 1000);
+                                });
+                            </script>
+                            @endpush
+                        @endif
 
                         <hr class="ref-divider">
 
