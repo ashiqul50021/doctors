@@ -16,201 +16,204 @@
         <div class="hero-wave-pattern"></div>
 
         <div class="container">
-            <!-- Hero Banner Skeleton (Hidden when Slick initializes) -->
-            <div class="hero-banner-skeleton d-none" id="heroBannerSkeleton">
-                <div class="skeleton-hero-left">
-                    <div class="skeleton-hero-title-1 skeleton-shimmer"></div>
-                    <div class="skeleton-hero-title-2 skeleton-shimmer"></div>
-                    <div class="skeleton-hero-badge skeleton-shimmer"></div>
-                    <div class="skeleton-hero-btn skeleton-shimmer"></div>
+            <!-- Combined Hero Wrapper -->
+            <div class="hero-combined-wrapper">
+                <!-- Hero Banner Skeleton (Hidden when Slick initializes) -->
+                <div class="hero-banner-skeleton d-none" id="heroBannerSkeleton">
+                    <div class="skeleton-hero-left">
+                        <div class="skeleton-hero-title-1 skeleton-shimmer"></div>
+                        <div class="skeleton-hero-title-2 skeleton-shimmer"></div>
+                        <div class="skeleton-hero-badge skeleton-shimmer"></div>
+                        <div class="skeleton-hero-btn skeleton-shimmer"></div>
+                    </div>
+                    <div class="skeleton-hero-right skeleton-shimmer"></div>
                 </div>
-                <div class="skeleton-hero-right skeleton-shimmer"></div>
-            </div>
 
-            <!-- Hero Slider -->
-            <div class="hero-slider">
-                @if(isset($banners) && $banners->count() > 0)
-                    @foreach($banners as $banner)
-                        @if($banner->type == 'content_image')
-                            <!-- Content + Image Slide -->
-                            <div class="hero-slide-item">
-                                <div class="hero-main-wrapper">
-                                    <div class="hero-content-left">
-                                        <h1 class="hero-main-title">
-                                            {!! $banner->title !!}
-                                        </h1>
-                                        @if($banner->subtitle)
-                                            <p class="mb-4 text-muted">{{ $banner->subtitle }}</p>
-                                        @endif
+                <!-- Hero Slider -->
+                <div class="hero-slider">
+                    @if(isset($banners) && $banners->count() > 0)
+                        @foreach($banners as $banner)
+                            @if($banner->type == 'content_image')
+                                <!-- Content + Image Slide -->
+                                <div class="hero-slide-item">
+                                    <div class="hero-main-wrapper">
+                                        <div class="hero-content-left">
+                                            <h1 class="hero-main-title">
+                                                {!! $banner->title !!}
+                                            </h1>
+                                            @if($banner->subtitle)
+                                                <p class="mb-4 text-muted">{{ $banner->subtitle }}</p>
+                                            @endif
 
-                                        @if($banner->stats_text)
-                                            <div class="hero-trust-badge">
-                                                <i class="fas fa-check-circle"></i>
-                                                <span>Trusted By <strong>{{ $banner->stats_text }}</strong></span>
-                                            </div>
-                                        @endif
+                                            @if($banner->stats_text)
+                                                <div class="hero-trust-badge">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Trusted By <strong>{{ $banner->stats_text }}</strong></span>
+                                                </div>
+                                            @endif
 
-                                        @if($banner->button_text && $banner->button_link)
-                                            <a href="{{ $banner->button_link }}" class="btn-hero-cta">
-                                                {{ $banner->button_text }} <i class="fas fa-arrow-right"></i>
-                                            </a>
-                                        @endif
-                                    </div>
-                                    <div class="hero-content-right">
-                                        <img src="{{ asset($banner->image) }}" alt="{{ $banner->title }}" class="hero-doctors-img">
+                                            @if($banner->button_text && $banner->button_link)
+                                                <a href="{{ $banner->button_link }}" class="btn-hero-cta">
+                                                    {{ $banner->button_text }} <i class="fas fa-arrow-right"></i>
+                                                </a>
+                                            @endif
+                                        </div>
+                                        <div class="hero-content-right">
+                                            <img src="{{ asset($banner->image) }}" alt="{{ $banner->title }}" class="hero-doctors-img">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @elseif($banner->type == 'image_only')
-                            <!-- Image Only Slide -->
-                            <div class="hero-slide-item">
-                                <div class="hero-full-image-wrapper">
-                                    <img src="{{ asset($banner->image) }}" alt="Banner Image" class="hero-full-image-img">
-                                    @if($banner->button_link)
-                                        <a href="{{ $banner->button_link }}"
-                                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"></a>
+                            @elseif($banner->type == 'image_only')
+                                <!-- Image Only Slide -->
+                                <div class="hero-slide-item">
+                                    <div class="hero-full-image-wrapper">
+                                        <img src="{{ asset($banner->image) }}" alt="Banner Image" class="hero-full-image-img">
+                                        @if($banner->button_link)
+                                            <a href="{{ $banner->button_link }}"
+                                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"></a>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    @else
+                        <!-- Fallback Static Slides (Keep original if no dynamic banners) -->
+                        <!-- Slide 1 -->
+                        <div class="hero-slide-item">
+                            <div class="hero-main-wrapper">
+                                <div class="hero-content-left">
+                                    <h1 class="hero-main-title">
+                                        {!! $bannerSettings['banner_title'] ?? 'The Largest Online<br><span class="text-blue">Doctor Platform</span><br>Of The Country' !!}
+                                    </h1>
+                                    <div class="hero-trust-badge">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Trusted By <strong>{{ $bannerSettings['banner_stats_text'] ?? '700,000' }}</strong>
+                                            Patients</span>
+                                    </div>
+                                    <a href="{{ route('doctors.search') }}" class="btn-hero-cta">
+                                        Consult a Doctor Now <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                                <div class="hero-content-right">
+                                    @if(!empty($bannerSettings['banner_image']))
+                                        <img src="{{ asset($bannerSettings['banner_image']) }}" alt="Professional Doctors"
+                                            class="hero-doctors-img">
+                                    @else
+                                        <img src="{{ asset('assets/img/doctors-hero.png') }}" alt="Professional Doctors"
+                                            class="hero-doctors-img">
                                     @endif
                                 </div>
                             </div>
-                        @endif
-                    @endforeach
-                @else
-                    <!-- Fallback Static Slides (Keep original if no dynamic banners) -->
-                    <!-- Slide 1 -->
-                    <div class="hero-slide-item">
-                        <div class="hero-main-wrapper">
-                            <div class="hero-content-left">
-                                <h1 class="hero-main-title">
-                                    {!! $bannerSettings['banner_title'] ?? 'The Largest Online<br><span class="text-blue">Doctor Platform</span><br>Of The Country' !!}
-                                </h1>
-                                <div class="hero-trust-badge">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Trusted By <strong>{{ $bannerSettings['banner_stats_text'] ?? '700,000' }}</strong>
-                                        Patients</span>
-                                </div>
-                                <a href="{{ route('doctors.search') }}" class="btn-hero-cta">
-                                    Consult a Doctor Now <i class="fas fa-arrow-right"></i>
-                                </a>
-                            </div>
-                            <div class="hero-content-right">
-                                @if(!empty($bannerSettings['banner_image']))
-                                    <img src="{{ asset($bannerSettings['banner_image']) }}" alt="Professional Doctors"
-                                        class="hero-doctors-img">
-                                @else
-                                    <img src="{{ asset('assets/img/doctors-hero.png') }}" alt="Professional Doctors"
-                                        class="hero-doctors-img">
-                                @endif
-                            </div>
                         </div>
-                    </div>
-                    <!-- Other static slides can be removed or kept as backups -->
-                @endif
-            </div>
-
-            <!-- Search Section -->
-            <div class="hero-search-section">
-                <!-- Card 1: Search by Doctor -->
-                <div class="search-card-wrapper mb-3 p-3 bg-white rounded-3 shadow-sm">
-                    <h5 class="search-box-title d-flex align-items-center gap-2 mb-2 font-weight-bold">
-                        <span class="icon-circle rounded d-inline-flex align-items-center justify-content-center">
-                            <i class="fas fa-user-md"></i>
-                        </span> 
-                        <span>Search by Doctor</span>
-                    </h5>
-                    <!-- Normal Search Bar (Doctor Name/Code) -->
-                    <div class="hero-search-bar" id="normal-search-form">
-                        <form action="{{ route('doctors.search') }}" class="hero-search-form d-flex align-items-center" id="normalSearchForm">
-                            <div class="search-field search-keyword-full flex-grow-1 d-flex align-items-center px-3">
-                                <i class="fas fa-search search-lead-icon me-2"></i>
-                                <input type="text" name="keywords" placeholder="Search doctor by name, specialty, or code..." class="form-control border-0 bg-transparent shadow-none">
-                            </div>
-                            <button type="submit" class="btn btn-search-action text-white" aria-label="Search Doctor">
-                                <i class="fas fa-search"></i>
-                                <span class="d-none d-md-inline ms-1">Search</span>
-                            </button>
-                        </form>
-                    </div>
+                        <!-- Other static slides can be removed or kept as backups -->
+                    @endif
                 </div>
 
-                <!-- Card 2: Search by Speciality & Location -->
-                <div class="search-card-wrapper p-3 bg-white rounded-3 shadow-sm">
-                    <h5 class="search-box-title d-flex align-items-center gap-2 mb-2 font-weight-bold">
-                        <span class="icon-circle rounded d-inline-flex align-items-center justify-content-center">
-                            <i class="fas fa-stethoscope"></i>
-                        </span> 
-                        <span>Search by Speciality & Location</span>
-                    </h5>
-                    <!-- Filter Search Bar (Location & Speciality) -->
-                    <div class="hero-search-bar" id="filter-search-form">
-                        <form action="{{ route('doctors.search') }}" class="hero-search-form d-flex align-items-center" id="filterSearchForm">
-                            <!-- Speciality - Custom Searchable Dropdown -->
-                            <div class="search-field search-select flex-grow-1 px-3 position-relative">
-                                <i class="fas fa-stethoscope search-lead-icon me-2"></i>
-                                <div class="custom-dropdown w-100 position-relative" id="specialityDropdown">
-                                    <input type="hidden" name="speciality_id" id="speciality_value">
-                                    <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Speciality (e.g. Cardiologist)"
-                                        data-default-placeholder="Speciality (e.g. Cardiologist)" readonly id="speciality_display">
-                                    <i class="fas fa-chevron-down dropdown-arrow"></i>
-                                    <div class="dropdown-menu">
-                                        <input type="text" class="dropdown-filter" placeholder="Search speciality...">
-                                        <div class="dropdown-list">
-                                            <div class="dropdown-item" data-value="">All Specialities</div>
-                                            @foreach($searchSpecialities as $speciality)
-                                                <div class="dropdown-item" data-value="{{ $speciality->id }}">{{ $speciality->name }}
-                                                </div>
-                                            @endforeach
+                <!-- Search Section -->
+                <div class="hero-search-section">
+                    <!-- Card 1: Search by Doctor -->
+                    <div class="search-card-wrapper mb-3 p-3 bg-white rounded-3 shadow-sm">
+                        <h5 class="search-box-title d-flex align-items-center gap-2 mb-2 font-weight-bold">
+                            <span class="icon-circle rounded d-inline-flex align-items-center justify-content-center">
+                                <i class="fas fa-user-md"></i>
+                            </span> 
+                            <span>Search by Doctor</span>
+                        </h5>
+                        <!-- Normal Search Bar (Doctor Name/Code) -->
+                        <div class="hero-search-bar" id="normal-search-form">
+                            <form action="{{ route('doctors.search') }}" class="hero-search-form d-flex align-items-center" id="normalSearchForm">
+                                <div class="search-field search-keyword-full flex-grow-1 d-flex align-items-center px-3">
+                                    <i class="fas fa-search search-lead-icon me-2"></i>
+                                    <input type="text" name="keywords" placeholder="Search doctor by name, specialty, or code..." class="form-control border-0 bg-transparent shadow-none">
+                                </div>
+                                <button type="submit" class="btn btn-search-action text-white" aria-label="Search Doctor">
+                                    <i class="fas fa-search"></i>
+                                    <span class="d-none d-md-inline ms-1">Search</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Search by Speciality & Location -->
+                    <div class="search-card-wrapper p-3 bg-white rounded-3 shadow-sm">
+                        <h5 class="search-box-title d-flex align-items-center gap-2 mb-2 font-weight-bold">
+                            <span class="icon-circle rounded d-inline-flex align-items-center justify-content-center">
+                                <i class="fas fa-stethoscope"></i>
+                            </span> 
+                            <span>Search by Speciality & Location</span>
+                        </h5>
+                        <!-- Filter Search Bar (Location & Speciality) -->
+                        <div class="hero-search-bar" id="filter-search-form">
+                            <form action="{{ route('doctors.search') }}" class="hero-search-form d-flex align-items-center" id="filterSearchForm">
+                                <!-- Speciality - Custom Searchable Dropdown -->
+                                <div class="search-field search-select flex-grow-1 px-3 position-relative">
+                                    <i class="fas fa-stethoscope search-lead-icon me-2"></i>
+                                    <div class="custom-dropdown w-100 position-relative" id="specialityDropdown">
+                                        <input type="hidden" name="speciality_id" id="speciality_value">
+                                        <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Speciality (e.g. Cardiologist)"
+                                            data-default-placeholder="Speciality (e.g. Cardiologist)" readonly id="speciality_display">
+                                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                                        <div class="dropdown-menu">
+                                            <input type="text" class="dropdown-filter" placeholder="Search speciality...">
+                                            <div class="dropdown-list">
+                                                <div class="dropdown-item" data-value="">All Specialities</div>
+                                                @foreach($searchSpecialities as $speciality)
+                                                    <div class="dropdown-item" data-value="{{ $speciality->id }}">{{ $speciality->name }}
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="search-divider-line d-none d-md-block"></div>
+                                <div class="search-divider-line d-none d-md-block"></div>
 
-                            <!-- District - Custom Searchable Dropdown -->
-                            <div class="search-field search-select flex-grow-1 px-3 position-relative">
-                                <i class="fas fa-map-marker-alt search-lead-icon me-2"></i>
-                                <div class="custom-dropdown w-100 position-relative" id="districtDropdown">
-                                    <input type="hidden" name="district_id" id="district_value">
-                                    <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="District (e.g. Dhaka)"
-                                        data-default-placeholder="District (e.g. Dhaka)" readonly id="district_display">
-                                    <i class="fas fa-chevron-down dropdown-arrow"></i>
-                                    <div class="dropdown-menu">
-                                        <input type="text" class="dropdown-filter" placeholder="Search district...">
-                                        <div class="dropdown-list">
-                                            <div class="dropdown-item" data-value="">All Districts</div>
-                                            @foreach($districts as $district)
-                                                <div class="dropdown-item" data-value="{{ $district->id }}">{{ $district->name }}
-                                                </div>
-                                            @endforeach
+                                <!-- District - Custom Searchable Dropdown -->
+                                <div class="search-field search-select flex-grow-1 px-3 position-relative">
+                                    <i class="fas fa-map-marker-alt search-lead-icon me-2"></i>
+                                    <div class="custom-dropdown w-100 position-relative" id="districtDropdown">
+                                        <input type="hidden" name="district_id" id="district_value">
+                                        <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="District (e.g. Dhaka)"
+                                            data-default-placeholder="District (e.g. Dhaka)" readonly id="district_display">
+                                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                                        <div class="dropdown-menu">
+                                            <input type="text" class="dropdown-filter" placeholder="Search district...">
+                                            <div class="dropdown-list">
+                                                <div class="dropdown-item" data-value="">All Districts</div>
+                                                @foreach($districts as $district)
+                                                    <div class="dropdown-item" data-value="{{ $district->id }}">{{ $district->name }}
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="search-divider-line d-none d-md-block"></div>
+                                <div class="search-divider-line d-none d-md-block"></div>
 
-                            <!-- Area - Custom Searchable Dropdown -->
-                            <div class="search-field search-select flex-grow-1 px-3 position-relative">
-                                <i class="fas fa-location-arrow search-lead-icon me-2"></i>
-                                <div class="custom-dropdown w-100 position-relative" id="areaDropdown">
-                                    <input type="hidden" name="area_id" id="area_value">
-                                    <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Area"
-                                        data-default-placeholder="Area" readonly id="area_display" disabled>
-                                    <i class="fas fa-chevron-down dropdown-arrow"></i>
-                                    <div class="dropdown-menu">
-                                        <input type="text" class="dropdown-filter" placeholder="Search area...">
-                                        <div class="dropdown-list" id="area_list">
-                                            <div class="dropdown-item" data-value="">Select district first</div>
+                                <!-- Area - Custom Searchable Dropdown -->
+                                <div class="search-field search-select flex-grow-1 px-3 position-relative">
+                                    <i class="fas fa-location-arrow search-lead-icon me-2"></i>
+                                    <div class="custom-dropdown w-100 position-relative" id="areaDropdown">
+                                        <input type="hidden" name="area_id" id="area_value">
+                                        <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Area"
+                                            data-default-placeholder="Area" readonly id="area_display" disabled>
+                                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                                        <div class="dropdown-menu">
+                                            <input type="text" class="dropdown-filter" placeholder="Search area...">
+                                            <div class="dropdown-list" id="area_list">
+                                                <div class="dropdown-item" data-value="">Select district first</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <button type="submit" class="btn btn-search-action text-white" aria-label="Search by Filters">
-                                <i class="fas fa-search"></i>
-                                <span class="d-none d-md-inline ms-1">Find</span>
-                            </button>
-                        </form>
+                                <button type="submit" class="btn btn-search-action text-white" aria-label="Search by Filters">
+                                    <i class="fas fa-search"></i>
+                                    <span class="d-none d-md-inline ms-1">Find</span>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3522,17 +3525,18 @@
         }
 
         .section-hero-doctime {
-            padding-bottom: 125px !important;
+            padding-bottom: 40px !important;
         }
 
         .hero-search-section {
-            position: absolute !important;
-            left: 12px !important;
-            right: 12px !important;
-            bottom: -110px !important;
+            position: relative !important;
+            left: auto !important;
+            right: auto !important;
+            bottom: auto !important;
             transform: none !important;
-            margin: 0 !important;
-            z-index: 500 !important;
+            margin-top: 25px !important;
+            margin-bottom: 0 !important;
+            z-index: 100 !important;
         }
 
         .hero-search-bar {
