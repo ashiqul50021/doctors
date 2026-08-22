@@ -936,10 +936,12 @@
 
                 if (confirmAddBtn) {
                     confirmAddBtn.addEventListener('click', function() {
-                        if (!selectedType || !sectionsContainer) return;
-                        const index = getSectionCounter();
+                        const targetContainer = sectionsContainer || document.getElementById('landing-sections-builder-container');
+                        if (!selectedType || !targetContainer) return;
+                        const index = document.querySelectorAll('.section-card').length;
                         const newCard = createSectionCard(selectedType, index);
-                        sectionsContainer.appendChild(newCard);
+                        bindSectionCardEvents(newCard);
+                        targetContainer.appendChild(newCard);
                         reindexSections();
                         pickerModal.hide();
                         newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
