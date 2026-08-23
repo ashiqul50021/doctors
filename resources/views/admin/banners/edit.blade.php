@@ -53,18 +53,25 @@
                         </div>
 
                         <div class="mb-3">
-                            <label>Banner Image</label>
+                            <label class="form-label font-weight-bold">Banner Image</label>
                             <input type="file" class="form-control @error('image') is-invalid @enderror" name="image"
                                 id="bannerImageInput" accept="image/*">
                             @error('image')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small id="bannerImageHelper" class="form-text text-muted">Leave empty to keep current image</small>
+                            <div class="mt-2 text-muted small">
+                                <i class="fas fa-info-circle text-primary me-1"></i> <strong>Recommended Dimensions:</strong>
+                                <ul class="mb-1 ps-3">
+                                    <li><strong>Image Only (Full Width):</strong> <code>1920 x 450 px</code></li>
+                                    <li><strong>Content with Image (Standard):</strong> <code>600 x 450 px</code></li>
+                                </ul>
+                                <span class="text-success"><i class="fas fa-magic me-1"></i> Note: Images of any dimension will be automatically auto-adjusted and optimized upon upload. Leave empty to keep current image.</span>
+                            </div>
                             <div class="mt-2">
                                 <img id="bannerImagePreview"
                                     src="{{ $banner->image ? asset($banner->image) : '#' }}"
                                     alt="Current Banner"
-                                    style="max-height: 120px; {{ $banner->image ? '' : 'display:none;' }}">
+                                    style="max-height: 140px; border-radius: 4px; border: 1px solid #ddd; padding: 3px; {{ $banner->image ? '' : 'display:none;' }}">
                             </div>
                         </div>
 
