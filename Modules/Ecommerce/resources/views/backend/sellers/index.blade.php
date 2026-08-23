@@ -73,6 +73,7 @@
                                     @endif
                                 </td>
                                 <td class="text-right">
+                                    <a href="{{ route('ecommerce.admin.sellers.edit', $seller->id) }}" class="btn btn-sm btn-primary me-1">Edit</a>
                                     <form action="{{ route('ecommerce.admin.sellers.update-status', $seller->id) }}" method="POST" class="d-inline-block">
                                         @csrf
                                         @method('PATCH')

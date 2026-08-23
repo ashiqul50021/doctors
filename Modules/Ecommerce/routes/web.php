@@ -63,6 +63,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('ecommerce.admi
     Route::get('sellers/create', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'create'])->name('sellers.create');
     Route::post('sellers', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'store'])->name('sellers.store');
     Route::get('sellers/{id}', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'show'])->name('sellers.show');
+    Route::get('sellers/{id}/edit', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'edit'])->name('sellers.edit');
+    Route::put('sellers/{id}', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'update'])->name('sellers.update');
     Route::patch('sellers/{id}/status', [\Modules\Ecommerce\Http\Controllers\Backend\SellerManagementController::class, 'updateStatus'])->name('sellers.update-status');
 
     // Seller Payout Routes (Admin)

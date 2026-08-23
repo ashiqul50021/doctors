@@ -71,10 +71,65 @@ class SellerManagementController extends Controller
         }
     }
 
-    public function show($id)
+    public function edit($id)
     {
-        $seller = SellerProfile::with(['user', 'products'])->findOrFail($id);
-        return view('ecommerce::backend.sellers.show', compact('seller'));
+        $seller = SellerProfile::with('user')->findOrFail($id);
+        return view('ecommerce::backend.sellers.edit', compact('seller'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $seller = SellerProfile::with('user')->findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $seller->user_id,
+            'password' => 'nullable|string|min:6',
+            'store_name' => 'required|string|max:255|unique:seller_profiles,store_name,' . $seller->id,
+            'phone' => 'required|string|max:20',
+            'address' => 'nullable|string',
+            'commission_rate' => 'required|numeric|min:0|max:100',
+            'status' => 'required|in:pending,approved,suspended',
+            'store_logo' => 'nullable|image|max:20480',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $seller) {
+                // 1. Update user
+                $userData = [
+                    'name' => $request->name,
+                    'email' => $request->email,
+                ];
+                if ($request->filled('password')) {
+                    $userData['password'] = bcrypt($request->password);
+                }
+                $seller->user->update($userData);
+
+                // 2. Handle store logo upload
+                $sellerData = [
+                    'store_name' => $request->store_name,
+                    'store_slug' => Str::slug($request->store_name),
+                    'phone' => $request->phone,
+                    'address' => $request->address,
+                    'commission_rate' => $request->commission_rate,
+                    'status' => $request->status,
+                ];
+
+                if ($request->hasFile('store_logo')) {
+                    if ($seller->store_logo) {
+                        \App\Services\ImageService::delete($seller->store_logo);
+                    }
+                    $sellerData['store_logo'] = \App\Services\ImageService::upload($request->file('store_logo'), 'sellers', 85, 400);
+                }
+
+                // 3. Update seller profile
+                $seller->update($sellerData);
+            });
+
+            return redirect()->route('ecommerce.admin.sellers.index')->with('success', 'Seller updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->withErrors(['error' => 'Failed to update seller: ' . $e->getMessage()]);
+        }
     }
 
     public function updateStatus(Request $request, $id)
