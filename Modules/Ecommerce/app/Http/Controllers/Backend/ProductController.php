@@ -23,7 +23,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $products = Product::with(['category', 'variants'])->select('products.*');
+            $products = Product::with(['category', 'variants', 'seller'])->select('products.*');
 
             return DataTables::of($products)
                 ->addIndexColumn()
@@ -41,7 +41,9 @@ class ProductController extends Controller
                         ? '<a href="#" class="avatar avatar-sm me-2"><img class="avatar-img" src="' . $imgUrl . '" alt="Product"></a>'
                         : '<span class="avatar avatar-sm me-2 d-inline-flex align-items-center justify-content-center bg-light text-muted border" style="font-size: 9px; font-weight: 600;">No Image</span>';
 
-                    return '<div class="table-avatar">' . $avatarHtml . '<a href="#" class="fw-semibold text-dark">' . e($row->name) . '</a></div>';
+                    $sellerBadge = $row->seller_id ? '<span class="badge bg-info-light text-info ms-2" style="font-size: 10px;">Seller: ' . e($row->seller->name ?? 'Seller') . '</span>' : '<span class="badge bg-secondary-light text-secondary ms-2" style="font-size: 10px;">Official</span>';
+
+                    return '<div class="table-avatar">' . $avatarHtml . '<div><a href="#" class="fw-semibold text-dark">' . e($row->name) . '</a>' . $sellerBadge . '</div></div>';
                 })
                 ->editColumn('category', function ($row) {
                     return '<span class="text-secondary fw-semibold">' . e($row->category->name ?? 'N/A') . '</span>';

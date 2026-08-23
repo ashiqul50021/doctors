@@ -97,10 +97,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="status-toggle">
-                                        <input type="checkbox" id="status_{{ $product->id }}" class="check seller-status-toggle-btn" data-id="{{ $product->id }}" {{ $product->is_active ? 'checked' : '' }}>
-                                        <label for="status_{{ $product->id }}" class="checktoggle">checkbox</label>
-                                    </div>
+                                    @if($product->is_active)
+                                        <span class="badge bg-success-light text-success">Approved / Live</span>
+                                    @else
+                                        <span class="badge bg-warning-light text-warning"><i class="fas fa-clock me-1"></i> Pending Approval</span>
+                                    @endif
                                 </td>
                                 <td class="text-right">
                                     <div class="actions">

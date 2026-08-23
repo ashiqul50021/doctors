@@ -83,7 +83,7 @@ class ProductController extends Controller
                     'stock' => (int) ($validated['stock'] ?? 0),
                     'image' => $imagePath,
                     'gallery' => $galleryPaths,
-                    'is_active' => true,
+                    'is_active' => false, // Set to false so admin must approve before it goes live
                     'is_featured' => false,
                     'landing_settings' => $request->landing_settings,
                     'seller_id' => auth()->id(), // set seller id
@@ -96,7 +96,7 @@ class ProductController extends Controller
             throw $exception;
         }
 
-        return redirect()->route('ecommerce.seller.products.index')->with('success', 'Product created successfully.');
+        return redirect()->route('ecommerce.seller.products.index')->with('success', 'Product submitted successfully! It will be live once approved by an Admin.');
     }
 
     public function edit(Product $product)
