@@ -112,9 +112,9 @@
                 <!-- Search Section -->
                 <div class="hero-search-section">
                     <!-- Card 1: Search by Doctor -->
-                    <div class="search-card-wrapper mb-3 p-3 bg-white rounded-3 shadow-sm">
+                    <div class="search-card-wrapper mb-2 p-2 bg-white shadow-sm">
                         <h5 class="search-box-title d-flex align-items-center gap-2 mb-2 font-weight-bold">
-                            <span class="icon-circle rounded d-inline-flex align-items-center justify-content-center">
+                            <span class="icon-circle d-inline-flex align-items-center justify-content-center">
                                 <i class="fas fa-user-md"></i>
                             </span> 
                             <span>Search by Doctor</span>
@@ -122,7 +122,7 @@
                         <!-- Normal Search Bar (Doctor Name/Code) -->
                         <div class="hero-search-bar" id="normal-search-form">
                             <form action="{{ route('doctors.search') }}" class="hero-search-form d-flex align-items-center" id="normalSearchForm">
-                                <div class="search-field search-keyword-full flex-grow-1 d-flex align-items-center px-3">
+                                <div class="search-field search-keyword-full flex-grow-1 d-flex align-items-center px-2">
                                     <i class="fas fa-search search-lead-icon me-2"></i>
                                     <input type="text" name="keywords" placeholder="Search doctor by name, specialty, or code..." class="form-control border-0 bg-transparent shadow-none">
                                 </div>
@@ -135,9 +135,9 @@
                     </div>
 
                     <!-- Card 2: Search by Speciality & Location -->
-                    <div class="search-card-wrapper p-3 bg-white rounded-3 shadow-sm">
+                    <div class="search-card-wrapper p-2 bg-white shadow-sm">
                         <h5 class="search-box-title d-flex align-items-center gap-2 mb-2 font-weight-bold">
-                            <span class="icon-circle rounded d-inline-flex align-items-center justify-content-center">
+                            <span class="icon-circle d-inline-flex align-items-center justify-content-center">
                                 <i class="fas fa-stethoscope"></i>
                             </span> 
                             <span>Search by Speciality & Location</span>
@@ -146,7 +146,7 @@
                         <div class="hero-search-bar" id="filter-search-form">
                             <form action="{{ route('doctors.search') }}" class="hero-search-form d-flex align-items-center" id="filterSearchForm">
                                 <!-- Speciality - Custom Searchable Dropdown -->
-                                <div class="search-field search-select flex-grow-1 px-3 position-relative">
+                                <div class="search-field search-select flex-grow-1 px-2 position-relative">
                                     <i class="fas fa-stethoscope search-lead-icon me-2"></i>
                                     <div class="custom-dropdown w-100 position-relative" id="specialityDropdown">
                                         <input type="hidden" name="speciality_id" id="speciality_value">
@@ -169,7 +169,7 @@
                                 <div class="search-divider-line d-none d-md-block"></div>
 
                                 <!-- District - Custom Searchable Dropdown -->
-                                <div class="search-field search-select flex-grow-1 px-3 position-relative">
+                                <div class="search-field search-select flex-grow-1 px-2 position-relative">
                                     <i class="fas fa-map-marker-alt search-lead-icon me-2"></i>
                                     <div class="custom-dropdown w-100 position-relative" id="districtDropdown">
                                         <input type="hidden" name="district_id" id="district_value">
@@ -192,7 +192,7 @@
                                 <div class="search-divider-line d-none d-md-block"></div>
 
                                 <!-- Area - Custom Searchable Dropdown -->
-                                <div class="search-field search-select flex-grow-1 px-3 position-relative">
+                                <div class="search-field search-select flex-grow-1 px-2 position-relative">
                                     <i class="fas fa-location-arrow search-lead-icon me-2"></i>
                                     <div class="custom-dropdown w-100 position-relative" id="areaDropdown">
                                         <input type="hidden" name="area_id" id="area_value">
@@ -1844,166 +1844,246 @@
         .search-card-wrapper {
             background: #ffffff !important;
             border: 1px solid #e2e8f0 !important;
-            border-radius: 12px !important;
-            padding: 16px 20px !important;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+            border-radius: 0 !important;
+            padding: 8px 14px !important;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04) !important;
             transition: all 0.25s ease;
         }
 
         .search-card-wrapper:hover {
             border-color: #cbd5e1 !important;
-            box-shadow: 0 8px 26px rgba(37, 99, 235, 0.08) !important;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08) !important;
         }
 
         .search-box-title {
-            font-size: 15px !important;
+            font-size: 13px !important;
             font-weight: 700 !important;
             color: #0f172a !important;
             letter-spacing: -0.2px;
-            margin-bottom: 12px !important;
+            margin-bottom: 6px !important;
         }
 
         .icon-circle {
-            width: 30px;
-            height: 30px;
+            width: 22px;
+            height: 22px;
             background: #eff6ff !important;
             color: #2563eb !important;
-            border-radius: 6px !important;
-            font-size: 14px;
+            border-radius: 0 !important;
+            font-size: 11px;
         }
 
         .hero-search-bar {
-            background: #f8fafc;
-            border: 1.5px solid #e2e8f0 !important;
-            border-radius: 8px !important;
-            padding: 4px 6px !important;
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0 !important;
+            padding: 3px !important;
+            box-shadow: none !important;
             transition: all 0.2s ease;
+            min-height: unset !important;
         }
 
         .hero-search-bar:focus-within {
             background: #ffffff !important;
             border-color: #2563eb !important;
-            box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.12) !important;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+        }
+
+        .hero-search-form {
+            display: flex !important;
+            align-items: center !important;
+            min-height: unset !important;
+            height: 32px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .search-field {
+            display: flex !important;
+            align-items: center !important;
+            min-height: unset !important;
+            height: 32px !important;
+            padding: 0 8px !important;
+            margin: 0 !important;
+            border: none !important;
+            background: transparent !important;
         }
 
         .search-lead-icon {
-            color: #64748b;
-            font-size: 15px;
-            flex-shrink: 0;
+            color: #64748b !important;
+            font-size: 13px !important;
+            flex-shrink: 0 !important;
+            line-height: 1 !important;
+            margin-right: 6px !important;
         }
 
-        .hero-search-form input.form-control,
-        .hero-search-form .dropdown-search {
-            font-size: 14.5px !important;
+        .hero-search-form input.form-control {
+            min-height: unset !important;
+            height: 32px !important;
+            line-height: 32px !important;
+            font-size: 13px !important;
             font-weight: 500 !important;
             color: #1e293b !important;
-            padding: 10px 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
             background: transparent !important;
-            height: 42px !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
         }
 
-        .hero-search-form input.form-control::placeholder,
-        .hero-search-form .dropdown-search::placeholder {
+        .hero-search-form input.form-control::placeholder {
             color: #94a3b8 !important;
             font-weight: 400 !important;
+            font-size: 13px !important;
+            line-height: 32px !important;
         }
 
         .search-divider-line {
-            width: 1px;
-            height: 26px;
-            background: #e2e8f0;
-            flex-shrink: 0;
-            margin: 0 4px;
+            width: 1px !important;
+            height: 18px !important;
+            background: #e2e8f0 !important;
+            flex-shrink: 0 !important;
+            margin: 0 4px !important;
+        }
+
+        .custom-dropdown {
+            position: relative !important;
+            width: 100% !important;
+            height: 32px !important;
+            display: flex !important;
+            align-items: center !important;
         }
 
         .custom-dropdown .dropdown-search {
-            cursor: pointer;
+            min-height: unset !important;
+            height: 32px !important;
+            line-height: 32px !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            color: #1e293b !important;
+            padding: 0 16px 0 0 !important;
+            margin: 0 !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            cursor: pointer !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            width: 100% !important;
+            border-radius: 0 !important;
+        }
+
+        .custom-dropdown .dropdown-search::placeholder {
+            color: #94a3b8 !important;
+            font-weight: 400 !important;
+            font-size: 13px !important;
+            line-height: 32px !important;
         }
 
         .custom-dropdown .dropdown-arrow {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 11px;
-            pointer-events: none;
-            transition: transform 0.2s ease;
+            position: absolute !important;
+            right: 0 !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            color: #94a3b8 !important;
+            font-size: 10px !important;
+            pointer-events: none !important;
+            transition: transform 0.2s ease !important;
         }
 
         .custom-dropdown.open .dropdown-arrow {
-            transform: translateY(-50%) rotate(180deg);
-            color: #2563eb;
+            transform: translateY(-50%) rotate(180deg) !important;
+            color: #2563eb !important;
         }
 
         .custom-dropdown .dropdown-menu {
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 8px !important;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12) !important;
-            padding: 8px !important;
-            margin-top: 8px !important;
+            position: absolute !important;
+            top: calc(100% + 4px) !important;
+            left: 0 !important;
+            width: 100% !important;
+            min-width: 220px !important;
+            max-height: 260px !important;
             background: #ffffff !important;
-            min-width: 240px;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0 !important;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12) !important;
+            z-index: 1050 !important;
+            padding: 6px !important;
+            margin: 0 !important;
+            display: none;
+            flex-direction: column !important;
+        }
+
+        .custom-dropdown.open .dropdown-menu {
+            display: flex !important;
         }
 
         .custom-dropdown .dropdown-filter {
-            width: 100%;
-            height: 38px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 13px;
-            margin-bottom: 6px;
-            outline: none;
+            width: 100% !important;
+            min-height: unset !important;
+            height: 28px !important;
+            line-height: 28px !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0 !important;
+            padding: 2px 8px !important;
+            font-size: 12px !important;
+            margin-bottom: 4px !important;
+            outline: none !important;
+            box-sizing: border-box !important;
         }
 
         .custom-dropdown .dropdown-filter:focus {
-            border-color: #2563eb;
+            border-color: #2563eb !important;
         }
 
         .custom-dropdown .dropdown-list {
-            max-height: 220px;
-            overflow-y: auto;
+            flex: 1 1 auto !important;
+            max-height: 180px !important;
+            overflow-y: auto !important;
         }
 
         .custom-dropdown .dropdown-item {
-            padding: 8px 12px !important;
-            font-size: 13.5px !important;
+            padding: 5px 8px !important;
+            font-size: 12.5px !important;
             color: #334155 !important;
-            border-radius: 6px !important;
-            cursor: pointer;
-            transition: all 0.15s ease;
+            border-radius: 0 !important;
+            cursor: pointer !important;
+            line-height: 1.3 !important;
+            transition: all 0.15s ease !important;
         }
 
         .custom-dropdown .dropdown-item:hover,
         .custom-dropdown .dropdown-item.selected {
             background: #eff6ff !important;
             color: #2563eb !important;
-            font-weight: 600;
+            font-weight: 600 !important;
         }
 
         .btn-search-action {
             background: #2563eb !important;
             color: #ffffff !important;
-            border: 1.5px solid #2563eb !important;
-            border-radius: 4px !important;
-            font-size: 14px !important;
+            border: 1px solid #2563eb !important;
+            border-radius: 0 !important;
+            font-size: 12.5px !important;
             font-weight: 600 !important;
-            padding: 10px 22px !important;
-            height: 42px !important;
+            padding: 0 16px !important;
+            height: 32px !important;
+            min-height: 32px !important;
+            line-height: 32px !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
             transition: all 0.2s ease !important;
-            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2) !important;
-            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.15) !important;
+            flex-shrink: 0 !important;
         }
 
         .btn-search-action:hover {
             background: #1d4ed8 !important;
             border-color: #1d4ed8 !important;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25) !important;
             color: #ffffff !important;
         }
 
@@ -3608,7 +3688,7 @@
         }
 
         .section-hero-doctime {
-            padding: 36px 0 120px 0;
+            padding: 10px 0 40px 0 !important;
             min-height: auto;
         }
 
@@ -3621,14 +3701,10 @@
         }
 
         .hero-main-wrapper {
-            min-height: 460px;
+            min-height: 330px;
             max-height: none;
             overflow: hidden;
-            border-radius: 20px;
-        }
-
-        .section-hero-doctime {
-            padding-bottom: 40px !important;
+            border-radius: 0;
         }
 
         .hero-search-section {
@@ -3637,18 +3713,13 @@
             right: auto !important;
             bottom: auto !important;
             transform: none !important;
-            margin-top: 25px !important;
+            margin-top: 15px !important;
             margin-bottom: 0 !important;
             z-index: 100 !important;
         }
 
-        .hero-search-bar {
-            border-radius: 18px;
-            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
-        }
-
         .hero-doctors-img {
-            max-height: 460px;
+            max-height: 330px;
             width: auto;
             object-fit: contain;
         }
@@ -3656,8 +3727,8 @@
         /* Responsive image-only banner style */
         .hero-full-image-wrapper {
             width: 100%;
-            height: 460px;
-            border-radius: 20px;
+            height: 330px;
+            border-radius: 0;
             overflow: hidden;
             position: relative;
         }
@@ -3667,24 +3738,25 @@
             height: 100%;
             object-fit: cover;
             object-position: center;
-            border-radius: 20px;
+            border-radius: 0;
             display: block;
         }
 
         /* Mobile Dropdown Popup Style */
         @media (max-width: 991px) {
             .section-hero-doctime {
-                padding: 20px 0 10px 0 !important;
+                padding: 8px 0 10px 0 !important;
             }
 
             .hero-main-wrapper {
                 flex-direction: row !important;
                 text-align: left;
-                min-height: 280px;
+                min-height: 240px;
                 gap: 20px;
                 align-items: center;
                 justify-content: space-between;
                 padding: 0 15px;
+                border-radius: 0;
             }
 
             .hero-content-left {
@@ -3699,7 +3771,7 @@
             }
 
             .hero-doctors-img {
-                max-height: 280px;
+                max-height: 240px;
                 width: 100%;
                 object-fit: contain;
             }
@@ -3711,14 +3783,14 @@
 
             .hero-full-image-wrapper {
                 height: auto;
-                border-radius: 15px;
+                border-radius: 0;
             }
 
             .hero-full-image-img {
                 height: auto;
-                max-height: 400px;
+                max-height: 320px;
                 object-fit: cover;
-                border-radius: 15px;
+                border-radius: 0;
             }
 
             .hero-search-section {
@@ -3840,7 +3912,8 @@
                 margin-bottom: 10px !important;
             }
             .hero-full-image-img {
-                max-height: 350px;
+                max-height: 260px;
+                border-radius: 0;
             }
         }
 
@@ -3873,7 +3946,8 @@
                 margin-bottom: 6px !important;
             }
             .hero-full-image-img {
-                max-height: 300px;
+                max-height: 210px;
+                border-radius: 0;
             }
 
             /* Product Card Mobile 2-Column Responsive Styling */
@@ -3964,7 +4038,8 @@
                 font-size: 9px !important;
             }
             .hero-full-image-img {
-                max-height: 250px;
+                max-height: 180px;
+                border-radius: 0;
             }
         }
 
@@ -3972,41 +4047,10 @@
                 position: relative !important;
             }
 
-            .custom-dropdown .dropdown-menu {
-                position: absolute !important;
-                top: calc(100% + 6px) !important;
-                left: 0 !important;
-                transform: none !important;
-                width: 100% !important;
-                min-width: 220px !important;
-                max-height: 300px !important;
-                z-index: 1050 !important;
-                background: #ffffff !important;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
-                border: 1px solid #e2e8f0 !important;
-                border-radius: 10px !important;
-                padding: 10px !important;
-                backdrop-filter: none !important;
-                -webkit-backdrop-filter: none !important;
-                display: none;
-                overflow: hidden !important;
-                flex-direction: column !important;
-            }
-
-            .custom-dropdown.open .dropdown-menu,
-            .custom-dropdown .dropdown-menu[style*="block"] {
-                display: flex !important;
-            }
-
-            .dropdown-search {
-                flex: 0 0 auto;
-                margin-bottom: 6px;
-            }
-
             .dropdown-list {
                 flex: 1 1 auto;
                 overflow-y: auto;
-                max-height: 220px !important;
+                max-height: 200px !important;
                 padding-bottom: 0 !important;
                 position: relative !important;
                 min-height: 0;
