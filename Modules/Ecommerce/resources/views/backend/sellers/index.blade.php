@@ -34,6 +34,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Logo</th>
                                 <th>Store Name</th>
                                 <th>Owner Name</th>
                                 <th>Email</th>
@@ -47,6 +48,14 @@
                             @forelse($sellers as $seller)
                             <tr>
                                 <td>#{{ $seller->id }}</td>
+                                <td>
+                                    <div class="avatar avatar-sm me-2 d-inline-block">
+                                        <img class="avatar-img rounded-circle"
+                                             src="{{ $seller->store_logo ? asset($seller->store_logo) : asset('assets/img/features/feature-01.jpg') }}"
+                                             alt="{{ $seller->store_name }}"
+                                             style="width: 40px; height: 40px; object-fit: cover; border: 1px solid #e2e8f0;">
+                                    </div>
+                                </td>
                                 <td>
                                     <strong>{{ $seller->store_name }}</strong>
                                 </td>
