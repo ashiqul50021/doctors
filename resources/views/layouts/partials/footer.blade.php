@@ -152,15 +152,10 @@
                             <p class="mb-0">&copy; {{ date('Y') }} {{ \Illuminate\Support\Str::upper($siteName) }}. All rights reserved.</p>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-6">
-                        <!-- Copyright Menu -->
-                        <div class="copyright-menu">
-                            <ul class="policy-menu">
-                                <li><a href="{{ route('terms') }}">Terms and Conditions</a></li>
-                                <li><a href="{{ route('privacy') }}">Privacy Policy</a></li>
-                            </ul>
+                    <div class="col-md-6 col-lg-6 text-md-end">
+                        <div class="copyright-text">
+                            <p class="mb-0">Design and Developed by <a href="#" style="color: #fff; text-decoration: underline;">Ashiqul Islam</a></p>
                         </div>
-                        <!-- /Copyright Menu -->
                     </div>
                 </div>
             </div>

@@ -14,22 +14,22 @@ class SiteSettingSeeder extends Seeder
     {
         $settings = [
             // General Settings
-            ['key' => 'site_name', 'value' => 'Doccure', 'type' => 'text', 'group' => 'general'],
+            ['key' => 'site_name', 'value' => 'abcSheba', 'type' => 'text', 'group' => 'general'],
             ['key' => 'site_tagline', 'value' => 'Doctor Appointment Booking', 'type' => 'text', 'group' => 'general'],
             ['key' => 'logo', 'value' => 'assets/img/logo.png', 'type' => 'image', 'group' => 'general'],
             ['key' => 'favicon', 'value' => 'assets/img/favicon.png', 'type' => 'image', 'group' => 'general'],
             ['key' => 'footer_logo', 'value' => 'assets/img/footer-logo.png', 'type' => 'image', 'group' => 'general'],
 
             // Contact Settings
-            ['key' => 'contact_email', 'value' => 'info@doccure.com', 'type' => 'text', 'group' => 'contact'],
+            ['key' => 'contact_email', 'value' => 'info@abcsheba.com', 'type' => 'text', 'group' => 'contact'],
             ['key' => 'contact_phone', 'value' => '+1 66589 14356', 'type' => 'text', 'group' => 'contact'],
             ['key' => 'contact_address', 'value' => '3556 Beech Street, San Francisco, CA 94108', 'type' => 'text', 'group' => 'contact'],
 
             // Social Links
-            ['key' => 'facebook_url', 'value' => 'https://facebook.com/doccure', 'type' => 'text', 'group' => 'social'],
-            ['key' => 'twitter_url', 'value' => 'https://twitter.com/doccure', 'type' => 'text', 'group' => 'social'],
-            ['key' => 'instagram_url', 'value' => 'https://instagram.com/doccure', 'type' => 'text', 'group' => 'social'],
-            ['key' => 'linkedin_url', 'value' => 'https://linkedin.com/company/doccure', 'type' => 'text', 'group' => 'social'],
+            ['key' => 'facebook_url', 'value' => 'https://facebook.com/abcsheba', 'type' => 'text', 'group' => 'social'],
+            ['key' => 'twitter_url', 'value' => 'https://twitter.com/abcsheba', 'type' => 'text', 'group' => 'social'],
+            ['key' => 'instagram_url', 'value' => 'https://instagram.com/abcsheba', 'type' => 'text', 'group' => 'social'],
+            ['key' => 'linkedin_url', 'value' => 'https://linkedin.com/company/abcsheba', 'type' => 'text', 'group' => 'social'],
 
             // Banner Settings
             ['key' => 'banner_title', 'value' => 'Discover Health: Find Your Trusted Doctors Today', 'type' => 'text', 'group' => 'banner'],

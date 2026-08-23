@@ -326,41 +326,71 @@
         @endpush
     @endif
 
-    <!-- Doctor Registration CTA -->
-    <section class="section-doctor-cta">
-        <div class="container">
-            <div class="doctor-cta-wrapper">
-                <div class="doctor-cta-content">
-                    <div class="doctor-cta-icon">
-                        <i class="fas fa-user-md"></i>
-                    </div>
-                    <div class="doctor-cta-text">
-                        <h3>Are you a Doctor?</h3>
-                        <p>Join our platform to grow your practice and manage appointments easily.</p>
-                    </div>
-                </div>
-                <div class="doctor-cta-action">
-                    <a href="{{ route('doctor.register') }}" class="btn-doctor-register">
-                        <i class="fas fa-stethoscope"></i> Register as Doctor
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- /Doctor Registration CTA -->
 
     <!-- Video Section -->
-    <section class="section-video">
+    <section class="section-video py-4" style="background: transparent !important; margin: 0 !important;">
         <div class="container">
-            <div class="video-wrapper">
-                <div class="video-container" id="telemedicineVideoContainer">
-                    <div class="video-cover-wrapper" style="background-image: url('{{ asset('uploads/settings/video_cover.png') }}');" onclick="playTelemedicineVideo()">
-                        <div class="video-cover-overlay"></div>
-                        <div class="video-play-btn-modern">
-                            <i class="fas fa-play"></i>
-                            <div class="video-ripple-modern"></div>
-                            <div class="video-ripple-modern video-ripple-modern-2"></div>
-                            <div class="video-ripple-modern video-ripple-modern-3"></div>
+            <div class="row align-items-center g-4">
+                <!-- Left Column: Content & Features -->
+                <div class="col-lg-6">
+                    <div class="video-content-left pe-lg-3">
+                        <span class="badge px-2.5 py-1.5 mb-2 fw-semibold" style="background-color: rgba(37, 99, 235, 0.08); color: #2563eb; font-size: 12px; border-radius: 4px;">
+                            <i class="fas fa-video me-1"></i> TELEMEDICINE CONSULTATION
+                        </span>
+                        <h2 class="fw-bold mb-2" style="color: #1e293b; font-size: 24px; line-height: 1.35;">Consult Specialist Doctors Online Anytime</h2>
+                        <p class="mb-3" style="color: #64748b; font-size: 14px; line-height: 1.5;">Access top-tier medical care from the comfort of your home. Connect with verified specialists instantly via video calls for personalized consultations, diagnostics, and digital prescriptions 24/7.</p>
+                        
+                        <div class="video-features-list mb-3">
+                            <div class="d-flex align-items-start mb-2.5">
+                                <div class="feature-icon-box p-2 me-2.5 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: rgba(37, 99, 235, 0.08); color: #2563eb; border-radius: 4px;">
+                                    <i class="fas fa-clock" style="font-size: 14px;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-0.5" style="color: #1e293b; font-size: 14px;">24/7 Service Availability</h6>
+                                    <p class="mb-0" style="color: #64748b; font-size: 13px;">Get round-the-clock medical assistance whenever you need it.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start mb-2.5">
+                                <div class="feature-icon-box p-2 me-2.5 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: rgba(37, 99, 235, 0.08); color: #2563eb; border-radius: 4px;">
+                                    <i class="fas fa-user-md" style="font-size: 14px;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-0.5" style="color: #1e293b; font-size: 14px;">100% Verified Specialist Doctors</h6>
+                                    <p class="mb-0" style="color: #64748b; font-size: 13px;">Consult with certified healthcare professionals across various departments.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start">
+                                <div class="feature-icon-box p-2 me-2.5 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: rgba(37, 99, 235, 0.08); color: #2563eb; border-radius: 4px;">
+                                    <i class="fas fa-file-medical" style="font-size: 14px;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-0.5" style="color: #1e293b; font-size: 14px;">Instant Digital Prescription</h6>
+                                    <p class="mb-0" style="color: #64748b; font-size: 13px;">Receive instant, downloadable e-prescriptions right after your consultation.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <a href="{{ route('doctors.search') }}" class="btn text-white px-3 py-2 d-inline-flex align-items-center gap-2" style="background: #2563eb !important; border: 1.5px solid #2563eb !important; border-radius: 4px !important; font-size: 14px; font-weight: 600; box-shadow: 0 4px 10px rgba(37,99,235,0.2) !important;">
+                                Consult a Doctor Now <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Video Container -->
+                <div class="col-lg-6">
+                    <div class="video-wrapper overflow-hidden border" style="border-radius: 0 !important;">
+                        <div class="video-container" id="telemedicineVideoContainer" style="border-radius: 0 !important;">
+                            <div class="video-cover-wrapper" style="background-image: url('{{ asset('uploads/settings/video_cover.png') }}'); border-radius: 0 !important;" onclick="playTelemedicineVideo()">
+                                <div class="video-cover-overlay"></div>
+                                <div class="video-play-btn-modern">
+                                    <i class="fas fa-play"></i>
+                                    <div class="video-ripple-modern"></div>
+                                    <div class="video-ripple-modern video-ripple-modern-2"></div>
+                                    <div class="video-ripple-modern video-ripple-modern-3"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -404,16 +434,16 @@
     <!-- Clinic and Specialities -->
 
     <!-- Medical Products -->
-    <section class="section section-products" style="background-color: #f8f9fa;">
+    <section class="section section-products py-4" style="background-color: transparent;">
         <div class="container">
-            <div class="section-header text-center">
-                <h2>Our Products</h2>
-                <p class="sub-title">Order medicines and health products from our trusted pharmacy store.</p>
+            <div class="section-header text-center mb-3">
+                <h2 class="fw-bold mb-1" style="color: #1e293b; font-size: 24px; line-height: 1.3;">Our Products</h2>
+                <p class="sub-title mb-0" style="color: #64748b; font-size: 14px;">Order medicines and health products from our trusted pharmacy store.</p>
             </div>
 
-            <div class="row">
+            <div class="row g-3">
                 <!-- Sidebar Filter -->
-                <div class="col-lg-3 col-md-4 mb-4">
+                <div class="col-lg-3 col-md-4 mb-3">
                     <div class="product-filter-card">
                         <!-- Search -->
                         <div class="filter-section">
@@ -502,7 +532,7 @@
                                 $productReviewCount = (int) ($product->reviews_count ?? 0);
                                 $productRating = $productReviewCount > 0 ? (float) ($product->rating ?? 0) : 0;
                             @endphp
-                            <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-4 product-grid-item">
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3 product-grid-item">
                                 <div class="product-card-modern">
                                     <!-- Product Image -->
                                     <div class="product-image-container">
@@ -593,16 +623,16 @@
     <!-- /Medical Products -->
 
     <!-- Popular Doctors -->
-    <section class="section section-doctor" style="background-color: #f8f9fa;">
+    <section class="section section-doctor py-4" style="background-color: transparent;">
         <div class="container">
-            <div class="section-header text-center">
-                <h2>Book Our Doctors</h2>
-                <p class="sub-title">Meet our expert doctors and book your appointment today</p>
+            <div class="section-header text-center mb-3">
+                <h2 class="fw-bold mb-1" style="color: #1e293b; font-size: 24px; line-height: 1.3;">Book Our Doctors</h2>
+                <p class="sub-title mb-0" style="color: #64748b; font-size: 14px;">Meet our expert doctors and book your appointment today</p>
             </div>
 
-            <div class="row">
+            <div class="row g-3">
                 <!-- Sidebar Filter -->
-                <div class="col-lg-3 col-md-4 mb-4">
+                <div class="col-lg-3 col-md-4 mb-3">
                     <div class="doctor-filter-card">
                         <!-- Search -->
                         <div class="filter-section">
@@ -691,21 +721,67 @@
     <!-- /Popular Doctors -->
 
     <!-- Health Packages Section -->
-    @if(isset($healthPackages) && $healthPackages->count() > 0)
-    <section class="section section-health-packages"
-        style="background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); padding: 80px 0;">
+    @php
+        $packagesToDisplay = (isset($healthPackages) && $healthPackages->count() > 0) ? $healthPackages : collect([
+            (object)[
+                'is_featured' => false,
+                'icon' => 'fas fa-heartbeat',
+                'badge_label' => 'BASIC CHECKUP',
+                'title' => 'Basic Health Checkup',
+                'test_count' => 15,
+                'features' => ['CBC Test', 'Blood Sugar Test', 'Lipid Profile', 'Doctor Consultation'],
+                'price' => 1500,
+                'price_label' => 'Per Package',
+                'link' => route('ecommerce.products')
+            ],
+            (object)[
+                'is_featured' => true,
+                'icon' => 'fas fa-shield-alt',
+                'badge_label' => 'RECOMMENDED',
+                'title' => 'Comprehensive Health',
+                'test_count' => 35,
+                'features' => ['Full Body Checkup', 'ECG & X-Ray', 'Kidney & Liver Function', 'Free Follow-up'],
+                'price' => 3500,
+                'price_label' => 'Per Package',
+                'link' => route('ecommerce.products')
+            ],
+            (object)[
+                'is_featured' => false,
+                'icon' => 'fas fa-user-md',
+                'badge_label' => 'SENIOR CARE',
+                'title' => 'Senior Citizen Package',
+                'test_count' => 45,
+                'features' => ['Complete Blood Profile', 'Cardiac Checkup', 'Bone Density Test', 'Specialist Advice'],
+                'price' => 4800,
+                'price_label' => 'Per Package',
+                'link' => route('ecommerce.products')
+            ],
+            (object)[
+                'is_featured' => false,
+                'icon' => 'fas fa-female',
+                'badge_label' => 'WOMEN CARE',
+                'title' => 'Women Wellness Check',
+                'test_count' => 25,
+                'features' => ['Thyroid Profile', 'Vitamin D3 & B12', 'Gynaecology Consultation', 'USG Screening'],
+                'price' => 2900,
+                'price_label' => 'Per Package',
+                'link' => route('ecommerce.products')
+            ]
+        ]);
+    @endphp
+
+    <section class="section section-health-packages py-4" style="background-color: transparent;">
         <div class="container">
             <!-- Section Header -->
-            <div class="section-header text-center mb-5">
-                <span class="badge badge-soft-blue mb-3">Health Packages</span>
-                <h2 class="mb-3">Choose Your Health Package</h2>
-                <p class="text-muted">Comprehensive health checkup packages at affordable prices</p>
+            <div class="section-header text-center mb-3">
+                <h2 class="fw-bold mb-1" style="color: #1e293b; font-size: 24px; line-height: 1.3;">Health Packages</h2>
+                <p class="sub-title mb-0" style="color: #64748b; font-size: 14px;">Comprehensive health checkup packages at affordable prices</p>
             </div>
 
             <!-- Packages Grid -->
-            <div class="row justify-content-center">
-                @foreach($healthPackages as $package)
-                <div class="col-lg-3 col-md-6 mb-4">
+            <div class="row g-3 justify-content-center">
+                @foreach($packagesToDisplay as $package)
+                <div class="col-lg-3 col-md-6 mb-3">
                     <div class="health-package-card {{ $package->is_featured ? 'featured' : '' }}">
                         @if($package->is_featured)
                             <div class="featured-ribbon">Most Popular</div>
@@ -743,23 +819,21 @@
             </div>
         </div>
     </section>
-    @endif
     <!-- /Health Packages Section -->
 
     <!-- Health Courses Section -->
-    <section class="section section-courses" style="background: #fff; padding: 80px 0;">
+    <section class="section section-courses py-4" style="background-color: transparent;">
         <div class="container">
             <!-- Section Header -->
-            <div class="section-header text-center mb-5">
-                <span class="badge badge-soft-blue mb-3">Learn & Grow</span>
-                <h2 class="mb-3">Health Education Courses</h2>
-                <p class="text-muted">Free and paid courses to help you understand and manage your health better</p>
+            <div class="section-header text-center mb-3">
+                <h2 class="fw-bold mb-1" style="color: #1e293b; font-size: 24px; line-height: 1.3;">Health Education Courses</h2>
+                <p class="sub-title mb-0" style="color: #64748b; font-size: 14px;">Free and paid courses to help you understand and manage your health better</p>
             </div>
 
             <!-- Courses Grid -->
-            <div class="row">
+            <div class="row g-3">
                 <!-- Course 1 -->
-                <div class="col-lg-4 col-md-6 mb-4">
+                <div class="col-lg-4 col-md-6 mb-3">
                     <div class="course-card">
                         <div class="course-thumbnail">
                             <img src="{{ asset('assets/img/features/feature-01.jpg') }}" alt="Diabetes Management">
@@ -789,7 +863,7 @@
                 </div>
 
                 <!-- Course 2 -->
-                <div class="col-lg-4 col-md-6 mb-4">
+                <div class="col-lg-4 col-md-6 mb-3">
                     <div class="course-card">
                         <div class="course-thumbnail">
                             <img src="{{ asset('assets/img/features/feature-02.jpg') }}" alt="Heart Health">
@@ -819,7 +893,7 @@
                 </div>
 
                 <!-- Course 3 -->
-                <div class="col-lg-4 col-md-6 mb-4">
+                <div class="col-lg-4 col-md-6 mb-3">
                     <div class="course-card">
                         <div class="course-thumbnail">
                             <img src="{{ asset('assets/img/features/feature-03.jpg') }}" alt="Mental Health">
@@ -859,371 +933,155 @@
     </section>
     <!-- /Health Courses Section -->
 
-    <!-- Video Section -->
-    <section class="section section-video-promo">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <div class="video-promo-content">
-                        <span class="badge badge-soft-blue mb-3">Health First</span>
-                        <h2 class="mb-4">We Are Always Here For Your Health</h2>
-                        <p class="mb-4 text-muted">abcsheba provides progressive, and affordable healthcare, accessible on
-                            mobile and online for everyone. To us, it's not just work. We take pride in the solutions we
-                            deliver</p>
 
-                        <ul class="video-promo-list list-unstyled mb-4">
-                            <li><i class="fas fa-check-circle text-primary me-2"></i> Leading Healthcare Provider</li>
-                            <li><i class="fas fa-check-circle text-primary me-2"></i> 24/7 Support Available</li>
-                            <li><i class="fas fa-check-circle text-primary me-2"></i> Experienced Doctors</li>
-                        </ul>
-
-                        <a href="{{ route('doctors.search') }}" class="btn btn-primary">Book Now</a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="video-promo-box">
-                        <img src="{{ asset('assets/img/features/feature.png') }}" alt="Video Thumbnail"
-                            class="img-fluid" style="background: transparent;">
-                        <a href="https://www.youtube.com/watch?v=zNHq9gD2uqc" data-fancybox class="video-play-btn">
-                            <i class="fas fa-play"></i>
-                            <span class="video-ripple ripple-1"></span>
-                            <span class="video-ripple ripple-2"></span>
-                            <span class="video-ripple ripple-3"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- /Video Section -->
-
-    <!-- Services Section -->
-    <section class="section section-services">
-        <div class="container">
-            <div class="section-header text-center">
-                <h2>Our Services</h2>
-                <p class="sub-title">We provide the best quality healthcare services.</p>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-4 col-sm-6">
-                    <div class="service-box">
-                        <div class="service-icon">
-                            <i class="fas fa-stethoscope"></i>
-                        </div>
-                        <h4>Medical</h4>
-                        <p>Comprehensive medical care with state-of-the-art facilities and expert physicians.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6">
-                    <div class="service-box">
-                        <div class="service-icon">
-                            <i class="fas fa-flask"></i>
-                        </div>
-                        <h4>Laboratory</h4>
-                        <p>Advanced diagnostic laboratory for accurate and timely test results.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6">
-                    <div class="service-box">
-                        <div class="service-icon">
-                            <i class="fas fa-heartbeat"></i>
-                        </div>
-                        <h4>ICU Service</h4>
-                        <p>24/7 Intensive Care Unit with specialized monitoring and support.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6">
-                    <div class="service-box">
-                        <div class="service-icon">
-                            <i class="fas fa-procedures"></i>
-                        </div>
-                        <h4>Operation</h4>
-                        <p>Modern operation theaters equipped for complex surgical procedures.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6">
-                    <div class="service-box">
-                        <div class="service-icon">
-                            <i class="fas fa-vials"></i>
-                        </div>
-                        <h4>Test Room</h4>
-                        <p>Dedicated rooms for various specialized medical tests and screenings.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6">
-                    <div class="service-box">
-                        <div class="service-icon">
-                            <i class="fas fa-user-injured"></i>
-                        </div>
-                        <h4>Patient Ward</h4>
-                        <p>Comfortable and hygienic wards for optimal patient recovery.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- /Services Section -->
 
     <!-- Blog Section -->
-    <section class="section section-blogs" style="background-color: #ffff;">
+    <section class="section section-blogs py-4" style="background-color: transparent;">
         <div class="container">
-            <div class="section-header text-center">
-                <h2>Latest Blogs & News</h2>
-                <p class="sub-title">Stay updated with our latest health tips and news.</p>
+            <div class="section-header text-center mb-3">
+                <h2 class="fw-bold mb-1" style="color: #1e293b; font-size: 24px; line-height: 1.3;">Latest Blogs & News</h2>
+                <p class="sub-title mb-0" style="color: #64748b; font-size: 14px;">Stay updated with our latest health tips and news.</p>
             </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 col-lg-3 col-sm-12">
+            <div class="row g-3 justify-content-center">
+                <div class="col-md-6 col-lg-3 col-sm-12 mb-3">
                     <div class="blog-grid">
                         <div class="blog-grid-img">
                             <a href="#">
-                                <img src="{{ asset('assets/img/img-01.jpg') }}" class="img-fluid" alt="Blog Image" style="width: 100%; height: 200px; object-fit: cover;">
+                                <img src="{{ asset('assets/img/img-01.jpg') }}" class="img-fluid" alt="Blog Image">
                             </a>
                         </div>
                         <div class="blog-grid-info">
-                            <div class="blog-date">05 Sep 2025</div>
+                            <div class="blog-date">05 SEP 2025</div>
                             <h4 class="blog-title"><a href="#">How to Handle Patient Health?</a></h4>
                             <p class="blog-text">Learn the best practices for managing patient health effectively...</p>
-                            <a href="#" class="read-more-btn">Read More <i class="fas fa-long-arrow-alt-right"></i></a>
+                            <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3 col-sm-12">
+                <div class="col-md-6 col-lg-3 col-sm-12 mb-3">
                     <div class="blog-grid">
                         <div class="blog-grid-img">
                             <a href="#">
-                                <img src="{{ asset('assets/img/img-02.jpg') }}" class="img-fluid" alt="Blog Image" style="width: 100%; height: 200px; object-fit: cover;">
+                                <img src="{{ asset('assets/img/img-02.jpg') }}" class="img-fluid" alt="Blog Image">
                             </a>
                         </div>
                         <div class="blog-grid-info">
-                            <div class="blog-date">06 Sep 2025</div>
+                            <div class="blog-date">06 SEP 2025</div>
                             <h4 class="blog-title"><a href="#">The Benefits of Regular Checkups</a></h4>
                             <p class="blog-text">Regular health checkups are vital for early detection and prevention...</p>
-                            <a href="#" class="read-more-btn">Read More <i class="fas fa-long-arrow-alt-right"></i></a>
+                            <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3 col-sm-12">
+                <div class="col-md-6 col-lg-3 col-sm-12 mb-3">
                     <div class="blog-grid">
                         <div class="blog-grid-img">
                             <a href="#">
-                                <img src="{{ asset('assets/img/img-03.jpg') }}" class="img-fluid" alt="Blog Image" style="width: 100%; height: 200px; object-fit: cover;">
+                                <img src="{{ asset('assets/img/img-03.jpg') }}" class="img-fluid" alt="Blog Image">
                             </a>
                         </div>
                         <div class="blog-grid-info">
-                            <div class="blog-date">07 Sep 2025</div>
+                            <div class="blog-date">07 SEP 2025</div>
                             <h4 class="blog-title"><a href="#">Healthy Living Tips</a></h4>
                             <p class="blog-text">Simple lifestyle changes can lead to significant health improvements...</p>
-                            <a href="#" class="read-more-btn">Read More <i class="fas fa-long-arrow-alt-right"></i></a>
+                            <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3 col-sm-12">
+                <div class="col-md-6 col-lg-3 col-sm-12 mb-3">
                     <div class="blog-grid">
                         <div class="blog-grid-img">
                             <a href="#">
-                                <img src="{{ asset('assets/img/img-04.jpg') }}" class="img-fluid" alt="Blog Image" style="width: 100%; height: 200px; object-fit: cover;">
+                                <img src="{{ asset('assets/img/img-04.jpg') }}" class="img-fluid" alt="Blog Image">
                             </a>
                         </div>
                         <div class="blog-grid-info">
-                            <div class="blog-date">08 Sep 2025</div>
+                            <div class="blog-date">08 SEP 2025</div>
                             <h4 class="blog-title"><a href="#">Understanding Mental Health</a></h4>
                             <p class="blog-text">Mental health is just as important as physical health. Find out why...</p>
-                            <a href="#" class="read-more-btn">Read More <i class="fas fa-long-arrow-alt-right"></i></a>
+                            <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="view-all text-center mt-4">
-                <a href="#" class="btn btn-outline-primary">View All Blogs</a>
+            <div class="text-center mt-4">
+                <a href="#" class="btn-view-all-arrow">
+                    View All Blogs <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
         </div>
     </section>
     <!-- /Blog Section -->
 
-    <!-- How It Works -->
-    <section class="section section-how-it-works" style="background-color: #f9faff;">
-        <div class="container">
-            <div class="section-header text-center">
-                <h2>How It Works</h2>
-                <p class="sub-title">Get started with just a few simple steps</p>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card text-center border-0 shadow-sm h-100 how-it-works-card" style="border-radius: 15px;">
-                        <div class="card-body py-5">
-                            <div class="mb-4">
-                                <span style="font-size: 50px; color: #1D4ED8;"><i class="fas fa-search"></i></span>
-                            </div>
-                            <h5 class="card-title font-weight-bold">Search Doctor</h5>
-                            <p class="card-text text-muted">Find the right doctor by specialty, name, or location.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card text-center border-0 shadow-sm h-100 how-it-works-card" style="border-radius: 15px;">
-                        <div class="card-body py-5">
-                            <div class="mb-4">
-                                <span style="font-size: 50px; color: #1D4ED8;"><i class="fas fa-user-check"></i></span>
-                            </div>
-                            <h5 class="card-title font-weight-bold">Check Profile</h5>
-                            <p class="card-text text-muted">View doctor's qualifications, reviews, and experience.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card text-center border-0 shadow-sm h-100 how-it-works-card" style="border-radius: 15px;">
-                        <div class="card-body py-5">
-                            <div class="mb-4">
-                                <span style="font-size: 50px; color: #1D4ED8;"><i class="fas fa-calendar-check"></i></span>
-                            </div>
-                            <h5 class="card-title font-weight-bold">Book Appointment</h5>
-                            <p class="card-text text-muted">Select a convenient time slot and book your visit.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card text-center border-0 shadow-sm h-100 how-it-works-card" style="border-radius: 15px;">
-                        <div class="card-body py-5">
-                            <div class="mb-4">
-                                <span style="font-size: 50px; color: #1D4ED8;"><i class="fas fa-notes-medical"></i></span>
-                            </div>
-                            <h5 class="card-title font-weight-bold">Get Consultation</h5>
-                            <p class="card-text text-muted">Visit the doctor and receive quality care.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- /How It Works -->
 
-    <!-- Statistics Section -->
-    <section class="section section-stats"
-        style="background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); padding: 80px 0;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-user-md"></i>
-                        </div>
-                        <h2 class="stat-number">
-                            <span class="counter-number" data-target="500">0</span>+
-                        </h2>
-                        <p class="stat-label">Expert Doctors</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h2 class="stat-number">
-                            <span class="counter-number" data-target="10000" data-suffix="K">0</span>+
-                        </h2>
-                        <p class="stat-label">Happy Patients</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-hospital"></i>
-                        </div>
-                        <h2 class="stat-number">
-                            <span class="counter-number" data-target="100">0</span>+
-                        </h2>
-                        <p class="stat-label">Clinics & Hospitals</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-award"></i>
-                        </div>
-                        <h2 class="stat-number">
-                            <span class="counter-number" data-target="15">0</span>+
-                        </h2>
-                        <p class="stat-label">Years of Experience</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- /Statistics Section -->
 
     <!-- Testimonials Section -->
-    <section class="section section-specialities">
+    <section class="section section-testimonials py-4" style="background-color: transparent;">
         <div class="container">
-            <div class="section-header text-center">
-                <h2>What Our Patients Say</h2>
-                <p class="sub-title">Real feedback from our valued patients</p>
+            <div class="section-header text-center mb-3">
+                <h2 class="fw-bold mb-1" style="color: #1e293b; font-size: 24px; line-height: 1.3;">What Our Patients Say</h2>
+                <p class="sub-title mb-0" style="color: #64748b; font-size: 14px;">Real feedback from our valued patients</p>
             </div>
-            <div class="row justify-content-center">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 15px;">
-                        <div class="card-body p-4">
-                            <div class="d-flex mb-3">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                            </div>
-                            <p class="card-text text-muted">"Excellent service! The doctor was very professional and the
-                                booking process was seamless. Highly recommend abcsheba to everyone."</p>
-                            <div class="d-flex align-items-center mt-4">
-                                <img src="{{ asset('assets/img/patients/patient1.jpg') }}" class="rounded-circle me-3"
-                                    alt="Patient" style="width: 50px; height: 50px; object-fit: cover;">
-                                <div>
-                                    <h6 class="mb-0 font-weight-bold">Sarah Johnson</h6>
-                                    <small class="text-muted">Cardiology Patient</small>
-                                </div>
+            <div class="row g-3 justify-content-center">
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="testimonial-card">
+                        <div class="testimonial-rating mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="testimonial-text">"Excellent service! The doctor was very professional and the
+                            booking process was seamless. Highly recommend abcsheba to everyone."</p>
+                        <div class="testimonial-author mt-auto pt-2 border-top">
+                            <img src="{{ asset('assets/img/patients/patient1.jpg') }}" class="rounded-circle"
+                                alt="Patient">
+                            <div>
+                                <h6 class="author-name mb-0">Sarah Johnson</h6>
+                                <small class="author-role text-muted">Cardiology Patient</small>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 15px;">
-                        <div class="card-body p-4">
-                            <div class="d-flex mb-3">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                            </div>
-                            <p class="card-text text-muted">"Found the best dentist through abcsheba. The platform is easy to
-                                use and the doctor profiles are very detailed. Great experience!"</p>
-                            <div class="d-flex align-items-center mt-4">
-                                <img src="{{ asset('assets/img/patients/patient2.jpg') }}" class="rounded-circle me-3"
-                                    alt="Patient" style="width: 50px; height: 50px; object-fit: cover;">
-                                <div>
-                                    <h6 class="mb-0 font-weight-bold">Michael Chen</h6>
-                                    <small class="text-muted">Dental Patient</small>
-                                </div>
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="testimonial-card">
+                        <div class="testimonial-rating mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="testimonial-text">"Found the best dentist through abcsheba. The platform is easy to
+                            use and the doctor profiles are very detailed. Great experience!"</p>
+                        <div class="testimonial-author mt-auto pt-2 border-top">
+                            <img src="{{ asset('assets/img/patients/patient2.jpg') }}" class="rounded-circle"
+                                alt="Patient">
+                            <div>
+                                <h6 class="author-name mb-0">Michael Chen</h6>
+                                <small class="author-role text-muted">Dental Patient</small>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 15px;">
-                        <div class="card-body p-4">
-                            <div class="d-flex mb-3">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star-half-alt text-warning"></i>
-                            </div>
-                            <p class="card-text text-muted">"Very convenient way to book appointments. No more waiting in
-                                long queues. The reminder system is also very helpful."</p>
-                            <div class="d-flex align-items-center mt-4">
-                                <img src="{{ asset('assets/img/patients/patient3.jpg') }}" class="rounded-circle me-3"
-                                    alt="Patient" style="width: 50px; height: 50px; object-fit: cover;">
-                                <div>
-                                    <h6 class="mb-0 font-weight-bold">Emily Davis</h6>
-                                    <small class="text-muted">General Checkup</small>
-                                </div>
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="testimonial-card">
+                        <div class="testimonial-rating mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                        </div>
+                        <p class="testimonial-text">"Very convenient way to book appointments. No more waiting in
+                            long queues. The reminder system is also very helpful."</p>
+                        <div class="testimonial-author mt-auto pt-2 border-top">
+                            <img src="{{ asset('assets/img/patients/patient3.jpg') }}" class="rounded-circle"
+                                alt="Patient">
+                            <div>
+                                <h6 class="author-name mb-0">Emily Davis</h6>
+                                <small class="author-role text-muted">General Checkup</small>
                             </div>
                         </div>
                     </div>
@@ -1233,24 +1091,6 @@
     </section>
     <!-- /Testimonials Section -->
 
-    <!-- Call to Action -->
-    <!-- Call to Action -->
-    <section class="section-cta">
-        <div class="cta-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-        </div>
-        <div class="container text-center position-relative z-index-1">
-            <h2 class="display-5 font-weight-bold mb-3 text-white">Ready to Book Your Appointment?</h2>
-            <p class="lead mb-5 text-white-50">Join thousands of patients who trust abcsheba for their healthcare needs.</p>
-            <a href="{{ route('doctors.search') }}" class="btn btn-light cta-btn">
-                <i class="fas fa-calendar-check me-2"></i> Find a Doctor Now
-            </a>
-        </div>
-    </section>
-    <!-- /Call to Action -->
-    <!-- /Call to Action -->
 
 @endsection
 
@@ -1482,13 +1322,13 @@
             // Product filtering functionality
             var searchTimeout;
 
-            function renderProductSkeletons(count = 6) {
+            function renderProductSkeletons(count = 8) {
                 var grid = $('#productsGrid');
                 grid.empty();
                 var skeletonHtml = '';
                 for (var i = 0; i < count; i++) {
                     skeletonHtml += `
-                        <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-4 product-skeleton-item">
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3 product-skeleton-item">
                             <div class="product-card-skeleton">
                                 <div class="skeleton-img-wrap">
                                     <div class="skeleton-badge skeleton-shimmer"></div>
@@ -1523,7 +1363,7 @@
                 var category = $('input[name="product_category"]:checked').val();
                 var search = $('#productSearchInput').val();
 
-                renderProductSkeletons(6);
+                renderProductSkeletons(8);
 
                 $.ajax({
                     url: '/api/products/filter',
@@ -1588,32 +1428,32 @@
                             </form>`;
 
                     var html = `
-                                                                                                                <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-4 product-grid-item">
-                                                                                                                    <div class="product-card-modern">
-                                                                                                                        <div class="stock-badge ${stockClass}">${stockText}</div>
-                                                                                                                        <div class="product-image-container">
-                                                                                                                            <a href="/products/${product.id}" class="product-image-link">
-                                                                                                                                <img src="${imageSrc}" class="product-main-img" alt="${product.name}">
-                                                                                                                            </a>
-                                                                                                                        </div>
-                                                                                                                        <div class="product-details">
-                                                                                                                            <div class="product-rating">
-                                                                                                                                <i class="fas fa-star"></i>
-                                                                                                                                <span class="rating-value">${rating.toFixed(1)}</span>
-                                                                                                                                <span class="review-count">(${reviewCount})</span>
-                                                                                                                            </div>
-                                                                                                                            <div class="product-brand">${categoryName}</div>
-                                                                                                                            <h4 class="product-name">
-                                                                                                                                <a href="/products/${product.id}">${product.name}</a>
-                                                                                                                            </h4>
-                                                                                                                            <div class="product-footer">
-                                                                                                                                <div class="product-price-tag">${priceHtml}</div>
-                                                                                                                                ${actionHtml}
-                                                                                                                            </div>
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            `;
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3 product-grid-item">
+                            <div class="product-card-modern">
+                                <div class="stock-badge ${stockClass}">${stockText}</div>
+                                <div class="product-image-container">
+                                    <a href="/products/${product.id}" class="product-image-link">
+                                        <img src="${imageSrc}" class="product-main-img" alt="${product.name}">
+                                    </a>
+                                </div>
+                                <div class="product-details">
+                                    <div class="product-rating">
+                                        <i class="fas fa-star"></i>
+                                        <span class="rating-value">${rating.toFixed(1)}</span>
+                                        <span class="review-count">(${reviewCount})</span>
+                                    </div>
+                                    <div class="product-brand">${categoryName}</div>
+                                    <h4 class="product-name">
+                                        <a href="/products/${product.id}">${product.name}</a>
+                                    </h4>
+                                    <div class="product-footer">
+                                        <div class="product-price-tag">${priceHtml}</div>
+                                        ${actionHtml}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                     grid.append(html);
                 });
             }
@@ -1742,46 +1582,46 @@
                     var favIconClass = isFav ? 'fas' : 'far';
 
                     var html = `
-                                                                                                                <div class="col-lg-4 col-md-6 col-sm-6 mb-4 doctor-grid-item">
-                                                                                                                    <div class="doctor-card-new">
-                                                                                                                        <div class="doctor-img-wrapper">
-                                                                                                                            <a href="/doctor-profile/${doctor.id}">
-                                                                                                                                <img src="${imageSrc}" class="doctor-img" alt="${doctor.name}">
-                                                                                                                            </a>
-                                                                                                                            <div class="doctor-fee-badge">
-                                                                                                                                <span>${fee}</span>
-                                                                                                                            </div>
-                                                                                                                            <a href="javascript:void(0)" class="fav-btn ${favClass}" data-id="${doctor.id}">
-                                                                                                                                <i class="${favIconClass} fa-bookmark"></i>
-                                                                                                                            </a>
-                                                                                                                        </div>
-                                                                                                                        <div class="doctor-info">
-                                                                                                                            <span class="doctor-speciality">${doctor.speciality}</span>
-                                                                                                                            <h4 class="doctor-name">
-                                                                                                                                <a href="/doctor-profile/${doctor.id}">Dr. ${doctor.name}</a>
-                                                                                                                                <i class="fas fa-check-circle verified-badge" title="Verified"></i>
-                                                                                                                            </h4>
-                                                                                                                            <div class="doctor-rating">
-                                                                                                                                <i class="fas fa-star"></i>
-                                                                                                                                <span>${parseFloat(doctor.average_rating || 0).toFixed(1)}</span>
-                                                                                                                                <span class="rating-count">(${doctor.review_count || 0} reviews)</span>
-                                                                                                                            </div>
-                                                                                                                            <div class="doctor-location">
-                                                                                                                                <i class="fas fa-map-marker-alt"></i>
-                                                                                                                                <span>${doctor.clinic_name || doctor.area_name}</span>
-                                                                                                                            </div>
-                                                                                                                            <div class="doctor-buttons">
-                                                                                                                                <a href="/doctor-profile/${doctor.id}" class="btn-view-details">
-                                                                                                                                    <i class="fas fa-user"></i> Details
-                                                                                                                                </a>
-                                                                                                                                <a href="/booking/${doctor.id}" class="btn-book-appointment">
-                                                                                                                                    <i class="fas fa-calendar-check"></i> Appointment
-                                                                                                                                </a>
-                                                                                                                            </div>
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            `;
+                        <div class="col-lg-4 col-md-6 col-sm-6 mb-4 doctor-grid-item">
+                            <div class="doctor-card-new">
+                                <div class="doctor-img-wrapper">
+                                    <a href="/doctor-profile/${doctor.id}">
+                                        <img src="${imageSrc}" class="doctor-img" alt="${doctor.name}">
+                                    </a>
+                                    <div class="doctor-fee-badge">
+                                        <span>${fee}</span>
+                                    </div>
+                                    <a href="javascript:void(0)" class="fav-btn ${favClass}" data-id="${doctor.id}">
+                                        <i class="${favIconClass} fa-bookmark"></i>
+                                    </a>
+                                </div>
+                                <div class="doctor-info">
+                                    <span class="doctor-speciality">${doctor.speciality}</span>
+                                    <h4 class="doctor-name">
+                                        <a href="/doctor-profile/${doctor.id}">Dr. ${doctor.name}</a>
+                                        <i class="fas fa-check-circle verified-badge" title="Verified"></i>
+                                    </h4>
+                                    <div class="doctor-rating">
+                                        <i class="fas fa-star"></i>
+                                        <span>${parseFloat(doctor.average_rating || 0).toFixed(1)}</span>
+                                        <span class="rating-count">(${doctor.review_count || 0} reviews)</span>
+                                    </div>
+                                    <div class="doctor-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>${doctor.clinic_name || doctor.area || 'Dhaka'}</span>
+                                    </div>
+                                    <div class="doctor-buttons">
+                                        <a href="/doctor-profile/${doctor.id}" class="btn-view-details">
+                                            <i class="fas fa-user"></i> Details
+                                        </a>
+                                        <a href="/booking/${doctor.id}" class="btn-book-appointment">
+                                            <i class="fas fa-calendar-check"></i> Appointment
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                     grid.append(html);
                 });
             }
@@ -2308,9 +2148,9 @@
 
         /* Video Section */
         .section-video {
-            background: linear-gradient(180deg, #e8f4fc 0%, #f0f9ff 100%);
-            padding: 60px 0;
-            margin: 20px 0;
+            background: transparent !important;
+            padding: 40px 0;
+            margin: 0;
         }
 
         .section-video .section-header h2 {
@@ -2326,7 +2166,7 @@
         }
 
         .video-wrapper {
-            max-width: 900px;
+            max-width: 100%;
             margin: 0 auto;
         }
 
@@ -2336,8 +2176,8 @@
             /* 16:9 aspect ratio */
             height: 0;
             overflow: hidden;
-            border-radius: 20px;
-            box-shadow: 0 15px 50px rgba(0, 102, 255, 0.15);
+            border-radius: 0;
+            box-shadow: none;
         }
 
         .video-container iframe {
@@ -2346,7 +2186,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 20px;
+            border-radius: 0;
         }
 
         .video-cover-wrapper {
@@ -2470,14 +2310,15 @@
         .product-filter-card {
             background: #fff;
             border-radius: 0;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
-            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            padding: 15px;
             position: sticky;
             top: 100px;
+            border: 1px solid #f0f0f0;
         }
 
         .filter-section {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
 
         .filter-section:last-child {
@@ -2485,13 +2326,13 @@
         }
 
         .filter-title {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             color: #272b41;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .filter-title i {
@@ -2499,33 +2340,35 @@
         }
 
         .search-input-wrapper input {
-            border-radius: 10px;
-            padding: 12px 15px;
-            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 13px;
+            height: 36px;
+            border: 1px solid #e2e8f0;
             transition: all 0.3s;
         }
 
         .search-input-wrapper input:focus {
             border-color: #1D4ED8;
-            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+            box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.1);
         }
 
         /* Category List */
         .category-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 4px;
         }
 
         .speciality-list .category-item {
-            padding: 7px 8px;
-            gap: 8px;
+            padding: 5px 6px;
+            gap: 6px;
         }
 
         .speciality-list .category-item input[type="radio"] {
-            width: 15px;
-            height: 15px;
-            flex: 0 0 15px;
+            width: 14px;
+            height: 14px;
+            flex: 0 0 14px;
         }
 
         .speciality-list .category-name {
@@ -2539,9 +2382,9 @@
         .category-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 8px;
+            gap: 6px;
+            padding: 5px 6px;
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.2s;
             margin: 0;
@@ -2552,14 +2395,14 @@
         }
 
         .category-item input[type="radio"] {
-            width: 18px;
-            height: 18px;
+            width: 14px;
+            height: 14px;
             accent-color: #1D4ED8;
         }
 
         .category-item .category-name {
-            font-size: 14px;
-            color: #555;
+            font-size: 13px;
+            color: #475569;
         }
 
         .category-item input:checked+.category-name {
@@ -2580,6 +2423,7 @@
         .home-cat-root.active-cat {
             background: #eff6ff;
             color: #1D4ED8;
+            border-radius: 4px;
         }
 
         .home-cat-arrow {
@@ -2594,22 +2438,22 @@
         }
 
         .home-sub-list {
-            padding-left: 12px;
+            padding-left: 10px;
             border-left: 2px solid #e2e8f0;
-            margin-left: 10px;
+            margin-left: 8px;
             margin-top: 2px;
             margin-bottom: 4px;
         }
 
         .home-subsub-list {
-            padding-left: 10px;
+            padding-left: 8px;
             border-left: 2px dashed #cbd5e1;
-            margin-left: 8px;
+            margin-left: 6px;
         }
 
         .home-cat-sub {
-            font-size: 13px !important;
-            padding: 7px 10px !important;
+            font-size: 12.5px !important;
+            padding: 4px 6px !important;
             color: #475569;
         }
 
@@ -2620,7 +2464,7 @@
 
         .home-cat-subsub {
             font-size: 12px !important;
-            padding: 5px 8px !important;
+            padding: 3px 6px !important;
             color: #64748b;
         }
 
@@ -2665,11 +2509,11 @@
         /* Stock Badge */
         .stock-badge {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            padding: 4px 10px;
+            top: 8px;
+            left: 8px;
+            padding: 2px 6px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
             letter-spacing: 0.5px;
             z-index: 10;
@@ -2689,7 +2533,7 @@
         /* Product Image */
         .product-image-container {
             position: relative;
-            height: 180px;
+            height: 135px;
             overflow: hidden;
             background: #f8fafc;
             display: flex;
@@ -2704,7 +2548,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px;
+            padding: 8px;
         }
 
         .product-main-img {
@@ -2721,7 +2565,7 @@
 
         /* Product Details */
         .product-details {
-            padding: 16px;
+            padding: 10px;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -2732,13 +2576,13 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            margin-bottom: 8px;
-            font-size: 13px;
+            margin-bottom: 4px;
+            font-size: 11px;
         }
 
         .product-rating i {
             color: #ffc107;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .product-rating .rating-value {
@@ -2748,30 +2592,30 @@
 
         .product-rating .review-count {
             color: #999;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         /* Brand */
         .product-brand {
-            font-size: 11px;
+            font-size: 10px;
             color: #1D4ED8;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         /* Product Name */
         .product-name {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            line-height: 1.4;
-            margin-bottom: 12px;
+            line-height: 1.3;
+            margin-bottom: 8px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            min-height: 40px;
+            min-height: 34px;
         }
 
         .product-name a {
@@ -2799,13 +2643,13 @@
         }
 
         .price-current {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 700;
             color: #272b41;
         }
 
         .price-original {
-            font-size: 12px;
+            font-size: 11px;
             color: #999;
             text-decoration: line-through;
         }
@@ -2817,14 +2661,14 @@
 
         .btn-group-modern {
             display: flex;
-            gap: 6px;
+            gap: 4px;
         }
 
         .btn-cart-modern {
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            border: 2px solid #1D4ED8;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            border: 1.5px solid #1D4ED8;
             background: transparent;
             color: #1D4ED8;
             display: flex;
@@ -2832,6 +2676,7 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 12px;
         }
 
         .btn-cart-modern:hover {
@@ -2840,14 +2685,14 @@
         }
 
         .btn-buy-modern {
-            padding: 0 20px;
-            height: 38px;
-            border-radius: 8px;
+            padding: 0 12px;
+            height: 32px;
+            border-radius: 4px;
             border: none;
             background: linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%);
             color: #fff;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -2884,16 +2729,17 @@
         .btn-view-all-arrow {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 28px;
-            background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%);
-            color: #fff;
-            font-size: 15px;
+            gap: 8px;
+            padding: 6px 16px;
+            background: #2563eb !important;
+            border: 1.5px solid #2563eb !important;
+            color: #fff !important;
+            font-size: 13px;
             font-weight: 600;
-            border-radius: 50px;
+            border-radius: 4px !important;
             text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(29, 78, 216, 0.3);
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2) !important;
         }
 
         .btn-view-all-arrow i {
@@ -2964,23 +2810,25 @@
                                                                                             ===================================== */
         .course-card {
             background: #fff;
-            border-radius: 16px;
+            border-radius: 0;
             overflow: hidden;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease;
             height: 100%;
             display: flex;
             flex-direction: column;
+            border: 1px solid #f0f0f0;
         }
 
         .course-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 50px rgba(29, 78, 216, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(29, 78, 216, 0.12);
+            border-color: #1D4ED8;
         }
 
         .course-thumbnail {
             position: relative;
-            height: 200px;
+            height: 135px;
             overflow: hidden;
         }
 
@@ -2992,7 +2840,7 @@
         }
 
         .course-card:hover .course-thumbnail img {
-            transform: scale(1.08);
+            transform: scale(1.05);
         }
 
         .play-overlay {
@@ -3014,7 +2862,7 @@
         }
 
         .play-overlay i {
-            font-size: 60px;
+            font-size: 40px;
             color: #fff;
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             transition: transform 0.3s ease;
@@ -3026,12 +2874,12 @@
 
         .course-badge {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+            top: 8px;
+            left: 8px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
         }
 
         .course-badge.free {
@@ -3045,7 +2893,7 @@
         }
 
         .course-content {
-            padding: 20px;
+            padding: 10px;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -3053,33 +2901,33 @@
 
         .course-meta {
             display: flex;
-            gap: 15px;
-            margin-bottom: 12px;
+            gap: 12px;
+            margin-bottom: 6px;
         }
 
         .course-meta span {
-            font-size: 12px;
+            font-size: 11px;
             color: #6b7280;
         }
 
         .course-meta i {
             color: #1D4ED8;
-            margin-right: 5px;
+            margin-right: 4px;
         }
 
         .course-title {
-            font-size: 17px;
+            font-size: 13px;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 10px;
-            line-height: 1.4;
+            margin-bottom: 6px;
+            line-height: 1.3;
         }
 
         .course-desc {
-            font-size: 13px;
+            font-size: 11px;
             color: #6b7280;
-            line-height: 1.6;
-            margin-bottom: 15px;
+            line-height: 1.4;
+            margin-bottom: 10px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -3091,25 +2939,25 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-top: 15px;
+            padding-top: 10px;
             border-top: 1px solid #f3f4f6;
         }
 
         .course-instructor {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
         }
 
         .course-instructor img {
-            width: 35px;
-            height: 35px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             object-fit: cover;
         }
 
         .course-instructor span {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: #4b5563;
         }
@@ -3117,13 +2965,13 @@
         .btn-enroll {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
+            gap: 4px;
+            padding: 5px 12px;
             background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%);
             color: #fff;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 600;
-            border-radius: 8px;
+            border-radius: 4px;
             text-decoration: none;
             transition: all 0.3s ease;
         }
@@ -3145,61 +2993,62 @@
         /* =====================================
                                                                                                HEALTH PACKAGES SECTION
                                                                                             ===================================== */
+        /* Health Package Card */
         .health-package-card {
             background: #fff;
-            border-radius: 20px;
-            padding: 30px 25px;
+            border-radius: 0;
+            padding: 15px 12px;
             text-align: center;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease;
             height: 100%;
             display: flex;
             flex-direction: column;
             position: relative;
-            border: 2px solid transparent;
+            border: 1px solid #f0f0f0;
         }
 
         .health-package-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 50px rgba(29, 78, 216, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(29, 78, 216, 0.12);
             border-color: #1D4ED8;
         }
 
         .health-package-card.featured {
-            border: 2px solid #1D4ED8;
-            transform: scale(1.02);
+            border: 1.5px solid #1D4ED8;
+            transform: none;
         }
 
         .health-package-card.featured:hover {
-            transform: scale(1.02) translateY(-10px);
+            transform: translateY(-5px);
         }
 
         .featured-ribbon {
             position: absolute;
-            top: 15px;
-            right: -35px;
+            top: 10px;
+            right: -30px;
             background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%);
             color: #fff;
-            padding: 5px 40px;
-            font-size: 11px;
+            padding: 3px 30px;
+            font-size: 9px;
             font-weight: 600;
             transform: rotate(45deg);
-            box-shadow: 0 2px 10px rgba(29, 78, 216, 0.3);
+            box-shadow: 0 2px 8px rgba(29, 78, 216, 0.3);
         }
 
         .package-icon {
-            width: 70px;
-            height: 70px;
+            width: 48px;
+            height: 48px;
             background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
+            margin: 0 auto 10px;
         }
 
         .package-icon i {
-            font-size: 28px;
+            font-size: 20px;
             color: #1D4ED8;
         }
 
@@ -3207,43 +3056,46 @@
             display: inline-block;
             background: #EEF2FF;
             color: #1D4ED8;
-            padding: 4px 15px;
-            border-radius: 20px;
-            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
         }
 
         .package-title {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 10px;
+            margin-bottom: 4px;
         }
 
         .package-tests {
             color: #6b7280;
-            font-size: 13px;
-            margin-bottom: 20px;
+            font-size: 11px;
+            margin-bottom: 10px;
         }
 
         .package-tests i {
             color: #1D4ED8;
-            margin-right: 5px;
+            margin-right: 4px;
         }
 
         .package-features {
             list-style: none;
             padding: 0;
-            margin: 0 0 20px 0;
+            margin: 0 0 10px 0;
             text-align: left;
         }
 
         .package-features li {
-            padding: 8px 0;
-            font-size: 13px;
+            padding: 4px 0;
+            font-size: 11px;
             color: #4b5563;
             border-bottom: 1px solid #f3f4f6;
         }
@@ -3254,26 +3106,42 @@
 
         .package-features li i {
             color: #10b981;
-            margin-right: 10px;
-            font-size: 12px;
+            margin-right: 6px;
+            font-size: 11px;
         }
 
         .package-price {
-            margin: auto 0 20px 0;
-            padding-top: 15px;
+            margin: auto 0 10px 0;
+            padding-top: 8px;
         }
 
         .package-price .price {
-            font-size: 32px;
+            font-size: 20px;
             font-weight: 700;
             color: #1D4ED8;
         }
 
         .package-price .period {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             color: #9ca3af;
-            margin-top: 2px;
+            margin-top: 1px;
+        }
+
+        .btn-package {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            width: 100%;
         }
 
         .btn-package {
@@ -3489,11 +3357,12 @@
         /* Doctor Filter Card */
         .doctor-filter-card {
             background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
-            padding: 25px;
+            border-radius: 0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            padding: 15px;
             position: sticky;
             top: 100px;
+            border: 1px solid #f0f0f0;
         }
 
         /* Doctor Card New */
@@ -3507,8 +3376,8 @@
 
         .doctor-card-new {
             background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border-radius: 0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             overflow: hidden;
             transition: all 0.3s;
             height: 100%;
@@ -3518,14 +3387,14 @@
         }
 
         .doctor-card-new:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 50px rgba(0, 102, 255, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 102, 255, 0.12);
             border-color: #1D4ED8;
         }
 
         .doctor-img-wrapper {
             position: relative;
-            height: 200px;
+            height: 135px;
             overflow: hidden;
             background: linear-gradient(135deg, #e8f4ff 0%, #f0f8ff 100%);
         }
@@ -3543,44 +3412,44 @@
 
         .doctor-fee-badge {
             position: absolute;
-            top: 15px;
-            left: 15px;
+            top: 8px;
+            left: 8px;
             background: linear-gradient(135deg, #1D4ED8, #60A5FA);
             color: #fff;
-            padding: 8px 15px;
-            border-radius: 25px;
+            padding: 4px 10px;
+            border-radius: 4px;
             font-weight: 700;
-            font-size: 14px;
-            box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
+            font-size: 11px;
+            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
         }
 
         .doctor-info {
-            padding: 20px;
+            padding: 10px;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
 
         .doctor-speciality {
-            font-size: 13px;
+            font-size: 10px;
             color: #1D4ED8;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-weight: 600;
             display: inline-block;
             background: #e8f4ff;
-            padding: 5px 12px;
-            border-radius: 20px;
+            padding: 3px 8px;
+            border-radius: 4px;
             width: fit-content;
         }
 
         .doctor-name {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 700;
-            margin-bottom: 10px;
-            line-height: 1.4;
-            min-height: 25px;
+            margin-bottom: 4px;
+            line-height: 1.3;
+            min-height: 20px;
         }
 
         .doctor-name a {
@@ -3594,33 +3463,34 @@
 
         .verified-badge {
             color: #1D4ED8;
-            font-size: 14px;
-            margin-left: 5px;
+            font-size: 12px;
+            margin-left: 3px;
         }
 
         .doctor-rating {
             display: flex;
             align-items: center;
-            gap: 5px;
-            margin-bottom: 10px;
-            font-size: 14px;
+            gap: 4px;
+            margin-bottom: 4px;
+            font-size: 11px;
         }
 
         .doctor-rating i {
             color: #ffc107;
+            font-size: 11px;
         }
 
         .doctor-rating .rating-count {
             color: #888;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .doctor-location {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 15px;
-            font-size: 13px;
+            gap: 6px;
+            margin-bottom: 10px;
+            font-size: 11px;
             color: #666;
         }
 
@@ -3631,19 +3501,19 @@
         /* Doctor Buttons Container */
         .doctor-buttons {
             display: flex;
-            gap: 10px;
+            gap: 6px;
             margin-top: auto;
         }
 
         .btn-view-details {
             flex: 1;
-            padding: 10px 8px;
+            padding: 6px 4px;
             background: transparent;
-            border: 2px solid #1D4ED8;
-            border-radius: 8px;
+            border: 1.5px solid #1D4ED8;
+            border-radius: 4px;
             color: #1D4ED8;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11px;
             text-align: center;
             text-decoration: none;
             cursor: pointer;
@@ -3657,18 +3527,18 @@
         }
 
         .btn-view-details i {
-            margin-right: 4px;
+            margin-right: 2px;
         }
 
         .btn-book-appointment {
             flex: 1;
-            padding: 10px 8px;
+            padding: 6px 4px;
             background: linear-gradient(135deg, #1D4ED8, #60A5FA);
             border: none;
-            border-radius: 8px;
+            border-radius: 4px;
             color: #fff;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11px;
             text-align: center;
             text-decoration: none;
             cursor: pointer;
@@ -3722,6 +3592,157 @@
             max-height: 330px;
             width: auto;
             object-fit: contain;
+        }
+
+        /* Blog Grid Modern Styles (Matching Course Section) */
+        .blog-grid {
+            background: #fff;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #f0f0f0;
+        }
+
+        .blog-grid:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(29, 78, 216, 0.12);
+            border-color: #1D4ED8;
+        }
+
+        .blog-grid-img {
+            position: relative;
+            height: 135px;
+            overflow: hidden;
+        }
+
+        .blog-grid-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .blog-grid:hover .blog-grid-img img {
+            transform: scale(1.05);
+        }
+
+        .blog-grid-info {
+            padding: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .blog-date {
+            font-size: 10px;
+            color: #1D4ED8;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .blog-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .blog-title a {
+            color: #1f2937;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .blog-title a:hover {
+            color: #1D4ED8;
+        }
+
+        .blog-text {
+            font-size: 11px;
+            color: #6b7280;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .read-more-btn {
+            margin-top: auto;
+            font-size: 11px;
+            font-weight: 600;
+            color: #1D4ED8;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .read-more-btn:hover {
+            color: #1e40af;
+            gap: 6px;
+        }
+
+        /* Testimonial Card Modern Styles */
+        .testimonial-card {
+            background: #fff;
+            border-radius: 0;
+            padding: 15px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #f0f0f0;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(29, 78, 216, 0.12);
+            border-color: #1D4ED8;
+        }
+
+        .testimonial-rating i {
+            font-size: 11px;
+        }
+
+        .testimonial-text {
+            font-size: 11px;
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .testimonial-author img {
+            width: 32px;
+            height: 32px;
+            object-fit: cover;
+        }
+
+        .author-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .author-role {
+            font-size: 10px;
+            color: #6b7280;
         }
 
         /* Responsive image-only banner style */
