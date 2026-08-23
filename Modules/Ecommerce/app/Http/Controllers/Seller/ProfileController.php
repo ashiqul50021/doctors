@@ -32,8 +32,8 @@ class ProfileController extends Controller
             'store_name' => 'required|string|max:255|unique:seller_profiles,store_name,' . $seller->id,
             'phone' => 'required|string|max:20',
             'address' => 'nullable|string',
-            'store_logo' => 'nullable|image|max:2048',
-            'store_banner' => 'nullable|image|max:4096',
+            'store_logo' => 'nullable|image|max:20480',
+            'store_banner' => 'nullable|image|max:20480',
             'bank_name' => 'nullable|string|max:255',
             'bank_account_name' => 'nullable|string|max:255',
             'bank_account_number' => 'nullable|string|max:255',
@@ -51,26 +51,18 @@ class ProfileController extends Controller
 
         // Handle Store Logo Upload
         if ($request->hasFile('store_logo')) {
-            // Delete old logo if exists
-            if ($seller->store_logo && file_exists(public_path($seller->store_logo))) {
-                @unlink(public_path($seller->store_logo));
+            if ($seller->store_logo) {
+                \App\Services\ImageService::delete($seller->store_logo);
             }
-            $logo = $request->file('store_logo');
-            $filename = 'logo_' . time() . '_' . uniqid() . '.' . $logo->getClientOriginalExtension();
-            $logo->move(public_path('uploads/sellers'), $filename);
-            $data['store_logo'] = 'uploads/sellers/' . $filename;
+            $data['store_logo'] = \App\Services\ImageService::upload($request->file('store_logo'), 'sellers', 85, 400);
         }
 
         // Handle Store Banner Upload
         if ($request->hasFile('store_banner')) {
-            // Delete old banner if exists
-            if ($seller->store_banner && file_exists(public_path($seller->store_banner))) {
-                @unlink(public_path($seller->store_banner));
+            if ($seller->store_banner) {
+                \App\Services\ImageService::delete($seller->store_banner);
             }
-            $banner = $request->file('store_banner');
-            $filename = 'banner_' . time() . '_' . uniqid() . '.' . $banner->getClientOriginalExtension();
-            $banner->move(public_path('uploads/sellers'), $filename);
-            $data['store_banner'] = 'uploads/sellers/' . $filename;
+            $data['store_banner'] = \App\Services\ImageService::upload($request->file('store_banner'), 'sellers', 85, 1200);
         }
 
         $seller->update($data);

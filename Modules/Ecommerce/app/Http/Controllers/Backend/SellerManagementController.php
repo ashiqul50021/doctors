@@ -33,7 +33,7 @@ class SellerManagementController extends Controller
             'address' => 'nullable|string',
             'commission_rate' => 'required|numeric|min:0|max:100',
             'status' => 'required|in:pending,approved,suspended',
-            'store_logo' => 'nullable|image|max:2048',
+            'store_logo' => 'nullable|image|max:20480',
         ]);
 
         try {
@@ -49,10 +49,7 @@ class SellerManagementController extends Controller
                 // 2. Handle store logo upload
                 $logoPath = null;
                 if ($request->hasFile('store_logo')) {
-                    $logo = $request->file('store_logo');
-                    $filename = time() . '_' . uniqid() . '.' . $logo->getClientOriginalExtension();
-                    $logo->move(public_path('uploads/sellers'), $filename);
-                    $logoPath = 'uploads/sellers/' . $filename;
+                    $logoPath = \App\Services\ImageService::upload($request->file('store_logo'), 'sellers', 85, 400);
                 }
 
                 // 3. Create the seller profile

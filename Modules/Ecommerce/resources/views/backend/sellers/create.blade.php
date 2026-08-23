@@ -110,11 +110,14 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label" for="store_logo">Store Logo</label>
+                            <label class="form-label font-weight-bold" for="store_logo">Store Logo</label>
                             <input type="file" class="form-control @error('store_logo') is-invalid @enderror" id="store_logo" name="store_logo" accept="image/*">
                             @error('store_logo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            <div class="form-text text-muted small mt-1">
+                                <i class="fas fa-magic text-success me-1"></i> Images of any size will be automatically resized, cropped & optimized (Recommended: Square / 400x400 px).
+                            </div>
                         </div>
                     </div>
 
