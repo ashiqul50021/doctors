@@ -49,26 +49,14 @@ class HomeController extends Controller
         // Get all districts for search dropdown
         $districts = District::orderBy('name')->get();
 
-        // Get featured products
+        // Get products for homepage grid
         $products = Product::where('is_active', true)
-                          ->where('is_featured', true)
                           ->with(['category', 'variants'])
                           ->withCount('approvedProductReviews as reviews_count')
                           ->withAvg('approvedProductReviews as rating', 'rating')
                           ->take(8)
                           ->latest()
                           ->get();
-
-        // If no featured products, get latest products
-        if ($products->isEmpty()) {
-            $products = Product::where('is_active', true)
-                              ->with(['category', 'variants'])
-                              ->withCount('approvedProductReviews as reviews_count')
-                              ->withAvg('approvedProductReviews as rating', 'rating')
-                              ->take(8)
-                              ->latest()
-                              ->get();
-        }
 
         // Get active health packages
         $healthPackages = \App\Models\HealthPackage::active()->ordered()->get();
