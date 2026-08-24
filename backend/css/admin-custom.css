@@ -597,6 +597,29 @@ input[type="color"] {
     gap: 8px;
 }
 
+.btn-action-view {
+    background: rgba(6, 182, 212, 0.08) !important;
+    color: #0891B2 !important;
+    border: 1px solid rgba(6, 182, 212, 0.15) !important;
+    border-radius: 8px !important;
+    padding: 6px 14px !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+}
+
+.btn-action-view:hover {
+    background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%) !important;
+    color: #FFFFFF !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 10px rgba(6, 182, 212, 0.3) !important;
+    transform: translateY(-1px);
+}
+
 .btn-action-edit {
     background: rgba(79, 70, 229, 0.08) !important;
     color: var(--primary-indigo) !important;

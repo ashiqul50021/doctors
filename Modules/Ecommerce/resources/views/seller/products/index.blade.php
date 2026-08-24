@@ -71,7 +71,7 @@
                                             }
                                         @endphp
                                         @if($productImage)
-                                            <a href="#" class="avatar avatar-sm me-2">
+                                            <a href="{{ route('ecommerce.products.show', $product->id) }}" target="_blank" class="avatar avatar-sm me-2">
                                                 <img class="avatar-img" src="{{ \Illuminate\Support\Str::startsWith($productImage, ['http://', 'https://']) ? $productImage : asset($productImage) }}" alt="Product">
                                             </a>
                                         @else
@@ -80,7 +80,7 @@
                                                 No Image
                                             </span>
                                         @endif
-                                        <a href="#" style="text-decoration: none; color: #333;">{{ $product->name }}</a>
+                                        <a href="{{ route('ecommerce.products.show', $product->id) }}" target="_blank" style="text-decoration: none; color: #333;">{{ $product->name }}</a>
                                     </h2>
                                 </td>
                                 <td>{{ $product->category->name ?? 'N/A' }}</td>
@@ -105,6 +105,9 @@
                                 </td>
                                 <td class="text-right">
                                     <div class="actions">
+                                        <a class="btn btn-sm bg-info-light text-info me-2" href="{{ route('ecommerce.products.show', $product->id) }}" target="_blank">
+                                            <i class="fe fe-eye"></i> View
+                                        </a>
                                         <a class="btn btn-sm bg-success-light me-2" href="{{ route('ecommerce.seller.products.edit', $product->id) }}">
                                             <i class="fe fe-pencil"></i> Edit
                                         </a>

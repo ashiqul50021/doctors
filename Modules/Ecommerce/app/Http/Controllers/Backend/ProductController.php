@@ -36,14 +36,15 @@ class ProductController extends Controller
                         $image = $row->gallery[0] ?? null;
                     }
                     $imgUrl = $image ? (Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image)) : null;
+                    $viewUrl = route('ecommerce.products.show', $row->id);
 
                     $avatarHtml = $imgUrl 
-                        ? '<a href="#" class="avatar avatar-sm me-2"><img class="avatar-img" src="' . $imgUrl . '" alt="Product"></a>'
+                        ? '<a href="' . $viewUrl . '" target="_blank" class="avatar avatar-sm me-2"><img class="avatar-img" src="' . $imgUrl . '" alt="Product"></a>'
                         : '<span class="avatar avatar-sm me-2 d-inline-flex align-items-center justify-content-center bg-light text-muted border" style="font-size: 9px; font-weight: 600;">No Image</span>';
 
                     $sellerBadge = $row->seller_id ? '<span class="badge bg-info-light text-info ms-2" style="font-size: 10px;">Seller: ' . e($row->seller->name ?? 'Seller') . '</span>' : '<span class="badge bg-secondary-light text-secondary ms-2" style="font-size: 10px;">Official</span>';
 
-                    return '<div class="table-avatar">' . $avatarHtml . '<div><a href="#" class="fw-semibold text-dark">' . e($row->name) . '</a>' . $sellerBadge . '</div></div>';
+                    return '<div class="table-avatar">' . $avatarHtml . '<div><a href="' . $viewUrl . '" target="_blank" class="fw-semibold text-dark">' . e($row->name) . '</a>' . $sellerBadge . '</div></div>';
                 })
                 ->editColumn('category', function ($row) {
                     return '<span class="text-secondary fw-semibold">' . e($row->category->name ?? 'N/A') . '</span>';
@@ -79,11 +80,13 @@ class ProductController extends Controller
                     </div>';
                 })
                 ->addColumn('action', function ($row) {
+                    $viewUrl = route('ecommerce.products.show', $row->id);
                     $editUrl = route('ecommerce.admin.products.edit', $row->id);
                     $destroyUrl = route('ecommerce.admin.products.destroy', $row->id);
                     $csrf = csrf_field();
                     $method = method_field('DELETE');
                     return '<div class="actions text-end">
+                        <a class="btn-action-view" href="' . $viewUrl . '" target="_blank"><i class="fe fe-eye"></i> View</a>
                         <a class="btn-action-edit" href="' . $editUrl . '"><i class="fe fe-pencil"></i> Edit</a>
                         <form action="' . $destroyUrl . '" method="POST" style="display:inline-block;" onsubmit="return confirm(\'Are you sure?\');">
                             ' . $csrf . '
