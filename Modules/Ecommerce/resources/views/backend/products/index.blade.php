@@ -51,6 +51,25 @@
         </div>
     </div>
 </div>
+
+<!-- Product Details Modal -->
+<div class="modal fade" id="productDetailsModal" tabindex="-1" aria-labelledby="productDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bold" id="productDetailsModalLabel">Product Details Overview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="productDetailsModalContent">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -74,6 +93,29 @@
                 { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' }
             ],
             order: [[0, 'desc']]
+        });
+
+        $(document).on('click', '.btn-product-details-modal', function(e) {
+            e.preventDefault();
+            const detailsUrl = $(this).attr('href');
+            const modal = new bootstrap.Modal(document.getElementById('productDetailsModal'));
+            $('#productDetailsModalContent').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+            modal.show();
+
+            $.ajax({
+                url: detailsUrl,
+                type: 'GET',
+                success: function(response) {
+                    if (response.success && response.html) {
+                        $('#productDetailsModalContent').html(response.html);
+                    } else {
+                        $('#productDetailsModalContent').html('<div class="alert alert-danger mb-0">Failed to load details.</div>');
+                    }
+                },
+                error: function() {
+                    $('#productDetailsModalContent').html('<div class="alert alert-danger mb-0">Error fetching product details.</div>');
+                }
+            });
         });
 
         $(document).on('change', '.status-toggle-btn', function() {

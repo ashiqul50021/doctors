@@ -29,6 +29,23 @@ class ProductController extends Controller
         return view('ecommerce::seller.products.index', compact('products'));
     }
 
+    public function show(Request $request, $id)
+    {
+        $sellerId = auth()->id();
+        $product = Product::where('seller_id', $sellerId)
+            ->with(['category', 'variants', 'seller'])
+            ->findOrFail($id);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'html' => view('ecommerce::backend.products.partials.details-modal-body', compact('product'))->render()
+            ]);
+        }
+
+        return view('ecommerce::seller.products.show', compact('product'));
+    }
+
     public function create()
     {
         $categories = ProductCategory::with([

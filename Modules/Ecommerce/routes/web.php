@@ -44,7 +44,7 @@ Route::get('/api/products/filter', [ProductController::class, 'filter'])->name('
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('ecommerce.admin.')->group(function () {
     Route::patch('products/{product}/toggle-status', [AdminProductController::class, 'toggleStatus'])->name('products.toggle-status');
-    Route::resource('products', AdminProductController::class)->except(['show']);
+    Route::resource('products', AdminProductController::class);
     Route::resource('product-categories', AdminProductCategoryController::class)->except(['show']);
     Route::get('product-reviews/search-products', [\Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class, 'searchProducts'])->name('product-reviews.search-products');
     Route::resource('product-reviews', \Modules\Ecommerce\Http\Controllers\Backend\ProductReviewController::class)->except(['show']);
@@ -70,6 +70,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('ecommerce.admi
     // Seller Payout Routes (Admin)
     Route::get('seller-payouts', [\Modules\Ecommerce\Http\Controllers\Backend\SellerPayoutController::class, 'index'])->name('seller-payouts.index');
     Route::patch('seller-payouts/{id}/status', [\Modules\Ecommerce\Http\Controllers\Backend\SellerPayoutController::class, 'updateStatus'])->name('seller-payouts.update-status');
+
+    // Seller Products Approval Routes (Admin)
+    Route::get('seller-products', [\Modules\Ecommerce\Http\Controllers\Backend\SellerProductApprovalController::class, 'index'])->name('seller-products.index');
+    Route::get('seller-products/{id}', [\Modules\Ecommerce\Http\Controllers\Backend\SellerProductApprovalController::class, 'show'])->name('seller-products.show');
+    Route::post('seller-products/{id}/approve', [\Modules\Ecommerce\Http\Controllers\Backend\SellerProductApprovalController::class, 'approve'])->name('seller-products.approve');
+    Route::post('seller-products/{id}/reject', [\Modules\Ecommerce\Http\Controllers\Backend\SellerProductApprovalController::class, 'reject'])->name('seller-products.reject');
 });
 
 /*

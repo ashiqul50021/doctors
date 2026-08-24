@@ -88,6 +88,9 @@
                     <li class="{{ request()->routeIs('ecommerce.admin.sellers.*') ? 'active' : '' }}">
                         <a href="{{ route('ecommerce.admin.sellers.index') }}" wire:navigate><i class="fe fe-users"></i> <span>Sellers List</span></a>
                     </li>
+                    <li class="{{ request()->routeIs('ecommerce.admin.seller-products.*') ? 'active' : '' }}">
+                        <a href="{{ route('ecommerce.admin.seller-products.index') }}" wire:navigate><i class="fe fe-box"></i> <span>Seller Products</span></a>
+                    </li>
                     <li class="{{ request()->routeIs('ecommerce.admin.seller-payouts.*') ? 'active' : '' }}">
                         <a href="{{ route('ecommerce.admin.seller-payouts.index') }}" wire:navigate><i class="fe fe-credit-card"></i> <span>Seller Payouts</span></a>
                     </li>

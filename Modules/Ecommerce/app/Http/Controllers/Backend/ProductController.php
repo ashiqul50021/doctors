@@ -80,18 +80,20 @@ class ProductController extends Controller
                     </div>';
                 })
                 ->addColumn('action', function ($row) {
-                    $viewUrl = route('ecommerce.products.show', $row->id);
+                    $siteUrl = route('ecommerce.products.show', $row->id);
+                    $detailsUrl = route('ecommerce.admin.products.show', $row->id);
                     $editUrl = route('ecommerce.admin.products.edit', $row->id);
                     $destroyUrl = route('ecommerce.admin.products.destroy', $row->id);
                     $csrf = csrf_field();
                     $method = method_field('DELETE');
                     return '<div class="actions text-end">
-                        <a class="btn-action-view" href="' . $viewUrl . '" target="_blank"><i class="fe fe-eye"></i> View</a>
-                        <a class="btn-action-edit" href="' . $editUrl . '"><i class="fe fe-pencil"></i> Edit</a>
+                        <a class="btn-action-site" href="' . $siteUrl . '" target="_blank" title="Site View"><i class="fe fe-globe"></i> Site View</a>
+                        <a class="btn-action-details btn-product-details-modal" href="' . $detailsUrl . '" data-id="' . $row->id . '" title="Details View"><i class="fe fe-eye"></i> Details View</a>
+                        <a class="btn-action-edit" href="' . $editUrl . '" title="Edit Product"><i class="fe fe-pencil"></i> Edit</a>
                         <form action="' . $destroyUrl . '" method="POST" style="display:inline-block;" onsubmit="return confirm(\'Are you sure?\');">
                             ' . $csrf . '
                             ' . $method . '
-                            <button type="submit" class="btn-action-delete"><i class="fe fe-trash"></i> Delete</button>
+                            <button type="submit" class="btn-action-delete" title="Delete Product"><i class="fe fe-trash"></i> Delete</button>
                         </form>
                     </div>';
                 })
@@ -101,6 +103,20 @@ class ProductController extends Controller
 
         $products = Product::with(['category', 'variants'])->latest()->get();
         return view('ecommerce::backend.products.index', compact('products'));
+    }
+
+    public function show(Request $request, $id)
+    {
+        $product = Product::with(['category', 'variants', 'seller', 'approvedProductReviews'])->findOrFail($id);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'html' => view('ecommerce::backend.products.partials.details-modal-body', compact('product'))->render()
+            ]);
+        }
+
+        return view('ecommerce::backend.products.show', compact('product'));
     }
 
     public function create()
