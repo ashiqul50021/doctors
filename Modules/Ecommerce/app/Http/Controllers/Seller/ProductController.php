@@ -100,10 +100,13 @@ class ProductController extends Controller
                     'stock' => (int) ($validated['stock'] ?? 0),
                     'image' => $imagePath,
                     'gallery' => $galleryPaths,
-                    'is_active' => false, // Set to false so admin must approve before it goes live
+                    'is_active' => false,
+                    'is_approved' => false,
+                    'status' => 'pending',
+                    'rejection_reason' => null,
                     'is_featured' => false,
                     'landing_settings' => $request->landing_settings,
-                    'seller_id' => auth()->id(), // set seller id
+                    'seller_id' => auth()->id(),
                 ]);
 
                 $this->syncVariants($product, $variants);

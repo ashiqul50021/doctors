@@ -19,20 +19,16 @@ class SellerProductApprovalController extends Controller
 
             if ($request->has('status') && in_array($request->status, ['pending', 'approved', 'rejected'])) {
                 if ($request->status === 'approved') {
-                    $query->where(function($q) {
-                        $q->where('status', 'approved')->orWhere('is_approved', true);
-                    });
+                    $query->where('is_approved', true)->where('is_active', true)->where('status', 'approved');
                 } elseif ($request->status === 'rejected') {
                     $query->where(function($q) {
-                        $q->where('status', 'rejected')->orWhere(function($subQ) {
-                            $subQ->where('is_approved', false)->whereNotNull('rejection_reason');
-                        });
+                        $q->where('status', 'rejected')->orWhereNotNull('rejection_reason');
                     });
                 } elseif ($request->status === 'pending') {
                     $query->where(function($q) {
-                        $q->where('status', 'pending')
-                          ->orWhere(function($subQ) {
-                              $subQ->where('is_approved', false)->whereNull('rejection_reason');
+                        $q->where('is_approved', false)
+                          ->where(function($subQ) {
+                              $subQ->whereNull('rejection_reason')->where('status', '!=', 'rejected');
                           });
                     });
                 }
@@ -67,11 +63,14 @@ class SellerProductApprovalController extends Controller
                     return '<span class="price-text">৳' . number_format($row->price, 2) . '</span>';
                 })
                 ->editColumn('status', function ($row) {
-                    if ($row->status === 'approved' || ($row->is_approved && $row->is_active)) {
+                    $isApprovedAndLive = $row->is_approved && $row->is_active && $row->status === 'approved';
+                    $isRejected = $row->status === 'rejected' || (!empty($row->rejection_reason));
+
+                    if ($isApprovedAndLive) {
                         return '<span class="badge bg-success-light text-success px-2 py-1"><i class="fas fa-check-circle me-1"></i> Live / Approved</span>';
-                    } elseif ($row->status === 'rejected' || (! $row->is_approved && ! empty($row->rejection_reason))) {
+                    } elseif ($isRejected) {
                         return '<div class="d-flex flex-column">
-                            <span class="badge bg-danger-light text-danger px-2 py-1"><i class="fas fa-times-circle me-1"></i> Rejected</span>
+                            <span class="badge bg-danger-light text-danger px-2 py-1" style="width: fit-content;"><i class="fas fa-times-circle me-1"></i> Rejected</span>
                             <small class="text-muted mt-1" style="font-size: 11px;" title="' . e($row->rejection_reason) . '">Reason: ' . e(Str::limit($row->rejection_reason, 25)) . '</small>
                         </div>';
                     } else {
@@ -82,15 +81,18 @@ class SellerProductApprovalController extends Controller
                     $siteUrl = route('ecommerce.products.show', $row->id);
                     $detailsUrl = route('ecommerce.admin.seller-products.show', $row->id);
 
+                    $isApprovedAndLive = $row->is_approved && $row->is_active && $row->status === 'approved';
+                    $isRejected = $row->status === 'rejected' || (!empty($row->rejection_reason));
+
                     $buttons = '<div class="actions text-end gap-1 d-inline-flex align-items-center">
                         <a class="btn btn-sm btn-outline-info me-1" href="' . $siteUrl . '" target="_blank" title="Site View"><i class="fe fe-globe"></i> Site View</a>
                         <a class="btn btn-sm btn-primary me-1 btn-review-modal" href="' . $detailsUrl . '" data-id="' . $row->id . '" title="Review & Action"><i class="fe fe-eye"></i> Review</a>';
 
-                    if (! ($row->status === 'approved' || ($row->is_approved && $row->is_active))) {
+                    if (! $isApprovedAndLive) {
                         $buttons .= '<button class="btn btn-sm btn-success me-1 btn-approve-direct" data-id="' . $row->id . '" title="Approve & Live"><i class="fe fe-check"></i> Approve</button>';
                     }
 
-                    if (! ($row->status === 'rejected' || (! $row->is_approved && ! empty($row->rejection_reason)))) {
+                    if (! $isRejected) {
                         $buttons .= '<button class="btn btn-sm btn-danger btn-reject-modal" data-id="' . $row->id . '" data-name="' . e($row->name) . '" title="Reject Product"><i class="fe fe-x"></i> Reject</button>';
                     }
 
@@ -103,22 +105,21 @@ class SellerProductApprovalController extends Controller
 
         $pendingCount = Product::whereNotNull('seller_id')
             ->where(function($q) {
-                $q->where('status', 'pending')
-                  ->orWhere(function($subQ) {
-                      $subQ->where('is_approved', false)->whereNull('rejection_reason');
+                $q->where('is_approved', false)
+                  ->where(function($subQ) {
+                      $subQ->whereNull('rejection_reason')->where('status', '!=', 'rejected');
                   });
             })->count();
 
         $approvedCount = Product::whereNotNull('seller_id')
-            ->where(function($q) {
-                $q->where('status', 'approved')->orWhere('is_approved', true);
-            })->count();
+            ->where('is_approved', true)
+            ->where('is_active', true)
+            ->where('status', 'approved')
+            ->count();
 
         $rejectedCount = Product::whereNotNull('seller_id')
             ->where(function($q) {
-                $q->where('status', 'rejected')->orWhere(function($subQ) {
-                    $subQ->where('is_approved', false)->whereNotNull('rejection_reason');
-                });
+                $q->where('status', 'rejected')->orWhereNotNull('rejection_reason');
             })->count();
 
         return view('ecommerce::backend.seller_products.index', compact('pendingCount', 'approvedCount', 'rejectedCount'));
