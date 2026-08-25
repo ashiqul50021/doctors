@@ -175,6 +175,10 @@ class ProductController extends Controller
                     'is_active' => true,
                     'is_featured' => $request->has('is_featured'),
                     'landing_settings' => $request->landing_settings,
+                    'has_variants' => $request->has('has_variants'),
+                    'override_shipping' => $request->has('override_shipping'),
+                    'inside_dhaka_charge' => $request->has('override_shipping') ? $request->inside_dhaka_charge : null,
+                    'outside_dhaka_charge' => $request->has('override_shipping') ? $request->outside_dhaka_charge : null,
                 ]);
 
                 $this->syncVariants($product, $variants);
