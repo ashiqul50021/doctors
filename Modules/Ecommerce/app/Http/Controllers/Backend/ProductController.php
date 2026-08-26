@@ -164,7 +164,7 @@ class ProductController extends Controller
             DB::transaction(function () use ($validated, $request, $imagePath, $galleryPaths, $variants) {
                 $product = Product::create([
                     'name' => $validated['name'],
-                    'slug' => Str::slug($validated['name']),
+                    'slug' => $this->generateUniqueSlug($validated['name']),
                     'product_category_id' => $validated['product_category_id'],
                     'description' => $request->description,
                     'price' => $validated['price'],
@@ -251,7 +251,7 @@ class ProductController extends Controller
 
         $data = [
             'name' => $validated['name'],
-            'slug' => Str::slug($validated['name']),
+            'slug' => $this->generateUniqueSlug($validated['name'], $product->id),
             'product_category_id' => $validated['product_category_id'],
             'description' => $request->description,
             'price' => $validated['price'],
@@ -446,5 +446,19 @@ class ProductController extends Controller
         }
 
         return redirect()->back()->with('success', 'Product status updated successfully.');
+    }
+
+    protected function generateUniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $counter = 1;
+
+        while (Product::where('slug', $slug)->when($ignoreId, fn($query) => $query->where('id', '!=', $ignoreId))->exists()) {
+            $slug = "{$originalSlug}-{$counter}";
+            $counter++;
+        }
+
+        return $slug;
     }
 }
