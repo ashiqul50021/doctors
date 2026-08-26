@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Product;
-use App\Models\ProductVariant;
+use Modules\Ecommerce\Models\Product;
+use Modules\Ecommerce\Models\ProductVariant;
 use Illuminate\Validation\ValidationException;
 
 class ProductStockService
