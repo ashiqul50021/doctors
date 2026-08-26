@@ -387,6 +387,7 @@ class ProductController extends Controller
         }
 
         $product = $inventory['product'];
+        $variant = $inventory['variant'] ?? null;
         $effectivePrice = $variant ? $variant->currentPrice() : ($product->sale_price ?? $product->price);
         $campaignPrice = $product->getEffectiveCampaignPrice();
         if ($campaignPrice !== null) {
