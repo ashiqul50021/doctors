@@ -160,8 +160,10 @@ class ProductController extends Controller
             ? ImageService::uploadMany($request->file('gallery'), 'products')
             : [];
 
+        $landingSettings = $this->processLandingSettingsWithUploads($request, $request->landing_settings);
+
         try {
-            DB::transaction(function () use ($validated, $request, $imagePath, $galleryPaths, $variants) {
+            DB::transaction(function () use ($validated, $request, $imagePath, $galleryPaths, $variants, $landingSettings) {
                 $product = Product::create([
                     'name' => $validated['name'],
                     'slug' => $this->generateUniqueSlug($validated['name']),
@@ -174,7 +176,7 @@ class ProductController extends Controller
                     'gallery' => $galleryPaths,
                     'is_active' => true,
                     'is_featured' => $request->has('is_featured'),
-                    'landing_settings' => $request->landing_settings,
+                    'landing_settings' => $landingSettings,
                     'has_variants' => $request->has('has_variants'),
                     'override_shipping' => $request->has('override_shipping'),
                     'inside_dhaka_charge' => $request->has('override_shipping') ? $request->inside_dhaka_charge : null,
@@ -249,6 +251,8 @@ class ProductController extends Controller
         $oldPrimaryImagePath = $product->image;
         $newPrimaryImagePath = null;
 
+        $landingSettings = $this->processLandingSettingsWithUploads($request, $request->landing_settings, $product->landing_settings);
+
         $data = [
             'name' => $validated['name'],
             'slug' => $this->generateUniqueSlug($validated['name'], $product->id),
@@ -264,7 +268,7 @@ class ProductController extends Controller
             'gallery' => $galleryPaths,
             'is_active' => $request->has('is_active'),
             'is_featured' => $request->has('is_featured'),
-            'landing_settings' => $request->landing_settings,
+            'landing_settings' => $landingSettings,
         ];
 
         if ($request->hasFile('image')) {
@@ -460,5 +464,44 @@ class ProductController extends Controller
         }
 
         return $slug;
+    }
+
+    protected function processLandingSettingsWithUploads(Request $request, ?array $landingSettings, ?array $currentSettings = null): ?array
+    {
+        if (!$landingSettings || empty($landingSettings['sections'])) {
+            return $landingSettings;
+        }
+
+        $landingFiles = $request->file('landing_settings_files', []);
+
+        foreach ($landingSettings['sections'] as $secIndex => &$section) {
+            $type = $section['type'] ?? '';
+
+            if ($type === 'gallery') {
+                $images = is_array($section['images'] ?? null) ? $section['images'] : [];
+                $cleanImages = [];
+
+                // Handle string URLs / existing images
+                foreach ($images as $img) {
+                    if (is_string($img) && trim($img) !== '') {
+                        $cleanImages[] = trim($img);
+                    }
+                }
+
+                // Handle newly uploaded files for this section
+                if (isset($landingFiles['sections'][$secIndex]['images']) && is_array($landingFiles['sections'][$secIndex]['images'])) {
+                    foreach ($landingFiles['sections'][$secIndex]['images'] as $uploadedImage) {
+                        if ($uploadedImage instanceof \Illuminate\Http\UploadedFile && $uploadedImage->isValid()) {
+                            $uploadedPath = ImageService::upload($uploadedImage, 'landing_gallery');
+                            $cleanImages[] = $uploadedPath;
+                        }
+                    }
+                }
+
+                $section['images'] = array_values(array_unique($cleanImages));
+            }
+        }
+
+        return $landingSettings;
     }
 }

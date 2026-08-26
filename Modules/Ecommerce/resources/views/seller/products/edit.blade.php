@@ -427,26 +427,35 @@
                                                                 <!-- Section Content Container -->
                                                                 <div class="section-content-container mt-2 border-top pt-2">
                                                                     @if($secType === 'gallery')
-                                                                        <label class="small fw-bold mb-2">গ্যালারি ছবিসমূহ (Gallery Image Links / URLs)</label>
-                                                                        <div class="gallery-items-list border rounded p-2 bg-white">
+                                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                                            <label class="small fw-bold mb-0">গ্যালারি ছবিসমূহ (Gallery Photos)</label>
+                                                                            <span class="text-muted small">সরাসরি ফাইল আপলোড অথবা ইমেজ লিংক দিন</span>
+                                                                        </div>
+                                                                        <div class="gallery-items-list border rounded p-2 bg-white mb-2">
                                                                             @php
                                                                                 $secGalleryImages = $sec['images'] ?? [];
                                                                             @endphp
                                                                             @foreach($secGalleryImages as $imgUrl)
-                                                                                <div class="gallery-image-row d-flex align-items-center gap-2 mb-2 p-2 rounded border bg-light">
-                                                                                    <div class="preview-box flex-shrink-0" style="width: 50px; height: 50px; background: #cbd5e1; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                                                                                        <img src="{{ $imgUrl }}" class="img-preview" style="width: 100%; height: 100%; object-fit: cover;">
+                                                                                <div class="gallery-image-row d-flex align-items-center gap-2 mb-2 p-2 rounded border bg-light shadow-2xs">
+                                                                                    <div class="preview-box flex-shrink-0" style="width: 54px; height: 54px; background: #cbd5e1; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #cbd5e1;">
+                                                                                        <img src="{{ Str::startsWith($imgUrl, ['http://', 'https://', 'data:']) ? $imgUrl : asset($imgUrl) }}" class="img-preview" style="width: 100%; height: 100%; object-fit: cover;">
                                                                                     </div>
                                                                                     <div class="flex-grow-1">
                                                                                         <input type="text" name="landing_settings[sections][{{ $secIdx }}][images][]" class="form-control form-control-sm gallery-url-input" value="{{ $imgUrl }}" placeholder="ছবির লিংক/ইউআরএল (যেমন: https://... বা /uploads/...)">
                                                                                     </div>
-                                                                                    <button type="button" class="btn btn-xs btn-danger remove-item-btn" title="মুছে ফেলুন"><i class="fas fa-trash"></i></button>
+                                                                                    <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn" title="মুছে ফেলুন"><i class="fas fa-trash"></i></button>
                                                                                 </div>
                                                                             @endforeach
                                                                         </div>
-                                                                        <button type="button" class="btn btn-xs btn-outline-primary add-gallery-item-btn mt-2">
-                                                                            <i class="fas fa-plus me-1"></i> ছবি যোগ করুন (Add Photo URL)
-                                                                        </button>
+                                                                        <div class="d-flex flex-wrap gap-2">
+                                                                            <label class="btn btn-xs btn-primary upload-gallery-file-label mb-0 cursor-pointer">
+                                                                                <i class="fas fa-cloud-upload-alt me-1"></i> ছবি আপলোড করুন (Upload Image)
+                                                                                <input type="file" class="upload-gallery-file-input" accept="image/*" multiple style="display: none;">
+                                                                            </label>
+                                                                            <button type="button" class="btn btn-xs btn-outline-secondary add-gallery-item-btn">
+                                                                                <i class="fas fa-link me-1"></i> লিঙ্ক যোগ করুন (Add URL Link)
+                                                                            </button>
+                                                                        </div>
                                                                     @elseif($secType === 'video')
                                                                         <div class="form-group mb-2">
                                                                             <label class="small fw-bold">ইউটিউব ভিডিও লিংক (YouTube Video URL)</label>
@@ -786,19 +795,60 @@
                 });
             }
 
-            function createGalleryImageRow(secIndex, imgUrl = '') {
+            function createGalleryImageRow(secIndex, imgUrl = '', fileObj = null) {
                 const div = document.createElement('div');
-                div.className = 'gallery-image-row d-flex align-items-center gap-2 mb-2 p-2 rounded border bg-light';
+                div.className = 'gallery-image-row d-flex align-items-center gap-2 mb-2 p-2 rounded border bg-light shadow-2xs';
+                
+                const previewSrc = fileObj ? URL.createObjectURL(fileObj) : (imgUrl || '');
+
                 div.innerHTML = `
-                    <div class="preview-box flex-shrink-0" style="width: 50px; height: 50px; background: #cbd5e1; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                        <img src="${imgUrl || ''}" class="img-preview" style="width: 100%; height: 100%; object-fit: cover; ${imgUrl ? '' : 'display: none;'}" />
-                        <i class="fas fa-image text-muted placeholder-icon" style="${imgUrl ? 'display: none;' : ''}"></i>
+                    <div class="preview-box flex-shrink-0" style="width: 54px; height: 54px; background: #cbd5e1; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #cbd5e1;">
+                        <img src="${previewSrc}" class="img-preview" style="width: 100%; height: 100%; object-fit: cover; ${previewSrc ? '' : 'display: none;'}" />
+                        <i class="fas fa-image text-muted placeholder-icon" style="${previewSrc ? 'display: none;' : ''}"></i>
                     </div>
                     <div class="flex-grow-1">
-                        <input type="text" name="landing_settings[sections][${secIndex}][images][]" class="form-control form-control-sm gallery-url-input" value="${imgUrl}" placeholder="ছবির ইউআরএল/লিংক লিখুন">
+                        ${fileObj ? `
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-success-light text-success fw-semibold"><i class="fas fa-file-image me-1"></i> New Upload</span>
+                                <small class="text-truncate text-dark fw-medium" style="max-width: 200px;">${fileObj.name}</small>
+                                <small class="text-muted">(${(fileObj.size / 1024).toFixed(1)} KB)</small>
+                            </div>
+                            <input type="hidden" name="landing_settings[sections][${secIndex}][images][]" value="" class="gallery-url-input">
+                        ` : `
+                            <input type="text" name="landing_settings[sections][${secIndex}][images][]" class="form-control form-control-sm gallery-url-input" value="${imgUrl}" placeholder="ছবির ইউআরএল/লিংক লিখুন (যেমন: https://... বা /uploads/...)">
+                        `}
                     </div>
-                    <button type="button" class="btn btn-xs btn-danger remove-item-btn" title="মুছে ফেলুন"><i class="fas fa-trash"></i></button>
+                    <button type="button" class="btn btn-xs btn-outline-danger remove-item-btn" title="মুছে ফেলুন"><i class="fas fa-trash"></i></button>
                 `;
+
+                if (fileObj) {
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.name = `landing_settings_files[sections][${secIndex}][images][]`;
+                    fileInput.style.display = 'none';
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(fileObj);
+                    fileInput.files = dataTransfer.files;
+                    div.appendChild(fileInput);
+                }
+
+                const input = div.querySelector('.gallery-url-input');
+                const imgPreview = div.querySelector('.img-preview');
+                const placeholder = div.querySelector('.placeholder-icon');
+                if (input && !fileObj) {
+                    input.addEventListener('input', function() {
+                        const val = input.value.trim();
+                        if (val !== '') {
+                            imgPreview.src = val;
+                            imgPreview.style.display = 'block';
+                            if (placeholder) placeholder.style.display = 'none';
+                        } else {
+                            imgPreview.style.display = 'none';
+                            if (placeholder) placeholder.style.display = 'block';
+                        }
+                    });
+                }
+
                 div.querySelector('.remove-item-btn').addEventListener('click', () => div.remove());
                 return div;
             }
@@ -940,11 +990,20 @@
                     <!-- Section Content Container -->
                     <div class="section-content-container mt-2 border-top pt-2">
                         ${type === 'gallery' ? `
-                            <label class="small fw-bold mb-2">গ্যালারি ছবিসমূহ (Gallery Image Links / URLs)</label>
-                            <div class="gallery-items-list border rounded p-2 bg-white"></div>
-                            <button type="button" class="btn btn-xs btn-outline-primary add-gallery-item-btn mt-2">
-                                <i class="fas fa-plus me-1"></i> ছবি যোগ করুন (Add Photo URL)
-                            </button>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <label class="small fw-bold mb-0">গ্যালারি ছবিসমূহ (Gallery Photos)</label>
+                                <span class="text-muted small">সরাসরি ফাইল আপলোড অথবা ইমেজ লিংক দিন</span>
+                            </div>
+                            <div class="gallery-items-list border rounded p-2 bg-white mb-2"></div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <label class="btn btn-xs btn-primary upload-gallery-file-label mb-0 cursor-pointer">
+                                    <i class="fas fa-cloud-upload-alt me-1"></i> ছবি আপলোড করুন (Upload Image)
+                                    <input type="file" class="upload-gallery-file-input" accept="image/*" multiple style="display: none;">
+                                </label>
+                                <button type="button" class="btn btn-xs btn-outline-secondary add-gallery-item-btn">
+                                    <i class="fas fa-link me-1"></i> লিঙ্ক যোগ করুন (Add URL Link)
+                                </button>
+                            </div>
                         ` : type === 'video' ? `
                             <div class="form-group mb-2">
                                 <label class="small fw-bold">ইউটিউব ভিডিও লিংক (YouTube Video URL)</label>
@@ -1050,7 +1109,7 @@
                     });
                 }
 
-                // Add gallery image
+                // Add gallery image from URL
                 const addGalleryBtn = card.querySelector('.add-gallery-item-btn');
                 if (addGalleryBtn) {
                     addGalleryBtn.addEventListener('click', function() {
@@ -1060,6 +1119,22 @@
                             galleryList.appendChild(createGalleryImageRow(secIndex));
                             const input = galleryList.lastElementChild.querySelector('input');
                             if (input) input.focus();
+                        }
+                    });
+                }
+
+                // Add gallery image from File Upload
+                const uploadGalleryInput = card.querySelector('.upload-gallery-file-input');
+                if (uploadGalleryInput) {
+                    uploadGalleryInput.addEventListener('change', function(e) {
+                        const secIndex = parseInt(card.getAttribute('data-section-index') || '0');
+                        const galleryList = card.querySelector('.gallery-items-list');
+                        if (galleryList && e.target.files && e.target.files.length > 0) {
+                            Array.from(e.target.files).forEach(file => {
+                                galleryList.appendChild(createGalleryImageRow(secIndex, '', file));
+                            });
+                            uploadGalleryInput.value = '';
+                            reindexSections();
                         }
                     });
                 }
@@ -1156,8 +1231,15 @@
                     } else if (type === 'badges') {
                         reindexBadgeItems(card);
                     } else if (type === 'gallery') {
-                        card.querySelectorAll('.gallery-url-input').forEach(input => {
-                            input.name = `landing_settings[sections][${index}][images][]`;
+                        card.querySelectorAll('.gallery-image-row').forEach(row => {
+                            const urlInput = row.querySelector('.gallery-url-input');
+                            if (urlInput) {
+                                urlInput.name = `landing_settings[sections][${index}][images][]`;
+                            }
+                            const fileInput = row.querySelector('input[type="file"]');
+                            if (fileInput) {
+                                fileInput.name = `landing_settings_files[sections][${index}][images][]`;
+                            }
                         });
                     } else if (type === 'custom') {
                         card.querySelectorAll('.item-row textarea').forEach(textarea => {
