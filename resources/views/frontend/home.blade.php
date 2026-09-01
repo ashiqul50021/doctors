@@ -227,38 +227,57 @@
         <!-- Live Campaign Flash Deal Section -->
         <section class="section-home-campaign py-4 my-2">
             <div class="container">
-                <div class="card border-0 rounded-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #1e1b4b 0%, #31104b 50%, #4c0519 100%); color: #ffffff;">
-                    <div class="p-4 p-md-5">
+                <div class="card border-0 rounded-4 overflow-hidden shadow-lg position-relative" style="background: linear-gradient(135deg, #091a3c 0%, #1e3a8a 55%, #1d4ed8 100%); color: #ffffff;">
+                    <!-- Ambient Glow / Background decoration -->
+                    <div style="position: absolute; top: -40px; right: -40px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+                    <div style="position: absolute; bottom: -50px; left: 10%; width: 200px; height: 200px; background: radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+
+                    <div class="p-4 p-md-5 position-relative">
                         <div class="row align-items-center g-4">
-                            <div class="col-lg-5">
-                                <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill mb-2 fw-bold">
-                                    <i class="fas fa-bolt me-1"></i> LIVE FLASH DEAL
-                                </span>
-                                <h2 class="fw-bold text-white display-6 mb-2">{{ $homeCampaign->title }}</h2>
-                                <p class="text-light opacity-75 mb-3">{{ $homeCampaign->description ?: 'Exclusive mega discount offers for a limited time. Don’t miss out!' }}</p>
+                            <!-- Left Info & Countdown -->
+                            <div class="col-lg-4 col-xl-4">
+                                <div class="pe-lg-2">
+                                    <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill mb-2 fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 11.5px; box-shadow: 0 4px 12px rgba(220,38,38,0.35);">
+                                        <i class="fas fa-bolt me-1 text-warning"></i> Live Flash Deal
+                                    </span>
+                                    <h2 class="fw-bold text-white mb-2" style="font-size: 28px; line-height: 1.25;">{{ $homeCampaign->title }}</h2>
+                                    <p class="text-light opacity-75 mb-3" style="font-size: 13.5px; line-height: 1.5;">{{ $homeCampaign->description ?: 'Exclusive mega discount offers for a limited time. Don’t miss out!' }}</p>
 
-                                <!-- Live Countdown -->
-                                <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-10 backdrop-blur p-2.5 rounded-3 border border-white border-opacity-20 mb-4">
-                                    <span class="text-white small fw-bold me-1"><i class="fas fa-clock me-1"></i> Ends In:</span>
-                                    <div class="d-flex align-items-center gap-1">
-                                        <span class="badge bg-danger text-white px-2.5 py-1.5 fs-6" id="homeCampHours">00</span>
-                                        <span class="text-white fw-bold">:</span>
-                                        <span class="badge bg-danger text-white px-2.5 py-1.5 fs-6" id="homeCampMins">00</span>
-                                        <span class="text-white fw-bold">:</span>
-                                        <span class="badge bg-danger text-white px-2.5 py-1.5 fs-6" id="homeCampSecs">00</span>
+                                    <!-- Live Countdown -->
+                                    <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-10 backdrop-blur px-3 py-2 rounded-3 border border-white border-opacity-20 mb-4 shadow-sm" id="campaignTimerWrapper">
+                                        <span class="text-white small fw-bold me-1"><i class="fas fa-clock text-warning me-1"></i> Ends In:</span>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <span class="badge text-white px-2 py-1 fs-6 fw-bold" style="background-color: #ef4444;" id="homeCampHours">00</span>
+                                            <span class="text-white fw-bold">:</span>
+                                            <span class="badge text-white px-2 py-1 fs-6 fw-bold" style="background-color: #ef4444;" id="homeCampMins">00</span>
+                                            <span class="text-white fw-bold">:</span>
+                                            <span class="badge text-white px-2 py-1 fs-6 fw-bold" style="background-color: #ef4444;" id="homeCampSecs">00</span>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div>
-                                    <a href="{{ route('ecommerce.campaigns.show', $homeCampaign->slug) }}" class="btn btn-danger btn-lg rounded-pill px-4 fw-bold">
-                                        View All Offers <i class="fas fa-arrow-right ms-2"></i>
-                                    </a>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="{{ route('ecommerce.campaigns.show', $homeCampaign->slug) }}" class="btn text-white rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border: 1.5px solid rgba(255,255,255,0.25); box-shadow: 0 4px 14px rgba(0,0,0,0.25); font-size: 14px;">
+                                            View All Offers <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                        @if($homeCampaign->products->count() > 3)
+                                            <!-- Custom Slider Nav Buttons -->
+                                            <div class="d-none d-lg-flex align-items-center gap-1.5 ms-2">
+                                                <button type="button" class="btn btn-sm btn-light rounded-circle shadow-sm camp-slick-prev" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center; color: #1e3a8a;">
+                                                    <i class="fas fa-chevron-left" style="font-size: 12px;"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-light rounded-circle shadow-sm camp-slick-next" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center; color: #1e3a8a;">
+                                                    <i class="fas fa-chevron-right" style="font-size: 12px;"></i>
+                                                </button>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="col-lg-7">
-                                <div class="row g-3">
-                                    @foreach($homeCampaign->products->take(4) as $campProd)
+                            <!-- Right Single-Row Products Carousel -->
+                            <div class="col-lg-8 col-xl-8">
+                                <div class="campaign-products-slider" id="homeCampaignSlider">
+                                    @foreach($homeCampaign->products as $campProd)
                                         @php
                                             $customP = $campProd->pivot->campaign_price ? (float)$campProd->pivot->campaign_price : null;
                                             $cPrice = $homeCampaign->calculateCampaignPrice((float)$campProd->price, $customP);
@@ -266,27 +285,27 @@
                                             $dPct = ($rPrice > $cPrice && $rPrice > 0) ? round((($rPrice - $cPrice) / $rPrice) * 100) : 0;
                                             $pImg = $campProd->image ?: (is_array($campProd->gallery) ? ($campProd->gallery[0] ?? null) : null);
                                         @endphp
-                                        <div class="col-6 col-md-6">
-                                            <div class="card h-100 border-0 rounded-3 p-2 bg-white text-dark shadow-sm">
-                                                <div class="position-relative bg-light rounded-2 p-2 text-center" style="aspect-ratio: 1/1;">
-                                                    <a href="{{ route('ecommerce.products.show', $campProd->id) }}">
+                                        <div class="px-2">
+                                            <div class="card h-100 border-0 rounded-3 p-2 bg-white text-dark shadow-sm campaign-product-card" style="transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                                                <div class="position-relative bg-light rounded-2 p-2 text-center" style="aspect-ratio: 1/1; overflow: hidden;">
+                                                    <a href="{{ route('ecommerce.products.show', $campProd->id) }}" class="d-block h-100 w-100">
                                                         <img src="{{ $pImg ? asset($pImg) : asset('assets/img/products/default-product.png') }}" 
-                                                             alt="{{ $campProd->name }}" class="img-fluid h-100 object-fit-contain">
+                                                             alt="{{ $campProd->name }}" class="img-fluid h-100 w-100 object-fit-contain" style="transition: transform 0.3s ease;">
                                                     </a>
                                                     @if($dPct > 0)
-                                                        <span class="badge bg-danger position-absolute top-0 start-0 m-2 fw-bold">-{{ $dPct }}%</span>
+                                                        <span class="badge bg-danger position-absolute top-0 start-0 m-2 fw-bold" style="font-size: 11px; box-shadow: 0 2px 6px rgba(220,38,38,0.3);">-{{ $dPct }}%</span>
                                                     @endif
                                                 </div>
                                                 <div class="pt-2 px-1">
-                                                    <h6 class="text-truncate fw-bold mb-1">
+                                                    <h6 class="text-truncate fw-bold mb-1" style="font-size: 13.5px;" title="{{ $campProd->name }}">
                                                         <a href="{{ route('ecommerce.products.show', $campProd->id) }}" class="text-dark text-decoration-none">
                                                             {{ $campProd->name }}
                                                         </a>
                                                     </h6>
                                                     <div class="d-flex align-items-center justify-content-between">
-                                                        <span class="text-danger fw-bold">৳{{ number_format($cPrice, 0) }}</span>
+                                                        <span class="text-primary fw-bold" style="font-size: 15px; color: #1d4ed8 !important;">৳{{ number_format($cPrice, 0) }}</span>
                                                         @if($cPrice < $rPrice)
-                                                            <span class="text-muted text-decoration-line-through small">৳{{ number_format($rPrice, 0) }}</span>
+                                                            <span class="text-muted text-decoration-line-through small" style="font-size: 12px;">৳{{ number_format($rPrice, 0) }}</span>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -301,14 +320,51 @@
             </div>
         </section>
 
+        @push('styles')
+        <style>
+            .campaign-product-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+            }
+            .campaign-product-card:hover img {
+                transform: scale(1.05);
+            }
+            .campaign-products-slider .slick-track {
+                display: flex !important;
+                align-items: stretch;
+            }
+            .campaign-products-slider .slick-slide {
+                height: auto;
+            }
+            .campaign-products-slider .slick-slide > div {
+                height: 100%;
+            }
+            .camp-slick-prev:hover, .camp-slick-next:hover {
+                background-color: #1d4ed8 !important;
+                color: #ffffff !important;
+            }
+        </style>
+        @endpush
+
         @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+            function initHomeCampaign() {
+                // Countdown Timer
                 const hCampEnd = new Date("{{ $homeCampaign->end_date->toIso8601String() }}").getTime();
+                const timerWrap = document.getElementById('campaignTimerWrapper');
+
                 function tickHomeCamp() {
                     const now = new Date().getTime();
                     const dist = hCampEnd - now;
-                    if (dist < 0) return;
+                    if (dist <= 0) {
+                        const hE = document.getElementById('homeCampHours');
+                        const mE = document.getElementById('homeCampMins');
+                        const sE = document.getElementById('homeCampSecs');
+                        if (hE) hE.innerText = '00';
+                        if (mE) mE.innerText = '00';
+                        if (sE) sE.innerText = '00';
+                        return;
+                    }
                     const hrs = Math.floor(dist / (1000 * 60 * 60));
                     const mns = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
                     const scs = Math.floor((dist % (1000 * 60)) / 1000);
@@ -321,7 +377,73 @@
                 }
                 tickHomeCamp();
                 setInterval(tickHomeCamp, 1000);
-            });
+
+                // Slick Slider for Single-Row
+                if (typeof $ !== 'undefined' && typeof $.fn.slick !== 'undefined') {
+                    const $slider = $('#homeCampaignSlider');
+                    if ($slider.length > 0) {
+                        if ($slider.hasClass('slick-initialized')) {
+                            try { $slider.slick('unslick'); } catch (e) {}
+                        }
+                        $slider.slick({
+                            dots: false,
+                            arrows: false,
+                            infinite: false,
+                            speed: 400,
+                            slidesToShow: 3,
+                            slidesToScroll: 1,
+                            autoplay: false,
+                            responsive: [
+                                {
+                                    breakpoint: 1200,
+                                    settings: {
+                                        slidesToShow: 3,
+                                        slidesToScroll: 1
+                                    }
+                                },
+                                {
+                                    breakpoint: 992,
+                                    settings: {
+                                        slidesToShow: 2.5,
+                                        slidesToScroll: 1
+                                    }
+                                },
+                                {
+                                    breakpoint: 768,
+                                    settings: {
+                                        slidesToShow: 2,
+                                        slidesToScroll: 1
+                                    }
+                                },
+                                {
+                                    breakpoint: 480,
+                                    settings: {
+                                        slidesToShow: 1.5,
+                                        slidesToScroll: 1
+                                    }
+                                }
+                            ]
+                        });
+
+                        // Wire custom arrows
+                        $('.camp-slick-prev').off('click').on('click', function() {
+                            $slider.slick('slickPrev');
+                        });
+                        $('.camp-slick-next').off('click').on('click', function() {
+                            $slider.slick('slickNext');
+                        });
+
+                        setTimeout(function () {
+                            if ($slider.hasClass('slick-initialized')) {
+                                $slider.slick('setPosition');
+                            }
+                        }, 100);
+                    }
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', initHomeCampaign);
+            document.addEventListener('livewire:navigated', initHomeCampaign);
         </script>
         @endpush
     @endif

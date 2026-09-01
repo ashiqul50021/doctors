@@ -65,7 +65,7 @@ class HomeController extends Controller
         $homeCampaign = \Modules\Ecommerce\Models\Campaign::active()
             ->where('show_on_homepage', true)
             ->with(['products' => function ($q) {
-                $q->where('is_active', true)->take(8);
+                $q->where('is_active', true)->take(16);
             }])
             ->latest('id')
             ->first();
