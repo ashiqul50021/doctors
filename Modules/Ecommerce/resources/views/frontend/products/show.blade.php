@@ -899,7 +899,7 @@
             <!-- Add Buy Now Button if enabled for this section -->
             @if(!in_array($secType, ['order_form', 'reviews']) && ($secShowBtn === '1' || $secShowBtn === 1 || $secShowBtn === 'true') && $stockQty > 0)
                 <div class="text-center my-4">
-                    <a href="#order-form" class="btn btn-primary btn-lg detail-buy-btn text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto shadow" style="min-width: 250px; padding: 12px 36px; border-radius: 8px;">
+                    <a href="#order-form" class="btn btn-primary btn-lg detail-buy-btn landing-buy-now text-decoration-none d-inline-flex align-items-center justify-content-center mx-auto shadow" style="min-width: 250px; padding: 12px 36px; border-radius: 8px;">
                         <i class="fas fa-bolt me-2"></i>
                         <span>{{ $secBtnText }}</span>
                     </a>
@@ -2925,23 +2925,34 @@
         let directCouponType = null;
         let directCouponAmount = 0;
 
-        // Submit main purchase form on landing CTA click
-        document.querySelectorAll('.landing-buy-now').forEach(button => {
+        // Smart Action for Landing Order / Buy Now Buttons
+        document.querySelectorAll('.landing-buy-now, a[href="#order-form"]').forEach(button => {
             button.addEventListener('click', function (e) {
                 e.preventDefault();
-                const mainForm = document.querySelector('.purchase-form');
-                if (mainForm) {
-                    let buyNowInput = mainForm.querySelector('input[name="buy_now"]');
-                    if (!buyNowInput) {
-                        buyNowInput = document.createElement('input');
-                        buyNowInput.type = 'hidden';
-                        buyNowInput.name = 'buy_now';
-                        buyNowInput.value = '1';
-                        mainForm.appendChild(buyNowInput);
-                    } else {
-                        buyNowInput.value = '1';
+                const orderFormSection = document.getElementById('order-form');
+                if (orderFormSection) {
+                    orderFormSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Focus on the name input inside the form for quick checkout
+                    setTimeout(() => {
+                        const nameInput = orderFormSection.querySelector('input[name="name"]');
+                        if (nameInput) nameInput.focus();
+                    }, 400);
+                } else {
+                    // Fallback to top purchase form if custom order form section is not present
+                    const mainForm = document.querySelector('.ref-purchase-form') || document.querySelector('.purchase-form');
+                    if (mainForm) {
+                        let buyNowInput = mainForm.querySelector('input[name="buy_now"]');
+                        if (!buyNowInput) {
+                            buyNowInput = document.createElement('input');
+                            buyNowInput.type = 'hidden';
+                            buyNowInput.name = 'buy_now';
+                            buyNowInput.value = '1';
+                            mainForm.appendChild(buyNowInput);
+                        } else {
+                            buyNowInput.value = '1';
+                        }
+                        mainForm.submit();
                     }
-                    mainForm.submit();
                 }
             });
         });
