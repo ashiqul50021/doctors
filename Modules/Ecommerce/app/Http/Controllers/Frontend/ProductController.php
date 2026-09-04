@@ -568,7 +568,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email',
+            'email' => 'nullable|email',
             'phone' => 'required|string|max:20',
             'address' => 'required|string',
             'coupon_code' => 'nullable|string',
@@ -618,11 +618,14 @@ class ProductController extends Controller
         if (auth()->check() && auth()->user()->role === 'patient') {
             $patient = auth()->user()->patient;
         } else {
-            $customerUser = \App\Models\User::where('email', $request->email)->first();
+            $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone);
+            $userEmail = $request->filled('email') ? $request->email : ('guest_' . $cleanPhone . '@abcsheba.com');
+
+            $customerUser = \App\Models\User::where('email', $userEmail)->first();
             if (!$customerUser) {
                 $customerUser = \App\Models\User::create([
                     'name' => $request->name,
-                    'email' => $request->email,
+                    'email' => $userEmail,
                     'password' => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(12)),
                     'role' => 'patient',
                 ]);

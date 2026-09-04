@@ -33,13 +33,7 @@
                                         <input type="text" name="name" class="form-control" value="{{ old('name', Auth::user()->name ?? '') }}" required>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group mb-3">
-                                        <label class="form-label">Email Address <span class="text-danger">*</span></label>
-                                        <input type="email" name="email" class="form-control" value="{{ old('email', Auth::user()->email ?? '') }}" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="form-group mb-3">
                                         <label class="form-label">Phone Number <span class="text-danger">*</span></label>
                                         <input type="text" name="phone" class="form-control" value="{{ old('phone', Auth::user()->patient->phone ?? '') }}" required>
@@ -47,7 +41,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group mb-3">
-                                        <label class="form-label">Shipping Address <span class="text-danger">*</span></label>
+                                        <label class="form-label">Address <span class="text-danger">*</span></label>
                                         <textarea name="address" class="form-control" rows="3" required>{{ old('address', Auth::user()->patient->address ?? '') }}</textarea>
                                     </div>
                                 </div>
@@ -147,6 +141,18 @@
                             <div class="d-flex justify-content-between mb-2" id="discount_wrapper" @if(!$autoCoupon) style="display: none !important;" @endif>
                                 <span>Discount <small class="text-muted" id="coupon_info">@if($autoCoupon) ({{ $autoCoupon->code }}) @endif</small></span>
                                 <span class="text-danger">-৳<span id="discount_display">{{ number_format($discount, 2) }}</span></span>
+                            </div>
+
+                            <!-- Coupon Code Input -->
+                            <div class="my-3">
+                                <label class="form-label small fw-bold text-muted mb-1">Have a coupon?</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="coupon_code" placeholder="Enter coupon code" value="{{ $autoCoupon ? $autoCoupon->code : '' }}" style="min-height: 46px; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                                    <button class="btn btn-outline-primary px-3 fw-bold" type="button" onclick="applyCoupon()" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                                        Apply
+                                    </button>
+                                </div>
+                                <div id="coupon_alert_msg" class="mt-1" style="display: none;"></div>
                             </div>
 
                             <hr>

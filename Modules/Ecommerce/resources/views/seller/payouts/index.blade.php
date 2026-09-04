@@ -13,7 +13,7 @@
             </ul>
         </div>
         <div class="col-auto">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#payoutModal" {{ $walletBalance < 500 ? 'disabled' : '' }}>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#payoutModal" data-bs-toggle="modal" data-bs-target="#payoutModal" {{ $walletBalance < 500 ? 'disabled' : '' }}>
                 <i class="fe fe-plus-circle mr-1"></i> Request Payout
             </button>
         </div>
@@ -50,52 +50,52 @@
 
 <div class="row">
     <div class="col-xl-4 col-sm-6 col-12">
-        <div class="card bg-success text-white">
+        <div class="card">
             <div class="card-body">
                 <div class="dash-widget-header">
-                    <span class="dash-widget-icon text-white border-white">
+                    <span class="dash-widget-icon text-success">
                         <i class="fe fe-check-circle"></i>
                     </span>
                     <div class="dash-count">
-                        <h3 class="text-white">৳{{ number_format($walletBalance, 2) }}</h3>
+                        <h3>৳{{ number_format($walletBalance, 2) }}</h3>
                     </div>
                 </div>
-                <div class="dash-widget-info mt-2">
-                    <h6 class="text-white-50 mb-0">Available Balance (Withdrawable)</h6>
+                <div class="dash-widget-info">
+                    <h6 class="text-muted mb-0">Available Balance (Withdrawable)</h6>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-xl-4 col-sm-6 col-12">
-        <div class="card bg-warning text-dark">
+        <div class="card">
             <div class="card-body">
                 <div class="dash-widget-header">
-                    <span class="dash-widget-icon text-dark border-dark">
+                    <span class="dash-widget-icon text-warning">
                         <i class="fe fe-clock"></i>
                     </span>
                     <div class="dash-count">
-                        <h3 class="text-dark">৳{{ number_format($pendingEarnings, 2) }}</h3>
+                        <h3>৳{{ number_format($pendingEarnings, 2) }}</h3>
                     </div>
                 </div>
-                <div class="dash-widget-info mt-2">
-                    <h6 class="text-dark-50 mb-0">Pending Earnings (Undelivered Orders)</h6>
+                <div class="dash-widget-info">
+                    <h6 class="text-muted mb-0">Pending Earnings (Undelivered Orders)</h6>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-xl-4 col-sm-6 col-12">
-        <div class="card bg-info text-white">
+        <div class="card">
             <div class="card-body">
                 <div class="dash-widget-header">
-                    <span class="dash-widget-icon text-white border-white">
+                    <span class="dash-widget-icon text-primary">
                         <i class="fe fe-credit-card"></i>
                     </span>
                     <div class="dash-count">
-                        <h3 class="text-white">৳{{ number_format($totalWithdrawn, 2) }}</h3>
+                        <h3>৳{{ number_format($totalWithdrawn, 2) }}</h3>
                     </div>
                 </div>
-                <div class="dash-widget-info mt-2">
-                    <h6 class="text-white-50 mb-0">Total Paid Out</h6>
+                <div class="dash-widget-info">
+                    <h6 class="text-muted mb-0">Total Paid Out</h6>
                 </div>
             </div>
         </div>
@@ -168,7 +168,7 @@
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="payoutModalLabel">Request Payout</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close btn-close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -199,7 +199,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">Submit Payout Request</button>
                 </div>
             </form>

@@ -89,10 +89,10 @@
                                 <td>{{ $payout->created_at->format('d M Y, h:i A') }}</td>
                                 <td>
                                     @if($payout->status === 'pending')
-                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#approveModal{{ $payout->id }}">
+                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#approveModal{{ $payout->id }}" data-bs-toggle="modal" data-bs-target="#approveModal{{ $payout->id }}">
                                             Approve
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#rejectModal{{ $payout->id }}">
+                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#rejectModal{{ $payout->id }}" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $payout->id }}">
                                             Reject
                                         </button>
 
@@ -106,7 +106,7 @@
                                                         <input type="hidden" name="status" value="approved">
                                                         <div class="modal-header">
                                                             <h5 class="modal-title">Approve Payout Request #{{ $payout->id }}</h5>
-                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                            <button type="button" class="close btn-close" data-dismiss="modal" data-bs-dismiss="modal">&times;</button>
                                                         </div>
                                                         <div class="modal-body">
                                                             <p>Are you sure you want to mark this payout of <strong>৳{{ number_format($payout->amount, 2) }}</strong> for <strong>{{ $payout->sellerProfile->store_name ?? 'Seller' }}</strong> as Paid / Approved?</p>
@@ -116,7 +116,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Cancel</button>
                                                             <button type="submit" class="btn btn-success">Confirm Approve</button>
                                                         </div>
                                                     </form>
@@ -134,17 +134,17 @@
                                                         <input type="hidden" name="status" value="rejected">
                                                         <div class="modal-header">
                                                             <h5 class="modal-title text-danger">Reject Payout Request #{{ $payout->id }}</h5>
-                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                            <button type="button" class="close btn-close" data-dismiss="modal" data-bs-dismiss="modal">&times;</button>
                                                         </div>
                                                         <div class="modal-body">
                                                             <p>Are you sure you want to reject this payout? The amount <strong>৳{{ number_format($payout->amount, 2) }}</strong> will be refunded back to the seller's wallet balance.</p>
                                                             <div class="form-group mb-3">
-                                                                <label class="fw-bold">Reason for Rejection (Admin Note)</label>
-                                                                <textarea name="admin_note" class="form-control" rows="2" placeholder="Explain why the payout request was rejected" required></textarea>
+                                                                <label class="fw-bold">Reason for Rejection / Admin Note (Optional)</label>
+                                                                <textarea name="admin_note" class="form-control" rows="2" placeholder="e.g. Invalid bank account or mobile number"></textarea>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Cancel</button>
                                                             <button type="submit" class="btn btn-danger">Confirm Reject</button>
                                                         </div>
                                                     </form>
