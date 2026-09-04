@@ -283,10 +283,11 @@ class AgentDashboardController extends Controller
             ]);
             $coupon = $currentCoupon;
         } else {
+            $defaultDiscount = (float) \App\Models\SiteSetting::get('agent_default_coupon_discount', 5.00);
             $coupon = Coupon::create([
                 'code' => $code,
                 'type' => 'percent',
-                'amount' => 5.00,
+                'amount' => $defaultDiscount,
                 'status' => true,
                 'agent_id' => $agent->id,
                 'usage_limit' => null,

@@ -122,18 +122,26 @@
                         @method('PUT')
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label>Shipping Charge (Inside Dhaka)</label>
                                     <input type="number" class="form-control" name="shipping_inside_dhaka"
                                         value="{{ $ecommerceSettings['shipping_inside_dhaka'] ?? '60' }}">
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label>Shipping Charge (Outside Dhaka)</label>
                                     <input type="number" class="form-control" name="shipping_outside_dhaka"
                                         value="{{ $ecommerceSettings['shipping_outside_dhaka'] ?? '120' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label>Default Agent Coupon Discount (%)</label>
+                                    <input type="number" step="0.01" min="0" max="100" class="form-control" name="agent_default_coupon_discount"
+                                        value="{{ $ecommerceSettings['agent_default_coupon_discount'] ?? '5' }}">
+                                    <small class="text-muted">Default discount (%) given when agents create coupons.</small>
                                 </div>
                             </div>
                         </div>

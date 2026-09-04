@@ -60,6 +60,7 @@ class SiteSettingController extends Controller
             'footer_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:20480',
             'shipping_inside_dhaka' => 'nullable|numeric|min:0',
             'shipping_outside_dhaka' => 'nullable|numeric|min:0',
+            'agent_default_coupon_discount' => 'nullable|numeric|min:0|max:100',
             'sslcz_store_id' => 'nullable|string|max:255',
             'sslcz_store_password' => 'nullable|string|max:255',
         ]);
@@ -77,6 +78,7 @@ class SiteSettingController extends Controller
             'linkedin_url',
             'shipping_inside_dhaka',
             'shipping_outside_dhaka',
+            'agent_default_coupon_discount',
             'sslcz_store_id',
             'sslcz_store_password'
         ];
@@ -158,7 +160,7 @@ class SiteSettingController extends Controller
             return 'social';
         if (str_starts_with($key, 'banner_'))
             return 'banner';
-        if (str_starts_with($key, 'shipping_') || str_starts_with($key, 'sslcz_'))
+        if (str_starts_with($key, 'shipping_') || str_starts_with($key, 'sslcz_') || str_starts_with($key, 'agent_'))
             return 'ecommerce';
         return 'general';
     }
