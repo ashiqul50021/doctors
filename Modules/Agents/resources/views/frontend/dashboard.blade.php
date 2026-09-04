@@ -177,19 +177,49 @@
                             @endif
 
                             @php
-                                $linkedCoupon = $agent->coupons()->where('status', true)->first();
+                                $linkedCoupon = $agent->coupons()->first();
                             @endphp
-                            @if ($linkedCoupon)
-                                <div class="mt-4 pt-3 border-top">
-                                    <label class="form-label font-weight-bold text-muted small">Your Personal Discount Coupon Code</label>
-                                    <p class="text-muted mb-2 small">Customers can use this coupon at checkout to get a discount. You will still receive the referral commission!</p>
-                                    <div class="input-group" style="max-width: 450px;">
-                                        <span class="input-group-text bg-light font-weight-bold text-primary">{{ $linkedCoupon->type == 'percent' ? $linkedCoupon->amount . '%' : '৳' . number_format($linkedCoupon->amount, 0) }} OFF</span>
-                                        <input type="text" class="form-control font-weight-bold text-center bg-white" value="{{ $linkedCoupon->code }}" id="coupon_code_field" readonly style="letter-spacing: 1px;">
-                                        <button class="btn btn-outline-primary" type="button" onclick="copyLink('coupon_code_field')">Copy Coupon</button>
+                            <div class="mt-4 pt-3 border-top">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
+                                    <div>
+                                        <label class="form-label font-weight-bold text-muted small mb-0">Your Personal Discount Coupon Code</label>
+                                        <p class="text-muted mb-0 small">Customers can use this coupon at checkout to get a discount. You will still receive your referral commission!</p>
                                     </div>
+                                    @if ($linkedCoupon && $linkedCoupon->status)
+                                        <span class="badge bg-success-light text-success font-weight-bold px-2 py-1 mt-1 mt-md-0" id="couponDiscountBadge">
+                                            {{ $linkedCoupon->type == 'percent' ? $linkedCoupon->amount . '%' : '৳' . number_format($linkedCoupon->amount, 0) }} OFF
+                                        </span>
+                                    @endif
                                 </div>
-                            @endif
+
+                                <form id="agentCouponForm" class="mt-2">
+                                    <div class="input-group" style="max-width: 480px;">
+                                        <span class="input-group-text bg-light"><i class="fas fa-tag text-primary"></i></span>
+                                        <input type="text" 
+                                               class="form-control font-weight-bold text-uppercase" 
+                                               id="coupon_code_input" 
+                                               placeholder="e.g. {{ strtoupper($agent->referral_code) }}" 
+                                               value="{{ $linkedCoupon ? $linkedCoupon->code : '' }}" 
+                                               maxlength="50"
+                                               autocomplete="off"
+                                               style="letter-spacing: 1.5px;">
+                                        <button class="btn btn-primary" type="button" id="saveCouponBtn" disabled>
+                                            <span class="spinner-border spinner-border-sm d-none" id="saveCouponSpinner" role="status"></span>
+                                            <span id="saveCouponBtnText">{{ $linkedCoupon ? 'Update' : 'Save' }}</span>
+                                        </button>
+                                        <button class="btn btn-outline-secondary {{ $linkedCoupon ? '' : 'd-none' }}" type="button" id="copyCouponBtn" onclick="copyLink('coupon_code_input')" title="Copy Coupon Code">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <div id="couponFeedback" class="mt-2 small" style="min-height: 22px;">
+                                        @if ($linkedCoupon)
+                                            <span class="text-success"><i class="fas fa-check-circle me-1"></i> Current Active Coupon: <strong>{{ $linkedCoupon->code }}</strong></span>
+                                        @else
+                                            <span class="text-muted"><i class="fas fa-info-circle me-1"></i> Type your preferred coupon code to check availability and save.</span>
+                                        @endif
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
 
@@ -345,12 +375,144 @@
             copyText.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(copyText.value);
             
-            // Temporary alert using browser alert or toastr if loaded
             if (typeof toastr !== 'undefined') {
-                toastr.success("Affiliate link copied to clipboard!");
+                toastr.success("Copied to clipboard!");
             } else {
-                alert("Affiliate link copied: " + copyText.value);
+                alert("Copied: " + copyText.value);
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const couponInput = document.getElementById('coupon_code_input');
+            const saveBtn = document.getElementById('saveCouponBtn');
+            const saveBtnText = document.getElementById('saveCouponBtnText');
+            const saveSpinner = document.getElementById('saveCouponSpinner');
+            const feedback = document.getElementById('couponFeedback');
+            const copyBtn = document.getElementById('copyCouponBtn');
+            const csrfToken = '{{ csrf_token() }}';
+            let checkTimeout = null;
+            let currentSavedCode = "{{ $linkedCoupon ? $linkedCoupon->code : '' }}";
+
+            if (couponInput) {
+                couponInput.addEventListener('input', function() {
+                    // Auto-uppercase and sanitize invalid characters
+                    let val = this.value.toUpperCase().replace(/[^A-Z0-9_-]/g, '');
+                    this.value = val;
+
+                    clearTimeout(checkTimeout);
+                    saveBtn.disabled = true;
+
+                    if (val.length === 0) {
+                        this.classList.remove('is-valid', 'is-invalid');
+                        feedback.innerHTML = '<span class="text-muted"><i class="fas fa-info-circle me-1"></i> Type your preferred coupon code.</span>';
+                        return;
+                    }
+
+                    if (val.length < 3) {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                        feedback.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i> Coupon code must be at least 3 characters.</span>';
+                        return;
+                    }
+
+                    // Show checking status
+                    feedback.innerHTML = '<span class="text-muted"><i class="fas fa-spinner fa-spin me-1"></i> Checking availability...</span>';
+
+                    checkTimeout = setTimeout(function() {
+                        fetch("{{ route('agent.coupon.check') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ code: val })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.available) {
+                                couponInput.classList.remove('is-invalid');
+                                if (data.is_current) {
+                                    couponInput.classList.remove('is-valid');
+                                    feedback.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i> This is your current saved coupon code.</span>';
+                                    saveBtn.disabled = true;
+                                } else {
+                                    couponInput.classList.add('is-valid');
+                                    feedback.innerHTML = '<span class="text-success font-weight-bold"><i class="fas fa-check-circle text-success me-1"></i> ' + data.message + '</span>';
+                                    saveBtn.disabled = false;
+                                }
+                            } else {
+                                couponInput.classList.remove('is-valid');
+                                couponInput.classList.add('is-invalid');
+                                feedback.innerHTML = '<span class="text-danger font-weight-bold"><i class="fas fa-times-circle text-danger me-1"></i> ' + data.message + '</span>';
+                                saveBtn.disabled = true;
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error checking coupon:', err);
+                            feedback.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i> Could not check code availability.</span>';
+                        });
+                    }, 350);
+                });
+
+                saveBtn.addEventListener('click', function() {
+                    const code = couponInput.value.trim();
+                    if (!code || code.length < 3) return;
+
+                    saveBtn.disabled = true;
+                    saveSpinner.classList.remove('d-none');
+                    saveBtnText.textContent = 'Saving...';
+
+                    fetch("{{ route('agent.coupon.save') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ code: code })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        saveSpinner.classList.add('d-none');
+                        saveBtnText.textContent = 'Update';
+
+                        if (data.success) {
+                            currentSavedCode = data.code;
+                            couponInput.classList.remove('is-invalid');
+                            couponInput.classList.add('is-valid');
+                            feedback.innerHTML = '<span class="text-success font-weight-bold"><i class="fas fa-check-circle me-1"></i> ' + data.message + ' (Active: ' + data.code + ')</span>';
+                            
+                            if (copyBtn) copyBtn.classList.remove('d-none');
+                            
+                            let badge = document.getElementById('couponDiscountBadge');
+                            if (!badge) {
+                                const badgeContainer = document.querySelector('#agentCouponForm').previousElementSibling;
+                                badge = document.createElement('span');
+                                badge.id = 'couponDiscountBadge';
+                                badge.className = 'badge bg-success-light text-success font-weight-bold px-2 py-1 mt-1 mt-md-0';
+                                badgeContainer.appendChild(badge);
+                            }
+                            badge.textContent = data.discount + ' OFF';
+
+                            if (typeof toastr !== 'undefined') {
+                                toastr.success(data.message);
+                            }
+                        } else {
+                            couponInput.classList.add('is-invalid');
+                            feedback.innerHTML = '<span class="text-danger font-weight-bold"><i class="fas fa-times-circle me-1"></i> ' + (data.message || 'Error saving coupon.') + '</span>';
+                            saveBtn.disabled = false;
+                        }
+                    })
+                    .catch(err => {
+                        saveSpinner.classList.add('d-none');
+                        saveBtnText.textContent = 'Update';
+                        saveBtn.disabled = false;
+                        console.error('Error saving coupon:', err);
+                        feedback.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i> An error occurred while saving. Please try again.</span>';
+                    });
+                });
+            }
+        });
     </script>
 @endsection

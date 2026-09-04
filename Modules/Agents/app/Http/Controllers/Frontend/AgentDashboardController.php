@@ -9,6 +9,7 @@ use App\Models\Appointment;
 use App\Models\Order;
 use Modules\Courses\Models\Enrollment;
 use Modules\Agents\Models\AgentTransaction;
+use App\Models\Coupon;
 
 class AgentDashboardController extends Controller
 {
@@ -193,5 +194,115 @@ class AgentDashboardController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to process image: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function checkCouponAvailability(Request $request)
+    {
+        $code = strtoupper(trim($request->input('code', '')));
+
+        if (empty($code)) {
+            return response()->json([
+                'available' => false,
+                'message' => 'Please enter a coupon code.'
+            ]);
+        }
+
+        if (strlen($code) < 3) {
+            return response()->json([
+                'available' => false,
+                'message' => 'Coupon code must be at least 3 characters.'
+            ]);
+        }
+
+        if (!preg_match('/^[A-Z0-9_-]+$/', $code)) {
+            return response()->json([
+                'available' => false,
+                'message' => 'Only letters, numbers, hyphens, and underscores are allowed.'
+            ]);
+        }
+
+        $agent = Auth::user()->agent;
+        $currentCoupon = Coupon::where('agent_id', $agent->id)->first();
+
+        if ($currentCoupon && strtoupper($currentCoupon->code) === $code) {
+            return response()->json([
+                'available' => true,
+                'is_current' => true,
+                'message' => 'This is your current coupon code.'
+            ]);
+        }
+
+        $exists = Coupon::where('code', $code)
+            ->when($currentCoupon, function ($q) use ($currentCoupon) {
+                $q->where('id', '!=', $currentCoupon->id);
+            })
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'available' => false,
+                'message' => 'This coupon code is already taken. Please try another.'
+            ]);
+        }
+
+        return response()->json([
+            'available' => true,
+            'message' => 'Coupon code is available!'
+        ]);
+    }
+
+    public function saveCoupon(Request $request)
+    {
+        $agent = Auth::user()->agent;
+        $currentCoupon = Coupon::where('agent_id', $agent->id)->first();
+
+        $request->merge([
+            'code' => strtoupper(trim($request->input('code', '')))
+        ]);
+
+        $request->validate([
+            'code' => [
+                'required',
+                'string',
+                'min:3',
+                'max:50',
+                'regex:/^[A-Z0-9_-]+$/',
+                'unique:coupons,code,' . ($currentCoupon ? $currentCoupon->id : 'NULL') . ',id',
+            ]
+        ], [
+            'code.unique' => 'This coupon code is already taken by another user.',
+            'code.regex' => 'Only letters, numbers, hyphens, and underscores are allowed.',
+        ]);
+
+        $code = $request->code;
+
+        if ($currentCoupon) {
+            $currentCoupon->update([
+                'code' => $code,
+                'status' => true,
+            ]);
+            $coupon = $currentCoupon;
+        } else {
+            $coupon = Coupon::create([
+                'code' => $code,
+                'type' => 'percent',
+                'amount' => 5.00,
+                'status' => true,
+                'agent_id' => $agent->id,
+                'usage_limit' => null,
+                'used_count' => 0,
+            ]);
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Coupon code saved successfully!',
+                'code' => $coupon->code,
+                'discount' => $coupon->type == 'percent' ? $coupon->amount . '%' : '৳' . number_format($coupon->amount, 0)
+            ]);
+        }
+
+        return back()->with('success', 'Coupon code saved successfully!');
     }
 }

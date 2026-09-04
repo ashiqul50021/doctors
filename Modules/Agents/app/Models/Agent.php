@@ -93,37 +93,15 @@ class Agent extends Model
 
         static::saved(function ($agent) {
             if ($agent->status === 'active') {
-                // Check if coupon already exists for this agent
-                $couponExists = \App\Models\Coupon::where('agent_id', $agent->id)->exists();
-                
-                if (!$couponExists) {
-                    \App\Models\Coupon::create([
-                        'code' => $agent->referral_code,
-                        'type' => 'percent',
-                        'amount' => 5.00, // Default 5% discount
-                        'status' => true,
-                        'agent_id' => $agent->id,
-                        'usage_limit' => null,
-                        'used_count' => 0,
-                    ]);
-                } else {
-                    // Make sure the coupon code matches the referral code and status is active
-                    $coupon = \App\Models\Coupon::where('agent_id', $agent->id)->first();
-                    if ($coupon) {
-                        $coupon->update([
-                            'code' => $agent->referral_code,
-                            'status' => true,
-                        ]);
-                    }
-                }
+                // If coupon exists for this agent, ensure it is active
+                \App\Models\Coupon::where('agent_id', $agent->id)->update([
+                    'status' => true,
+                ]);
             } elseif (in_array($agent->status, ['pending', 'suspended'])) {
                 // If suspended or pending, deactivate the coupon
-                $coupon = \App\Models\Coupon::where('agent_id', $agent->id)->first();
-                if ($coupon) {
-                    $coupon->update([
-                        'status' => false,
-                    ]);
-                }
+                \App\Models\Coupon::where('agent_id', $agent->id)->update([
+                    'status' => false,
+                ]);
             }
         });
     }
