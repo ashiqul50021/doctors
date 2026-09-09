@@ -17,6 +17,9 @@ class AdminAgentController extends Controller
     {
         $agents = Agent::with('user')
             ->withSum('orders as total_product_sales', 'total')
+            ->withSum(['transactions as pending_payout_amount' => function ($query) {
+                $query->where('type', 'payout_request')->where('status', 'pending');
+            }], 'amount')
             ->withCount('orders')
             ->latest()
             ->get();

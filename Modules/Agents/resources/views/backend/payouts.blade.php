@@ -119,6 +119,7 @@
                                     <th>Email & Phone</th>
                                     <th>Requested Amount</th>
                                     <th>Payment Details</th>
+                                    <th>Description / Txn Info</th>
                                     <th>Current Wallet Balance</th>
                                     <th>Status</th>
                                     <th class="text-end">Actions</th>
@@ -145,6 +146,17 @@
                                                 }
                                             @endphp
                                             {!! $paymentDetails !!}
+                                        </td>
+                                        <td>
+                                            <div style="max-width: 220px; font-size: 12.5px; line-height: 1.4;">
+                                                <span class="text-secondary">{{ $payout->description ?? '-' }}</span>
+                                                @if ($payout->reference_id)
+                                                    <div class="mt-1">
+                                                        <small class="text-muted font-weight-bold">Txn / Ref:</small>
+                                                        <code class="text-success font-weight-bold">{{ $payout->reference_id }}</code>
+                                                    </div>
+                                                @endif
+                                            </div>
                                         </td>
                                         <td><strong>৳{{ number_format($payout->agent->wallet_balance, 2) }}</strong></td>
                                         <td>
@@ -179,7 +191,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center py-4 text-muted">No payout requests found.</td>
+                                        <td colspan="9" class="text-center py-4 text-muted">No payout requests found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -192,7 +204,7 @@
                                         <td style="font-size: 14px;">
                                             <span class="text-danger">৳{{ number_format($payouts->sum('amount'), 2) }}</span>
                                         </td>
-                                        <td></td>
+                                        <td colspan="2"></td>
                                         <td style="font-size: 14px;">
                                             {{-- Sum of distinct agents current wallet balance in the filtered list --}}
                                             @php
