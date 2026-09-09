@@ -15,7 +15,11 @@ class AdminAgentController extends Controller
 {
     public function index()
     {
-        $agents = Agent::with('user')->latest()->get();
+        $agents = Agent::with('user')
+            ->withSum('orders as total_product_sales', 'total')
+            ->withCount('orders')
+            ->latest()
+            ->get();
         return view('agents::backend.index', compact('agents'));
     }
 

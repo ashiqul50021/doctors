@@ -31,6 +31,7 @@
                                     <th>Referral Code</th>
                                     <th>Permissions</th>
                                     <th>Commission Rates</th>
+                                    <th>Product Sales</th>
                                     <th>Wallet Balance</th>
                                     <th>Status</th>
                                     <th class="text-end">Actions</th>
@@ -67,6 +68,10 @@
                                             <small class="d-block">Bookings: ৳{{ number_format($agent->booking_commission_rate, 2) }}</small>
                                             <small class="d-block">Products: {{ $agent->product_commission_rate }}%</small>
                                             <small class="d-block">Courses: {{ $agent->course_commission_rate }}%</small>
+                                        </td>
+                                        <td>
+                                            <strong>৳{{ number_format($agent->total_product_sales ?? 0, 2) }}</strong>
+                                            <small class="d-block text-muted">{{ $agent->orders_count ?? 0 }} orders</small>
                                         </td>
                                         <td><strong>৳{{ number_format($agent->wallet_balance, 2) }}</strong></td>
                                         <td>
