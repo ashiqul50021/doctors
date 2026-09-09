@@ -71,7 +71,7 @@
     <!-- Filter Card -->
     <div class="card mb-4">
         <div class="card-body py-3">
-            <form action="{{ route('admin.agents.payouts.index') }}" method="GET" class="row align-items-end g-3">
+            <form action="{{ route('admin.agents.payouts') }}" method="GET" class="row align-items-end g-3">
                 <div class="col-md-4 col-sm-6">
                     <label class="form-label mb-1" style="font-size: 12px; font-weight: 600;">Filter by Agent</label>
                     <select name="agent_id" class="form-control form-select">
@@ -97,7 +97,7 @@
                         <i class="fe fe-filter"></i> Filter
                     </button>
                     @if (request()->hasAny(['agent_id', 'status']))
-                        <a href="{{ route('admin.agents.payouts.index') }}" class="btn btn-secondary" style="padding: 8px 16px;">
+                        <a href="{{ route('admin.agents.payouts') }}" class="btn btn-secondary" style="padding: 8px 16px;">
                             <i class="fe fe-refresh-cw"></i> Reset
                         </a>
                     @endif
