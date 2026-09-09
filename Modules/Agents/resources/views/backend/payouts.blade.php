@@ -16,12 +16,102 @@
         </div>
     </div>
 
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-4 col-sm-6 col-12">
+            <div class="card bg-white shadow-sm mb-0">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1" style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">Total Payout Requests</h6>
+                            <h3 class="mb-0 text-dark font-weight-bold" style="font-size: 22px;">৳{{ number_format($totalRequestedAmount, 2) }}</h3>
+                            <small class="text-muted">{{ $payouts->count() }} requests</small>
+                        </div>
+                        <div class="avatar avatar-md rounded-circle bg-primary-light d-flex align-items-center justify-content-center">
+                            <i class="fe fe-activity text-primary" style="font-size: 20px;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-sm-6 col-12">
+            <div class="card bg-white shadow-sm mb-0">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1" style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">Pending Payouts</h6>
+                            <h3 class="mb-0 text-warning font-weight-bold" style="font-size: 22px;">৳{{ number_format($payouts->where('status', 'pending')->sum('amount'), 2) }}</h3>
+                            <small class="text-muted">{{ $payouts->where('status', 'pending')->count() }} pending</small>
+                        </div>
+                        <div class="avatar avatar-md rounded-circle bg-warning-light d-flex align-items-center justify-content-center">
+                            <i class="fe fe-clock text-warning" style="font-size: 20px;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-sm-6 col-12">
+            <div class="card bg-white shadow-sm mb-0">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1" style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">Approved / Paid</h6>
+                            <h3 class="mb-0 text-success font-weight-bold" style="font-size: 22px;">৳{{ number_format($payouts->where('status', 'completed')->sum('amount'), 2) }}</h3>
+                            <small class="text-muted">{{ $payouts->where('status', 'completed')->count() }} approved</small>
+                        </div>
+                        <div class="avatar avatar-md rounded-circle bg-success-light d-flex align-items-center justify-content-center">
+                            <i class="fe fe-check-circle text-success" style="font-size: 20px;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card mb-4">
+        <div class="card-body py-3">
+            <form action="{{ route('admin.agents.payouts.index') }}" method="GET" class="row align-items-end g-3">
+                <div class="col-md-4 col-sm-6">
+                    <label class="form-label mb-1" style="font-size: 12px; font-weight: 600;">Filter by Agent</label>
+                    <select name="agent_id" class="form-control form-select">
+                        <option value="">All Agents</option>
+                        @foreach ($agents as $ag)
+                            <option value="{{ $ag->id }}" {{ request('agent_id') == $ag->id ? 'selected' : '' }}>
+                                {{ $ag->user->name ?? 'Agent #' . $ag->id }} ({{ $ag->referral_code }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <label class="form-label mb-1" style="font-size: 12px; font-weight: 600;">Status</label>
+                    <select name="status" class="form-control form-select">
+                        <option value="">All Statuses</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Approved / Paid</option>
+                        <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-3 col-sm-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" style="padding: 8px 18px;">
+                        <i class="fe fe-filter"></i> Filter
+                    </button>
+                    @if (request()->hasAny(['agent_id', 'status']))
+                        <a href="{{ route('admin.agents.payouts.index') }}" class="btn btn-secondary" style="padding: 8px 16px;">
+                            <i class="fe fe-refresh-cw"></i> Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="datatable table table-hover table-center mb-0">
+                        <table class="table table-hover table-center mb-0">
                             <thead>
                                 <tr>
                                     <th>Date</th>
@@ -93,6 +183,28 @@
                                     </tr>
                                 @endforelse
                             </tbody>
+                            @if ($payouts->count() > 0)
+                                <tfoot style="background-color: #F8FAFC; border-top: 2px solid #E2E8F0; font-weight: 700;">
+                                    <tr>
+                                        <td colspan="3" class="text-end" style="color: #475569; font-size: 13px; text-transform: uppercase;">
+                                            Total:
+                                        </td>
+                                        <td style="font-size: 14px;">
+                                            <span class="text-danger">৳{{ number_format($payouts->sum('amount'), 2) }}</span>
+                                        </td>
+                                        <td></td>
+                                        <td style="font-size: 14px;">
+                                            {{-- Sum of distinct agents current wallet balance in the filtered list --}}
+                                            @php
+                                                $uniqueAgentsBalance = $payouts->pluck('agent')->filter()->unique('id')->sum('wallet_balance');
+                                            @endphp
+                                            <span class="text-primary">৳{{ number_format($uniqueAgentsBalance, 2) }}</span>
+                                            <small class="d-block text-muted" style="font-size: 10px; font-weight: normal;">(Unique Agents)</small>
+                                        </td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tfoot>
+                            @endif
                         </table>
                     </div>
                 </div>

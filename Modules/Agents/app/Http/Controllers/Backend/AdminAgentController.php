@@ -150,13 +150,25 @@ class AdminAgentController extends Controller
         }
     }
 
-    public function payoutsIndex()
+    public function payoutsIndex(Request $request)
     {
-        $payouts = AgentTransaction::with('agent.user')
-            ->where('type', 'payout_request')
-            ->latest()
-            ->get();
-        return view('agents::backend.payouts', compact('payouts'));
+        $query = AgentTransaction::with('agent.user')
+            ->where('type', 'payout_request');
+
+        if ($request->filled('agent_id')) {
+            $query->where('agent_id', $request->agent_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $payouts = (clone $query)->latest()->get();
+        $totalRequestedAmount = $payouts->sum('amount');
+
+        $agents = Agent::with('user')->get();
+
+        return view('agents::backend.payouts', compact('payouts', 'agents', 'totalRequestedAmount'));
     }
 
     public function payoutsApprove(Request $request, $id)

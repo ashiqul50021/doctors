@@ -100,6 +100,23 @@
                                     </tr>
                                 @endforeach
                             </tbody>
+                            @if ($agents->count() > 0)
+                                <tfoot style="background-color: #F8FAFC; border-top: 2px solid #E2E8F0; font-weight: 700;">
+                                    <tr>
+                                        <td colspan="5" class="text-end" style="color: #475569; font-size: 13px; text-transform: uppercase;">
+                                            Total:
+                                        </td>
+                                        <td style="font-size: 14px;">
+                                            <span class="text-success">৳{{ number_format($agents->sum('total_product_sales'), 2) }}</span>
+                                            <small class="d-block text-muted" style="font-size: 11px; font-weight: normal;">{{ $agents->sum('orders_count') }} orders</small>
+                                        </td>
+                                        <td style="font-size: 14px;">
+                                            <span class="text-primary">৳{{ number_format($agents->sum('wallet_balance'), 2) }}</span>
+                                        </td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tfoot>
+                            @endif
                         </table>
                     </div>
                 </div>
