@@ -148,12 +148,43 @@
                                             {!! $paymentDetails !!}
                                         </td>
                                         <td>
-                                            <div style="max-width: 220px; font-size: 12.5px; line-height: 1.4;">
-                                                <span class="text-secondary">{{ $payout->description ?? '-' }}</span>
+                                            @php
+                                                // Find related approval log if completed
+                                                $approvedLog = null;
+                                                if ($payout->status === 'completed') {
+                                                    if ($payout->reference_id && isset($approvalLogsMap[$payout->reference_id])) {
+                                                        $approvedLog = $approvalLogsMap[$payout->reference_id];
+                                                    } elseif (isset($approvalLogsMap[(string)$payout->id])) {
+                                                        $approvedLog = $approvalLogsMap[(string)$payout->id];
+                                                    }
+                                                }
+
+                                                // Check for note inside approved log description
+                                                $adminNote = null;
+                                                if ($approvedLog && preg_match('/Note:\s*(.*)$/i', $approvedLog->description, $noteMatches)) {
+                                                    $adminNote = trim($noteMatches[1]);
+                                                }
+                                            @endphp
+
+                                            <div style="max-width: 260px; font-size: 12.5px; line-height: 1.4;">
+                                                <div class="text-secondary mb-1">
+                                                    {{ $payout->description ?? '-' }}
+                                                </div>
+
                                                 @if ($payout->reference_id)
                                                     <div class="mt-1">
                                                         <small class="text-muted font-weight-bold">Txn / Ref:</small>
-                                                        <code class="text-success font-weight-bold">{{ $payout->reference_id }}</code>
+                                                        <code class="text-success font-weight-bold" style="font-size: 12px;">{{ $payout->reference_id }}</code>
+                                                    </div>
+                                                @endif
+
+                                                @if ($adminNote)
+                                                    <div class="mt-1 p-1 px-2 rounded bg-light border" style="font-size: 11.5px; color: #475569;">
+                                                        <strong class="text-primary"><i class="fe fe-file-text"></i> Admin Note:</strong> {{ $adminNote }}
+                                                    </div>
+                                                @elseif ($approvedLog && $approvedLog->description)
+                                                    <div class="mt-1 text-muted" style="font-size: 11px;">
+                                                        <i class="fe fe-info"></i> {{ $approvedLog->description }}
                                                     </div>
                                                 @endif
                                             </div>

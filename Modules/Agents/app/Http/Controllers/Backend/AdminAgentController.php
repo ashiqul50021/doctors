@@ -169,9 +169,28 @@ class AdminAgentController extends Controller
         $payouts = (clone $query)->latest()->get();
         $totalRequestedAmount = $payouts->sum('amount');
 
+        // Fetch corresponding approval transactions to display admin notes/details
+        $refIds = $payouts->pluck('reference_id')->filter()->unique();
+        $payoutIds = $payouts->pluck('id')->unique();
+        
+        $approvalLogs = AgentTransaction::where('type', 'payout_approved')
+            ->where(function($q) use ($refIds, $payoutIds) {
+                if ($refIds->isNotEmpty()) {
+                    $q->whereIn('reference_id', $refIds);
+                }
+                $q->orWhereIn('reference_id', $payoutIds->map(fn($id) => (string)$id));
+            })
+            ->get();
+
+        // Key logs by reference_id
+        $approvalLogsMap = [];
+        foreach ($approvalLogs as $log) {
+            $approvalLogsMap[$log->reference_id] = $log;
+        }
+
         $agents = Agent::with('user')->get();
 
-        return view('agents::backend.payouts', compact('payouts', 'agents', 'totalRequestedAmount'));
+        return view('agents::backend.payouts', compact('payouts', 'agents', 'totalRequestedAmount', 'approvalLogsMap'));
     }
 
     public function payoutsApprove(Request $request, $id)
@@ -200,7 +219,7 @@ class AdminAgentController extends Controller
             // Update original request to completed and store transaction number
             $payoutRequest->update([
                 'status' => 'completed',
-                'reference_id' => $txnNumber
+                'reference_id' => $txnNumber,
             ]);
 
             // Create description log for payout approval
