@@ -452,56 +452,9 @@
     <!-- Video Section -->
     <section class="section-video py-4" style="background: transparent !important; margin: 0 !important;">
         <div class="container">
-            <div class="row align-items-center g-4">
-                <!-- Left Column: Content & Features -->
-                <div class="col-lg-6">
-                    <div class="video-content-left pe-lg-3">
-                        <span class="badge px-2.5 py-1.5 mb-2 fw-semibold" style="background-color: rgba(37, 99, 235, 0.08); color: #2563eb; font-size: 12px; border-radius: 4px;">
-                            <i class="fas fa-video me-1"></i> TELEMEDICINE CONSULTATION
-                        </span>
-                        <h2 class="fw-bold mb-2" style="color: #1e293b; font-size: 24px; line-height: 1.35;">Consult Specialist Doctors Online Anytime</h2>
-                        <p class="mb-3" style="color: #64748b; font-size: 14px; line-height: 1.5;">Access top-tier medical care from the comfort of your home. Connect with verified specialists instantly via video calls for personalized consultations, diagnostics, and digital prescriptions 24/7.</p>
-                        
-                        <div class="video-features-list mb-3">
-                            <div class="d-flex align-items-start mb-2.5">
-                                <div class="feature-icon-box p-2 me-2.5 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: rgba(37, 99, 235, 0.08); color: #2563eb; border-radius: 4px;">
-                                    <i class="fas fa-clock" style="font-size: 14px;"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold mb-0.5" style="color: #1e293b; font-size: 14px;">24/7 Service Availability</h6>
-                                    <p class="mb-0" style="color: #64748b; font-size: 13px;">Get round-the-clock medical assistance whenever you need it.</p>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-start mb-2.5">
-                                <div class="feature-icon-box p-2 me-2.5 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: rgba(37, 99, 235, 0.08); color: #2563eb; border-radius: 4px;">
-                                    <i class="fas fa-user-md" style="font-size: 14px;"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold mb-0.5" style="color: #1e293b; font-size: 14px;">100% Verified Specialist Doctors</h6>
-                                    <p class="mb-0" style="color: #64748b; font-size: 13px;">Consult with certified healthcare professionals across various departments.</p>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-start">
-                                <div class="feature-icon-box p-2 me-2.5 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: rgba(37, 99, 235, 0.08); color: #2563eb; border-radius: 4px;">
-                                    <i class="fas fa-file-medical" style="font-size: 14px;"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold mb-0.5" style="color: #1e293b; font-size: 14px;">Instant Digital Prescription</h6>
-                                    <p class="mb-0" style="color: #64748b; font-size: 13px;">Receive instant, downloadable e-prescriptions right after your consultation.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <a href="{{ route('doctors.search') }}" class="btn text-white px-3 py-2 d-inline-flex align-items-center gap-2" style="background: #2563eb !important; border: 1.5px solid #2563eb !important; border-radius: 4px !important; font-size: 14px; font-weight: 600; box-shadow: 0 4px 10px rgba(37,99,235,0.2) !important;">
-                                Consult a Doctor Now <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column: Video Container -->
-                <div class="col-lg-6">
+            <div class="row justify-content-center">
+                <!-- Video Container (Full Width) -->
+                <div class="col-12 col-lg-10">
                     <div class="video-wrapper overflow-hidden border" style="border-radius: 0 !important;">
                         <div class="video-container" id="telemedicineVideoContainer" style="border-radius: 0 !important;">
                             <div class="video-cover-wrapper" style="background-image: url('{{ asset('uploads/settings/video_cover.png') }}'); border-radius: 0 !important;" onclick="playTelemedicineVideo()">
