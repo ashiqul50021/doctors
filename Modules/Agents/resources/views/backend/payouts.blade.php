@@ -117,10 +117,10 @@
                                     <th>Date</th>
                                     <th>Agent Name</th>
                                     <th>Email & Phone</th>
+                                    <th>Current Wallet Balance</th>
                                     <th>Requested Amount</th>
                                     <th>Payment Details</th>
                                     <th>Description / Txn Info</th>
-                                    <th>Current Wallet Balance</th>
                                     <th>Status</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
@@ -137,6 +137,7 @@
                                             <small class="d-block">{{ $payout->agent->user->email ?? 'N/A' }}</small>
                                             <small class="text-muted">{{ $payout->agent->phone }}</small>
                                         </td>
+                                        <td><strong>৳{{ number_format($payout->agent->wallet_balance, 2) }}</strong></td>
                                         <td><strong class="text-danger">৳{{ number_format($payout->amount, 2) }}</strong></td>
                                         <td>
                                             @php
@@ -186,10 +187,8 @@
                                                     <div class="mt-1 text-muted" style="font-size: 11px;">
                                                         <i class="fe fe-info"></i> {{ $approvedLog->description }}
                                                     </div>
-                                                @endif
                                             </div>
                                         </td>
-                                        <td><strong>৳{{ number_format($payout->agent->wallet_balance, 2) }}</strong></td>
                                         <td>
                                             @if ($payout->status === 'pending')
                                                 <span class="badge rounded-pill bg-warning-light">Pending</span>
@@ -233,18 +232,16 @@
                                             Total:
                                         </td>
                                         <td style="font-size: 14px;">
-                                            <span class="text-danger">৳{{ number_format($payouts->sum('amount'), 2) }}</span>
-                                        </td>
-                                        <td colspan="2"></td>
-                                        <td style="font-size: 14px;">
-                                            {{-- Sum of distinct agents current wallet balance in the filtered list --}}
                                             @php
                                                 $uniqueAgentsBalance = $payouts->pluck('agent')->filter()->unique('id')->sum('wallet_balance');
                                             @endphp
                                             <span class="text-primary">৳{{ number_format($uniqueAgentsBalance, 2) }}</span>
                                             <small class="d-block text-muted" style="font-size: 10px; font-weight: normal;">(Unique Agents)</small>
                                         </td>
-                                        <td colspan="2"></td>
+                                        <td style="font-size: 14px;">
+                                            <span class="text-danger">৳{{ number_format($payouts->sum('amount'), 2) }}</span>
+                                        </td>
+                                        <td colspan="4"></td>
                                     </tr>
                                 </tfoot>
                             @endif

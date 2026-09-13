@@ -132,10 +132,10 @@
                                     <th>Date</th>
                                     <th>Seller / Store Name</th>
                                     <th>Email & Phone</th>
+                                    <th>Current Wallet Balance</th>
                                     <th>Requested Amount</th>
                                     <th>Payment Details</th>
                                     <th>Description / Txn Info</th>
-                                    <th>Current Wallet Balance</th>
                                     <th>Status</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
@@ -152,6 +152,7 @@
                                             <small class="d-block">{{ $payout->seller->email ?? 'N/A' }}</small>
                                             <small class="text-muted">{{ $payout->sellerProfile->phone ?? '' }}</small>
                                         </td>
+                                        <td><strong>৳{{ number_format($payout->sellerProfile->wallet_balance ?? 0, 2) }}</strong></td>
                                         <td><strong class="text-danger">৳{{ number_format($payout->amount, 2) }}</strong></td>
                                         <td>
                                             <span class="badge bg-info-light text-uppercase">{{ $payout->payment_method }}</span><br>
@@ -177,7 +178,6 @@
                                                 @endif
                                             </div>
                                         </td>
-                                        <td><strong>৳{{ number_format($payout->sellerProfile->wallet_balance ?? 0, 2) }}</strong></td>
                                         <td>
                                             @if ($payout->status === 'pending')
                                                 <span class="badge rounded-pill bg-warning-light">Pending</span>
@@ -225,17 +225,16 @@
                                             Total:
                                         </td>
                                         <td style="font-size: 14px;">
-                                            <span class="text-danger">৳{{ number_format($payouts->sum('amount'), 2) }}</span>
-                                        </td>
-                                        <td colspan="2"></td>
-                                        <td style="font-size: 14px;">
                                             @php
                                                 $uniqueSellersBalance = $payouts->pluck('sellerProfile')->filter()->unique('id')->sum('wallet_balance');
                                             @endphp
                                             <span class="text-primary">৳{{ number_format($uniqueSellersBalance, 2) }}</span>
                                             <small class="d-block text-muted" style="font-size: 10px; font-weight: normal;">(Unique Sellers)</small>
                                         </td>
-                                        <td colspan="2"></td>
+                                        <td style="font-size: 14px;">
+                                            <span class="text-danger">৳{{ number_format($payouts->sum('amount'), 2) }}</span>
+                                        </td>
+                                        <td colspan="4"></td>
                                     </tr>
                                 </tfoot>
                             @endif
