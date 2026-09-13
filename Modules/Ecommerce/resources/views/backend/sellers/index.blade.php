@@ -38,8 +38,8 @@
                                 <th>Commission Rate</th>
                                 <th>Products</th>
                                 <th>Product Sales</th>
-                                <th>Pending Payout</th>
                                 <th>Wallet Balance</th>
+                                <th>Pending Payout</th>
                                 <th>Status</th>
                                 <th class="text-end">Actions</th>
                             </tr>
@@ -71,12 +71,12 @@
                                     <strong>৳{{ number_format($seller->total_product_sales ?? 0, 2) }}</strong>
                                     <small class="d-block text-muted">{{ $seller->total_orders_count ?? 0 }} orders</small>
                                 </td>
+                                <td><strong>৳{{ number_format($seller->wallet_balance ?? 0, 2) }}</strong></td>
                                 <td>
                                     <strong class="{{ ($seller->pending_payout_amount ?? 0) > 0 ? 'text-warning' : 'text-muted' }}">
                                         ৳{{ number_format($seller->pending_payout_amount ?? 0, 2) }}
                                     </strong>
                                 </td>
-                                <td><strong>৳{{ number_format($seller->wallet_balance ?? 0, 2) }}</strong></td>
                                 <td>
                                     @if($seller->status === 'approved')
                                         <span class="badge rounded-pill bg-success-light">Approved</span>
@@ -122,10 +122,10 @@
                                         <small class="d-block text-muted" style="font-size: 11px; font-weight: normal;">{{ $sellers->sum('total_orders_count') }} orders</small>
                                     </td>
                                     <td style="font-size: 14px;">
-                                        <span class="text-warning">৳{{ number_format($sellers->sum('pending_payout_amount'), 2) }}</span>
+                                        <span class="text-primary">৳{{ number_format($sellers->sum('wallet_balance'), 2) }}</span>
                                     </td>
                                     <td style="font-size: 14px;">
-                                        <span class="text-primary">৳{{ number_format($sellers->sum('wallet_balance'), 2) }}</span>
+                                        <span class="text-warning">৳{{ number_format($sellers->sum('pending_payout_amount'), 2) }}</span>
                                     </td>
                                     <td colspan="2"></td>
                                 </tr>

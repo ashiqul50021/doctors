@@ -31,9 +31,9 @@
                                     <th>Referral Code</th>
                                     <th>Permissions</th>
                                     <th>Commission Rates</th>
-                                    <th>Product Sales</th>
-                                    <th>Pending Payout</th>
+                                     <th>Product Sales</th>
                                     <th>Wallet Balance</th>
+                                    <th>Pending Payout</th>
                                     <th>Status</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
@@ -74,12 +74,12 @@
                                             <strong>৳{{ number_format($agent->total_product_sales ?? 0, 2) }}</strong>
                                             <small class="d-block text-muted">{{ $agent->orders_count ?? 0 }} orders</small>
                                         </td>
+                                        <td><strong>৳{{ number_format($agent->wallet_balance, 2) }}</strong></td>
                                         <td>
                                             <strong class="{{ ($agent->pending_payout_amount ?? 0) > 0 ? 'text-warning' : 'text-muted' }}">
                                                 ৳{{ number_format($agent->pending_payout_amount ?? 0, 2) }}
                                             </strong>
                                         </td>
-                                        <td><strong>৳{{ number_format($agent->wallet_balance, 2) }}</strong></td>
                                         <td>
                                             @if ($agent->status === 'active')
                                                 <span class="badge rounded-pill bg-success-light">Active</span>
@@ -117,10 +117,10 @@
                                             <small class="d-block text-muted" style="font-size: 11px; font-weight: normal;">{{ $agents->sum('orders_count') }} orders</small>
                                         </td>
                                         <td style="font-size: 14px;">
-                                            <span class="text-warning">৳{{ number_format($agents->sum('pending_payout_amount'), 2) }}</span>
+                                            <span class="text-primary">৳{{ number_format($agents->sum('wallet_balance'), 2) }}</span>
                                         </td>
                                         <td style="font-size: 14px;">
-                                            <span class="text-primary">৳{{ number_format($agents->sum('wallet_balance'), 2) }}</span>
+                                            <span class="text-warning">৳{{ number_format($agents->sum('pending_payout_amount'), 2) }}</span>
                                         </td>
                                         <td colspan="2"></td>
                                     </tr>

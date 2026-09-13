@@ -187,6 +187,7 @@
                                                     <div class="mt-1 text-muted" style="font-size: 11px;">
                                                         <i class="fe fe-info"></i> {{ $approvedLog->description }}
                                                     </div>
+                                                @endif
                                             </div>
                                         </td>
                                         <td>
