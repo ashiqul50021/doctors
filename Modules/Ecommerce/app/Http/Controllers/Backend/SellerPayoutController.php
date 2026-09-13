@@ -14,19 +14,28 @@ class SellerPayoutController extends Controller
     {
         $query = SellerPayout::with(['seller', 'sellerProfile']);
 
+        if ($request->filled('seller_id')) {
+            $query->where('seller_id', $request->seller_id);
+        }
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
+        $allPayouts = (clone $query)->latest()->get();
+        $totalRequestedAmount = $allPayouts->sum('amount');
+        
         $payouts = $query->latest()->paginate(15);
+        $sellers = SellerProfile::with('user')->get();
 
-        return view('ecommerce::backend.seller_payouts.index', compact('payouts'));
+        return view('ecommerce::backend.seller_payouts.index', compact('payouts', 'allPayouts', 'sellers', 'totalRequestedAmount'));
     }
 
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
             'status' => 'required|in:approved,rejected',
+            'transaction_number' => 'nullable|string|max:191',
             'admin_note' => 'nullable|string|max:1000',
         ]);
 
@@ -40,6 +49,7 @@ class SellerPayoutController extends Controller
             if ($request->status === 'approved') {
                 $payout->update([
                     'status' => 'approved',
+                    'transaction_number' => $request->transaction_number,
                     'admin_note' => $request->admin_note,
                     'processed_at' => now(),
                 ]);
@@ -58,8 +68,8 @@ class SellerPayoutController extends Controller
         });
 
         $message = $request->status === 'approved' 
-            ? 'Seller payout request approved successfully!' 
-            : 'Seller payout request rejected and amount refunded to seller wallet.';
+            ? 'Seller payout request approved successfully.' 
+            : 'Seller payout request rejected and balance refunded successfully.';
 
         return redirect()->back()->with('success', $message);
     }
