@@ -2050,20 +2050,30 @@
         }
 
         @media (max-width: 767px) {
+            .hero-search-bar {
+                height: auto !important;
+                padding: 4px !important;
+            }
             .hero-search-form {
                 flex-direction: column !important;
-                gap: 8px !important;
+                height: auto !important;
+                min-height: unset !important;
+                gap: 6px !important;
                 align-items: stretch !important;
+            }
+            .search-field {
+                height: 36px !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                padding: 0 6px !important;
             }
             .search-divider-line {
                 display: none !important;
             }
-            .search-field {
-                border-bottom: 1px solid #e2e8f0;
-                padding-bottom: 4px;
-            }
             .btn-search-action {
                 width: 100% !important;
+                height: 36px !important;
+                min-height: 36px !important;
+                margin-top: 4px !important;
             }
         }
 
