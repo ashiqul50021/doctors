@@ -18,8 +18,14 @@ class SellerManagementController extends Controller
             ->withSum(['payouts as pending_payout_amount' => function ($query) {
                 $query->where('status', 'pending');
             }], 'amount')
-            ->latest()
-            ->paginate(15);
+            ->get();
+
+        // Calculate total sales amount for each seller through their products
+        foreach ($sellers as $seller) {
+            $sellerProductIds = \Modules\Ecommerce\Models\Product::where('seller_id', $seller->user_id)->pluck('id');
+            $seller->total_product_sales = \App\Models\OrderItem::whereIn('product_id', $sellerProductIds)->sum('price') ?? 0;
+            $seller->total_orders_count = \App\Models\OrderItem::whereIn('product_id', $sellerProductIds)->distinct('order_id')->count('order_id');
+        }
 
         return view('ecommerce::backend.sellers.index', compact('sellers'));
     }
