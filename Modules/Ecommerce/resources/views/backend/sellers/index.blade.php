@@ -30,69 +30,98 @@
                 @endif
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-center mb-0">
+                    <table class="datatable table table-hover table-center mb-0">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Logo</th>
-                                <th>Store Name</th>
-                                <th>Owner Name</th>
-                                <th>Email</th>
+                                <th>Seller / Store Name</th>
                                 <th>Phone</th>
+                                <th>Commission Rate</th>
                                 <th>Products</th>
+                                <th>Pending Payout</th>
+                                <th>Wallet Balance</th>
                                 <th>Status</th>
-                                <th class="text-right">Actions</th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($sellers as $seller)
                             <tr>
-                                <td>#{{ $seller->id }}</td>
                                 <td>
-                                    <div class="avatar avatar-sm me-2 d-inline-block">
-                                        <img class="avatar-img rounded-circle"
-                                             src="{{ $seller->store_logo ? asset($seller->store_logo) : asset('assets/img/features/feature-01.jpg') }}"
-                                             alt="{{ $seller->store_name }}"
-                                             style="width: 40px; height: 40px; object-fit: cover; border: 1px solid #e2e8f0;">
-                                    </div>
+                                    <h2 class="table-avatar">
+                                        <span class="avatar avatar-sm me-2 d-inline-block">
+                                            <img class="avatar-img rounded-circle"
+                                                 src="{{ $seller->store_logo ? asset($seller->store_logo) : asset('assets/img/features/feature-01.jpg') }}"
+                                                 alt="{{ $seller->store_name }}"
+                                                 style="width: 40px; height: 40px; object-fit: cover; border: 1px solid #e2e8f0;">
+                                        </span>
+                                        <span>
+                                            <strong>{{ $seller->store_name }}</strong><br>
+                                            <small class="text-muted">{{ $seller->user->name ?? 'N/A' }} ({{ $seller->user->email ?? 'N/A' }})</small>
+                                        </span>
+                                    </h2>
                                 </td>
-                                <td>
-                                    <strong>{{ $seller->store_name }}</strong>
-                                </td>
-                                <td>{{ $seller->user->name ?? 'N/A' }}</td>
-                                <td>{{ $seller->user->email ?? 'N/A' }}</td>
                                 <td>{{ $seller->phone ?? 'N/A' }}</td>
-                                <td>{{ $seller->products_count }}</td>
+                                <td><code class="text-primary">{{ $seller->commission_rate }}%</code></td>
+                                <td>
+                                    <strong>{{ $seller->products_count }}</strong>
+                                    <small class="d-block text-muted">items</small>
+                                </td>
+                                <td>
+                                    <strong class="{{ ($seller->pending_payout_amount ?? 0) > 0 ? 'text-warning' : 'text-muted' }}">
+                                        ৳{{ number_format($seller->pending_payout_amount ?? 0, 2) }}
+                                    </strong>
+                                </td>
+                                <td><strong>৳{{ number_format($seller->wallet_balance ?? 0, 2) }}</strong></td>
                                 <td>
                                     @if($seller->status === 'approved')
-                                        <span class="badge badge-pill bg-success-light">Approved</span>
+                                        <span class="badge rounded-pill bg-success-light">Approved</span>
                                     @elseif($seller->status === 'pending')
-                                        <span class="badge badge-pill bg-warning-light">Pending</span>
+                                        <span class="badge rounded-pill bg-warning-light">Pending</span>
                                     @else
-                                        <span class="badge badge-pill bg-danger-light">Suspended</span>
+                                        <span class="badge rounded-pill bg-danger-light">Suspended</span>
                                     @endif
                                 </td>
-                                <td class="text-right">
-                                    <a href="{{ route('ecommerce.admin.sellers.edit', $seller->id) }}" class="btn btn-sm btn-primary me-1">Edit</a>
-                                    <form action="{{ route('ecommerce.admin.sellers.update-status', $seller->id) }}" method="POST" class="d-inline-block">
-                                        @csrf
-                                        @method('PATCH')
-                                        @if($seller->status !== 'approved')
-                                            <input type="hidden" name="status" value="approved">
-                                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
-                                        @else
-                                            <input type="hidden" name="status" value="suspended">
-                                            <button type="submit" class="btn btn-sm btn-danger">Suspend</button>
-                                        @endif
-                                    </form>
+                                <td class="text-end">
+                                    <div class="actions">
+                                        <a href="{{ route('ecommerce.admin.sellers.edit', $seller->id) }}" class="btn btn-sm bg-primary-light me-1">
+                                            <i class="fe fe-pencil"></i> Edit
+                                        </a>
+                                        <form action="{{ route('ecommerce.admin.sellers.update-status', $seller->id) }}" method="POST" class="d-inline-block">
+                                            @csrf
+                                            @method('PATCH')
+                                            @if($seller->status !== 'approved')
+                                                <input type="hidden" name="status" value="approved">
+                                                <button type="submit" class="btn btn-sm bg-success-light">Approve</button>
+                                            @else
+                                                <input type="hidden" name="status" value="suspended">
+                                                <button type="submit" class="btn btn-sm bg-danger-light">Suspend</button>
+                                            @endif
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="text-center text-muted">No sellers found.</td>
+                                <td colspan="8" class="text-center text-muted py-4">No sellers found.</td>
                             </tr>
                             @endforelse
                         </tbody>
+                        @if ($sellers->count() > 0)
+                            <tfoot style="background-color: #F8FAFC; border-top: 2px solid #E2E8F0; font-weight: 700;">
+                                <tr>
+                                    <td colspan="4" class="text-end" style="color: #475569; font-size: 13px; text-transform: uppercase;">
+                                        Total Pending Payouts & Wallet Balance:
+                                    </td>
+                                    <td style="font-size: 14px;">
+                                        <span class="text-warning">৳{{ number_format($sellers->sum('pending_payout_amount'), 2) }}</span>
+                                    </td>
+                                    <td style="font-size: 14px;">
+                                        <span class="text-primary">৳{{ number_format($sellers->sum('wallet_balance'), 2) }}</span>
+                                    </td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        @endif
                     </table>
                 </div>
 

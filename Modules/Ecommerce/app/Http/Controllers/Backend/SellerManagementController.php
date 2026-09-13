@@ -13,7 +13,14 @@ class SellerManagementController extends Controller
 {
     public function index()
     {
-        $sellers = SellerProfile::with('user')->withCount('products')->latest()->paginate(15);
+        $sellers = SellerProfile::with('user')
+            ->withCount('products')
+            ->withSum(['payouts as pending_payout_amount' => function ($query) {
+                $query->where('status', 'pending');
+            }], 'amount')
+            ->latest()
+            ->paginate(15);
+
         return view('ecommerce::backend.sellers.index', compact('sellers'));
     }
 
