@@ -110,21 +110,46 @@
                 </div>
 
                 <!-- Search Section -->
+                <style>
+                    .hero-search-section input::placeholder,
+                    .hero-search-section .dropdown-search::placeholder {
+                        color: #1e293b !important;
+                        opacity: 1 !important;
+                        font-weight: 500 !important;
+                    }
+                    .hero-search-section input::-webkit-input-placeholder,
+                    .hero-search-section .dropdown-search::-webkit-input-placeholder {
+                        color: #1e293b !important;
+                        opacity: 1 !important;
+                        font-weight: 500 !important;
+                    }
+                    .hero-search-section input::-moz-placeholder,
+                    .hero-search-section .dropdown-search::-moz-placeholder {
+                        color: #1e293b !important;
+                        opacity: 1 !important;
+                        font-weight: 500 !important;
+                    }
+                    .hero-search-section .dropdown-search:disabled::placeholder,
+                    .hero-search-section .dropdown-search:disabled::-webkit-input-placeholder {
+                        color: #475569 !important;
+                        opacity: 1 !important;
+                    }
+                </style>
                 <div class="hero-search-section">
-                    <!-- Card 1: Search by Doctor -->
+                    <!-- Card 1: Search Doctor by Name -->
                     <div class="search-card-wrapper mb-2 p-2 bg-white shadow-sm">
                         <h5 class="search-box-title d-flex align-items-center gap-2 mb-2 font-weight-bold">
                             <span class="icon-circle d-inline-flex align-items-center justify-content-center">
                                 <i class="fas fa-user-md"></i>
                             </span> 
-                            <span>Search by Doctor</span>
+                            <span>Search Doctor by Name</span>
                         </h5>
                         <!-- Normal Search Bar (Doctor Name/Code) -->
                         <div class="hero-search-bar" id="normal-search-form">
                             <form action="{{ route('doctors.search') }}" class="hero-search-form d-flex align-items-center" id="normalSearchForm">
                                 <div class="search-field search-keyword-full flex-grow-1 d-flex align-items-center px-2">
                                     <i class="fas fa-search search-lead-icon me-2"></i>
-                                    <input type="text" name="keywords" placeholder="Search doctor by name, specialty, or code..." class="form-control border-0 bg-transparent shadow-none">
+                                    <input type="text" name="keywords" placeholder="Search doctor by name..." class="form-control border-0 bg-transparent shadow-none">
                                 </div>
                                 <button type="submit" class="btn btn-search-action text-white" aria-label="Search Doctor">
                                     <i class="fas fa-search"></i>
@@ -134,13 +159,13 @@
                         </div>
                     </div>
 
-                    <!-- Card 2: Search by Speciality & Location -->
+                    <!-- Card 2: Search Doctor by Specialist -->
                     <div class="search-card-wrapper p-2 bg-white shadow-sm">
                         <h5 class="search-box-title d-flex align-items-center gap-2 mb-2 font-weight-bold">
                             <span class="icon-circle d-inline-flex align-items-center justify-content-center">
                                 <i class="fas fa-stethoscope"></i>
                             </span> 
-                            <span>Search by Speciality & Location</span>
+                            <span>Search Doctor by Specialist</span>
                         </h5>
                         <!-- Filter Search Bar (Location & Speciality) -->
                         <div class="hero-search-bar" id="filter-search-form">
@@ -150,8 +175,8 @@
                                     <i class="fas fa-stethoscope search-lead-icon me-2"></i>
                                     <div class="custom-dropdown w-100 position-relative" id="specialityDropdown">
                                         <input type="hidden" name="speciality_id" id="speciality_value">
-                                        <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Speciality (e.g. Cardiologist)"
-                                            data-default-placeholder="Speciality (e.g. Cardiologist)" readonly id="speciality_display">
+                                        <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Select Speciality (e.g. Cardiologist)"
+                                            data-default-placeholder="Select Speciality (e.g. Cardiologist)" readonly id="speciality_display">
                                         <i class="fas fa-chevron-down dropdown-arrow"></i>
                                         <div class="dropdown-menu">
                                             <input type="text" class="dropdown-filter" placeholder="Search speciality...">
@@ -173,8 +198,8 @@
                                     <i class="fas fa-map-marker-alt search-lead-icon me-2"></i>
                                     <div class="custom-dropdown w-100 position-relative" id="districtDropdown">
                                         <input type="hidden" name="district_id" id="district_value">
-                                        <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="District (e.g. Dhaka)"
-                                            data-default-placeholder="District (e.g. Dhaka)" readonly id="district_display">
+                                        <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Select District (e.g. Dhaka)"
+                                            data-default-placeholder="Select District (e.g. Dhaka)" readonly id="district_display">
                                         <i class="fas fa-chevron-down dropdown-arrow"></i>
                                         <div class="dropdown-menu">
                                             <input type="text" class="dropdown-filter" placeholder="Search district...">
@@ -196,8 +221,8 @@
                                     <i class="fas fa-location-arrow search-lead-icon me-2"></i>
                                     <div class="custom-dropdown w-100 position-relative" id="areaDropdown">
                                         <input type="hidden" name="area_id" id="area_value">
-                                        <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Area"
-                                            data-default-placeholder="Area" readonly id="area_display" disabled>
+                                        <input type="text" class="dropdown-search border-0 bg-transparent shadow-none w-100" placeholder="Select Area"
+                                            data-default-placeholder="Select Area" readonly id="area_display" disabled>
                                         <i class="fas fa-chevron-down dropdown-arrow"></i>
                                         <div class="dropdown-menu">
                                             <input type="text" class="dropdown-filter" placeholder="Search area...">
@@ -1366,7 +1391,7 @@
                 var $areaValue = $('#area_value');
 
                 $areaValue.val('');
-                $areaDisplay.val('').attr('placeholder', 'Area');
+                $areaDisplay.val('').attr('placeholder', 'Select Area');
 
                 if (districtId) {
                     $areaDisplay.prop('disabled', false);
@@ -1824,7 +1849,7 @@
         }
 
         .search-lead-icon {
-            color: #64748b !important;
+            color: #2563eb !important;
             font-size: 13px !important;
             flex-shrink: 0 !important;
             line-height: 1 !important;
@@ -1847,8 +1872,23 @@
         }
 
         .hero-search-form input.form-control::placeholder {
-            color: #94a3b8 !important;
-            font-weight: 400 !important;
+            color: #1e293b !important;
+            opacity: 1 !important;
+            font-weight: 500 !important;
+            font-size: 13px !important;
+            line-height: 32px !important;
+        }
+        .hero-search-form input.form-control::-webkit-input-placeholder {
+            color: #1e293b !important;
+            opacity: 1 !important;
+            font-weight: 500 !important;
+            font-size: 13px !important;
+            line-height: 32px !important;
+        }
+        .hero-search-form input.form-control::-moz-placeholder {
+            color: #1e293b !important;
+            opacity: 1 !important;
+            font-weight: 500 !important;
             font-size: 13px !important;
             line-height: 32px !important;
         }
@@ -1890,10 +1930,43 @@
         }
 
         .custom-dropdown .dropdown-search::placeholder {
-            color: #94a3b8 !important;
-            font-weight: 400 !important;
+            color: #1e293b !important;
+            opacity: 1 !important;
+            font-weight: 500 !important;
             font-size: 13px !important;
             line-height: 32px !important;
+        }
+        .custom-dropdown .dropdown-search::-webkit-input-placeholder {
+            color: #1e293b !important;
+            opacity: 1 !important;
+            font-weight: 500 !important;
+            font-size: 13px !important;
+            line-height: 32px !important;
+        }
+        .custom-dropdown .dropdown-search::-moz-placeholder {
+            color: #1e293b !important;
+            opacity: 1 !important;
+            font-weight: 500 !important;
+            font-size: 13px !important;
+            line-height: 32px !important;
+        }
+
+        .custom-dropdown .dropdown-search:disabled {
+            cursor: not-allowed !important;
+            opacity: 1 !important;
+        }
+
+        .custom-dropdown .dropdown-search:disabled::placeholder {
+            color: #475569 !important;
+            opacity: 1 !important;
+        }
+        .custom-dropdown .dropdown-search:disabled::-webkit-input-placeholder {
+            color: #475569 !important;
+            opacity: 1 !important;
+        }
+        .custom-dropdown .dropdown-search:disabled::-moz-placeholder {
+            color: #475569 !important;
+            opacity: 1 !important;
         }
 
         .custom-dropdown .dropdown-arrow {

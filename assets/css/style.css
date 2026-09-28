@@ -8052,10 +8052,10 @@ html.menu-opened body {
     }
 }
 
-/* Reduced opacity for placeholders globally */
+/* Placeholder styling */
 input::placeholder,
 textarea::placeholder,
 .placeholder,
 .placeholder-label {
-    opacity: 0.2 !important;
+    opacity: 0.85;
 }

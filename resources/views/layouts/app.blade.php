@@ -25,16 +25,16 @@
     <!-- Select2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
 
-    @stack('styles')
-
     <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}?v={{ @filemtime(base_path('assets/css/style.css')) }}">
 
     <!-- Custom Header & Banner CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/header-banner-custom.css') }}?v={{ @filemtime(base_path('assets/css/header-banner-custom.css')) }}">
 
     <!-- Mobile Bottom Nav CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/mobile-nav.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/mobile-nav.css') }}?v={{ @filemtime(base_path('assets/css/mobile-nav.css')) }}">
+
+    @stack('styles')
 
     @livewireStyles
     <style>
