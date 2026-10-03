@@ -65,9 +65,26 @@ class DashboardController extends Controller
             ->orderBy('appointment_time', 'asc')
             ->get();
 
+        // Live Chamber Queue State
+        $servingApptId = \Illuminate\Support\Facades\Cache::get("doctor_{$doctor->id}_serving_appt_id");
+        $currentlyServing = $servingApptId ? $todayAppointments->firstWhere('id', $servingApptId) : null;
+        
+        // If the serving appointment was cancelled or completed, reset
+        if ($currentlyServing && in_array($currentlyServing->status, ['cancelled', 'completed'])) {
+            $currentlyServing = null;
+        }
+
+        // Determine next in line (offline chamber patient waiting)
+        $nextInLine = $todayAppointments
+            ->where('type', 'offline')
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->when($currentlyServing, fn($coll) => $coll->where('id', '!=', $currentlyServing->id))
+            ->first();
+
         return view('frontend.doctor-dashboard', compact(
             'doctor', 'totalPatients', 'todayPatients',
-            'totalAppointments', 'upcomingAppointments', 'todayAppointments'
+            'totalAppointments', 'upcomingAppointments', 'todayAppointments',
+            'currentlyServing', 'nextInLine'
         ));
     }
 
@@ -301,6 +318,12 @@ class DashboardController extends Controller
             'services' => ['nullable', 'string'],
             'education' => ['nullable', 'string'],
             'awards' => ['nullable', 'string'],
+            'custom_sections' => ['nullable', 'array'],
+            'custom_sections.*.type' => ['nullable', 'string', 'in:standard,image_only'],
+            'custom_sections.*.title' => ['nullable', 'string', 'max:255'],
+            'custom_sections.*.description' => ['nullable', 'string'],
+            'custom_sections.*.existing_image' => ['nullable', 'string'],
+            'custom_sections.*.image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
         ]);
 
         $fullName = trim(($validated['first_name'] ?? '') . ' ' . ($validated['last_name'] ?? ''));
@@ -320,7 +343,7 @@ class DashboardController extends Controller
             $validated['clinic_addresses'] ?? []
         );
 
-        $doctor->update([
+        $updateData = [
             'phone' => $validated['phone'] ?? null,
             'gender' => $validated['gender'] ?? null,
             'date_of_birth' => $validated['date_of_birth'] ?? null,
@@ -349,7 +372,58 @@ class DashboardController extends Controller
             'services' => $this->toJsonList($validated['services'] ?? null),
             'education' => $this->toJsonLines($validated['education'] ?? null),
             'awards' => $this->toJsonLines($validated['awards'] ?? null),
-        ]);
+        ];
+
+        // Process Custom Sections if submitted from profile settings
+        if ($request->has('custom_sections') || $request->has('custom_sections_submitted')) {
+            $customSections = [];
+            $rawSections = $request->input('custom_sections', []);
+            if (is_array($rawSections)) {
+                foreach ($rawSections as $index => $sectionData) {
+                    $secType = in_array($sectionData['type'] ?? '', ['standard', 'image_only']) 
+                        ? $sectionData['type'] 
+                        : 'standard';
+                    $secTitle = isset($sectionData['title']) ? trim((string) $sectionData['title']) : '';
+                    $secDesc = isset($sectionData['description']) ? trim((string) $sectionData['description']) : '';
+                    $secImage = $sectionData['existing_image'] ?? null;
+
+                    // Handle newly uploaded section image
+                    if ($request->hasFile("custom_sections.{$index}.image")) {
+                        $uploadedFile = $request->file("custom_sections.{$index}.image");
+                        if ($uploadedFile && $uploadedFile->isValid()) {
+                            if ($secImage && str_starts_with($secImage, 'uploads/doctors/sections/')) {
+                                ImageService::delete($secImage);
+                            }
+                            $secImage = ImageService::upload($uploadedFile, 'doctors/sections', 80, 1200);
+                        }
+                    }
+
+                    // Keep section based on type
+                    if ($secType === 'image_only') {
+                        if (!empty($secImage) || $secTitle !== '') {
+                            $customSections[] = [
+                                'type' => 'image_only',
+                                'title' => $secTitle,
+                                'description' => null,
+                                'image' => $secImage,
+                            ];
+                        }
+                    } else {
+                        if ($secTitle !== '' || $secDesc !== '' || !empty($secImage)) {
+                            $customSections[] = [
+                                'type' => 'standard',
+                                'title' => $secTitle,
+                                'description' => $secDesc,
+                                'image' => $secImage,
+                            ];
+                        }
+                    }
+                }
+            }
+            $updateData['custom_sections'] = $customSections;
+        }
+
+        $doctor->update($updateData);
 
         $doctor->refresh();
 
@@ -466,7 +540,86 @@ class DashboardController extends Controller
         $appointment->status = 'completed';
         $appointment->save();
 
+        // Clear active serving token if it was this appointment
+        $servingApptId = \Illuminate\Support\Facades\Cache::get("doctor_{$appointment->doctor_id}_serving_appt_id");
+        if ($servingApptId == $appointment->id) {
+            \Illuminate\Support\Facades\Cache::forget("doctor_{$appointment->doctor_id}_serving_appt_id");
+        }
+
         return redirect()->back()->with('success', 'Appointment marked as completed.');
+    }
+
+    /**
+     * Live Chamber Queue: Call Next Patient
+     */
+    public function callNextPatient(Request $request)
+    {
+        $doctor = $this->getDoctor();
+
+        // Find today's offline appointments
+        $todayAppointments = Appointment::where('doctor_id', $doctor->id)
+            ->whereDate('appointment_date', today())
+            ->where('type', 'offline')
+            ->orderBy('appointment_time', 'asc')
+            ->get();
+
+        $servingApptId = \Illuminate\Support\Facades\Cache::get("doctor_{$doctor->id}_serving_appt_id");
+
+        // 1. If someone is currently serving, mark them completed
+        if ($servingApptId) {
+            $currentAppt = $todayAppointments->firstWhere('id', $servingApptId);
+            if ($currentAppt && in_array($currentAppt->status, ['pending', 'confirmed'])) {
+                $currentAppt->status = 'completed';
+                $currentAppt->save();
+            }
+        }
+
+        // 2. Find the next pending/confirmed patient
+        $nextAppt = $todayAppointments
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->when($servingApptId, fn($coll) => $coll->where('id', '!=', $servingApptId))
+            ->first();
+
+        if ($nextAppt) {
+            // Confirm the appointment if it was pending
+            if ($nextAppt->status === 'pending') {
+                $nextAppt->status = 'confirmed';
+                $nextAppt->save();
+            }
+
+            \Illuminate\Support\Facades\Cache::put("doctor_{$doctor->id}_serving_appt_id", $nextAppt->id, now()->endOfDay());
+
+            $tokenMsg = $nextAppt->token_number ? " (" . $nextAppt->token_number . ")" : "";
+            $patientName = optional(optional($nextAppt->patient)->user)->name ?? 'Patient';
+
+            return redirect()->back()->with('success', "🔔 চেম্বারে ডাকা হয়েছে: {$patientName}{$tokenMsg}।");
+        }
+
+        // No more patients waiting
+        \Illuminate\Support\Facades\Cache::forget("doctor_{$doctor->id}_serving_appt_id");
+
+        return redirect()->back()->with('info', 'আজকের চেম্বারের সকল রোগীর অ্যাপয়েন্টমেন্ট সম্পন্ন হয়েছে।');
+    }
+
+    /**
+     * Live Chamber Queue: Call Specific Patient Out-of-Order
+     */
+    public function callSpecificPatient($id)
+    {
+        $doctor = $this->getDoctor();
+        $appointment = Appointment::where('doctor_id', $doctor->id)->findOrFail($id);
+
+        if ($appointment->status === 'pending') {
+            $appointment->status = 'confirmed';
+            $appointment->save();
+        }
+
+        \Illuminate\Support\Facades\Cache::put("doctor_{$doctor->id}_serving_appt_id", $appointment->id, now()->endOfDay());
+
+        $tokenMsg = $appointment->token_number ? " (" . $appointment->token_number . ")" : "";
+        $patientName = optional(optional($appointment->patient)->user)->name ?? 'Patient';
+
+        return redirect()->back()->with('success', "🔔 চেম্বারে ডাকা হয়েছে: {$patientName}{$tokenMsg}");
     }
 
     /**

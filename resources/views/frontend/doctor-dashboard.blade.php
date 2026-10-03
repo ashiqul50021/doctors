@@ -349,6 +349,7 @@
                                                                 <th>Patient Name</th>
                                                                 <th>Appt Date</th>
                                                                 <th>Purpose</th>
+                                                                <th>Token / Serial</th>
                                                                 <th>Type</th>
                                                                 <th class="text-center">Paid Amount</th>
                                                                 <th></th>
@@ -364,20 +365,64 @@
                                                                                     class="avatar-img rounded-circle"
                                                                                     src="{{ optional($appt->patient)->profile_image ? asset($appt->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}"
                                                                                     alt="Patient Image"></a>
-                                                                            <a href="{{ route('patient.profile', $appt->patient->id ?? '') }}">{{ optional(optional($appt->patient)->user)->name ?? 'Unknown' }} <span>#PT{{ sprintf('%04d', $appt->patient_id) }}</span></a>
+                                                                            <a href="{{ route('patient.profile', $appt->patient->id ?? '') }}">
+                                                                                {{ optional(optional($appt->patient)->user)->name ?? 'Unknown' }} 
+                                                                                <span>#PT{{ sprintf('%04d', $appt->patient_id) }}</span>
+                                                                                @if(optional($appt->patient)->phone)
+                                                                                    <span class="d-block text-muted" style="font-size:12px;font-weight:normal;"><i class="fas fa-phone-alt me-1 text-success"></i>{{ $appt->patient->phone }}</span>
+                                                                                @endif
+                                                                            </a>
                                                                         </h2>
                                                                     </td>
-                                                                    <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }} <span class="d-block text-info">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span></td>
+                                                                    <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }} <span class="d-block text-info font-weight-600">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span></td>
                                                                     <td>{{ $appt->reason ?? 'General' }}</td>
-                                                                    <td>{{ ucfirst($appt->type ?? 'offline') }}</td>
+                                                                    <td>
+                                                                        @if($appt->token_number)
+                                                                            <span class="badge bg-warning text-dark font-weight-bold px-2 py-1" style="font-size:13px;letter-spacing:0.5px;">
+                                                                                <i class="fas fa-ticket-alt me-1"></i>{{ $appt->token_number }}
+                                                                            </span>
+                                                                        @else
+                                                                            <span class="text-muted small">-</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if(($appt->type ?? 'offline') === 'online')
+                                                                            <span class="badge" style="background:#f3e8ff;color:#7e22ce;font-weight:600;"><i class="fas fa-video me-1"></i> Online</span>
+                                                                        @else
+                                                                            <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:600;"><i class="fas fa-hospital me-1"></i> Chamber</span>
+                                                                        @endif
+                                                                    </td>
                                                                     <td class="text-center">৳{{ number_format($appt->fee, 2) }}</td>
                                                                     <td class="text-end">
                                                                         <div class="table-action">
+                                                                            @if(optional($appt->patient)->phone)
+                                                                                <a href="tel:{{ $appt->patient->phone }}" class="btn btn-sm bg-success-light" title="Call Patient">
+                                                                                    <i class="fas fa-phone-alt"></i> Call
+                                                                                </a>
+                                                                                @php
+                                                                                    $cleanP = preg_replace('/[^0-9]/', '', $appt->patient->phone);
+                                                                                    $waNum = str_starts_with($cleanP, '01') ? ('88' . $cleanP) : (str_starts_with($cleanP, '8801') ? $cleanP : ('880' . ltrim($cleanP, '0')));
+                                                                                    $patientN = optional(optional($appt->patient)->user)->name ?? 'Patient';
+                                                                                    $docN = Auth::user()->name ?? 'Doctor';
+                                                                                    $tknTxt = $appt->token_number ? " (টোকেন: {$appt->token_number})" : "";
+                                                                                    $dateTxt = \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y');
+                                                                                    $timeTxt = \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A');
+                                                                                    $waReminder = rawurlencode("আসসালামু আলাইকুম {$patientN}, Dr. {$docN} এর চেম্বার/ক্লিনিক থেকে জানাচ্ছি: আপনার অ্যাপয়েন্টমেন্ট {$dateTxt} তারিখে {$timeTxt} এ নির্ধারিত রয়েছে{$tknTxt}। সময়মতো উপস্থিত থাকার জন্য অনুরোধ করা হচ্ছে। ধন্যবাদ, abcsheba");
+                                                                                @endphp
+                                                                                <a href="https://api.whatsapp.com/send?phone={{ $waNum }}&text={{ $waReminder }}" target="_blank" class="btn btn-sm bg-success-light text-success" title="Send WhatsApp Reminder">
+                                                                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                                                                </a>
+                                                                            @endif
                                                                             @if(optional(optional($appt->patient)->user)->id)
                                                                                 <a href="{{ route('chat', ['user_id' => $appt->patient->user->id]) }}"
-                                                                                    class="btn btn-sm bg-success-light">
+                                                                                    class="btn btn-sm bg-info-light">
                                                                                     <i class="far fa-comment-dots"></i> Chat
                                                                                 </a>
+                                                                            @endif
+                                                                            @if(!empty($appt->reports) && is_array($appt->reports))
+                                                                                <button type="button" class="btn btn-sm bg-warning-light text-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#reports_modal_{{ $appt->id }}" title="View Uploaded Reports">
+                                                                                    <i class="fas fa-file-medical text-primary me-1"></i> Reports ({{ count($appt->reports) }})
+                                                                                </button>
                                                                             @endif
                                                                             <a href="javascript:void(0);"
                                                                                 class="btn btn-sm bg-info-light">
@@ -428,9 +473,66 @@
                                                                         </div>
                                                                     </td>
                                                                 </tr>
+
+                                                                @if(!empty($appt->reports) && is_array($appt->reports))
+                                                                    <!-- Reports Modal -->
+                                                                    <div class="modal fade" id="reports_modal_{{ $appt->id }}" tabindex="-1" aria-hidden="true">
+                                                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title">
+                                                                                        <i class="fas fa-file-medical text-primary me-2"></i> রোগীর প্রেসক্রিপশন ও রিপোর্ট সমূহ
+                                                                                    </h5>
+                                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                </div>
+                                                                                <div class="modal-body text-start">
+                                                                                    <div class="alert alert-info py-2 px-3 small mb-3">
+                                                                                        <strong>রোগীর নাম:</strong> {{ optional(optional($appt->patient)->user)->name ?? 'Patient' }} |
+                                                                                        <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }}
+                                                                                        @if($appt->token_number) | <strong>টোকেন:</strong> {{ $appt->token_number }} @endif
+                                                                                    </div>
+                                                                                    <div class="row g-3">
+                                                                                        @foreach($appt->reports as $report)
+                                                                                            <div class="col-md-6">
+                                                                                                <div class="card h-100 border p-3 text-center shadow-sm">
+                                                                                                    @if(($report['type'] ?? '') === 'image')
+                                                                                                        <a href="{{ asset($report['path']) }}" target="_blank" class="d-block mb-2">
+                                                                                                            <img src="{{ asset($report['path']) }}" alt="{{ $report['name'] }}" class="img-fluid rounded border" style="max-height: 180px; object-fit: contain;">
+                                                                                                        </a>
+                                                                                                        <span class="small fw-semibold text-dark text-truncate d-block">{{ $report['name'] }}</span>
+                                                                                                        <div class="mt-2 d-flex gap-1 justify-content-center">
+                                                                                                            <a href="{{ asset($report['path']) }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">
+                                                                                                                <i class="fas fa-expand me-1"></i> বড় করে দেখুন
+                                                                                                            </a>
+                                                                                                            <a href="{{ asset($report['path']) }}" download class="btn btn-sm btn-outline-secondary rounded-pill">
+                                                                                                                <i class="fas fa-download"></i>
+                                                                                                            </a>
+                                                                                                        </div>
+                                                                                                    @else
+                                                                                                        <div class="py-4">
+                                                                                                            <i class="fas fa-file-pdf text-danger" style="font-size: 48px;"></i>
+                                                                                                            <h6 class="mt-2 mb-1 text-dark fw-semibold text-truncate">{{ $report['name'] }}</h6>
+                                                                                                            <small class="text-muted d-block mb-3">{{ $report['size'] ?? '' }}</small>
+                                                                                                            <a href="{{ asset($report['path']) }}" target="_blank" class="btn btn-sm btn-danger rounded-pill px-3">
+                                                                                                                <i class="fas fa-external-link-alt me-1"></i> PDF ফাইল ওপেন করুন
+                                                                                                            </a>
+                                                                                                        </div>
+                                                                                                    @endif
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">বন্ধ করুন</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
                                                             @empty
                                                                 <tr>
-                                                                    <td colspan="6" class="text-center">No upcoming appointments found.</td>
+                                                                    <td colspan="7" class="text-center">No upcoming appointments found.</td>
                                                                 </tr>
                                                             @endforelse
                                                         </tbody>
@@ -443,6 +545,69 @@
 
                                     <!-- Today Appointment Tab -->
                                     <div class="tab-pane" id="today-appointments">
+
+                                        <!-- Live Chamber Queue Management Card -->
+                                        <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 16px; color: #fff;">
+                                            <div class="card-body p-4">
+                                                <div class="row align-items-center g-3">
+                                                    <!-- Currently Serving -->
+                                                    <div class="col-md-5 border-end border-secondary border-opacity-50">
+                                                        <div class="d-flex align-items-center mb-2">
+                                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 me-2 rounded-pill" style="font-size: 11px;">
+                                                                <span class="spinner-grow spinner-grow-sm me-1" style="width: 8px; height: 8px;" role="status"></span> LIVE QUEUE
+                                                            </span>
+                                                            <span class="text-white-50 small">Currently Serving</span>
+                                                        </div>
+                                                        @if($currentlyServing)
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="badge bg-warning text-dark fs-5 fw-bold px-3 py-2 me-3 rounded-3 shadow-sm">
+                                                                    {{ $currentlyServing->token_number ?? 'TKN-01' }}
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-0 fw-bold text-white">{{ optional(optional($currentlyServing->patient)->user)->name ?? 'Patient' }}</h6>
+                                                                    <small class="text-white-50"><i class="far fa-clock me-1"></i> {{ \Carbon\Carbon::parse($currentlyServing->appointment_time)->format('h:i A') }}</small>
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <div class="text-white-50 small py-1">
+                                                                <i class="fas fa-stethoscope me-1 text-info"></i> চেম্বার প্রস্তুত। রোগী ডাকতে <strong>"Call Next"</strong> চাপুন।
+                                                            </div>
+                                                        @endif
+                                                    </div>
+
+                                                    <!-- Next In Line -->
+                                                    <div class="col-md-4">
+                                                        <div class="text-white-50 small mb-1">
+                                                            <i class="fas fa-user-clock text-warning me-1"></i> Next in Line (পরবর্তী রোগী)
+                                                        </div>
+                                                        @if($nextInLine)
+                                                            <div class="d-flex align-items-center">
+                                                                <span class="badge bg-secondary text-white fw-bold px-2 py-1 me-2">
+                                                                    {{ $nextInLine->token_number ?? 'TKN-XX' }}
+                                                                </span>
+                                                                <span class="text-white fw-semibold text-truncate" style="max-width: 170px;">
+                                                                    {{ optional(optional($nextInLine->patient)->user)->name ?? 'Patient' }}
+                                                                </span>
+                                                            </div>
+                                                        @else
+                                                            <span class="badge bg-dark text-muted">আর কোনো অপেক্ষমাণ রোগী নেই</span>
+                                                        @endif
+                                                    </div>
+
+                                                    <!-- Call Next Button -->
+                                                    <div class="col-md-3 text-md-end">
+                                                        <form action="{{ route('appointment.call_next') }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill shadow fw-bold px-3 py-2" style="font-size: 15px;">
+                                                                <i class="fas fa-bullhorn me-1"></i> Call Next ⏭️
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /Live Chamber Queue Management Card -->
+
                                         <div class="card card-table mb-0">
                                             <div class="card-body">
                                                 <div class="table-responsive">
@@ -452,6 +617,7 @@
                                                                 <th>Patient Name</th>
                                                                 <th>Appt Date</th>
                                                                 <th>Purpose</th>
+                                                                <th>Token / Serial</th>
                                                                 <th>Type</th>
                                                                 <th class="text-center">Paid Amount</th>
                                                                 <th></th>
@@ -459,7 +625,7 @@
                                                         </thead>
                                                         <tbody>
                                                             @forelse($todayAppointments as $appt)
-                                                                <tr>
+                                                                <tr @if($currentlyServing && $currentlyServing->id === $appt->id) class="table-success" style="background:#f0fdf4 !important;" @endif>
                                                                     <td>
                                                                         <h2 class="table-avatar">
                                                                             <a href="{{ route('patient.profile', $appt->patient->id ?? '') }}"
@@ -467,21 +633,79 @@
                                                                                     class="avatar-img rounded-circle"
                                                                                     src="{{ optional($appt->patient)->profile_image ? asset($appt->patient->profile_image) : asset('assets/img/patients/patient.jpg') }}"
                                                                                     alt="Patient Image"></a>
-                                                                            <a href="{{ route('patient.profile', $appt->patient->id ?? '') }}">{{ optional(optional($appt->patient)->user)->name ?? 'Unknown' }} <span>#PT{{ sprintf('%04d', $appt->patient_id) }}</span></a>
+                                                                            <a href="{{ route('patient.profile', $appt->patient->id ?? '') }}">
+                                                                                {{ optional(optional($appt->patient)->user)->name ?? 'Unknown' }} 
+                                                                                <span>#PT{{ sprintf('%04d', $appt->patient_id) }}</span>
+                                                                                @if(optional($appt->patient)->phone)
+                                                                                    <span class="d-block text-muted" style="font-size:12px;font-weight:normal;"><i class="fas fa-phone-alt me-1 text-success"></i>{{ $appt->patient->phone }}</span>
+                                                                                @endif
+                                                                            </a>
                                                                         </h2>
                                                                     </td>
-                                                                    <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }} <span class="d-block text-info">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span></td>
+                                                                    <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }} <span class="d-block text-info font-weight-600">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span></td>
                                                                     <td>{{ $appt->reason ?? 'General' }}</td>
-                                                                    <td>{{ ucfirst($appt->type ?? 'offline') }}</td>
+                                                                    <td>
+                                                                        @if($appt->token_number)
+                                                                            <span class="badge bg-warning text-dark font-weight-bold px-2 py-1" style="font-size:13px;letter-spacing:0.5px;">
+                                                                                <i class="fas fa-ticket-alt me-1"></i>{{ $appt->token_number }}
+                                                                            </span>
+                                                                        @else
+                                                                            <span class="text-muted small">-</span>
+                                                                        @endif
+                                                                        @if($currentlyServing && $currentlyServing->id === $appt->id)
+                                                                            <span class="badge bg-success text-white px-2 py-1 mt-1 d-block" style="font-size:11px;">
+                                                                                <i class="fas fa-door-open me-1"></i> In Chamber
+                                                                            </span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if(($appt->type ?? 'offline') === 'online')
+                                                                            <span class="badge" style="background:#f3e8ff;color:#7e22ce;font-weight:600;"><i class="fas fa-video me-1"></i> Online</span>
+                                                                        @else
+                                                                            <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:600;"><i class="fas fa-hospital me-1"></i> Chamber</span>
+                                                                        @endif
+                                                                    </td>
                                                                     <td class="text-center">৳{{ number_format($appt->fee, 2) }}</td>
                                                                     <td class="text-end">
                                                                         <div class="table-action">
+                                                                            @if(optional($appt->patient)->phone)
+                                                                                <a href="tel:{{ $appt->patient->phone }}" class="btn btn-sm bg-success-light" title="Call Patient">
+                                                                                    <i class="fas fa-phone-alt"></i> Call
+                                                                                </a>
+                                                                                @php
+                                                                                    $cleanP = preg_replace('/[^0-9]/', '', $appt->patient->phone);
+                                                                                    $waNum = str_starts_with($cleanP, '01') ? ('88' . $cleanP) : (str_starts_with($cleanP, '8801') ? $cleanP : ('880' . ltrim($cleanP, '0')));
+                                                                                    $patientN = optional(optional($appt->patient)->user)->name ?? 'Patient';
+                                                                                    $docN = Auth::user()->name ?? 'Doctor';
+                                                                                    $tknTxt = $appt->token_number ? " (টোকেন: {$appt->token_number})" : "";
+                                                                                    $timeTxt = \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A');
+                                                                                    $waReminder = rawurlencode("আসসালামু আলাইকুম {$patientN}, Dr. {$docN} এর চেম্বার/ক্লিনিক থেকে জানাচ্ছি: আপনার অ্যাপয়েন্টমেন্ট আজ {$timeTxt} এ নির্ধারিত রয়েছে{$tknTxt}। সময়মতো উপস্থিত থাকার জন্য অনুরোধ করা হচ্ছে। ধন্যবাদ, abcsheba");
+                                                                                @endphp
+                                                                                <a href="https://api.whatsapp.com/send?phone={{ $waNum }}&text={{ $waReminder }}" target="_blank" class="btn btn-sm bg-success-light text-success" title="Send WhatsApp Reminder">
+                                                                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                                                                </a>
+                                                                            @endif
                                                                             @if(optional(optional($appt->patient)->user)->id)
                                                                                 <a href="{{ route('chat', ['user_id' => $appt->patient->user->id]) }}"
-                                                                                    class="btn btn-sm bg-success-light">
+                                                                                    class="btn btn-sm bg-info-light">
                                                                                     <i class="far fa-comment-dots"></i> Chat
                                                                                 </a>
                                                                             @endif
+                                                                            @if(!empty($appt->reports) && is_array($appt->reports))
+                                                                                <button type="button" class="btn btn-sm bg-warning-light text-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#reports_modal_today_{{ $appt->id }}" title="View Uploaded Reports">
+                                                                                    <i class="fas fa-file-medical text-primary me-1"></i> Reports ({{ count($appt->reports) }})
+                                                                                </button>
+                                                                            @endif
+
+                                                                            @if($appt->status !== 'completed' && $appt->status !== 'cancelled' && (!$currentlyServing || $currentlyServing->id !== $appt->id))
+                                                                                <form action="{{ route('appointment.call_specific', $appt->id) }}" method="POST" class="d-inline">
+                                                                                    @csrf
+                                                                                    <button type="submit" class="btn btn-sm bg-primary-light" title="চেম্বারে ডাকুন (Call to Chamber)">
+                                                                                        <i class="fas fa-bullhorn"></i> Call In
+                                                                                    </button>
+                                                                                </form>
+                                                                            @endif
+
                                                                             <a href="javascript:void(0);"
                                                                                 class="btn btn-sm bg-info-light">
                                                                                 <i class="far fa-eye"></i> View
@@ -531,9 +755,66 @@
                                                                         </div>
                                                                     </td>
                                                                 </tr>
+
+                                                                @if(!empty($appt->reports) && is_array($appt->reports))
+                                                                    <!-- Reports Modal (Today) -->
+                                                                    <div class="modal fade" id="reports_modal_today_{{ $appt->id }}" tabindex="-1" aria-hidden="true">
+                                                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title">
+                                                                                        <i class="fas fa-file-medical text-primary me-2"></i> রোগীর প্রেসক্রিপশন ও রিপোর্ট সমূহ
+                                                                                    </h5>
+                                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                </div>
+                                                                                <div class="modal-body text-start">
+                                                                                    <div class="alert alert-info py-2 px-3 small mb-3">
+                                                                                        <strong>রোগীর নাম:</strong> {{ optional(optional($appt->patient)->user)->name ?? 'Patient' }} |
+                                                                                        <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }}
+                                                                                        @if($appt->token_number) | <strong>টোকেন:</strong> {{ $appt->token_number }} @endif
+                                                                                    </div>
+                                                                                    <div class="row g-3">
+                                                                                        @foreach($appt->reports as $report)
+                                                                                            <div class="col-md-6">
+                                                                                                <div class="card h-100 border p-3 text-center shadow-sm">
+                                                                                                    @if(($report['type'] ?? '') === 'image')
+                                                                                                        <a href="{{ asset($report['path']) }}" target="_blank" class="d-block mb-2">
+                                                                                                            <img src="{{ asset($report['path']) }}" alt="{{ $report['name'] }}" class="img-fluid rounded border" style="max-height: 180px; object-fit: contain;">
+                                                                                                        </a>
+                                                                                                        <span class="small fw-semibold text-dark text-truncate d-block">{{ $report['name'] }}</span>
+                                                                                                        <div class="mt-2 d-flex gap-1 justify-content-center">
+                                                                                                            <a href="{{ asset($report['path']) }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">
+                                                                                                                <i class="fas fa-expand me-1"></i> বড় করে দেখুন
+                                                                                                            </a>
+                                                                                                            <a href="{{ asset($report['path']) }}" download class="btn btn-sm btn-outline-secondary rounded-pill">
+                                                                                                                <i class="fas fa-download"></i>
+                                                                                                            </a>
+                                                                                                        </div>
+                                                                                                    @else
+                                                                                                        <div class="py-4">
+                                                                                                            <i class="fas fa-file-pdf text-danger" style="font-size: 48px;"></i>
+                                                                                                            <h6 class="mt-2 mb-1 text-dark fw-semibold text-truncate">{{ $report['name'] }}</h6>
+                                                                                                            <small class="text-muted d-block mb-3">{{ $report['size'] ?? '' }}</small>
+                                                                                                            <a href="{{ asset($report['path']) }}" target="_blank" class="btn btn-sm btn-danger rounded-pill px-3">
+                                                                                                                <i class="fas fa-external-link-alt me-1"></i> PDF ফাইল ওপেন করুন
+                                                                                                            </a>
+                                                                                                        </div>
+                                                                                                    @endif
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">বন্ধ করুন</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
                                                             @empty
                                                                 <tr>
-                                                                    <td colspan="6" class="text-center">No appointments for today.</td>
+                                                                    <td colspan="7" class="text-center">No appointments for today.</td>
                                                                 </tr>
                                                             @endforelse
                                                         </tbody>

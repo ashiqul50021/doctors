@@ -307,6 +307,29 @@
                             </div>
                         </div>
                         <div class="appointment-action">
+                            @if(optional($appointment->patient)->phone)
+                                <a href="tel:{{ $appointment->patient->phone }}" class="btn btn-sm bg-success-light" title="Call Patient">
+                                    <i class="fas fa-phone-alt"></i> Call
+                                </a>
+                                @php
+                                    $cleanP = preg_replace('/[^0-9]/', '', $appointment->patient->phone);
+                                    $waNum = str_starts_with($cleanP, '01') ? ('88' . $cleanP) : (str_starts_with($cleanP, '8801') ? $cleanP : ('880' . ltrim($cleanP, '0')));
+                                    $patientN = optional(optional($appointment->patient)->user)->name ?? 'Patient';
+                                    $docN = Auth::user()->name ?? 'Doctor';
+                                    $tknTxt = $appointment->token_number ? " (টোকেন: {$appointment->token_number})" : "";
+                                    $dateTxt = \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y');
+                                    $timeTxt = \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A');
+                                    $waReminder = rawurlencode("আসসালামু আলাইকুম {$patientN}, Dr. {$docN} এর চেম্বার থেকে জানাচ্ছি: আপনার অ্যাপয়েন্টমেন্ট {$dateTxt} তারিখে {$timeTxt} এ নির্ধারিত রয়েছে{$tknTxt}। সময়মতো চেম্বারে উপস্থিত থাকার জন্য অনুরোধ করা হচ্ছে। ধন্যবাদ, abcsheba");
+                                @endphp
+                                <a href="https://api.whatsapp.com/send?phone={{ $waNum }}&text={{ $waReminder }}" target="_blank" class="btn btn-sm bg-success-light text-success" title="Send WhatsApp Reminder">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </a>
+                            @endif
+                            @if(!empty($appointment->reports) && is_array($appointment->reports))
+                                <button type="button" class="btn btn-sm bg-warning-light text-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#reports_modal_appt_{{ $appointment->id }}" title="View Uploaded Reports">
+                                    <i class="fas fa-file-medical text-primary me-1"></i> Reports ({{ count($appointment->reports) }})
+                                </button>
+                            @endif
                             <a href="#" class="btn btn-sm bg-info-light" data-bs-toggle="modal" data-bs-target="#appt_details_{{ $appointment->id }}">
                                 <i class="far fa-eye"></i> View
                             </a>
@@ -340,6 +363,63 @@
                             @endif
                         </div>
                     </div>
+
+                    @if(!empty($appointment->reports) && is_array($appointment->reports))
+                        <!-- Reports Modal (Offline) -->
+                        <div class="modal fade" id="reports_modal_appt_{{ $appointment->id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-file-medical text-primary me-2"></i> রোগীর প্রেসক্রিপশন ও রিপোর্ট সমূহ
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-start">
+                                        <div class="alert alert-info py-2 px-3 small mb-3">
+                                            <strong>রোগীর নাম:</strong> {{ optional(optional($appointment->patient)->user)->name ?? 'Patient' }} |
+                                            <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}
+                                            @if($appointment->token_number) | <strong>টোকেন:</strong> {{ $appointment->token_number }} @endif
+                                        </div>
+                                        <div class="row g-3">
+                                            @foreach($appointment->reports as $report)
+                                                <div class="col-md-6">
+                                                    <div class="card h-100 border p-3 text-center shadow-sm">
+                                                        @if(($report['type'] ?? '') === 'image')
+                                                            <a href="{{ asset($report['path']) }}" target="_blank" class="d-block mb-2">
+                                                                <img src="{{ asset($report['path']) }}" alt="{{ $report['name'] }}" class="img-fluid rounded border" style="max-height: 180px; object-fit: contain;">
+                                                            </a>
+                                                            <span class="small fw-semibold text-dark text-truncate d-block">{{ $report['name'] }}</span>
+                                                            <div class="mt-2 d-flex gap-1 justify-content-center">
+                                                                <a href="{{ asset($report['path']) }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">
+                                                                    <i class="fas fa-expand me-1"></i> বড় করে দেখুন
+                                                                </a>
+                                                                <a href="{{ asset($report['path']) }}" download class="btn btn-sm btn-outline-secondary rounded-pill">
+                                                                    <i class="fas fa-download"></i>
+                                                                </a>
+                                                            </div>
+                                                        @else
+                                                            <div class="py-4">
+                                                                <i class="fas fa-file-pdf text-danger" style="font-size: 48px;"></i>
+                                                                <h6 class="mt-2 mb-1 text-dark fw-semibold text-truncate">{{ $report['name'] }}</h6>
+                                                                <small class="text-muted d-block mb-3">{{ $report['size'] ?? '' }}</small>
+                                                                <a href="{{ asset($report['path']) }}" target="_blank" class="btn btn-sm btn-danger rounded-pill px-3">
+                                                                    <i class="fas fa-external-link-alt me-1"></i> PDF ফাইল ওপেন করুন
+                                                                </a>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">বন্ধ করুন</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                     @empty
                     <div class="empty-state">
                         <i class="fas fa-hospital-user"></i>
@@ -360,6 +440,9 @@
                             <div class="profile-det-info">
                                 <h3>
                                     <span class="appt-type-badge online"><i class="fas fa-video"></i> Online</span>
+                                    @if($appointment->token_number)
+                                        <span class="token-badge"><i class="fas fa-hashtag"></i> {{ $appointment->token_number }}</span>
+                                    @endif
                                 </h3>
                                 <h3>
                                     <a href="#">{{ optional(optional($appointment->patient)->user)->name ?? 'Unknown Patient' }}</a>
@@ -376,6 +459,29 @@
                             </div>
                         </div>
                         <div class="appointment-action">
+                            @if(optional($appointment->patient)->phone)
+                                <a href="tel:{{ $appointment->patient->phone }}" class="btn btn-sm bg-success-light" title="Call Patient">
+                                    <i class="fas fa-phone-alt"></i> Call
+                                </a>
+                                @php
+                                    $cleanP = preg_replace('/[^0-9]/', '', $appointment->patient->phone);
+                                    $waNum = str_starts_with($cleanP, '01') ? ('88' . $cleanP) : (str_starts_with($cleanP, '8801') ? $cleanP : ('880' . ltrim($cleanP, '0')));
+                                    $patientN = optional(optional($appointment->patient)->user)->name ?? 'Patient';
+                                    $docN = Auth::user()->name ?? 'Doctor';
+                                    $dateTxt = \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y');
+                                    $timeTxt = \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A');
+                                    $meetTxt = $appointment->meeting_link ? ("\\nভিডিও লিংক: " . $appointment->meeting_link) : "";
+                                    $waReminder = rawurlencode("আসসালামু আলাইকুম {$patientN}, Dr. {$docN} এর সাথে আপনার অনলাইন ভিডিও কনসালটেশন {$dateTxt} তারিখে {$timeTxt} এ নির্ধারিত রয়েছে।{$meetTxt}\\nসময়মতো যুক্ত হওয়ার অনুরোধ করা হচ্ছে। ধন্যবাদ, abcsheba");
+                                @endphp
+                                <a href="https://api.whatsapp.com/send?phone={{ $waNum }}&text={{ $waReminder }}" target="_blank" class="btn btn-sm bg-success-light text-success" title="Send WhatsApp Reminder">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </a>
+                            @endif
+                            @if(!empty($appointment->reports) && is_array($appointment->reports))
+                                <button type="button" class="btn btn-sm bg-warning-light text-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#reports_modal_online_{{ $appointment->id }}" title="View Uploaded Reports">
+                                    <i class="fas fa-file-medical text-primary me-1"></i> Reports ({{ count($appointment->reports) }})
+                                </button>
+                            @endif
                             <a href="#" class="btn btn-sm bg-info-light" data-bs-toggle="modal" data-bs-target="#appt_details_{{ $appointment->id }}">
                                 <i class="far fa-eye"></i> View
                             </a>
@@ -414,6 +520,63 @@
                             @endif
                         </div>
                     </div>
+
+                    @if(!empty($appointment->reports) && is_array($appointment->reports))
+                        <!-- Reports Modal (Online) -->
+                        <div class="modal fade" id="reports_modal_online_{{ $appointment->id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-file-medical text-primary me-2"></i> রোগীর প্রেসক্রিপশন ও রিপোর্ট সমূহ
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-start">
+                                        <div class="alert alert-info py-2 px-3 small mb-3">
+                                            <strong>রোগীর নাম:</strong> {{ optional(optional($appointment->patient)->user)->name ?? 'Patient' }} |
+                                            <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}
+                                            @if($appointment->token_number) | <strong>টোকেন:</strong> {{ $appointment->token_number }} @endif
+                                        </div>
+                                        <div class="row g-3">
+                                            @foreach($appointment->reports as $report)
+                                                <div class="col-md-6">
+                                                    <div class="card h-100 border p-3 text-center shadow-sm">
+                                                        @if(($report['type'] ?? '') === 'image')
+                                                            <a href="{{ asset($report['path']) }}" target="_blank" class="d-block mb-2">
+                                                                <img src="{{ asset($report['path']) }}" alt="{{ $report['name'] }}" class="img-fluid rounded border" style="max-height: 180px; object-fit: contain;">
+                                                            </a>
+                                                            <span class="small fw-semibold text-dark text-truncate d-block">{{ $report['name'] }}</span>
+                                                            <div class="mt-2 d-flex gap-1 justify-content-center">
+                                                                <a href="{{ asset($report['path']) }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">
+                                                                    <i class="fas fa-expand me-1"></i> বড় করে দেখুন
+                                                                </a>
+                                                                <a href="{{ asset($report['path']) }}" download class="btn btn-sm btn-outline-secondary rounded-pill">
+                                                                    <i class="fas fa-download"></i>
+                                                                </a>
+                                                            </div>
+                                                        @else
+                                                            <div class="py-4">
+                                                                <i class="fas fa-file-pdf text-danger" style="font-size: 48px;"></i>
+                                                                <h6 class="mt-2 mb-1 text-dark fw-semibold text-truncate">{{ $report['name'] }}</h6>
+                                                                <small class="text-muted d-block mb-3">{{ $report['size'] ?? '' }}</small>
+                                                                <a href="{{ asset($report['path']) }}" target="_blank" class="btn btn-sm btn-danger rounded-pill px-3">
+                                                                    <i class="fas fa-external-link-alt me-1"></i> PDF ফাইল ওপেন করুন
+                                                                </a>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">বন্ধ করুন</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                     @empty
                     <div class="empty-state">
                         <i class="fas fa-video-slash"></i>

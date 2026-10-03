@@ -44,24 +44,30 @@
                         <div class="col-sm-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Schedule Timings</h4>
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                                        <h4 class="card-title mb-0">Schedule Timings</h4>
+
+                                        <div class="d-flex gap-2">
+                                            <a class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" data-bs-toggle="modal" href="#add_time_slot" onclick="openBulkScheduleModal('offline')">
+                                                <i class="fas fa-calendar-plus me-1"></i> Quick Multi-Day Setup (Chamber)
+                                            </a>
+                                            <a class="btn btn-success btn-sm rounded-pill px-3 shadow-sm" data-bs-toggle="modal" href="#add_time_slot" onclick="openBulkScheduleModal('online')">
+                                                <i class="fas fa-video me-1"></i> Quick Multi-Day (Online)
+                                            </a>
+                                        </div>
+                                    </div>
                                     <div class="profile-box">
                                         <div class="row">
-
                                             <div class="col-lg-4">
                                                 <div class="mb-3">
-                                                    <label>Timing Slot Duration</label>
-                                                    <select class="select form-control">
-                                                        <option>-</option>
-                                                        <option>15 mins</option>
+                                                    <label class="form-label text-muted small">Default Slot Duration</label>
+                                                    <select class="select form-control" disabled>
                                                         <option selected="selected">30 mins</option>
-                                                        <option>45 mins</option>
-                                                        <option>1 Hour</option>
                                                     </select>
                                                 </div>
                                             </div>
-
                                         </div>
+
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <!-- Primary Tab Nav -->
@@ -316,39 +322,71 @@
     <!-- Add Time Slot Modal -->
     <div class="modal fade custom-modal" id="add_time_slot">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Time Slots</h5>
+            <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold" id="addSlotModalTitle">Add Time Slots</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form action="{{ route('doctors.schedule.store') }}" method="POST">
+                <div class="modal-body p-4">
+                    <form action="{{ route('doctors.schedule.store') }}" method="POST" id="scheduleStoreForm">
                         @csrf
                         <input type="hidden" name="day" id="selected_day">
-                        <input type="hidden" name="type" id="selected_type">
-                        <div class="hours-info">
-                            <div class="row form-row hours-cont">
-                                <div class="col-12 col-md-10">
-                                    <div class="row form-row">
-                                        <div class="col-12 col-md-6">
-                                            <div class="mb-3">
-                                                <label>Start Time</label>
-                                                <input type="time" name="start_time" class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <div class="mb-3">
-                                                <label>End Time</label>
-                                                <input type="time" name="end_time" class="form-control" required>
-                                            </div>
-                                        </div>
-                                    </div>
+                        <input type="hidden" name="type" id="selected_type" value="offline">
+
+                        <!-- Consultation Type Indicator -->
+                        <div class="mb-3 d-flex align-items-center justify-content-between">
+                            <span class="text-muted small fw-semibold">Consultation Mode:</span>
+                            <span id="modalTypeBadge" class="badge bg-primary px-3 py-2">Chamber Consultation</span>
+                        </div>
+
+                        <!-- Multi-Day Checkboxes Selector -->
+                        <div class="mb-3" id="multiDaySelectorBox">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label fw-bold small mb-0">Select Active Days</label>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 11px;" onclick="selectAllDays(true)">All Days</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 11px;" onclick="selectAllDays(false)">Clear</button>
                                 </div>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2 p-2 rounded bg-light border">
+                                @foreach(['saturday' => 'Sat', 'sunday' => 'Sun', 'monday' => 'Mon', 'tuesday' => 'Tue', 'wednesday' => 'Wed', 'thursday' => 'Thu', 'friday' => 'Fri'] as $val => $lbl)
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input day-checkbox" type="checkbox" name="days[]" value="{{ $val }}" id="day_check_{{ $val }}">
+                                        <label class="form-check-label small fw-semibold" for="day_check_{{ $val }}">{{ $lbl }}</label>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <small class="text-muted" style="font-size: 11px;">একাধিক দিন সিলেক্ট করলে একসাথে সব দিনে স্লটটি তৈরি হয়ে যাবে।</small>
+                        </div>
+
+                        <!-- Start and End Time -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-bold small">Start Time <span class="text-danger">*</span></label>
+                                <input type="time" name="start_time" id="modal_start_time" class="form-control" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold small">End Time <span class="text-danger">*</span></label>
+                                <input type="time" name="end_time" id="modal_end_time" class="form-control" required>
                             </div>
                         </div>
 
-                        <div class="submit-section text-center">
-                            <button type="submit" class="btn btn-primary submit-btn">Save Changes</button>
+                        <!-- Slot Duration -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Slot Duration</label>
+                            <select name="slot_duration" class="form-select">
+                                <option value="15">15 Minutes</option>
+                                <option value="20">20 Minutes</option>
+                                <option value="30" selected>30 Minutes</option>
+                                <option value="45">45 Minutes</option>
+                                <option value="60">60 Minutes (1 Hour)</option>
+                            </select>
+                        </div>
+
+                        <div class="submit-section text-center mt-4">
+                            <button type="submit" class="btn btn-primary submit-btn w-100 py-2">
+                                <i class="fas fa-check-circle me-1"></i> Save Schedule
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -356,6 +394,7 @@
         </div>
     </div>
     <!-- /Add Time Slot Modal -->
+
 
     <!-- Edit Time Slot Modal -->
     <div class="modal fade custom-modal" id="edit_time_slot">
@@ -499,6 +538,50 @@
         function setDay(day, type) {
             document.getElementById('selected_day').value = day;
             document.getElementById('selected_type').value = type;
+
+            const title = document.getElementById('addSlotModalTitle');
+            if (title) {
+                title.textContent = 'Add Time Slot (' + day.charAt(0).toUpperCase() + day.slice(1) + ')';
+            }
+
+            const badge = document.getElementById('modalTypeBadge');
+            if (badge) {
+                badge.textContent = type === 'online' ? 'Online / Video Consultation' : 'Chamber Consultation';
+                badge.className = type === 'online' ? 'badge bg-success px-3 py-2' : 'badge bg-primary px-3 py-2';
+            }
+
+            // Uncheck all days, check only this day
+            document.querySelectorAll('.day-checkbox').forEach(cb => {
+                cb.checked = (cb.value === day);
+            });
+        }
+
+        function openBulkScheduleModal(type) {
+            document.getElementById('selected_day').value = '';
+            document.getElementById('selected_type').value = type;
+
+            const title = document.getElementById('addSlotModalTitle');
+            if (title) {
+                title.textContent = 'Quick Multi-Day Schedule Setup (' + (type === 'online' ? 'Online' : 'Chamber') + ')';
+            }
+
+            const badge = document.getElementById('modalTypeBadge');
+            if (badge) {
+                badge.textContent = type === 'online' ? 'Online / Video Consultation' : 'Chamber Consultation';
+                badge.className = type === 'online' ? 'badge bg-success px-3 py-2' : 'badge bg-primary px-3 py-2';
+            }
+
+            // Check Saturday to Thursday by default
+            document.querySelectorAll('.day-checkbox').forEach(cb => {
+                cb.checked = (cb.value !== 'friday');
+            });
+        }
+
+        function selectAllDays(checked) {
+            document.querySelectorAll('.day-checkbox').forEach(cb => {
+                cb.checked = checked;
+            });
         }
     </script>
 @endpush
+

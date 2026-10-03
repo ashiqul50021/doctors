@@ -320,3 +320,166 @@
         width: auto;
     }
 }
+
+/* =====================================
+   EXPRESS 1-PAGE BOOKING ENHANCEMENTS
+   ===================================== */
+.badge-fee {
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-left: auto;
+}
+.badge-fee-offline {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+.badge-fee-online {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.selected-slot-banner {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+.selected-slot-banner .slot-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.selected-slot-banner .slot-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #345cce;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+}
+.selected-slot-banner .slot-text strong {
+    color: #1e293b;
+    font-size: 15px;
+    display: block;
+}
+.selected-slot-banner .slot-text span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.patient-info-box {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid #f1f5f9;
+}
+.patient-info-box .form-label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #334155;
+    margin-bottom: 6px;
+}
+.patient-info-box .form-control {
+    border-radius: 10px;
+    border: 1.5px solid #e2e8f0;
+    padding: 11px 14px;
+    font-size: 14px;
+    transition: var(--transition);
+}
+.patient-info-box .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(52, 92, 206, 0.12);
+}
+
+.payment-method-card {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: var(--transition);
+    background: #fff;
+    margin-bottom: 12px;
+}
+.payment-method-card:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+.payment-method-card.selected {
+    border-color: var(--primary-color);
+    background: #eff6ff;
+}
+.payment-method-card .method-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.payment-method-card .method-icon {
+    font-size: 22px;
+}
+
+.booking-summary-sidebar {
+    position: sticky;
+    top: 90px;
+}
+.booking-summary-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+.booking-summary-card .summary-header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: #fff;
+    padding: 16px 20px;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.booking-summary-card .summary-body {
+    padding: 20px;
+}
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 14px;
+    color: #475569;
+    border-bottom: 1px dashed #e2e8f0;
+}
+.summary-row:last-child {
+    border-bottom: none;
+}
+.summary-row.total-row {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    padding-top: 14px;
+    margin-top: 6px;
+    border-top: 2px solid #e2e8f0;
+}
+.summary-row .val-highlight {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}

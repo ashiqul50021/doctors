@@ -39,6 +39,8 @@ Route::name('doctors.')->group(function () {
             Route::post('/appointment/accept/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'acceptAppointment'])->name('appointment.accept');
             Route::post('/appointment/cancel/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'cancelAppointment'])->name('appointment.cancel');
             Route::post('/appointment/complete/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'completeAppointment'])->name('appointment.complete');
+            Route::post('/appointment/call-next', [\App\Http\Controllers\Doctor\DashboardController::class, 'callNextPatient'])->name('appointment.call_next');
+            Route::post('/appointment/call-specific/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'callSpecificPatient'])->name('appointment.call_specific');
 
             // Change Password
             Route::get('/doctor-change-password', [\App\Http\Controllers\Doctor\DashboardController::class, 'changePassword'])->name('change.password');
@@ -105,6 +107,8 @@ Route::middleware(['auth', 'role:doctor'])->group(function () {
     Route::post('/appointment/accept/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'acceptAppointment'])->name('appointment.accept');
     Route::post('/appointment/cancel/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'cancelAppointment'])->name('appointment.cancel');
     Route::post('/appointment/complete/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'completeAppointment'])->name('appointment.complete');
+    Route::post('/appointment/call-next', [\App\Http\Controllers\Doctor\DashboardController::class, 'callNextPatient'])->name('appointment.call_next');
+    Route::post('/appointment/call-specific/{id}', [\App\Http\Controllers\Doctor\DashboardController::class, 'callSpecificPatient'])->name('appointment.call_specific');
 });
 
 /*

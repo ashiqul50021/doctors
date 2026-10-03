@@ -40,8 +40,10 @@ class ScheduleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'day' => 'required|in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
-            'start_time' => 'required', // Format check can be added
+            'days' => 'nullable|array',
+            'days.*' => 'in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
+            'day' => 'nullable|in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
+            'start_time' => 'required',
             'end_time' => 'required',
             'slot_duration' => 'nullable|integer',
             'type' => 'required|in:online,offline',
@@ -49,7 +51,7 @@ class ScheduleController extends Controller
 
         $doctor = Auth::user()->doctor;
 
-        // Parse 12-hour format to 24-hour
+        // Parse 12-hour or 24-hour format
         $startTime = \Carbon\Carbon::parse($request->start_time)->format('H:i:s');
         $endTime = \Carbon\Carbon::parse($request->end_time)->format('H:i:s');
 
@@ -58,18 +60,46 @@ class ScheduleController extends Controller
             return back()->withErrors(['start_time' => 'Start time must be before end time.']);
         }
 
-        // Logic: Add logic to check overlap if needed, for now simple add
-        Schedule::create([
-            'doctor_id' => $doctor->id,
-            'day' => $request->day,
-            'start_time' => $startTime,
-            'end_time' => $endTime,
-            'slot_duration' => $request->slot_duration ?? 30,
-            'type' => $request->type,
-        ]);
+        // Determine target days (multi-select days or single day fallback)
+        $targetDays = $request->input('days', []);
+        if (empty($targetDays) && $request->filled('day')) {
+            $targetDays = [$request->day];
+        }
 
-        return back()->with('success', 'Schedule added successfully!');
+        if (empty($targetDays)) {
+            return back()->withErrors(['days' => 'Please select at least one day.']);
+        }
+
+        $createdCount = 0;
+        foreach ($targetDays as $day) {
+            // Check if exact same slot already exists for this day and type
+            $exists = Schedule::where('doctor_id', $doctor->id)
+                ->where('day', $day)
+                ->where('type', $request->type)
+                ->where('start_time', $startTime)
+                ->where('end_time', $endTime)
+                ->exists();
+
+            if (!$exists) {
+                Schedule::create([
+                    'doctor_id' => $doctor->id,
+                    'day' => $day,
+                    'start_time' => $startTime,
+                    'end_time' => $endTime,
+                    'slot_duration' => $request->slot_duration ?? 30,
+                    'type' => $request->type,
+                ]);
+                $createdCount++;
+            }
+        }
+
+        $message = $createdCount > 1 
+            ? "Schedule added for {$createdCount} days successfully!" 
+            : 'Schedule added successfully!';
+
+        return back()->with('success', $message);
     }
+
 
     public function destroy($id)
     {

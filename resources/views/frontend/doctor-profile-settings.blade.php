@@ -370,6 +370,149 @@
                         </div>
                     </div>
 
+                    <!-- Custom Profile Sections -->
+                    <div class="card shadow-sm border-0 mb-4" id="custom-sections-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                <div>
+                                    <h4 class="card-title mb-1"><i class="fas fa-layer-group text-primary me-2"></i> Custom Profile Sections</h4>
+                                    <p class="text-muted small mb-0">Add custom sections with text & image, or showcase banners/posters with an image-only section.</p>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="add-standard-section-btn">
+                                        <i class="fas fa-file-alt me-1"></i> + Text & Image
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-info" id="add-image-section-btn">
+                                        <i class="fas fa-image me-1"></i> + Image Only
+                                    </button>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="custom_sections_submitted" value="1">
+
+                            <div id="custom-sections-container">
+                                @php
+                                    $existingSections = old('custom_sections', $doctor->custom_sections ?? []);
+                                    $existingSections = is_array($existingSections) ? $existingSections : [];
+                                @endphp
+
+                                @forelse($existingSections as $index => $section)
+                                    @php
+                                        $secType = $section['type'] ?? 'standard';
+                                        $secTitle = $section['title'] ?? '';
+                                        $secDesc = $section['description'] ?? '';
+                                        $secImage = $section['image'] ?? ($section['existing_image'] ?? null);
+                                    @endphp
+
+                                    @if($secType === 'image_only')
+                                        <div class="custom-section-item border rounded-3 p-3 mb-3 bg-light position-relative" data-index="{{ $index }}" data-type="image_only">
+                                            <input type="hidden" name="custom_sections[{{ $index }}][type]" value="image_only">
+                                            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                                <span class="badge bg-info text-dark section-badge px-3 py-2 fw-semibold">Photo Section #{{ $loop->iteration }}</span>
+                                                <button type="button" class="btn btn-sm btn-outline-danger remove-custom-section-btn">
+                                                    <i class="fas fa-trash-alt me-1"></i> Remove
+                                                </button>
+                                            </div>
+
+                                            <div class="row g-3 align-items-center">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-semibold">Photo Title / Caption (Optional)</label>
+                                                        <input type="text" class="form-control" name="custom_sections[{{ $index }}][title]" 
+                                                               value="{{ $secTitle }}" placeholder="e.g. Chamber Visiting Hours Poster / Degree Certificate">
+                                                    </div>
+                                                    <div class="p-3 bg-white rounded border">
+                                                        <p class="text-muted small mb-0">
+                                                            <i class="fas fa-info-circle text-info me-1"></i> <strong>Image Only Section:</strong> This section displays your uploaded photo in full-width banner style on your profile details page.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-semibold">Upload Image <span class="text-danger">*</span></label>
+                                                    <input type="hidden" name="custom_sections[{{ $index }}][existing_image]" value="{{ $secImage }}">
+                                                    <input type="file" class="form-control section-image-input mb-2" 
+                                                           name="custom_sections[{{ $index }}][image]" accept="image/*">
+                                                    
+                                                    <div class="section-image-preview-wrapper border rounded text-center p-2 bg-white" style="min-height: 120px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                                        @if(!empty($secImage))
+                                                            <img src="{{ asset($secImage) }}" alt="Preview" class="img-fluid rounded section-preview-img" style="max-height: 130px; object-fit: contain;">
+                                                        @else
+                                                            <div class="text-muted small empty-preview-placeholder">
+                                                                <i class="far fa-image fa-2x d-block mb-1 text-secondary"></i>
+                                                                <span>No image selected</span>
+                                                            </div>
+                                                            <img src="" alt="Preview" class="img-fluid rounded section-preview-img d-none" style="max-height: 130px; object-fit: contain;">
+                                                        @endif
+                                                    </div>
+                                                    <small class="text-muted d-block mt-1">Recommended: JPG, PNG, WebP (Max 10MB)</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="custom-section-item border rounded-3 p-3 mb-3 bg-light position-relative" data-index="{{ $index }}" data-type="standard">
+                                            <input type="hidden" name="custom_sections[{{ $index }}][type]" value="standard">
+                                            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                                <span class="badge bg-primary section-badge px-3 py-2 fw-semibold">Section #{{ $loop->iteration }}</span>
+                                                <button type="button" class="btn btn-sm btn-outline-danger remove-custom-section-btn">
+                                                    <i class="fas fa-trash-alt me-1"></i> Remove
+                                                </button>
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-md-8">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-semibold">Section Title</label>
+                                                        <input type="text" class="form-control" name="custom_sections[{{ $index }}][title]" 
+                                                               value="{{ $secTitle }}" placeholder="e.g. Modern Laser Treatment Chamber">
+                                                    </div>
+                                                    <div class="mb-0">
+                                                        <label class="form-label fw-semibold">Description / Details</label>
+                                                        <textarea class="form-control" rows="4" name="custom_sections[{{ $index }}][description]" 
+                                                                  placeholder="Provide full description, highlights, features, or instructions...">{{ $secDesc }}</textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-semibold">Section Image (Optional)</label>
+                                                    <input type="hidden" name="custom_sections[{{ $index }}][existing_image]" value="{{ $secImage }}">
+                                                    <input type="file" class="form-control section-image-input mb-2" 
+                                                           name="custom_sections[{{ $index }}][image]" accept="image/*">
+                                                    
+                                                    <div class="section-image-preview-wrapper border rounded text-center p-2 bg-white" style="min-height: 120px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                                        @if(!empty($secImage))
+                                                            <img src="{{ asset($secImage) }}" alt="Preview" class="img-fluid rounded section-preview-img" style="max-height: 110px; object-fit: cover;">
+                                                        @else
+                                                            <div class="text-muted small empty-preview-placeholder">
+                                                                <i class="far fa-image fa-2x d-block mb-1 text-secondary"></i>
+                                                                <span>No image selected</span>
+                                                            </div>
+                                                            <img src="" alt="Preview" class="img-fluid rounded section-preview-img d-none" style="max-height: 110px; object-fit: cover;">
+                                                        @endif
+                                                    </div>
+                                                    <small class="text-muted d-block mt-1">Recommended: JPG, PNG, WebP (Max 10MB)</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @empty
+                                    <div id="no-custom-sections-alert" class="alert alert-light border text-center py-4 mb-0">
+                                        <i class="fas fa-layer-group text-muted fa-3x mb-2 d-block"></i>
+                                        <p class="text-muted mb-3">No custom sections added yet.</p>
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" id="btn-add-first-standard">
+                                                <i class="fas fa-file-alt me-1"></i> Add Text & Image Section
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info btn-sm text-dark" id="btn-add-first-image">
+                                                <i class="fas fa-image me-1"></i> Add Image Only Section
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="submit-section submit-btn-bottom">
                         <button type="submit" class="btn btn-primary submit-btn">Save Changes</button>
                     </div>
@@ -517,6 +660,207 @@
                     .catch(() => {
                         areaSelect.innerHTML = '<option value="">Select Area</option>';
                     });
+            });
+        }
+
+        // Custom Sections Repeater Logic
+        const customSectionsContainer = document.getElementById('custom-sections-container');
+        const addStandardSectionBtn = document.getElementById('add-standard-section-btn');
+        const addImageSectionBtn = document.getElementById('add-image-section-btn');
+
+        function updateSectionBadges() {
+            if (!customSectionsContainer) return;
+            const items = customSectionsContainer.querySelectorAll('.custom-section-item');
+            items.forEach((item, idx) => {
+                const badge = item.querySelector('.section-badge');
+                const isImageOnly = item.getAttribute('data-type') === 'image_only';
+                if (badge) {
+                    if (isImageOnly) {
+                        badge.textContent = 'Photo Section #' + (idx + 1);
+                        badge.className = 'badge bg-info text-dark section-badge px-3 py-2 fw-semibold';
+                    } else {
+                        badge.textContent = 'Section #' + (idx + 1);
+                        badge.className = 'badge bg-primary section-badge px-3 py-2 fw-semibold';
+                    }
+                }
+            });
+
+            const noAlert = document.getElementById('no-custom-sections-alert');
+            if (items.length === 0) {
+                if (!noAlert) {
+                    const alertDiv = document.createElement('div');
+                    alertDiv.id = 'no-custom-sections-alert';
+                    alertDiv.className = 'alert alert-light border text-center py-4 mb-0';
+                    alertDiv.innerHTML = `
+                        <i class="fas fa-layer-group text-muted fa-3x mb-2 d-block"></i>
+                        <p class="text-muted mb-3">No custom sections added yet.</p>
+                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="btn-add-first-standard">
+                                <i class="fas fa-file-alt me-1"></i> Add Text & Image Section
+                            </button>
+                            <button type="button" class="btn btn-outline-info btn-sm text-dark" id="btn-add-first-image">
+                                <i class="fas fa-image me-1"></i> Add Image Only Section
+                            </button>
+                        </div>
+                    `;
+                    customSectionsContainer.appendChild(alertDiv);
+                }
+            } else if (noAlert) {
+                noAlert.remove();
+            }
+        }
+
+        function createNewSection(type) {
+            if (!customSectionsContainer) return;
+            const noAlert = document.getElementById('no-custom-sections-alert');
+            if (noAlert) noAlert.remove();
+
+            const secType = (type === 'image_only') ? 'image_only' : 'standard';
+            const index = Date.now();
+            const currentCount = customSectionsContainer.querySelectorAll('.custom-section-item').length + 1;
+
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = 'custom-section-item border rounded-3 p-3 mb-3 bg-light position-relative';
+            sectionDiv.setAttribute('data-index', index);
+            sectionDiv.setAttribute('data-type', secType);
+
+            if (secType === 'image_only') {
+                sectionDiv.innerHTML = `
+                    <input type="hidden" name="custom_sections[` + index + `][type]" value="image_only">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <span class="badge bg-info text-dark section-badge px-3 py-2 fw-semibold">Photo Section #` + currentCount + `</span>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-custom-section-btn">
+                            <i class="fas fa-trash-alt me-1"></i> Remove
+                        </button>
+                    </div>
+
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Photo Title / Caption (Optional)</label>
+                                <input type="text" class="form-control" name="custom_sections[` + index + `][title]" placeholder="e.g. Visiting Hours Poster / Degree Certificate">
+                            </div>
+                            <div class="p-3 bg-white rounded border">
+                                <p class="text-muted small mb-0">
+                                    <i class="fas fa-info-circle text-info me-1"></i> <strong>Image Only Section:</strong> This section displays your uploaded photo in full-width banner style on your profile details page.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Upload Image <span class="text-danger">*</span></label>
+                            <input type="hidden" name="custom_sections[` + index + `][existing_image]" value="">
+                            <input type="file" class="form-control section-image-input mb-2" name="custom_sections[` + index + `][image]" accept="image/*">
+                            
+                            <div class="section-image-preview-wrapper border rounded text-center p-2 bg-white" style="min-height: 120px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                <div class="text-muted small empty-preview-placeholder">
+                                    <i class="far fa-image fa-2x d-block mb-1 text-secondary"></i>
+                                    <span>No image selected</span>
+                                </div>
+                                <img src="" alt="Preview" class="img-fluid rounded section-preview-img d-none" style="max-height: 130px; object-fit: contain;">
+                            </div>
+                            <small class="text-muted d-block mt-1">Recommended: JPG, PNG, WebP (Max 10MB)</small>
+                        </div>
+                    </div>
+                `;
+            } else {
+                sectionDiv.innerHTML = `
+                    <input type="hidden" name="custom_sections[` + index + `][type]" value="standard">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <span class="badge bg-primary section-badge px-3 py-2 fw-semibold">Section #` + currentCount + `</span>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-custom-section-btn">
+                            <i class="fas fa-trash-alt me-1"></i> Remove
+                        </button>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Section Title</label>
+                                <input type="text" class="form-control" name="custom_sections[` + index + `][title]" placeholder="e.g. Modern Laser Treatment Chamber">
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label fw-semibold">Description / Details</label>
+                                <textarea class="form-control" rows="4" name="custom_sections[` + index + `][description]" placeholder="Provide full description, highlights, features, or instructions..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Section Image (Optional)</label>
+                            <input type="hidden" name="custom_sections[` + index + `][existing_image]" value="">
+                            <input type="file" class="form-control section-image-input mb-2" name="custom_sections[` + index + `][image]" accept="image/*">
+                            
+                            <div class="section-image-preview-wrapper border rounded text-center p-2 bg-white" style="min-height: 120px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                <div class="text-muted small empty-preview-placeholder">
+                                    <i class="far fa-image fa-2x d-block mb-1 text-secondary"></i>
+                                    <span>No image selected</span>
+                                </div>
+                                <img src="" alt="Preview" class="img-fluid rounded section-preview-img d-none" style="max-height: 110px; object-fit: cover;">
+                            </div>
+                            <small class="text-muted d-block mt-1">Recommended: JPG, PNG, WebP (Max 10MB)</small>
+                        </div>
+                    </div>
+                `;
+            }
+
+            customSectionsContainer.appendChild(sectionDiv);
+            updateSectionBadges();
+        }
+
+        if (addStandardSectionBtn) {
+            addStandardSectionBtn.addEventListener('click', function () {
+                createNewSection('standard');
+            });
+        }
+
+        if (addImageSectionBtn) {
+            addImageSectionBtn.addEventListener('click', function () {
+                createNewSection('image_only');
+            });
+        }
+
+        document.addEventListener('click', function (e) {
+            if (e.target && (e.target.id === 'btn-add-first-standard' || e.target.closest('#btn-add-first-standard'))) {
+                createNewSection('standard');
+            }
+
+            if (e.target && (e.target.id === 'btn-add-first-image' || e.target.closest('#btn-add-first-image'))) {
+                createNewSection('image_only');
+            }
+
+            if (e.target && (e.target.classList.contains('remove-custom-section-btn') || e.target.closest('.remove-custom-section-btn'))) {
+                const btn = e.target.classList.contains('remove-custom-section-btn') ? e.target : e.target.closest('.remove-custom-section-btn');
+                const item = btn.closest('.custom-section-item');
+                if (item) {
+                    item.remove();
+                    updateSectionBadges();
+                }
+            }
+        });
+
+        // Delegate file preview for section images
+        if (customSectionsContainer) {
+            customSectionsContainer.addEventListener('change', function (e) {
+                if (e.target && e.target.classList.contains('section-image-input')) {
+                    const input = e.target;
+                    const file = input.files && input.files[0];
+                    const col = input.closest('[class*="col-"]');
+                    if (!col) return;
+                    const wrapper = col.querySelector('.section-image-preview-wrapper');
+                    if (!wrapper) return;
+                    const placeholder = wrapper.querySelector('.empty-preview-placeholder');
+                    const img = wrapper.querySelector('.section-preview-img');
+
+                    if (file && file.type.startsWith('image/')) {
+                        if (img) {
+                            img.src = URL.createObjectURL(file);
+                            img.classList.remove('d-none');
+                        }
+                        if (placeholder) {
+                            placeholder.classList.add('d-none');
+                        }
+                    }
+                }
             });
         }
     });

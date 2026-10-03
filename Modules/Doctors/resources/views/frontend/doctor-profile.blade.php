@@ -396,6 +396,77 @@
                     </div>
                 </div>
 
+                {{-- Dynamic Custom Profile Sections --}}
+                @if(!empty($doctor->custom_sections) && is_iterable($doctor->custom_sections))
+                    @foreach($doctor->custom_sections as $sec)
+                        @continue(!is_array($sec))
+                        @php
+                            $secType = $sec['type'] ?? 'standard';
+                            $secTitle = trim($sec['title'] ?? '');
+                            $secDesc = trim($sec['description'] ?? '');
+                            $secImg = $sec['image'] ?? null;
+                        @endphp
+
+                        @if($secType === 'image_only')
+                            {{-- Image Only Section (Banner / Showcase) --}}
+                            @if(!empty($secImg))
+                                <div class="doctor-section custom-doctor-section custom-image-only-section">
+                                    @if(!empty($secTitle))
+                                        <h5 class="mb-3 text-dark font-weight-bold"><i class="fas fa-image text-primary me-2"></i>{{ $secTitle }}</h5>
+                                    @endif
+                                    <div class="custom-sec-banner-wrap rounded-3 overflow-hidden border shadow-sm bg-light text-center p-2">
+                                        <img src="{{ asset($secImg) }}" 
+                                             alt="{{ $secTitle ?: 'Doctor Image' }}" 
+                                             class="img-fluid rounded-3"
+                                             style="max-height: 480px; width: 100%; object-fit: contain; background: #fff;"
+                                             onerror="this.closest('.custom-image-only-section').style.display='none';">
+                                    </div>
+                                </div>
+                            @endif
+                        @else
+                            {{-- Standard Section (Text & Image) --}}
+                            @if(!empty($secTitle) || !empty($secDesc) || !empty($secImg))
+                                <div class="doctor-section custom-doctor-section">
+                                    <div class="row align-items-center g-4">
+                                        @if(!empty($secImg))
+                                            <div class="col-md-5">
+                                                <div class="custom-sec-img-wrap rounded-3 overflow-hidden border shadow-sm bg-light text-center p-1">
+                                                    <img src="{{ asset($secImg) }}" 
+                                                         alt="{{ $secTitle ?: 'Section Image' }}" 
+                                                         class="img-fluid rounded-3"
+                                                         style="max-height: 280px; width: 100%; object-fit: cover;"
+                                                         onerror="this.closest('.col-md-5').style.display='none'; const siblingCol = this.closest('.row').querySelector('.col-md-7'); if(siblingCol){ siblingCol.classList.replace('col-md-7', 'col-12'); }">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7">
+                                                @if(!empty($secTitle))
+                                                    <h5 class="mb-2 text-dark font-weight-bold">{{ $secTitle }}</h5>
+                                                @endif
+                                                @if(!empty($secDesc))
+                                                    <div class="text-secondary" style="font-size: 15px; line-height: 1.7;">
+                                                        {!! nl2br(e($secDesc)) !!}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <div class="col-12">
+                                                @if(!empty($secTitle))
+                                                    <h5 class="mb-2 text-dark font-weight-bold">{{ $secTitle }}</h5>
+                                                @endif
+                                                @if(!empty($secDesc))
+                                                    <div class="text-secondary" style="font-size: 15px; line-height: 1.7;">
+                                                        {!! nl2br(e($secDesc)) !!}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+                        @endif
+                    @endforeach
+                @endif
+
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="doctor-section">

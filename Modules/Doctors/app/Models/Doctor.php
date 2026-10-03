@@ -14,6 +14,22 @@ class Doctor extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'custom_sections' => 'array',
+    ];
+
+    public function getCustomSectionsAttribute($value): array
+    {
+        if (empty($value)) {
+            return [];
+        }
+        if (is_array($value)) {
+            return $value;
+        }
+        $decoded = json_decode($value, true);
+        return (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) ? $decoded : [];
+    }
+
     protected static function boot()
     {
         parent::boot();
