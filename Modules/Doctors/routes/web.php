@@ -23,6 +23,7 @@ Route::name('doctors.')->group(function () {
 
     // Booking
     Route::get('/booking/{doctor_id}', [BookingController::class, 'index'])->name('booking');
+    Route::get('/booking/{doctor_id}/get-slots', [BookingController::class, 'getSlots'])->name('booking.slots');
     Route::post('/booking/{doctor_id}', [BookingController::class, 'bookAppointment'])->name('booking.submit');
     Route::get('/checkout', [BookingController::class, 'checkout'])->name('checkout');
     Route::post('/checkout', [BookingController::class, 'processPayment'])->name('booking.payment');
@@ -98,6 +99,7 @@ Route::name('doctors.')->group(function () {
 | These aliases ensure backward compatibility.
 */
 Route::get('/booking/{doctor_id}', [BookingController::class, 'index'])->name('booking');
+Route::get('/booking/{doctor_id}/get-slots', [BookingController::class, 'getSlots'])->name('booking.slots');
 Route::post('/booking/{doctor_id}', [BookingController::class, 'bookAppointment'])->name('booking.submit');
 Route::get('/checkout', [BookingController::class, 'checkout'])->name('checkout');
 Route::post('/checkout', [BookingController::class, 'processPayment'])->name('booking.payment');

@@ -303,6 +303,19 @@
                                     @if(optional($appointment->patient)->phone)
                                         <h5 class="mb-0"><i class="fas fa-phone"></i> {{ $appointment->patient->phone }}</h5>
                                     @endif
+                                    @if($appointment->transaction_id)
+                                        <h5 class="text-primary mt-1 mb-0 font-weight-bold" style="font-size: 13px;">
+                                            <i class="fas fa-receipt me-1"></i> TrxID: {{ $appointment->transaction_id }} ({{ strtoupper($appointment->payment_method ?? 'bkash') }})
+                                            @if($appointment->sender_number)
+                                                <span class="text-muted font-weight-normal ms-1">| From: {{ $appointment->sender_number }}</span>
+                                            @endif
+                                            @if(($appointment->payment_status ?? 'pending') === 'paid' || $appointment->status === 'confirmed')
+                                                <span class="badge bg-success ms-1" style="font-size: 11px;">Paid</span>
+                                            @else
+                                                <span class="badge bg-warning text-dark ms-1" style="font-size: 11px;">Verify TrxID</span>
+                                            @endif
+                                        </h5>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -455,6 +468,19 @@
                                     @if(optional($appointment->patient)->phone)
                                         <h5 class="mb-0"><i class="fas fa-phone"></i> {{ $appointment->patient->phone }}</h5>
                                     @endif
+                                    @if($appointment->transaction_id)
+                                        <h5 class="text-primary mt-1 mb-0 font-weight-bold" style="font-size: 13px;">
+                                            <i class="fas fa-receipt me-1"></i> TrxID: {{ $appointment->transaction_id }} ({{ strtoupper($appointment->payment_method ?? 'bkash') }})
+                                            @if($appointment->sender_number)
+                                                <span class="text-muted font-weight-normal ms-1">| From: {{ $appointment->sender_number }}</span>
+                                            @endif
+                                            @if(($appointment->payment_status ?? 'pending') === 'paid' || $appointment->status === 'confirmed')
+                                                <span class="badge bg-success ms-1" style="font-size: 11px;">Paid</span>
+                                            @else
+                                                <span class="badge bg-warning text-dark ms-1" style="font-size: 11px;">Verify TrxID</span>
+                                            @endif
+                                        </h5>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -490,9 +516,9 @@
                                     <i class="fas fa-prescription"></i> Prescription
                                 </a>
                             @endif
-                            @if($appointment->type === 'online' && $appointment->meeting_link && in_array($appointment->status, ['pending', 'confirmed']))
-                                <a href="{{ $appointment->meeting_link }}" target="_blank" class="btn btn-sm bg-success-light">
-                                    <i class="fas fa-video"></i> Join Call
+                            @if($appointment->type === 'online' && in_array($appointment->status, ['pending', 'confirmed']))
+                                <a href="{{ route('appointment.consultation', $appointment->id) }}" class="btn btn-sm bg-success-light" title="Join Video Consultation Room">
+                                    <i class="fas fa-video"></i> Video Call
                                 </a>
                             @endif
                             @if($appointment->status == 'pending')

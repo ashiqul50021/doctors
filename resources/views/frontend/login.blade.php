@@ -156,21 +156,27 @@
                 <form action="{{ route('patient.login.submit') }}" method="POST">
                     @csrf
 
-                    <div class="mb-4">
-                        <label class="split-label">Email</label>
-                        <input type="email" class="form-control split-input" name="email" required
-                            value="{{ old('email') }}" placeholder="example@gmail.com">
+                    <div class="mb-3">
+                        <label class="split-label">ইমেইল অথবা মোবাইল নম্বর (Email or Phone)</label>
+                        <input type="text" class="form-control split-input" name="login" required
+                            value="{{ old('login', old('email')) }}" placeholder="017xxxxxxxx বা example@gmail.com">
+                        @error('login') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
                         @error('email') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="mb-2">
-                        <label class="split-label">Password</label>
+                        <label class="split-label">পাসওয়ার্ড (Password)</label>
                         <div class="split-input-group">
-                            <input type="password" class="form-control split-input pe-5" name="password" required
+                            <input type="password" id="loginPassword" class="form-control split-input pe-5" name="password" required
                                 placeholder="••••••••••••••">
-                            <i class="far fa-eye split-input-icon"></i>
+                            <i class="far fa-eye split-input-icon" id="togglePasswordIcon" onclick="togglePasswordVisibility()"></i>
                         </div>
                         @error('password') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="p-2 px-3 my-3 rounded-2" style="background-color: #EFF6FF; border-left: 3px solid #1D4ED8; font-size: 12.5px; color: #1E40AF; line-height: 1.5;">
+                        <i class="fas fa-info-circle me-1" style="color: #1D4ED8;"></i> 
+                        <strong>টিপস:</strong> যারা মোবাইল নম্বর দিয়ে বুকিং করেছিলেন, পাসওয়ার্ড হিসেবেও আপনার <strong>মোবাইল নম্বরটিই</strong> ব্যবহার করুন।
                     </div>
 
                     <div class="text-end mb-4">
@@ -222,5 +228,19 @@
                 }
             }
         });
+
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('loginPassword');
+            const icon = document.getElementById('togglePasswordIcon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
     </script>
 @endsection

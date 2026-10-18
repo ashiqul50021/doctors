@@ -500,9 +500,21 @@ class DashboardController extends Controller
         }
 
         $appointment->status = 'confirmed';
+        if ($appointment->payment_status === 'pending') {
+            $appointment->payment_status = 'paid';
+        }
         $appointment->save();
 
-        return redirect()->back()->with('success', 'Appointment confirmed successfully.');
+        // Send Email Notification if email is valid
+        if ($appointment->patient && $appointment->patient->user && filter_var($appointment->patient->user->email, FILTER_VALIDATE_EMAIL)) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($appointment->patient->user->email)->send(new \App\Mail\AppointmentBookedMail($appointment));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Appointment accept email could not be sent: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->back()->with('success', 'Appointment confirmed and payment verified successfully.');
     }
 
     /**

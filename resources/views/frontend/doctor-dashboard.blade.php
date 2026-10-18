@@ -392,7 +392,26 @@
                                                                             <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:600;"><i class="fas fa-hospital me-1"></i> Chamber</span>
                                                                         @endif
                                                                     </td>
-                                                                    <td class="text-center">৳{{ number_format($appt->fee, 2) }}</td>
+                                                                    <td class="text-center">
+                                                                        <strong>৳{{ number_format($appt->fee, 2) }}</strong>
+                                                                        @if($appt->transaction_id)
+                                                                            <span class="d-block small mt-1 text-primary fw-semibold" title="Transaction ID">
+                                                                                <i class="fas fa-receipt me-1"></i>{{ $appt->transaction_id }}
+                                                                            </span>
+                                                                            @if($appt->sender_number)
+                                                                                <span class="d-block text-muted" style="font-size: 11px;">
+                                                                                    <i class="fas fa-mobile-alt me-1"></i>{{ $appt->sender_number }} ({{ strtoupper($appt->payment_method ?? 'bkash') }})
+                                                                                </span>
+                                                                            @endif
+                                                                            @if(($appt->payment_status ?? 'pending') === 'paid' || $appt->status === 'confirmed')
+                                                                                <span class="badge bg-success-light text-success" style="font-size: 10px;">Paid</span>
+                                                                            @else
+                                                                                <span class="badge bg-warning-light text-dark" style="font-size: 10px;">Verify TrxID</span>
+                                                                            @endif
+                                                                        @elseif(($appt->type ?? 'offline') === 'offline')
+                                                                            <span class="d-block small text-muted mt-1" style="font-size: 11px;">Pay at Chamber</span>
+                                                                        @endif
+                                                                    </td>
                                                                     <td class="text-end">
                                                                         <div class="table-action">
                                                                             @if(optional($appt->patient)->phone)
@@ -435,9 +454,9 @@
                                                                                 </a>
                                                                             @endif
 
-                                                                            @if($appt->type === 'online' && $appt->meeting_link && in_array($appt->status, ['pending', 'confirmed']))
-                                                                                <a href="{{ $appt->meeting_link }}" target="_blank" class="btn btn-sm bg-success-light">
-                                                                                    <i class="fas fa-video"></i> Join Call
+                                                                            @if($appt->type === 'online' && in_array($appt->status, ['pending', 'confirmed']))
+                                                                                <a href="{{ route('appointment.consultation', $appt->id) }}" class="btn btn-sm bg-success-light" title="Join Video Consultation Room">
+                                                                                    <i class="fas fa-video"></i> Video Call
                                                                                 </a>
                                                                             @endif
 
@@ -665,7 +684,26 @@
                                                                             <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:600;"><i class="fas fa-hospital me-1"></i> Chamber</span>
                                                                         @endif
                                                                     </td>
-                                                                    <td class="text-center">৳{{ number_format($appt->fee, 2) }}</td>
+                                                                    <td class="text-center">
+                                                                        <strong>৳{{ number_format($appt->fee, 2) }}</strong>
+                                                                        @if($appt->transaction_id)
+                                                                            <span class="d-block small mt-1 text-primary fw-semibold" title="Transaction ID">
+                                                                                <i class="fas fa-receipt me-1"></i>{{ $appt->transaction_id }}
+                                                                            </span>
+                                                                            @if($appt->sender_number)
+                                                                                <span class="d-block text-muted" style="font-size: 11px;">
+                                                                                    <i class="fas fa-mobile-alt me-1"></i>{{ $appt->sender_number }} ({{ strtoupper($appt->payment_method ?? 'bkash') }})
+                                                                                </span>
+                                                                            @endif
+                                                                            @if(($appt->payment_status ?? 'pending') === 'paid' || $appt->status === 'confirmed')
+                                                                                <span class="badge bg-success-light text-success" style="font-size: 10px;">Paid</span>
+                                                                            @else
+                                                                                <span class="badge bg-warning-light text-dark" style="font-size: 10px;">Verify TrxID</span>
+                                                                            @endif
+                                                                        @elseif(($appt->type ?? 'offline') === 'offline')
+                                                                            <span class="d-block small text-muted mt-1" style="font-size: 11px;">Pay at Chamber</span>
+                                                                        @endif
+                                                                    </td>
                                                                     <td class="text-end">
                                                                         <div class="table-action">
                                                                             @if(optional($appt->patient)->phone)
@@ -717,9 +755,9 @@
                                                                                 </a>
                                                                             @endif
 
-                                                                            @if($appt->type === 'online' && $appt->meeting_link && in_array($appt->status, ['pending', 'confirmed']))
-                                                                                <a href="{{ $appt->meeting_link }}" target="_blank" class="btn btn-sm bg-success-light">
-                                                                                    <i class="fas fa-video"></i> Join Call
+                                                                            @if($appt->type === 'online' && in_array($appt->status, ['pending', 'confirmed']))
+                                                                                <a href="{{ route('appointment.consultation', $appt->id) }}" class="btn btn-sm bg-success-light" title="Join Video Consultation Room">
+                                                                                    <i class="fas fa-video"></i> Video Call
                                                                                 </a>
                                                                             @endif
 

@@ -28,29 +28,65 @@ class AuthController extends Controller
         return view('frontend.login');
     }
 
-    // Handle Login
+    // Handle Login (Email or Mobile Number)
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $loginInput = trim($request->input('login', $request->input('email', '')));
+        $password = $request->input('password');
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        if (empty($loginInput) || empty($password)) {
+            return back()->withErrors([
+                'login' => 'Email or Mobile Number and Password are required.',
+            ])->withInput();
+        }
 
-            $user = Auth::user();
+        $user = null;
 
+        // 1. If it's a valid email, look up by email
+        if (filter_var($loginInput, FILTER_VALIDATE_EMAIL)) {
+            $user = User::where('email', $loginInput)->first();
+        } else {
+            // 2. Otherwise treat as phone number
+            $cleanPhone = preg_replace('/[^0-9]/', '', $loginInput);
+            if (!empty($cleanPhone)) {
+                $last10 = substr($cleanPhone, -10);
+                $patient = Patient::where('phone', $cleanPhone)
+                    ->orWhere('phone', 'like', '%' . $last10)
+                    ->latest()->first();
+
+                if ($patient && $patient->user) {
+                    $user = $patient->user;
+                }
+
+                // Fallback: check Doctor mobile
+                if (!$user) {
+                    $doctor = Doctor::where('mobile', $cleanPhone)
+                        ->orWhere('mobile', 'like', '%' . $last10)
+                        ->latest()->first();
+                    if ($doctor && $doctor->user) {
+                        $user = $doctor->user;
+                    }
+                }
+
+                // Fallback: check User auto-generated email
+                if (!$user) {
+                    $user = User::where('email', 'like', 'patient_' . $cleanPhone . '%')
+                        ->orWhere('email', 'like', 'patient_%' . $last10 . '%')
+                        ->first();
+                }
+            }
+        }
+
+        if ($user && Hash::check($password, $user->password)) {
             // Block admin accounts from normal/patient login form.
             if ($user->role === 'admin') {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-
                 return redirect()->route('admin.login')->withErrors([
                     'email' => 'Admin account detected. Please use the admin login page.',
-                ])->onlyInput('email');
+                ]);
             }
+
+            Auth::login($user, $request->boolean('remember'));
+            $request->session()->regenerate();
 
             // Redirect based on role
             if ($user->role === 'doctor') {
@@ -65,8 +101,8 @@ class AuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+            'login' => 'প্রদত্ত ইমেইল/মোবাইল নম্বর অথবা পাসওয়ার্ড সঠিক নয়।',
+        ])->withInput();
     }
 
     // Show Doctor Login

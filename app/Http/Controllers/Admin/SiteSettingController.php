@@ -63,6 +63,14 @@ class SiteSettingController extends Controller
             'agent_default_coupon_discount' => 'nullable|numeric|min:0|max:100',
             'sslcz_store_id' => 'nullable|string|max:255',
             'sslcz_store_password' => 'nullable|string|max:255',
+            'manual_payment_enabled' => 'nullable|string|in:0,1',
+            'manual_bkash_number' => 'nullable|string|max:50',
+            'manual_bkash_type' => 'nullable|string|max:50',
+            'manual_nagad_number' => 'nullable|string|max:50',
+            'manual_nagad_type' => 'nullable|string|max:50',
+            'manual_rocket_number' => 'nullable|string|max:50',
+            'manual_rocket_type' => 'nullable|string|max:50',
+            'manual_payment_instruction' => 'nullable|string',
         ]);
 
         // Text settings
@@ -80,11 +88,19 @@ class SiteSettingController extends Controller
             'shipping_outside_dhaka',
             'agent_default_coupon_discount',
             'sslcz_store_id',
-            'sslcz_store_password'
+            'sslcz_store_password',
+            'manual_bkash_number',
+            'manual_bkash_type',
+            'manual_nagad_number',
+            'manual_nagad_type',
+            'manual_rocket_number',
+            'manual_rocket_type',
+            'manual_payment_instruction'
         ];
 
-        // Handle checkbox for sslcz_testmode explicitly since unchecking means it won't be in request
+        // Handle checkboxes explicitly
         SiteSetting::set('sslcz_testmode', $request->has('sslcz_testmode') ? '1' : '0', 'boolean', 'ecommerce');
+        SiteSetting::set('manual_payment_enabled', $request->has('manual_payment_enabled') ? '1' : '0', 'boolean', 'ecommerce');
 
         foreach ($textSettings as $key) {
             if ($request->has($key)) {
@@ -160,7 +176,7 @@ class SiteSettingController extends Controller
             return 'social';
         if (str_starts_with($key, 'banner_'))
             return 'banner';
-        if (str_starts_with($key, 'shipping_') || str_starts_with($key, 'sslcz_') || str_starts_with($key, 'agent_'))
+        if (str_starts_with($key, 'shipping_') || str_starts_with($key, 'sslcz_') || str_starts_with($key, 'agent_') || str_starts_with($key, 'manual_'))
             return 'ecommerce';
         return 'general';
     }

@@ -58,22 +58,88 @@
 
                                 @if($booking['type'] === 'online')
                                 <div class="payment-widget">
-                                    <h4 class="card-title">Payment Method</h4>
+                                    <h4 class="card-title">Payment Method (মোবাইল ব্যাংকিং)</h4>
 
-                                    <!-- SSLCommerz Payment -->
-                                    <div class="payment-list">
-                                        <label class="payment-radio credit-card-option">
-                                            <input type="radio" name="payment_method" value="sslcommerz" checked>
-                                            <span class="checkmark"></span>
-                                            SSLCommerz (Credit Card / Mobile Banking)
-                                        </label>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <p class="text-muted mt-3 mb-0">You will be redirected to SSLCommerz's secure gateway to complete your payment.</p>
+                                    <!-- Manual Mobile Banking Options -->
+                                    <div class="payment-list mb-3">
+                                        <label class="form-label fw-bold text-dark mb-2">পেমেন্ট মেথড বেছে নিন:</label>
+                                        <div class="d-flex gap-2 mb-3">
+                                            <label class="btn btn-outline-danger flex-fill text-center py-2 payment-radio-btn active" id="chkRadioBkash" style="border-radius: 4px; font-weight: 500; cursor: pointer;">
+                                                <input type="radio" name="payment_method" value="bkash" class="d-none" checked onchange="switchCheckoutPayment('bkash')">
+                                                <i class="fas fa-wallet me-1"></i> bKash
+                                            </label>
+                                            <label class="btn btn-outline-warning flex-fill text-center py-2 payment-radio-btn" id="chkRadioNagad" style="border-radius: 4px; font-weight: 500; cursor: pointer;">
+                                                <input type="radio" name="payment_method" value="nagad" class="d-none" onchange="switchCheckoutPayment('nagad')">
+                                                <i class="fas fa-wallet me-1"></i> Nagad
+                                            </label>
+                                            @if(!empty($siteSettings['manual_rocket_number']))
+                                            <label class="btn btn-outline-primary flex-fill text-center py-2 payment-radio-btn" id="chkRadioRocket" style="border-radius: 4px; font-weight: 500; cursor: pointer;">
+                                                <input type="radio" name="payment_method" value="rocket" class="d-none" onchange="switchCheckoutPayment('rocket')">
+                                                <i class="fas fa-wallet me-1"></i> Rocket
+                                            </label>
+                                            @endif
+                                        </div>
+
+                                        <!-- Account Number Display Box -->
+                                        <div class="p-3 mb-3 rounded" style="background: #F0FDF4; border: 1px dashed #86EFAC;">
+                                            <div id="chkBoxBkash">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="text-danger fw-bold"><i class="fas fa-arrow-circle-right me-1"></i> বিকাশ নম্বর:</span>
+                                                    <span class="badge bg-danger text-white">{{ $siteSettings['manual_bkash_type'] ?? 'Personal (Send Money)' }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <strong class="text-dark fs-5">{{ $siteSettings['manual_bkash_number'] ?? '01711111111' }}</strong>
+                                                    <button type="button" class="btn btn-sm btn-light border py-1 px-2" onclick="navigator.clipboard.writeText('{{ $siteSettings['manual_bkash_number'] ?? '01711111111' }}'); alert('নম্বর কপি করা হয়েছে!');">
+                                                        <i class="far fa-copy text-primary me-1"></i> Copy
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div id="chkBoxNagad" style="display: none;">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="text-warning fw-bold"><i class="fas fa-arrow-circle-right me-1"></i> নগদ নম্বর:</span>
+                                                    <span class="badge bg-warning text-dark">{{ $siteSettings['manual_nagad_type'] ?? 'Personal (Send Money)' }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <strong class="text-dark fs-5">{{ $siteSettings['manual_nagad_number'] ?? '01811111111' }}</strong>
+                                                    <button type="button" class="btn btn-sm btn-light border py-1 px-2" onclick="navigator.clipboard.writeText('{{ $siteSettings['manual_nagad_number'] ?? '01811111111' }}'); alert('নম্বর কপি করা হয়েছে!');">
+                                                        <i class="far fa-copy text-primary me-1"></i> Copy
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            @if(!empty($siteSettings['manual_rocket_number']))
+                                            <div id="chkBoxRocket" style="display: none;">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="text-primary fw-bold"><i class="fas fa-arrow-circle-right me-1"></i> রকেট নম্বর:</span>
+                                                    <span class="badge bg-primary text-white">{{ $siteSettings['manual_rocket_type'] ?? 'Personal (Send Money)' }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <strong class="text-dark fs-5">{{ $siteSettings['manual_rocket_number'] }}</strong>
+                                                    <button type="button" class="btn btn-sm btn-light border py-1 px-2" onclick="navigator.clipboard.writeText('{{ $siteSettings['manual_rocket_number'] }}'); alert('নম্বর কপি করা হয়েছে!');">
+                                                        <i class="far fa-copy text-primary me-1"></i> Copy
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            @endif
+
+                                            <small class="text-muted d-block mt-2">
+                                                <i class="fas fa-info-circle text-primary me-1"></i> {{ $siteSettings['manual_payment_instruction'] ?? 'উপরের নম্বরে Send Money করে নিচের বক্সে আপনার প্রেরক নম্বর ও TrxID দিন।' }}
+                                            </small>
+                                        </div>
+
+                                        <!-- Sender Number and TrxID Inputs -->
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold text-dark">যে নম্বর থেকে টাকা পাঠিয়েছেন (Sender No) <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" name="sender_number" required placeholder="01XXXXXXXXX" value="{{ old('sender_number') }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold text-dark">Transaction ID (TrxID) <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" name="transaction_id" required placeholder="যেমন: 9J3K8L2P" value="{{ old('transaction_id') }}">
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- /SSLCommerz Payment -->
 
                                     <!-- Terms Accept -->
                                     <div class="terms-accept">
@@ -184,4 +250,27 @@
     <!-- Sticky Sidebar JS -->
     <script src="{{ asset('assets/plugins/theia-sticky-sidebar/ResizeSensor.js') }}"></script>
     <script src="{{ asset('assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}"></script>
+    <script>
+        function switchCheckoutPayment(method) {
+            document.querySelectorAll('#chkRadioBkash, #chkRadioNagad, #chkRadioRocket').forEach(btn => btn?.classList.remove('active'));
+            const bkashBox = document.getElementById('chkBoxBkash');
+            const nagadBox = document.getElementById('chkBoxNagad');
+            const rocketBox = document.getElementById('chkBoxRocket');
+
+            if (bkashBox) bkashBox.style.display = 'none';
+            if (nagadBox) nagadBox.style.display = 'none';
+            if (rocketBox) rocketBox.style.display = 'none';
+
+            if (method === 'bkash') {
+                document.getElementById('chkRadioBkash')?.classList.add('active');
+                if (bkashBox) bkashBox.style.display = 'block';
+            } else if (method === 'nagad') {
+                document.getElementById('chkRadioNagad')?.classList.add('active');
+                if (nagadBox) nagadBox.style.display = 'block';
+            } else if (method === 'rocket') {
+                document.getElementById('chkRadioRocket')?.classList.add('active');
+                if (rocketBox) rocketBox.style.display = 'block';
+            }
+        }
+    </script>
 @endpush

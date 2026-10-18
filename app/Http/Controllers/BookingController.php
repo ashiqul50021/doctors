@@ -18,59 +18,169 @@ class BookingController extends Controller
     {
         $doctor = Doctor::with(['user', 'speciality', 'schedules'])->findOrFail($doctor_id);
 
-        // Fetch doctor's off days for the next 30 days
         $offDates = \App\Models\DoctorOffDay::where('doctor_id', $doctor_id)
             ->where('off_date', '>=', today())
-            ->where('off_date', '<=', now()->addDays(30))
             ->pluck('off_date')
             ->map(fn($d) => $d->format('Y-m-d'))
             ->toArray();
 
-        // Get days doctor has schedule set
-        $scheduledDays = $doctor->schedules->pluck('day')->unique()->toArray();
+        $scheduledDays = $doctor->schedules->pluck('day')->map(fn($d) => strtolower($d))->unique()->values()->toArray();
 
-        // Generate available dates: scan next 30 days, collect up to 7 available ones
-        $dates = [];
-        for ($i = 0; $i < 30 && count($dates) < 7; $i++) {
-            $date = now()->addDays($i);
-            $dayName = strtolower($date->format('l'));
-            $dateStr = $date->format('Y-m-d');
+        $currentYear = (int) date('Y');
+        $availableYears = [$currentYear, $currentYear + 1, $currentYear + 2];
 
-            // Skip if doctor has no schedule for this day of the week
-            if (!in_array($dayName, $scheduledDays)) {
-                continue;
+        $initialDate = null;
+        for ($i = 0; $i < 60; $i++) {
+            $checkDate = now()->addDays($i);
+            $checkDayName = strtolower($checkDate->format('l'));
+            $checkDateStr = $checkDate->format('Y-m-d');
+
+            if (in_array($checkDayName, $scheduledDays) && !in_array($checkDateStr, $offDates)) {
+                $initialDate = $checkDate;
+                break;
             }
-
-            // Skip if this specific date is an off day
-            if (in_array($dateStr, $offDates)) {
-                continue;
-            }
-
-            $dates[] = $date;
         }
 
-        // Fetch booked slots for available dates only
-        $dateStrings = array_map(fn($d) => $d->format('Y-m-d'), $dates);
+        if (!$initialDate) {
+            $initialDate = now();
+        }
 
-        $bookedAppointments = Appointment::where('doctor_id', $doctor_id)
-            ->whereIn('appointment_date', $dateStrings)
+        $initialDateKey = $initialDate->format('Y-m-d');
+        $initialSlots = $this->generateSlotsForDate($doctor, $initialDateKey);
+
+        $dates = [$initialDate];
+        $subdividedSlots = [
+            'offline' => [$initialDateKey => $initialSlots['offline']],
+            'online'  => [$initialDateKey => $initialSlots['online']],
+        ];
+
+        return view('frontend.booking', compact(
+            'doctor',
+            'dates',
+            'subdividedSlots',
+            'offDates',
+            'scheduledDays',
+            'availableYears',
+            'initialDate'
+        ));
+    }
+
+    public function getSlots(Request $request, $doctor_id)
+    {
+        $doctor = Doctor::with('schedules')->findOrFail($doctor_id);
+        $dateStr = $request->query('date');
+
+        if (!$dateStr || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateStr)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid date format. Expected YYYY-MM-DD.'
+            ], 422);
+        }
+
+        $date = \Carbon\Carbon::parse($dateStr);
+        $today = today();
+
+        if ($date->lt($today)) {
+            return response()->json([
+                'status' => 'past_date',
+                'message' => 'Cannot book appointments for past dates.',
+                'slots' => ['offline' => [], 'online' => []]
+            ]);
+        }
+
+        $isOffDay = \App\Models\DoctorOffDay::where('doctor_id', $doctor_id)
+            ->where('off_date', $dateStr)
+            ->exists();
+
+        if ($isOffDay) {
+            return response()->json([
+                'status' => 'off_day',
+                'message' => 'Doctor is unavailable on this date (marked as off-day).',
+                'slots' => ['offline' => [], 'online' => []]
+            ]);
+        }
+
+        $dayName = strtolower($date->format('l'));
+        $daySchedules = $doctor->schedules->where('day', $dayName);
+
+        if ($daySchedules->isEmpty()) {
+            return response()->json([
+                'status' => 'no_schedule',
+                'message' => 'Doctor does not have consultation hours on ' . ucfirst($dayName) . 's.',
+                'slots' => ['offline' => [], 'online' => []]
+            ]);
+        }
+
+        $slots = $this->generateSlotsForDate($doctor, $dateStr);
+
+        return response()->json([
+            'status' => 'success',
+            'date' => $dateStr,
+            'formatted_date' => $date->format('l, d M Y'),
+            'day_name' => $date->format('l'),
+            'slots' => $slots
+        ]);
+    }
+
+    private function generateSlotsForDate($doctor, $dateStr)
+    {
+        $date = \Carbon\Carbon::parse($dateStr);
+        $dayName = strtolower($date->format('l'));
+
+        $bookedAppointments = Appointment::where('doctor_id', $doctor->id)
+            ->where('appointment_date', $dateStr)
             ->whereIn('status', ['pending', 'confirmed'])
-            ->get(['appointment_date', 'appointment_time', 'type']);
+            ->get(['appointment_time', 'type']);
 
-        // Separate booked slots by type so offline does NOT block online and vice versa
-        $bookedSlotsOffline = [];
-        $bookedSlotsOnline  = [];
+        $bookedOffline = [];
+        $bookedOnline  = [];
         foreach ($bookedAppointments as $appt) {
-            $dateKey = $appt->appointment_date->format('Y-m-d');
-            $timeVal = $appt->appointment_time->format('H:i:s');
+            $timeVal = $appt->appointment_time->format('H:i');
             if ($appt->type === 'online') {
-                $bookedSlotsOnline[$dateKey][] = $timeVal;
+                $bookedOnline[] = $timeVal;
             } else {
-                $bookedSlotsOffline[$dateKey][] = $timeVal;
+                $bookedOffline[] = $timeVal;
             }
         }
 
-        return view('frontend.booking', compact('doctor', 'dates', 'bookedSlotsOffline', 'bookedSlotsOnline', 'offDates'));
+        $subdividedSlots = [
+            'offline' => [],
+            'online'  => [],
+        ];
+
+        foreach (['offline', 'online'] as $type) {
+            $daySchedules = $doctor->schedules->where('day', $dayName)->where('type', $type);
+
+            foreach ($daySchedules as $sched) {
+                if (!$sched->start_time || !$sched->end_time) {
+                    continue;
+                }
+
+                $start = \Carbon\Carbon::parse($dateStr . ' ' . $sched->start_time);
+                $end   = \Carbon\Carbon::parse($dateStr . ' ' . $sched->end_time);
+
+                $timeKey = $start->format('H:i:s');
+                $isBooked = false;
+
+                // For online video, 1 appointment per slot
+                if ($type === 'online') {
+                    $isBooked = in_array($start->format('H:i'), $bookedOnline);
+                }
+
+                // If date is today, check if schedule end time has already passed
+                if ($date->isToday() && $end->lt(now())) {
+                    $isBooked = true;
+                }
+
+                $subdividedSlots[$type][] = [
+                    'time_key'   => $start->format('H:i:s'),
+                    'display'    => $start->format('g:i A') . ' - ' . $end->format('g:i A'),
+                    'is_booked'  => $isBooked,
+                ];
+            }
+        }
+
+        return $subdividedSlots;
     }
 
     public function bookAppointment(Request $request, $doctor_id)
@@ -166,11 +276,14 @@ class BookingController extends Controller
                 return redirect()->back()->withErrors(['email' => 'This email is already registered. Please login to continue.'])->withInput();
             }
 
-            // Create User
+            // Create User with phone number as default password
+            $rawPhone = preg_replace('/[^0-9]/', '', (string)$request->phone);
+            $passwordToSet = !empty($rawPhone) ? $rawPhone : Str::random(10);
+
             $user = User::create([
                 'name' => $request->first_name . ' ' . $request->last_name,
                 'email' => $request->email,
-                'password' => Hash::make(Str::random(10)), // Random password
+                'password' => Hash::make($passwordToSet),
                 'role' => 'patient',
             ]);
 
@@ -219,16 +332,33 @@ class BookingController extends Controller
             $token_number = 'TKN-' . ($count + 1);
         }
 
-        Appointment::create([
+        $paymentMethod = $request->input('payment_method', ($booking['type'] === 'offline' ? 'pay_at_chamber' : 'bkash'));
+
+        // Manual mobile banking validation for online consultation
+        if ($booking['type'] === 'online' && in_array($paymentMethod, ['bkash', 'nagad', 'rocket'])) {
+            $request->validate([
+                'sender_number' => 'required|string|max:20',
+                'transaction_id' => 'required|string|max:50',
+            ], [
+                'sender_number.required' => 'যে নম্বর থেকে টাকা পাঠিয়েছেন (Sender Number) তা দেওয়া আবশ্যক।',
+                'transaction_id.required' => 'পেমেন্টের Transaction ID (TrxID) দেওয়া আবশ্যক।',
+            ]);
+        }
+
+        $appointment = Appointment::create([
             'doctor_id' => $booking['doctor_id'],
             'patient_id' => $user->patient->id,
             'appointment_date' => $booking['date'],
             'appointment_time' => $booking['time'],
-            'status' => 'pending',
+            'status' => $booking['type'] === 'offline' ? 'confirmed' : 'pending',
             'type' => $booking['type'],
             'meeting_link' => $meeting_link,
             'token_number' => $token_number,
             'fee' => $booking['fee'],
+            'payment_method' => $booking['type'] === 'offline' ? 'pay_at_chamber' : $paymentMethod,
+            'payment_status' => $booking['type'] === 'offline' ? 'pay_at_chamber' : 'pending',
+            'sender_number' => $request->input('sender_number'),
+            'transaction_id' => $request->input('transaction_id'),
             'reason' => 'Consultation',
         ]);
 
@@ -238,6 +368,7 @@ class BookingController extends Controller
 
         // Build flash data
         $flashData = [
+            'appointment_id' => $appointment->id,
             'meeting_link' => $meeting_link,
             'token_number' => $token_number,
             'type' => $booking['type'],
@@ -245,6 +376,12 @@ class BookingController extends Controller
             'doctor_user_id' => $doctor->user_id,
             'date' => $booking['date'],
             'time' => $booking['time'],
+            'payment_method' => $appointment->payment_method,
+            'payment_status' => $appointment->payment_status,
+            'transaction_id' => $appointment->transaction_id,
+            'sender_number' => $appointment->sender_number,
+            'patient_name' => $user->name,
+            'patient_phone' => optional($user->patient)->phone,
         ];
 
         return redirect()->route('booking.success')->with($flashData);

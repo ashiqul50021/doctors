@@ -188,7 +188,103 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Save Payment Settings</button>
+                        <button type="submit" class="btn btn-primary">Save SSLCommerz Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manual Mobile Banking (bKash / Nagad / Rocket) Settings -->
+        <div class="col-lg-12 mt-4">
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-mobile-alt me-2 text-primary"></i>Manual Payment Settings (bKash, Nagad, Rocket)
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('admin.site-settings.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="manual_payment_enabled" name="manual_payment_enabled" value="1" {{ (!isset($ecommerceSettings['manual_payment_enabled']) || $ecommerceSettings['manual_payment_enabled'] == '1') ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-bold" for="manual_payment_enabled">Enable Manual Payment for Online Consultation</label>
+                                </div>
+                                <small class="text-muted">অনলাইন কনসালটেশনে রোগীরা সরাসরি বিকাশ/নগদ/রকেটে টাকা পাঠিয়ে TrxID দিয়ে বুকিং কনফার্ম করতে পারবে।</small>
+                            </div>
+
+                            <!-- bKash -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="fw-semibold text-danger"><i class="fas fa-wallet me-1"></i> bKash Number</label>
+                                    <input type="text" class="form-control" name="manual_bkash_number"
+                                        placeholder="e.g. 017XXXXXXXX"
+                                        value="{{ $ecommerceSettings['manual_bkash_number'] ?? '01711111111' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="fw-semibold">bKash Account Type</label>
+                                    <select class="form-select" name="manual_bkash_type">
+                                        <option value="Personal (Send Money)" {{ ($ecommerceSettings['manual_bkash_type'] ?? '') == 'Personal (Send Money)' ? 'selected' : '' }}>Personal (Send Money)</option>
+                                        <option value="Merchant (Payment)" {{ ($ecommerceSettings['manual_bkash_type'] ?? '') == 'Merchant (Payment)' ? 'selected' : '' }}>Merchant (Payment)</option>
+                                        <option value="Agent (Cash In)" {{ ($ecommerceSettings['manual_bkash_type'] ?? '') == 'Agent (Cash In)' ? 'selected' : '' }}>Agent (Cash In)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Nagad -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="fw-semibold text-warning"><i class="fas fa-wallet me-1"></i> Nagad Number</label>
+                                    <input type="text" class="form-control" name="manual_nagad_number"
+                                        placeholder="e.g. 018XXXXXXXX"
+                                        value="{{ $ecommerceSettings['manual_nagad_number'] ?? '01811111111' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="fw-semibold">Nagad Account Type</label>
+                                    <select class="form-select" name="manual_nagad_type">
+                                        <option value="Personal (Send Money)" {{ ($ecommerceSettings['manual_nagad_type'] ?? '') == 'Personal (Send Money)' ? 'selected' : '' }}>Personal (Send Money)</option>
+                                        <option value="Merchant (Payment)" {{ ($ecommerceSettings['manual_nagad_type'] ?? '') == 'Merchant (Payment)' ? 'selected' : '' }}>Merchant (Payment)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Rocket -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="fw-semibold text-primary"><i class="fas fa-wallet me-1"></i> Rocket Number</label>
+                                    <input type="text" class="form-control" name="manual_rocket_number"
+                                        placeholder="e.g. 019XXXXXXXX"
+                                        value="{{ $ecommerceSettings['manual_rocket_number'] ?? '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="fw-semibold">Rocket Account Type</label>
+                                    <select class="form-select" name="manual_rocket_type">
+                                        <option value="Personal (Send Money)" {{ ($ecommerceSettings['manual_rocket_type'] ?? '') == 'Personal (Send Money)' ? 'selected' : '' }}>Personal (Send Money)</option>
+                                        <option value="Merchant (Payment)" {{ ($ecommerceSettings['manual_rocket_type'] ?? '') == 'Merchant (Payment)' ? 'selected' : '' }}>Merchant (Payment)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Instructions -->
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="fw-semibold">Special Instructions for Patient</label>
+                                    <textarea class="form-control" name="manual_payment_instruction" rows="2"
+                                        placeholder="টাকা পাঠিয়ে নিচে আপনার সেন্ডার নম্বর ও TrxID ইনপুট দিন।">{{ $ecommerceSettings['manual_payment_instruction'] ?? 'আমাদের বিকাশ বা নগদ নম্বরে Send Money করে নিচের বক্সে আপনার নম্বর ও Transaction ID (TrxID) প্রদান করুন।' }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Manual Payment Settings</button>
                     </form>
                 </div>
             </div>

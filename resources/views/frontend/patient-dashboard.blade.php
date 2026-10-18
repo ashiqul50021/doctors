@@ -102,9 +102,9 @@
                                                             </td>
                                                             <td class="text-end">
                                                                 <div class="table-action">
-                                                                    @if($appt->type === 'online' && $appt->meeting_link && in_array($appt->status, ['pending', 'confirmed']))
-                                                                        <a href="{{ $appt->meeting_link }}" target="_blank" class="btn btn-sm bg-success-light">
-                                                                            <i class="fas fa-video"></i> Join Call
+                                                                    @if($appt->type === 'online' && in_array($appt->status, ['pending', 'confirmed']))
+                                                                        <a href="{{ route('appointment.consultation', $appt->id) }}" class="btn btn-sm bg-success-light" title="Join Video Consultation Room">
+                                                                            <i class="fas fa-video"></i> Video Call
                                                                         </a>
                                                                     @endif
                                                                     @if($appt->status === 'completed')
