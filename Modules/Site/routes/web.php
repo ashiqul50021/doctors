@@ -21,8 +21,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat-doctor', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat.doctor');
     Route::post('/chat/send', [\App\Http\Controllers\ChatController::class, 'sendMessage'])->name('chat.send');
 
-    // In-App Live Video Consultation Room
+    // In-App Live Video Consultation Room & Online Waiting Room
     Route::get('/consultation/{appointment_id}', [\App\Http\Controllers\ConsultationController::class, 'room'])->name('appointment.consultation');
+    Route::get('/consultation/{appointment_id}/status', [\App\Http\Controllers\ConsultationController::class, 'checkStatus'])->name('appointment.consultation.status');
+    Route::post('/consultation/{appointment_id}/call-next', [\App\Http\Controllers\ConsultationController::class, 'callNextOnline'])->name('appointment.consultation.call_next');
     Route::post('/consultation/{appointment_id}/complete', [\App\Http\Controllers\ConsultationController::class, 'complete'])->name('appointment.consultation.complete');
 });
 Route::view('/voice-call', 'frontend.voice-call')->name('voice.call');

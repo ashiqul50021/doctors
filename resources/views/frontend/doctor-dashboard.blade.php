@@ -566,16 +566,16 @@
                                     <div class="tab-pane" id="today-appointments">
 
                                         <!-- Live Chamber Queue Management Card -->
-                                        <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 16px; color: #fff;">
+                                        <div class="card border-0 shadow-sm mb-3" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 16px; color: #fff;">
                                             <div class="card-body p-4">
                                                 <div class="row align-items-center g-3">
                                                     <!-- Currently Serving -->
                                                     <div class="col-md-5 border-end border-secondary border-opacity-50">
                                                         <div class="d-flex align-items-center mb-2">
                                                             <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 me-2 rounded-pill" style="font-size: 11px;">
-                                                                <span class="spinner-grow spinner-grow-sm me-1" style="width: 8px; height: 8px;" role="status"></span> LIVE QUEUE
+                                                                <span class="spinner-grow spinner-grow-sm me-1" style="width: 8px; height: 8px;" role="status"></span> CHAMBER QUEUE
                                                             </span>
-                                                            <span class="text-white-50 small">Currently Serving</span>
+                                                            <span class="text-white-50 small">Currently Serving (Chamber)</span>
                                                         </div>
                                                         @if($currentlyServing)
                                                             <div class="d-flex align-items-center">
@@ -597,7 +597,7 @@
                                                     <!-- Next In Line -->
                                                     <div class="col-md-4">
                                                         <div class="text-white-50 small mb-1">
-                                                            <i class="fas fa-user-clock text-warning me-1"></i> Next in Line (পরবর্তী রোগী)
+                                                            <i class="fas fa-user-clock text-warning me-1"></i> Next Chamber Patient (পরবর্তী রোগী)
                                                         </div>
                                                         @if($nextInLine)
                                                             <div class="d-flex align-items-center">
@@ -617,8 +617,9 @@
                                                     <div class="col-md-3 text-md-end">
                                                         <form action="{{ route('appointment.call_next') }}" method="POST">
                                                             @csrf
+                                                            <input type="hidden" name="type" value="offline">
                                                             <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill shadow fw-bold px-3 py-2" style="font-size: 15px;">
-                                                                <i class="fas fa-bullhorn me-1"></i> Call Next ⏭️
+                                                                <i class="fas fa-bullhorn me-1"></i> Call Chamber ⏭️
                                                             </button>
                                                         </form>
                                                     </div>
@@ -626,6 +627,74 @@
                                             </div>
                                         </div>
                                         <!-- /Live Chamber Queue Management Card -->
+
+                                        <!-- Live Online Telemedicine Queue Management Card -->
+                                        <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); border-radius: 16px; color: #fff;">
+                                            <div class="card-body p-4">
+                                                <div class="row align-items-center g-3">
+                                                    <!-- Currently Serving Online -->
+                                                    <div class="col-md-5 border-end border-secondary border-opacity-50">
+                                                        <div class="d-flex align-items-center mb-2">
+                                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 me-2 rounded-pill" style="font-size: 11px;">
+                                                                <span class="spinner-grow spinner-grow-sm me-1" style="width: 8px; height: 8px;" role="status"></span> ONLINE QUEUE
+                                                            </span>
+                                                            <span class="text-white-50 small">Active Telemedicine Call</span>
+                                                        </div>
+                                                        @if($onlineCurrentlyServing)
+                                                            <div class="d-flex align-items-center justify-content-between">
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="badge bg-info text-dark fs-5 fw-bold px-3 py-2 me-3 rounded-3 shadow-sm">
+                                                                        {{ $onlineCurrentlyServing->token_number ?? 'ONL-01' }}
+                                                                    </div>
+                                                                    <div>
+                                                                        <h6 class="mb-0 fw-bold text-white">{{ optional(optional($onlineCurrentlyServing->patient)->user)->name ?? 'Patient' }}</h6>
+                                                                        <small class="text-white-50"><i class="far fa-clock me-1"></i> {{ \Carbon\Carbon::parse($onlineCurrentlyServing->appointment_time)->format('h:i A') }}</small>
+                                                                    </div>
+                                                                </div>
+                                                                <a href="{{ route('appointment.consultation', $onlineCurrentlyServing->id) }}" class="btn btn-sm btn-success rounded-pill px-3 py-1 shadow-sm ms-2">
+                                                                    <i class="fas fa-video me-1"></i> Open Room
+                                                                </a>
+                                                            </div>
+                                                        @else
+                                                            <div class="text-white-50 small py-1">
+                                                                <i class="fas fa-video me-1 text-info"></i> কোনো অনলাইন রোগী সক্রিয় নেই। কল করতে <strong>"Call Next Online"</strong> চাপুন।
+                                                            </div>
+                                                        @endif
+                                                    </div>
+
+                                                    <!-- Next Online In Line -->
+                                                    <div class="col-md-4">
+                                                        <div class="text-white-50 small mb-1">
+                                                            <i class="fas fa-user-clock text-warning me-1"></i> Next Online (পরবর্তী অনলাইন রোগী)
+                                                        </div>
+                                                        @if($onlineNextInLine)
+                                                            <div class="d-flex align-items-center">
+                                                                <span class="badge bg-primary text-white fw-bold px-2 py-1 me-2">
+                                                                    {{ $onlineNextInLine->token_number ?? 'ONL-XX' }}
+                                                                </span>
+                                                                <span class="text-white fw-semibold text-truncate" style="max-width: 170px;">
+                                                                    {{ optional(optional($onlineNextInLine->patient)->user)->name ?? 'Patient' }}
+                                                                </span>
+                                                            </div>
+                                                        @else
+                                                            <span class="badge bg-dark text-muted">কোনো অনলাইন অপেক্ষমাণ রোগী নেই</span>
+                                                        @endif
+                                                    </div>
+
+                                                    <!-- Call Next Online Button -->
+                                                    <div class="col-md-3 text-md-end">
+                                                        <form action="{{ route('appointment.call_next') }}" method="POST">
+                                                            @csrf
+                                                            <input type="hidden" name="type" value="online">
+                                                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow fw-bold px-3 py-2" style="font-size: 14px;">
+                                                                <i class="fas fa-video me-1"></i> Call Next Online 📞
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /Live Online Telemedicine Queue Management Card -->
 
                                         <div class="card card-table mb-0">
                                             <div class="card-body">
@@ -756,9 +825,12 @@
                                                                             @endif
 
                                                                             @if($appt->type === 'online' && in_array($appt->status, ['pending', 'confirmed']))
-                                                                                <a href="{{ route('appointment.consultation', $appt->id) }}" class="btn btn-sm bg-success-light" title="Join Video Consultation Room">
-                                                                                    <i class="fas fa-video"></i> Video Call
-                                                                                </a>
+                                                                                <form action="{{ route('appointment.call_specific', $appt->id) }}" method="POST" class="d-inline">
+                                                                                    @csrf
+                                                                                    <button type="submit" class="btn btn-sm bg-success-light" title="রোগীকে কল করে ভিডিও রুমে প্রবেশ করুন">
+                                                                                        <i class="fas fa-video me-1"></i> Call & Video
+                                                                                    </button>
+                                                                                </form>
                                                                             @endif
 
                                                                             @if($appt->status == 'pending')

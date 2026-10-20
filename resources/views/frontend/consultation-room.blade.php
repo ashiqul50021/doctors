@@ -237,6 +237,171 @@
             height: 3rem;
         }
 
+        /* Waiting Room Overlay (For Patients Waiting in Queue) */
+        .waiting-room-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 25%, #152243 0%, #070B18 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            z-index: 60;
+            overflow-y: auto;
+        }
+
+        .waiting-card {
+            background: rgba(21, 31, 56, 0.96);
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            border-radius: 20px;
+            padding: 36px 32px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 35px rgba(37, 99, 235, 0.25);
+            text-align: center;
+        }
+
+        .waiting-live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            color: #60A5FA;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .waiting-live-badge .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3B82F6;
+            box-shadow: 0 0 10px #3B82F6;
+            animation: pulse-live 1.6s infinite;
+        }
+
+        .waiting-title {
+            color: #FFFFFF;
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .waiting-sub {
+            color: #94A3B8;
+            font-size: 13.5px;
+            margin-bottom: 24px;
+        }
+
+        .doctor-preview-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(30, 41, 75, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 18px;
+            border-radius: 14px;
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .doctor-avatar-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #3B82F6;
+        }
+
+        .queue-status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .queue-status-col {
+            background: rgba(13, 22, 47, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 16px 12px;
+        }
+
+        .queue-status-col.highlight {
+            background: linear-gradient(135deg, rgba(29, 78, 216, 0.25) 0%, rgba(30, 41, 75, 0.6) 100%);
+            border-color: rgba(59, 130, 246, 0.6);
+        }
+
+        .queue-status-col .label {
+            display: block;
+            color: #94A3B8;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .queue-status-col .token-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: #60A5FA;
+            letter-spacing: 1px;
+        }
+
+        .queue-status-col .serving-number {
+            font-size: 26px;
+            font-weight: 700;
+            color: #F8FAFC;
+            letter-spacing: 1px;
+        }
+
+        .queue-position-alert {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: #FBBF24;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .waiting-instructions {
+            background: rgba(11, 19, 41, 0.6);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+            color: #CBD5E1;
+        }
+
+        .instruction-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .waiting-pulse-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12.5px;
+            color: #94A3B8;
+        }
+
         /* Side Panel (Right) */
         .medical-side-panel {
             width: 380px;
@@ -457,6 +622,12 @@
             </span>
 
             <div class="consult-info-meta">
+                @if($appointment->token_number)
+                    <span class="badge bg-primary text-white fw-bold px-2.5 py-1" style="font-size: 12px; letter-spacing: 0.5px;">
+                        <i class="fas fa-ticket-alt me-1"></i> {{ $appointment->token_number }}
+                    </span>
+                    <span>•</span>
+                @endif
                 <span>Appointment <strong>#{{ $appointment->id }}</strong></span>
                 <span>•</span>
                 <span>{{ $appointment->appointment_date->format('d M, Y') }} at {{ $appointment->appointment_time->format('h:i A') }}</span>
@@ -470,6 +641,15 @@
         <div class="topbar-right">
             <!-- Doctor-Specific Actions -->
             @if($isDoctor)
+                @if(!empty($nextOnlineAppt))
+                    <form action="{{ route('appointment.consultation.call_next', $appointment->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Complete this consultation and call next patient ({{ $nextOnlineAppt->token_number ?? 'Next' }})?');">
+                        @csrf
+                        <button type="submit" class="btn-consult-action" style="background:#2563EB; color:#fff;" title="Complete current and call next online patient">
+                            <i class="fas fa-forward me-1"></i> Call Next ({{ $nextOnlineAppt->token_number ?? 'Next' }})
+                        </button>
+                    </form>
+                @endif
+
                 <a href="{{ route('doctors.add.prescription', $appointment->id) }}" target="_blank" class="btn-consult-action btn-prescription" title="Write & Issue Prescription in a new tab">
                     <i class="fas fa-file-prescription"></i> Write Prescription
                 </a>
@@ -498,7 +678,73 @@
         
         <!-- Video Conference Stage -->
         <section class="video-stage" id="videoStage">
-            <div id="jitsiLoader" class="jitsi-loading-overlay">
+            @if($isPatient && !$isServing)
+                <!-- Waiting Room for Patient Until Doctor Calls -->
+                <div id="waitingRoomStage" class="waiting-room-overlay">
+                    <div class="waiting-card">
+                        <div class="waiting-header">
+                            <span class="waiting-live-badge">
+                                <span class="pulse-dot"></span> LIVE WAITING ROOM
+                            </span>
+                            <h3 class="waiting-title">ডাক্তারের কলিং অপেক্ষা কক্ষ</h3>
+                            <p class="waiting-sub">ডাক্তার প্রস্তুত হয়ে কল করলেই স্বয়ংক্রিয়ভাবে ভিডিও কল শুরু হবে</p>
+                        </div>
+
+                        <div class="doctor-preview-box">
+                            <img src="{{ $appointment->doctor?->user?->profile_image ? asset($appointment->doctor->user->profile_image) : asset('assets/img/doctors/doctor-thumb-02.jpg') }}" 
+                                 alt="Doctor Avatar" class="doctor-avatar-circle">
+                            <div>
+                                <h5 class="mb-1 text-white fw-bold">Dr. {{ $appointment->doctor?->user?->name ?? 'Doctor' }}</h5>
+                                <span class="badge bg-primary-subtle text-primary">{{ $appointment->doctor?->speciality?->name ?? 'Specialist' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="queue-status-grid">
+                            <div class="queue-status-col highlight">
+                                <span class="label">আপনার অনলাইন সিরিয়াল</span>
+                                <div class="token-number">{{ $appointment->token_number ?? 'ONL-1' }}</div>
+                            </div>
+                            <div class="queue-status-col">
+                                <span class="label">বর্তমানে ডাকা হচ্ছে</span>
+                                <div class="serving-number" id="currentServingToken">{{ $servingToken ?? 'শুরু হয়নি' }}</div>
+                            </div>
+                        </div>
+
+                        <div class="queue-position-alert" id="aheadCountBox">
+                            <i class="fas fa-user-clock me-2"></i>
+                            <span id="aheadCountText">
+                                @if($aheadCount > 0)
+                                    আপনার পূর্বে <strong>{{ $aheadCount }}</strong> জন রোগী সিরিয়ালে আছেন।
+                                @else
+                                    আপনি পরবর্তী সিরিয়ালে আছেন। ডাক্তার খুব শীঘ্রই কল করবেন।
+                                @endif
+                            </span>
+                        </div>
+
+                        <div class="waiting-instructions">
+                            <div class="instruction-item">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <span>অনুগ্রহ করে এই ব্রাউজার ট্যাবটি খোলা রাখুন</span>
+                            </div>
+                            <div class="instruction-item">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <span>ক্যামেরা ও মাইক্রোফোন পারমিশন প্রস্তুত রাখুন</span>
+                            </div>
+                            <div class="instruction-item">
+                                <i class="fas fa-volume-up text-info"></i>
+                                <span>ডাক্তার কল দিলে অ্যালার্ম শব্দ বেজে উঠবে</span>
+                            </div>
+                        </div>
+
+                        <div class="waiting-pulse-indicator">
+                            <div class="spinner-grow spinner-grow-sm text-primary me-2" role="status"></div>
+                            <span>লাইভ সংযোগ সক্রিয় রয়েছে...</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <div id="jitsiLoader" class="jitsi-loading-overlay" @if($isPatient && !$isServing) style="display:none;" @endif>
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Connecting...</span>
                 </div>
@@ -507,7 +753,7 @@
             </div>
 
             <!-- Jitsi Meet Iframe Container -->
-            <div id="jitsi-meet-container"></div>
+            <div id="jitsi-meet-container" @if($isPatient && !$isServing) style="display:none;" @endif></div>
         </section>
 
         <!-- Right Side Panel: Patient Profile & Prescription Pad -->
@@ -697,11 +943,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script>
+        const domain = 'meet.jit.si';
+        const roomName = "{{ $roomName }}";
+        const displayName = "{{ $displayName }}";
+        const isPatient = {{ $isPatient ? 'true' : 'false' }};
+        const shouldInitNow = {{ ($isServing || $isDoctor || $isAdmin) ? 'true' : 'false' }};
+
+        let jitsiApiInstance = null;
+        let pollTimer = null;
+
+        // Sound chime when doctor calls
+        function playChime() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                osc.start();
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3); // A5
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                osc.stop(audioCtx.currentTime + 0.6);
+            } catch(e) {
+                console.log('Audio chime error:', e);
+            }
+        }
+
         // 1. Initialize Jitsi Meet Embedded Session
-        document.addEventListener('DOMContentLoaded', function () {
-            const domain = 'meet.jit.si';
-            const roomName = "{{ $roomName }}";
-            const displayName = "{{ $displayName }}";
+        function initJitsi() {
+            if (jitsiApiInstance) return;
 
             const options = {
                 roomName: roomName,
@@ -733,9 +1005,9 @@
             };
 
             try {
-                const api = new JitsiMeetExternalAPI(domain, options);
+                jitsiApiInstance = new JitsiMeetExternalAPI(domain, options);
 
-                api.addEventListeners({
+                jitsiApiInstance.addEventListeners({
                     videoConferenceJoined: function () {
                         const loader = document.getElementById('jitsiLoader');
                         if (loader) loader.style.display = 'none';
@@ -756,6 +1028,52 @@
                         <a href="https://${domain}/${roomName}" target="_blank" class="btn btn-sm btn-primary">Open in New Tab</a>
                     `;
                 }
+            }
+        }
+
+        // 2. Poll Waiting Room Status for Patient
+        function pollQueueStatus() {
+            fetch("{{ route('appointment.consultation.status', $appointment->id) }}")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.is_serving) {
+                        if (pollTimer) clearInterval(pollTimer);
+                        playChime();
+                        toastr.success('ডাক্তার আপনাকে ডেকেছেন! ভিডিও কলে যুক্ত হওয়া হচ্ছে...', 'আপনার সিরিয়াল এসেছে');
+                        
+                        const waitingOverlay = document.getElementById('waitingRoomStage');
+                        if (waitingOverlay) waitingOverlay.style.display = 'none';
+
+                        const loader = document.getElementById('jitsiLoader');
+                        if (loader) loader.style.display = 'flex';
+
+                        const container = document.getElementById('jitsi-meet-container');
+                        if (container) container.style.display = 'block';
+
+                        initJitsi();
+                    } else {
+                        const sTokenEl = document.getElementById('currentServingToken');
+                        if (sTokenEl && data.serving_token) {
+                            sTokenEl.textContent = data.serving_token;
+                        }
+                        const aheadTxt = document.getElementById('aheadCountText');
+                        if (aheadTxt) {
+                            if (data.ahead_count > 0) {
+                                aheadTxt.innerHTML = `আপনার পূর্বে <strong>${data.ahead_count}</strong> জন রোগী সিরিয়ালে আছেন।`;
+                            } else {
+                                aheadTxt.innerHTML = `আপনি পরবর্তী সিরিয়ালে আছেন। ডাক্তার খুব শীঘ্রই কল করবেন।`;
+                            }
+                        }
+                    }
+                })
+                .catch(err => console.error('Status poll error:', err));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (shouldInitNow) {
+                initJitsi();
+            } else if (isPatient) {
+                pollTimer = setInterval(pollQueueStatus, 4000);
             }
         });
 

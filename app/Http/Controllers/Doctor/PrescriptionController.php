@@ -68,6 +68,11 @@ class PrescriptionController extends Controller
                         'evening' => isset($request->evening[$index]) ? true : false,
                         'night' => isset($request->night[$index]) ? true : false,
                     ]);
+
+                    // Auto-learning: save to medicines catalog if not present
+                    \App\Models\Medicine::firstOrCreate(
+                        ['name' => trim($medicine)]
+                    );
                 }
             }
         }
@@ -138,10 +143,36 @@ class PrescriptionController extends Controller
                         'evening' => isset($request->evening[$index]) ? true : false,
                         'night' => isset($request->night[$index]) ? true : false,
                     ]);
+
+                    // Auto-learning: save to medicines catalog if not present
+                    \App\Models\Medicine::firstOrCreate(
+                        ['name' => trim($medicine)]
+                    );
                 }
             }
         }
 
         return redirect()->route('doctors.dashboard')->with('success', 'Prescription updated successfully!');
+    }
+
+    /**
+     * Search medicines for autocomplete dropdown
+     */
+    public function searchMedicines(Request $request)
+    {
+        $term = trim($request->input('term', $request->input('q', '')));
+
+        if (strlen($term) < 1) {
+            return response()->json([]);
+        }
+
+        $medicines = \App\Models\Medicine::where('name', 'like', $term . '%')
+            ->orWhere('name', 'like', '%' . $term . '%')
+            ->orWhere('generic', 'like', $term . '%')
+            ->orderByRaw("CASE WHEN name LIKE ? THEN 1 WHEN name LIKE ? THEN 2 ELSE 3 END", [$term . '%', '%' . $term . '%'])
+            ->take(15)
+            ->get(['id', 'name', 'generic', 'strength', 'company']);
+
+        return response()->json($medicines);
     }
 }

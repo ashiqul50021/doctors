@@ -148,6 +148,14 @@
                                 <div class="card border-2 mb-4" style="background: #EFF6FF; border: 2px dashed #BFDBFE; border-radius: 8px;">
                                     <div class="card-body text-center py-4">
                                         <span class="fw-semibold small text-uppercase" style="color: #1E40AF;">Online Telemedicine Consultation</span>
+                                        @if(session('token_number'))
+                                            <div class="my-2">
+                                                <span class="text-uppercase fw-semibold small d-block text-muted">আপনার অনলাইন সিরিয়াল নম্বর (Serial Token)</span>
+                                                <h1 class="display-4 fw-bold my-1" style="color: #1D4ED8; font-weight: 800; letter-spacing: 2px;">
+                                                    {{ session('token_number') }}
+                                                </h1>
+                                            </div>
+                                        @endif
                                         <div class="my-3">
                                             @php
                                                 $consultLink = session('appointment_id') 
@@ -155,10 +163,10 @@
                                                     : (session('meeting_link') ?? '#');
                                             @endphp
                                             <a href="{{ $consultLink }}" class="btn btn-brand-primary btn-lg px-4 py-2 shadow-sm">
-                                                <i class="fas fa-video me-2"></i> Join Video Consultation Call
+                                                <i class="fas fa-video me-2"></i> Join Video Consultation / Waiting Room
                                             </a>
                                         </div>
-                                        <p class="small mb-0" style="color: #64748B;">নির্ধারিত সময়ে সরাসরি উপরোক্ত লিংকে ক্লিক করে ডাক্তারের সাথে ভিডিও কলে যুক্ত হবেন।</p>
+                                        <p class="small mb-0" style="color: #64748B;">নির্ধারিত সময়ে সরাসরি উপরোক্ত লিংকে ক্লিক করে ডাক্তারের সাথে ভিডিও কলে যুক্ত হবেন। ডাক্তার কল করলে স্বয়ংক্রিয়ভাবে ভিডিও কল শুরু হবে।</p>
 
                                         @if(session('transaction_id'))
                                             <div class="alert alert-info py-2 px-3 mt-3 mb-0 text-start" style="background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF; border-radius: 6px; font-size: 13px;">

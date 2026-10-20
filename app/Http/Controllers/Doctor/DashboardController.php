@@ -81,10 +81,23 @@ class DashboardController extends Controller
             ->when($currentlyServing, fn($coll) => $coll->where('id', '!=', $currentlyServing->id))
             ->first();
 
+        // Live Online Telemedicine Queue State
+        $onlineServingApptId = \Illuminate\Support\Facades\Cache::get("doctor_{$doctor->id}_online_serving_appt_id");
+        $onlineCurrentlyServing = $onlineServingApptId ? $todayAppointments->firstWhere('id', $onlineServingApptId) : null;
+        if ($onlineCurrentlyServing && in_array($onlineCurrentlyServing->status, ['cancelled', 'completed'])) {
+            $onlineCurrentlyServing = null;
+        }
+
+        $onlineNextInLine = $todayAppointments
+            ->where('type', 'online')
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->when($onlineCurrentlyServing, fn($coll) => $coll->where('id', '!=', $onlineCurrentlyServing->id))
+            ->first();
+
         return view('frontend.doctor-dashboard', compact(
             'doctor', 'totalPatients', 'todayPatients',
             'totalAppointments', 'upcomingAppointments', 'todayAppointments',
-            'currentlyServing', 'nextInLine'
+            'currentlyServing', 'nextInLine', 'onlineCurrentlyServing', 'onlineNextInLine'
         ));
     }
 
@@ -568,6 +581,50 @@ class DashboardController extends Controller
     {
         $doctor = $this->getDoctor();
 
+        $type = request('type', 'offline');
+
+        if ($type === 'online') {
+            // Find today's online appointments
+            $todayAppointments = Appointment::where('doctor_id', $doctor->id)
+                ->whereDate('appointment_date', today())
+                ->where('type', 'online')
+                ->orderBy('id', 'asc')
+                ->get();
+
+            $servingApptId = \Illuminate\Support\Facades\Cache::get("doctor_{$doctor->id}_online_serving_appt_id");
+
+            // 1. If someone is currently serving, mark them completed
+            if ($servingApptId) {
+                $currentAppt = $todayAppointments->firstWhere('id', $servingApptId);
+                if ($currentAppt && in_array($currentAppt->status, ['pending', 'confirmed'])) {
+                    $currentAppt->status = 'completed';
+                    $currentAppt->save();
+                }
+            }
+
+            // 2. Find the next pending/confirmed patient
+            $nextAppt = $todayAppointments
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->when($servingApptId, fn($coll) => $coll->where('id', '!=', $servingApptId))
+                ->first();
+
+            if ($nextAppt) {
+                if ($nextAppt->status === 'pending') {
+                    $nextAppt->status = 'confirmed';
+                    $nextAppt->save();
+                }
+
+                \Illuminate\Support\Facades\Cache::put("doctor_{$doctor->id}_online_serving_appt_id", $nextAppt->id, now()->endOfDay());
+
+                return redirect()->route('appointment.consultation', $nextAppt->id);
+            }
+
+            // No more patients waiting
+            \Illuminate\Support\Facades\Cache::forget("doctor_{$doctor->id}_online_serving_appt_id");
+
+            return redirect()->back()->with('info', 'আজকের অনলাইন সিরিয়ালের সকল রোগী সম্পন্ন হয়েছে।');
+        }
+
         // Find today's offline appointments
         $todayAppointments = Appointment::where('doctor_id', $doctor->id)
             ->whereDate('appointment_date', today())
@@ -614,7 +671,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * Live Chamber Queue: Call Specific Patient Out-of-Order
+     * Live Chamber & Online Queue: Call Specific Patient Out-of-Order
      */
     public function callSpecificPatient($id)
     {
@@ -624,6 +681,11 @@ class DashboardController extends Controller
         if ($appointment->status === 'pending') {
             $appointment->status = 'confirmed';
             $appointment->save();
+        }
+
+        if ($appointment->type === 'online') {
+            \Illuminate\Support\Facades\Cache::put("doctor_{$doctor->id}_online_serving_appt_id", $appointment->id, now()->endOfDay());
+            return redirect()->route('appointment.consultation', $appointment->id);
         }
 
         \Illuminate\Support\Facades\Cache::put("doctor_{$doctor->id}_serving_appt_id", $appointment->id, now()->endOfDay());

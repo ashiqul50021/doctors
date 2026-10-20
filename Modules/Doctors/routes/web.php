@@ -87,6 +87,7 @@ Route::name('doctors.')->group(function () {
             Route::get('/edit-prescription/{id}', [\App\Http\Controllers\Doctor\PrescriptionController::class, 'edit'])->name('edit.prescription');
             Route::put('/update-prescription/{id}', [\App\Http\Controllers\Doctor\PrescriptionController::class, 'update'])->name('update.prescription');
             Route::get('/view-prescription/{id}', [\App\Http\Controllers\Doctor\PrescriptionController::class, 'show'])->name('view.prescription');
+            Route::get('/medicines/search', [\App\Http\Controllers\Doctor\PrescriptionController::class, 'searchMedicines'])->name('medicines.search');
         });
     });
 });

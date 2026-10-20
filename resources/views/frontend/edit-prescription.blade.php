@@ -123,8 +123,9 @@
                                         <tbody>
                                             @forelse($prescription->items as $index => $item)
                                             <tr>
-                                                <td>
-                                                    <input class="form-control" name="medicine_name[{{ $index }}]" type="text" value="{{ $item->medicine_name }}" required>
+                                                <td class="position-relative">
+                                                    <input class="form-control medicine-autocomplete" name="medicine_name[{{ $index }}]" type="text" value="{{ $item->medicine_name }}" placeholder="Type medicine name (e.g. Napa, Seclo)" autocomplete="off" required>
+                                                    <div class="medicine-suggestions dropdown-menu shadow-lg w-100" style="display:none; max-height: 280px; overflow-y: auto; z-index: 1050; position: absolute; left: 0; top: 100%;"></div>
                                                 </td>
                                                 <td>
                                                     <input class="form-control" name="quantity[{{ $index }}]" type="text" placeholder="e.g. 1 tab" value="{{ $item->quantity }}">
@@ -160,8 +161,9 @@
                                             </tr>
                                             @empty
                                             <tr>
-                                                <td>
-                                                    <input class="form-control" name="medicine_name[0]" type="text">
+                                                <td class="position-relative">
+                                                    <input class="form-control medicine-autocomplete" name="medicine_name[0]" type="text" placeholder="Type medicine name (e.g. Napa, Seclo)" autocomplete="off">
+                                                    <div class="medicine-suggestions dropdown-menu shadow-lg w-100" style="display:none; max-height: 280px; overflow-y: auto; z-index: 1050; position: absolute; left: 0; top: 100%;"></div>
                                                 </td>
                                                 <td>
                                                     <input class="form-control" name="quantity[0]" type="text" placeholder="e.g. 1 tab">
@@ -244,11 +246,90 @@
 
 <script>
     let rowIdx = {{ $prescription->items->count() > 0 ? $prescription->items->count() : 1 }};
+    const medicineSearchUrl = "{{ route('doctors.medicines.search') }}";
+
+    function initMedicineAutocomplete(inputElem) {
+        const $input = $(inputElem);
+        const $parent = $input.closest('td');
+        let $suggestions = $parent.find('.medicine-suggestions');
+        if ($suggestions.length === 0) {
+            $suggestions = $('<div class="medicine-suggestions dropdown-menu shadow-lg w-100" style="display:none; max-height: 280px; overflow-y: auto; z-index: 1050; position: absolute; left: 0; top: 100%;"></div>');
+            $parent.addClass('position-relative').append($suggestions);
+        }
+
+        let debounceTimer = null;
+
+        $input.on('input focus', function () {
+            const query = $(this).val().trim();
+            clearTimeout(debounceTimer);
+            if (query.length < 1) {
+                $suggestions.hide().empty();
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                $.ajax({
+                    url: medicineSearchUrl,
+                    data: { q: query },
+                    dataType: 'json',
+                    success: function (data) {
+                        $suggestions.empty();
+                        if (!data || data.length === 0) {
+                            $suggestions.append('<div class="dropdown-item text-muted small py-2"><i class="fas fa-pen me-1"></i> "' + query + '" (Custom medicine)</div>');
+                            $suggestions.show();
+                            return;
+                        }
+
+                        data.forEach(item => {
+                            const title = item.name + (item.strength ? ' - ' + item.strength : '');
+                            const sub = (item.generic ? item.generic : '') + (item.company ? ' • ' + item.company : '');
+                            const $item = $(`
+                                <a href="javascript:void(0);" class="dropdown-item py-2 px-3 border-bottom text-wrap" style="transition: background 0.15s ease;">
+                                    <div class="fw-bold text-dark fs-6">${title}</div>
+                                    <div class="small text-muted" style="font-size: 11.5px;">${sub}</div>
+                                </a>
+                            `);
+
+                            $item.on('click', function (e) {
+                                e.preventDefault();
+                                $input.val(item.name + (item.strength ? ' ' + item.strength : ''));
+                                $suggestions.hide().empty();
+
+                                let $hint = $parent.find('.med-hint');
+                                if ($hint.length === 0) {
+                                    $hint = $('<small class="med-hint text-muted d-block mt-1" style="font-size: 11px;"></small>');
+                                    $parent.append($hint);
+                                }
+                                $hint.html('<i class="fas fa-capsules text-primary me-1"></i> ' + (item.generic || '') + ' (' + (item.company || '') + ')');
+                            });
+
+                            $suggestions.append($item);
+                        });
+                        $suggestions.show();
+                    }
+                });
+            }, 180);
+        });
+
+        $(document).on('click', function (e) {
+            if (!$(e.target).closest($parent).length) {
+                $suggestions.hide();
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $('.medicine-autocomplete').each(function () {
+            initMedicineAutocomplete(this);
+        });
+    });
+
     function addPrescriptionRow() {
         let tr = `
             <tr>
-                <td>
-                    <input class="form-control" name="medicine_name[${rowIdx}]" type="text" required>
+                <td class="position-relative">
+                    <input class="form-control medicine-autocomplete" name="medicine_name[${rowIdx}]" type="text" placeholder="Type medicine name (e.g. Napa, Seclo)" autocomplete="off" required>
+                    <div class="medicine-suggestions dropdown-menu shadow-lg w-100" style="display:none; max-height: 280px; overflow-y: auto; z-index: 1050; position: absolute; left: 0; top: 100%;"></div>
                 </td>
                 <td>
                     <input class="form-control" name="quantity[${rowIdx}]" type="text" placeholder="e.g. 1 tab">
@@ -283,7 +364,9 @@
                 </td>
             </tr>
         `;
-        $('#prescription_table tbody').append(tr);
+        const $newRow = $(tr);
+        $('#prescription_table tbody').append($newRow);
+        initMedicineAutocomplete($newRow.find('.medicine-autocomplete')[0]);
         rowIdx++;
     }
 

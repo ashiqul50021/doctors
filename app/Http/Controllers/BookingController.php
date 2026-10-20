@@ -162,12 +162,8 @@ class BookingController extends Controller
                 $timeKey = $start->format('H:i:s');
                 $isBooked = false;
 
-                // For online video, 1 appointment per slot
-                if ($type === 'online') {
-                    $isBooked = in_array($start->format('H:i'), $bookedOnline);
-                }
-
-                // If date is today, check if schedule end time has already passed
+                // Both offline and online use serial token queues within doctor's schedule hours
+                // Slots are only marked booked if the time has already passed today
                 if ($date->isToday() && $end->lt(now())) {
                     $isBooked = true;
                 }
@@ -193,19 +189,19 @@ class BookingController extends Controller
 
         $doctor = Doctor::findOrFail($doctor_id);
 
-        // Server-side double-booking prevention (type-aware)
-        // (Added back — removed previously but needed for correctness)
-        $alreadyBooked = Appointment::where('doctor_id', $doctor_id)
-            ->where('appointment_date', $request->appointment_date)
-            ->where('appointment_time', $request->appointment_time)
-            ->where('type', $request->type)
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->exists();
-
-        if ($alreadyBooked) {
-            return redirect()->back()
-                ->withErrors(['appointment_time' => 'This time slot is already booked. Please select a different time.'])
-                ->withInput();
+        // Check if selected time slot has already passed for today
+        $dateObj = \Carbon\Carbon::parse($request->appointment_date);
+        if ($dateObj->isToday()) {
+            $timeParts = explode(':', $request->appointment_time);
+            if (count($timeParts) >= 2) {
+                // If schedule has passed
+                $schedule = $doctor->schedules->where('day', strtolower($dateObj->format('l')))->where('type', $request->type)->first();
+                if ($schedule && $schedule->end_time && \Carbon\Carbon::parse($dateObj->format('Y-m-d') . ' ' . $schedule->end_time)->lt(now())) {
+                    return redirect()->back()
+                        ->withErrors(['appointment_time' => 'This consultation schedule has already ended for today.'])
+                        ->withInput();
+                }
+            }
         }
 
         // Use correct fee columns from schema
@@ -323,6 +319,11 @@ class BookingController extends Controller
                 $booking['date'],
                 $booking['time']
             );
+            $count = Appointment::where('doctor_id', $booking['doctor_id'])
+                ->where('appointment_date', $booking['date'])
+                ->where('type', 'online')
+                ->count();
+            $token_number = 'ONL-' . ($count + 1);
         } elseif ($booking['type'] === 'offline') {
             // Generate Token Number
             $count = Appointment::where('doctor_id', $booking['doctor_id'])
