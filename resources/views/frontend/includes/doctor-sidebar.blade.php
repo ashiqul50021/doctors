@@ -80,21 +80,21 @@
     .dashboard-menu ul li a span { flex: 1; }
 
     .dashboard-menu ul li a:hover {
-        background-color: rgba(29, 78, 216, 0.04);
-        color: #1D4ED8 !important;
+        background-color: rgba(41, 88, 183, 0.05);
+        color: #2958B7 !important;
         border-left-color: transparent;
     }
-    .dashboard-menu ul li a:hover i { color: #1D4ED8 !important; }
+    .dashboard-menu ul li a:hover i { color: #2958B7 !important; }
 
     .dashboard-menu ul li.active a {
-        background-color: rgba(29, 78, 216, 0.08);
-        color: #1D4ED8 !important;
-        border-left-color: #1D4ED8;
+        background-color: rgba(41, 88, 183, 0.1);
+        color: #2958B7 !important;
+        border-left-color: #2958B7;
         border-radius: 0 8px 8px 0;
         margin-right: 12px;
         font-weight: 600;
     }
-    .dashboard-menu ul li.active a i { color: #1D4ED8 !important; }
+    .dashboard-menu ul li.active a i { color: #2958B7 !important; }
 
     .dashboard-menu ul li a .unread-msg {
         background-color: #f73563;

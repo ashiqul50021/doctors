@@ -84,11 +84,11 @@
                 @endif
 
                 @if($doctor->status === 'pending')
-                    <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border-left: 4px solid #0284c7 !important;">
+                    <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #f0f4fd 0%, #e8effd 100%); border-left: 4px solid #2958B7 !important;">
                         <div class="card-body p-3 p-md-4">
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
                                 <div class="d-flex align-items-center">
-                                    <i class="fas fa-user-clock text-primary fs-4 me-2"></i>
+                                    <i class="fas fa-user-clock fs-4 me-2" style="color: #2958B7;"></i>
                                     <div>
                                         <h5 class="mb-0 fw-bold text-dark">
                                             Account Status: <span class="badge bg-warning text-dark px-2 py-1">Pending Approval</span>
@@ -102,15 +102,15 @@
                                         </small>
                                     </div>
                                 </div>
-                                <span class="badge {{ $completionPercent == 100 ? 'bg-success' : 'bg-primary' }} fs-6 px-3 py-2">
+                                <span class="badge text-white fs-6 px-3 py-2" style="background-color: {{ $completionPercent == 100 ? '#10b981' : '#2958B7' }};">
                                     {{ $completionPercent }}% Completed
                                 </span>
                             </div>
 
                             <div class="progress my-2" style="height: 8px; border-radius: 4px; background-color: #cbd5e1;">
-                                <div class="progress-bar {{ $completionPercent == 100 ? 'bg-success' : 'bg-primary' }}" 
+                                <div class="progress-bar" 
                                      role="progressbar" 
-                                     style="width: {{ $completionPercent }}%;" 
+                                     style="width: {{ $completionPercent }}%; background-color: {{ $completionPercent == 100 ? '#10b981' : '#2958B7' }};" 
                                      aria-valuenow="{{ $completionPercent }}" 
                                      aria-valuemin="0" 
                                      aria-valuemax="100"></div>
@@ -158,7 +158,7 @@
                                                 <img id="profile-preview" src="{{ $profileImage }}" alt="User Image">
                                             </div>
                                             <div class="upload-img">
-                                                <div class="change-photo-btn" onclick="document.getElementById('profile_image_input').click();">
+                                                <div class="change-photo-btn" onclick="document.getElementById('profile_image_input').click();" style="background-color: #2958B7 !important;">
                                                     <span><i class="fa fa-upload"></i> Upload Photo</span>
                                                     <input type="file" class="upload d-none" id="profile_image_input" name="profile_image" accept="image/*">
                                                 </div>
@@ -595,7 +595,7 @@
                     </div>
 
                     <div class="submit-section submit-btn-bottom">
-                        <button type="submit" class="btn btn-primary submit-btn">Save Changes</button>
+                        <button type="submit" class="btn text-white px-5 py-2 fw-semibold" style="background-color: #2958B7; border-color: #2958B7; border-radius: 6px;">Save Changes</button>
                     </div>
                 </form>
             </div>
