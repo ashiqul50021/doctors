@@ -281,7 +281,7 @@
                         'id' => $doctor->id,
                         'isFavourite' => in_array($doctor->id, $favDoctorIds),
                         'image' => $doctor->profile_image ? asset($doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg'),
-                        'name' => 'Dr. ' . $doctor->user->name,
+                        'name' => str_starts_with($doctor->user->name ?? '', 'Dr.') ? $doctor->user->name : 'Dr. ' . ($doctor->user->name ?? ''),
                         'speciality' => $doctor->speciality->name ?? 'General',
                         'department' => $doctor->speciality->name ?? 'General',
                         'departmentIcon' => ($doctor->speciality && $doctor->speciality->image && file_exists(base_path($doctor->speciality->image))) ? asset($doctor->speciality->image) : asset('assets/img/specialities/specialities-05.png'),

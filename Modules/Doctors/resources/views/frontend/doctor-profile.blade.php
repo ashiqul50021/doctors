@@ -71,14 +71,25 @@
     }
 
     .doctor-rating {
-        color: #f59e0b;
         font-size: 14px;
         font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .doctor-rating i {
+        color: #cbd5e1;
+    }
+
+    .doctor-rating i.filled {
+        color: #f59e0b;
     }
 
     .doctor-rating .muted {
         color: #64748b;
         font-weight: 600;
+        margin-left: 6px;
     }
 
     .doctor-metrics {
@@ -104,24 +115,33 @@
     }
 
     .doctor-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 18px;
+        max-width: 480px;
     }
 
     .doctor-actions .btn {
-        border-radius: 50px !important;
+        border-radius: 10px !important;
         font-weight: 600;
-        padding: 8px 16px;
-        font-size: 14px;
+        padding: 9px 12px;
+        font-size: 13px;
         line-height: 1.2;
-        min-height: 42px;
+        min-height: 40px;
         box-shadow: none !important;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 6px;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+
+    .doctor-actions .btn-primary {
+        grid-column: 1 / -1;
+        font-size: 15px;
+        padding: 11px 18px;
     }
 
     .doctor-content {
@@ -330,10 +350,17 @@
                             </span>
                         </div>
                         <div class="doctor-rating mb-2">
-                            @for($i = 1; $i <= 5; $i++)
-                                <i class="fas fa-star {{ $i <= round($doctor->average_rating) ? 'filled' : '' }}"></i>
-                            @endfor
-                            <span class="muted"> {{ number_format($doctor->average_rating, 1) }} ({{ $doctor->review_count }} reviews)</span>
+                            @if($doctor->review_count > 0)
+                                @for($i = 1; $i <= 5; $i++)
+                                    <i class="fas fa-star {{ $i <= round($doctor->average_rating) ? 'filled' : '' }}"></i>
+                                @endfor
+                                <span class="muted">{{ number_format($doctor->average_rating, 1) }} ({{ $doctor->review_count }} reviews)</span>
+                            @else
+                                @for($i = 1; $i <= 5; $i++)
+                                    <i class="fas fa-star"></i>
+                                @endfor
+                                <span class="muted">New Doctor (0 reviews)</span>
+                            @endif
                         </div>
                         <div class="text-muted">
                             <i class="fas fa-map-marker-alt me-2"></i>{{ $locationText !== '' ? $locationText : 'Location not provided' }}
@@ -363,7 +390,7 @@
                         <div class="doctor-metrics">
                             <div class="metric">Consultation Fee<strong>৳{{ number_format((float) ($doctor->consultation_fee ?? 0), 0) }}</strong></div>
                             <div class="metric">Experience<strong>{{ (int) ($doctor->experience_years ?? 0) }} years</strong></div>
-                            <div class="metric">Status<strong>{{ ucfirst($doctor->status ?? 'N/A') }}</strong></div>
+                            <div class="metric">Availability<strong>Accepting Patients</strong></div>
                             <div class="metric">Home Visit<strong>{{ !empty($doctor->home_visit) ? 'Available' : 'No' }}</strong></div>
                             <div class="metric">Online Consult<strong>{{ !empty($doctor->online_consultation) ? 'Available' : 'No' }}</strong></div>
                             <div class="metric">Online Fee<strong>৳{{ number_format((float) ($doctor->online_fee ?? 0), 0) }}</strong></div>
@@ -381,18 +408,21 @@
                 <div class="doctor-section">
                     <h5>Professional Details</h5>
                     <div class="detail-grid">
-                        <div class="detail-item"><div class="label">Phone</div><div class="value">{{ $doctor->phone ?? 'N/A' }}</div></div>
                         <div class="detail-item"><div class="label">Gender</div><div class="value">{{ $doctor->gender ? ucfirst($doctor->gender) : 'N/A' }}</div></div>
-                        <div class="detail-item"><div class="label">Date Of Birth</div><div class="value">{{ !empty($doctor->date_of_birth) ? \Carbon\Carbon::parse($doctor->date_of_birth)->format('d M Y') : 'N/A' }}</div></div>
-                        <div class="detail-item"><div class="label">Registration No</div><div class="value">{{ $doctor->registration_number ?? 'N/A' }}</div></div>
-                        <div class="detail-item"><div class="label">Registration Date</div><div class="value">{{ !empty($doctor->registration_date) ? \Carbon\Carbon::parse($doctor->registration_date)->format('d M Y') : 'N/A' }}</div></div>
-                        <div class="detail-item"><div class="label">Clinic Name</div><div class="value">{{ $doctor->clinic_name ?? 'N/A' }}</div></div>
-                        <div class="detail-item"><div class="label">Clinic Address</div><div class="value">{{ $doctor->clinic_address ?? 'N/A' }}</div></div>
-                        <div class="detail-item"><div class="label">Area / District</div><div class="value">{{ ($doctor->area->name ?? 'N/A') . ' / ' . ($doctor->district->name ?? 'N/A') }}</div></div>
-                        <div class="detail-item"><div class="label">Website</div><div class="value">{{ $doctor->website ?? 'N/A' }}</div></div>
-                        <div class="detail-item"><div class="label">Facebook</div><div class="value">{{ $doctor->facebook ?? 'N/A' }}</div></div>
-                        <div class="detail-item"><div class="label">LinkedIn</div><div class="value">{{ $doctor->linkedin ?? 'N/A' }}</div></div>
-                        <div class="detail-item"><div class="label">Featured</div><div class="value">{{ !empty($doctor->is_featured) ? 'Yes' : 'No' }}</div></div>
+                        <div class="detail-item"><div class="label">Registration No</div><div class="value">{{ $doctor->registration_number ?? 'Verified' }}</div></div>
+                        <div class="detail-item"><div class="label">Clinic / Hospital</div><div class="value">{{ $doctor->clinic_name ?? 'N/A' }}</div></div>
+                        <div class="detail-item"><div class="label">Location</div><div class="value">{{ ($doctor->area->name ?? '') . ($doctor->area && $doctor->district ? ', ' : '') . ($doctor->district->name ?? 'Dhaka') }}</div></div>
+                        <div class="detail-item"><div class="label">Clinic Address</div><div class="value">{{ $doctor->clinic_address ?? 'Available upon booking' }}</div></div>
+                        <div class="detail-item"><div class="label">Contact / Helpline</div><div class="value">{{ $doctor->phone ?? 'Support Available' }}</div></div>
+                        @if(!empty($doctor->website) && $doctor->website !== 'N/A')
+                            <div class="detail-item"><div class="label">Website</div><div class="value"><a href="{{ $doctor->website }}" target="_blank" class="text-primary">{{ $doctor->website }}</a></div></div>
+                        @endif
+                        @if(!empty($doctor->facebook) && $doctor->facebook !== 'N/A')
+                            <div class="detail-item"><div class="label">Facebook</div><div class="value"><a href="{{ $doctor->facebook }}" target="_blank" class="text-primary">Profile</a></div></div>
+                        @endif
+                        @if(!empty($doctor->linkedin) && $doctor->linkedin !== 'N/A')
+                            <div class="detail-item"><div class="label">LinkedIn</div><div class="value"><a href="{{ $doctor->linkedin }}" target="_blank" class="text-primary">Profile</a></div></div>
+                        @endif
                     </div>
                 </div>
 

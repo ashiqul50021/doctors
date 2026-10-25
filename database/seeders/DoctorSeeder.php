@@ -28,7 +28,7 @@ class DoctorSeeder extends Seeder
                 'clinic_address' => 'Road 27, Dhanmondi, Dhaka',
                 'gender' => 'male',
                 'phone' => '01710000001',
-                'profile_image' => 'assets/img/doctors/doctor-thumb-01.jpg',
+                'profile_image' => 'assets/img/doctors/doctor-thumb-02.jpg',
             ],
             [
                 'name' => 'Dr. Fatema Akter',
@@ -43,7 +43,7 @@ class DoctorSeeder extends Seeder
                 'clinic_address' => 'Gulshan-1, Dhaka',
                 'gender' => 'female',
                 'phone' => '01710000002',
-                'profile_image' => 'assets/img/doctors/doctor-thumb-02.jpg',
+                'profile_image' => 'assets/img/doctors/doctor-thumb-03.jpg',
             ],
             [
                 'name' => 'Dr. Kamal Hossain',
@@ -58,7 +58,7 @@ class DoctorSeeder extends Seeder
                 'clinic_address' => 'Banani, Dhaka',
                 'gender' => 'male',
                 'phone' => '01710000003',
-                'profile_image' => 'assets/img/doctors/doctor-thumb-03.jpg',
+                'profile_image' => 'assets/img/doctors/doctor-thumb-09.jpg',
             ],
             [
                 'name' => 'Dr. Nasreen Begum',
@@ -118,7 +118,7 @@ class DoctorSeeder extends Seeder
                 'clinic_address' => 'Motijheel, Dhaka',
                 'gender' => 'male',
                 'phone' => '01710000007',
-                'profile_image' => 'assets/img/doctors/doctor-thumb-07.jpg',
+                'profile_image' => 'assets/img/doctors/doctor-thumb-08.jpg',
             ],
             [
                 'name' => 'Dr. Salma Khatun',
@@ -133,7 +133,7 @@ class DoctorSeeder extends Seeder
                 'clinic_address' => 'Tongi, Gazipur',
                 'gender' => 'female',
                 'phone' => '01710000008',
-                'profile_image' => 'assets/img/doctors/doctor-thumb-08.jpg',
+                'profile_image' => 'assets/img/doctors/doctor-thumb-07.jpg',
             ],
         ];
 

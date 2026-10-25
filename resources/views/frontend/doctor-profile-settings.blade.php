@@ -46,8 +46,30 @@
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
+                @if(session('info'))
+                    <div class="alert alert-info">{{ session('info') }}</div>
+                @endif
+
                 @if(session('warning'))
                     <div class="alert alert-warning">{{ session('warning') }}</div>
+                @endif
+
+                @if($doctor->status === 'pending')
+                    <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <div>
+                            @if($doctor->isProfileComplete())
+                                Your profile is complete and currently <strong>pending admin approval</strong>.
+                            @else
+                                Your account status is <strong>pending</strong>. Please fill in all required (<span class="text-danger">*</span>) fields below to submit for admin approval.
+                            @endif
+                        </div>
+                    </div>
+                @elseif($doctor->status === 'rejected')
+                    <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <div>Your doctor profile application was <strong>rejected</strong>. Please update your details or contact support.</div>
+                    </div>
                 @endif
 
                 @if($errors->any())

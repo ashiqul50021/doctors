@@ -11,7 +11,7 @@
             <div class="col-md-auto text-center mb-3 mb-md-0 position-relative">
                 <a href="{{ $profileLink }}" class="d-inline-block position-relative">
                     <img src="{{ $image }}" class="img-fluid rounded-circle" alt="{{ $name }}"
-                        style="width: 110px; height: 110px; object-fit: cover; border: 4px solid #f8f9fa; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                        style="width: 110px; height: 110px; object-fit: cover; object-position: top center; border: 4px solid #f8f9fa; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
                     <div class="verified-badge position-absolute"
                         style="bottom: 5px; right: 5px; background: #fff; border-radius: 50%; padding: 2px;">
                         <i class="fas fa-check-circle text-primary"

@@ -17,13 +17,7 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            if (Auth::user()->role === 'doctor') {
-                return $this->redirectDoctorAfterAuth(Auth::user()->doctor);
-            }
-            if (Auth::user()->role === 'seller') {
-                return redirect()->route('ecommerce.seller.dashboard');
-            }
-            return redirect()->route('patient.dashboard');
+            return $this->redirectAuthenticatedUser(Auth::user());
         }
         return view('frontend.login');
     }
@@ -58,10 +52,10 @@ class AuthController extends Controller
                     $user = $patient->user;
                 }
 
-                // Fallback: check Doctor mobile
+                // Fallback: check Doctor phone
                 if (!$user) {
-                    $doctor = Doctor::where('mobile', $cleanPhone)
-                        ->orWhere('mobile', 'like', '%' . $last10)
+                    $doctor = Doctor::where('phone', $cleanPhone)
+                        ->orWhere('phone', 'like', '%' . $last10)
                         ->latest()->first();
                     if ($doctor && $doctor->user) {
                         $user = $doctor->user;
@@ -89,15 +83,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             // Redirect based on role
-            if ($user->role === 'doctor') {
-                return $this->redirectDoctorAfterAuth($user->doctor);
-            }
-
-            if ($user->role === 'seller') {
-                return redirect()->route('ecommerce.seller.dashboard');
-            }
-
-            return redirect()->route('patient.dashboard');
+            return $this->redirectAuthenticatedUser($user);
         }
 
         return back()->withErrors([
@@ -148,10 +134,7 @@ class AuthController extends Controller
     public function showPatientRegisterForm()
     {
         if (Auth::check()) {
-            if (Auth::user()->role === 'doctor') {
-                return $this->redirectDoctorAfterAuth(Auth::user()->doctor);
-            }
-            return redirect()->route('patient.dashboard');
+            return $this->redirectAuthenticatedUser(Auth::user());
         }
         return view('frontend.register');
     }
@@ -176,6 +159,7 @@ class AuthController extends Controller
         // Create Patient Profile
         Patient::create([
             'user_id' => $user->id,
+            'phone' => $request->mobile,
             'address' => '', // Placeholder
             // Add other default fields if necessary
         ]);
@@ -189,12 +173,27 @@ class AuthController extends Controller
     public function showDoctorRegisterForm()
     {
         if (Auth::check()) {
-            if (Auth::user()->role === 'doctor') {
-                return $this->redirectDoctorAfterAuth(Auth::user()->doctor);
-            }
-            return redirect()->route('patient.dashboard');
+            return $this->redirectAuthenticatedUser(Auth::user());
         }
         return view('frontend.doctor-register');
+    }
+
+    private function redirectAuthenticatedUser(User $user): RedirectResponse
+    {
+        if ($user->role === 'doctor') {
+            return $this->redirectDoctorAfterAuth($user->doctor);
+        }
+        if ($user->role === 'seller') {
+            return redirect()->route('ecommerce.seller.dashboard');
+        }
+        if ($user->role === 'agent') {
+            return redirect()->route('agent.dashboard');
+        }
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('patient.dashboard');
     }
 
     // Handle Doctor Registration

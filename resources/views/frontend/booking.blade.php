@@ -240,8 +240,8 @@
                                 <div class="selection-level">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <div class="d-flex align-items-center gap-2">
-                                            <span class="level-badge">1. Year</span>
-                                            <span class="level-title">Select Year</span>
+                                            <span class="level-badge"><i class="far fa-calendar-alt me-1"></i> Year</span>
+                                            <span class="level-title">Select Year (বছর)</span>
                                         </div>
                                         <span class="text-muted small">Current & Next 2 Years</span>
                                     </div>
@@ -262,8 +262,8 @@
                                 <div class="selection-level">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <div class="d-flex align-items-center gap-2">
-                                            <span class="level-badge">2. Month</span>
-                                            <span class="level-title">Select Month</span>
+                                            <span class="level-badge"><i class="far fa-calendar me-1"></i> Month</span>
+                                            <span class="level-title">Select Month (মাস)</span>
                                         </div>
                                         <span id="selectedMonthNameBadge" class="text-primary small fw-semibold"></span>
                                     </div>
@@ -276,8 +276,8 @@
                                 <div class="selection-level">
                                     <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-1">
                                         <div class="d-flex align-items-center gap-2">
-                                            <span class="level-badge">3. Day</span>
-                                            <span class="level-title">Select Day</span>
+                                            <span class="level-badge"><i class="fas fa-calendar-day me-1"></i> Day</span>
+                                            <span class="level-title">Select Day (দিন)</span>
                                         </div>
                                         <span class="text-muted small" id="doctorVisitingDaysNotice">
                                             <i class="fas fa-calendar-day text-primary me-1"></i> Chamber days: <strong>{{ count($scheduledDays) > 0 ? implode(', ', array_map('ucfirst', $scheduledDays)) : 'Check schedule' }}</strong>
@@ -302,8 +302,8 @@
                                 <div class="selection-level mt-3">
                                     <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-1">
                                         <div class="d-flex align-items-center gap-2">
-                                            <span class="level-badge">4. Time</span>
-                                            <span class="level-title">Select Available Time</span>
+                                            <span class="level-badge"><i class="far fa-clock me-1"></i> Time Slot</span>
+                                            <span class="level-title">Select Available Time (সময়)</span>
                                         </div>
                                     </div>
 
@@ -370,7 +370,7 @@
                                     </span>
                                 @else
                                     <span class="user-status-chip guest">
-                                        <i class="fas fa-bolt text-warning me-1"></i> Fast Guest Booking (No Account Needed)
+                                        <i class="fas fa-bolt text-warning me-1"></i> ফাস্ট গেস্ট বুকিং (একাউন্ট ছাড়াই)
                                     </span>
                                 @endauth
                             </div>
@@ -380,7 +380,7 @@
                                     <!-- Full Name -->
                                     <div class="col-md-6">
                                         <label class="custom-form-label" for="patient_name">
-                                            Patient Full Name <span class="text-danger">*</span>
+                                            রোগীর পুরো নাম (Patient Full Name) <span class="text-danger">*</span>
                                         </label>
                                         <div class="custom-input-group">
                                             <span class="input-icon"><i class="far fa-user"></i></span>
@@ -397,7 +397,7 @@
                                     <!-- Phone Number -->
                                     <div class="col-md-6">
                                         <label class="custom-form-label" for="patient_phone">
-                                            Mobile Phone Number <span class="text-danger">*</span>
+                                            মোবাইল ফোন নম্বর (Phone Number) <span class="text-danger">*</span>
                                         </label>
                                         <div class="custom-input-group">
                                             <span class="input-icon"><i class="fas fa-phone-alt"></i></span>
@@ -417,7 +417,7 @@
                                     <!-- Email Address (Optional) -->
                                     <div class="col-md-6">
                                         <label class="custom-form-label" for="patient_email">
-                                            Email Address <span class="text-muted fw-normal">(Optional)</span>
+                                            ইমেইল এড্রেস (Email Address) <span class="text-muted fw-normal">(ঐচ্ছিক)</span>
                                         </label>
                                         <div class="custom-input-group">
                                             <span class="input-icon"><i class="far fa-envelope"></i></span>
@@ -434,7 +434,7 @@
                                     <!-- Reason / Health Concern -->
                                     <div class="col-md-6">
                                         <label class="custom-form-label" for="reason">
-                                            Problem / Health Concern <span class="text-muted fw-normal">(Optional)</span>
+                                            সমস্যার বিবরণ (Health Concern) <span class="text-muted fw-normal">(ঐচ্ছিক)</span>
                                         </label>
                                         <div class="custom-input-group">
                                             <span class="input-icon"><i class="far fa-comment-medical"></i></span>
@@ -452,9 +452,9 @@
                                         <label class="custom-form-label d-flex align-items-center justify-content-between mb-2">
                                             <span>
                                                 <i class="fas fa-file-medical text-primary me-1"></i> 
-                                                আগের প্রেসক্রিপশন বা টেস্ট রিপোর্ট <span class="text-muted fw-normal">(Optional)</span>
+                                                আগের প্রেসক্রিপশন বা টেস্ট রিপোর্ট <span class="text-muted fw-normal">(ঐচ্ছিক)</span>
                                             </span>
-                                            <span class="badge bg-light text-muted border">JPG, PNG, PDF (Max 5MB each)</span>
+                                            <span class="badge bg-light text-muted border">সর্বোচ্চ ৫MB (JPG, PNG, PDF)</span>
                                         </label>
                                         
                                         <div class="report-dropzone">
@@ -478,7 +478,7 @@
                                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                             <span class="small text-muted">
                                                 <i class="fas fa-info-circle text-primary me-1"></i> 
-                                                একাউন্ট তৈরি করা ছাড়াই বুকিং করতে পারবেন। ইতিমধ্যে একাউন্ট আছে? 
+                                                ইতিমধ্যে আমাদের ওয়েবসাইটে একাউন্ট রয়েছে? 
                                                 <a href="{{ route('login') }}" class="text-primary fw-semibold">লগইন করুন</a>
                                             </span>
                                         </div>
@@ -568,6 +568,14 @@
                                     </div>
 
                                     <div id="onlinePaymentOptions" class="payment-instruction-box online-note mt-3 flex-column align-items-stretch" style="{{ $initialType === 'online' ? 'display: block;' : 'display: none;' }}; padding: 16px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                        <!-- Slot Selection Reminder Alert -->
+                                        <div id="paymentSlotReminder" class="alert alert-warning py-2 px-3 small mb-3 d-flex align-items-center" style="border-radius: 6px;">
+                                            <i class="fas fa-exclamation-triangle me-2 text-warning fs-5 flex-shrink-0"></i>
+                                            <div style="font-size: 11px; line-height: 1.4;">
+                                                <strong>আগে টাইম স্লট নির্বাচন করুন:</strong> শিডিউল থেকে সময় নিশ্চিত করার পর এই নম্বরে ফি Send Money করুন।
+                                            </div>
+                                        </div>
+
                                         <div class="d-flex align-items-center mb-2 pb-2 border-bottom">
                                             <i class="fas fa-mobile-alt text-primary fs-5 me-2"></i>
                                             <div>
@@ -666,7 +674,7 @@
                                     <div class="mt-4">
                                         <button type="submit" id="btnConfirmBooking" class="btn btn-booking-action w-100" disabled>
                                             <i class="fas fa-calendar-check me-2"></i>
-                                            <span id="submitBtnText">Select a Time Slot First</span>
+                                            <span id="submitBtnText">প্রথমে একটি টাইম স্লট নির্বাচন করুন</span>
                                         </button>
                                     </div>
 
@@ -674,15 +682,15 @@
                                     <div class="summary-trust-badges mt-4">
                                         <div class="trust-badge-item">
                                             <i class="fas fa-check-circle text-primary"></i>
-                                            <span>100% Verified Specialist Doctor</span>
+                                            <span>১০০% ভেরিফাইড বিশেষজ্ঞ ডাক্তার</span>
                                         </div>
                                         <div class="trust-badge-item">
                                             <i class="fas fa-comment-dots text-primary"></i>
-                                            <span>Instant Serial Token & SMS Alert</span>
+                                            <span>তাৎক্ষণিক সিরিয়াল টোকেন ও এসএমএস এলার্ট</span>
                                         </div>
                                         <div class="trust-badge-item">
                                             <i class="fas fa-shield-alt text-secondary"></i>
-                                            <span>Private & Confidential Medical Data</span>
+                                            <span>নিরাপদ ও গোপনীয় চিকিৎসা তথ্য</span>
                                         </div>
                                     </div>
 
@@ -1208,19 +1216,28 @@
         function validateAndToggleButton() {
             const btn = document.getElementById('btnConfirmBooking');
             const btnText = document.getElementById('submitBtnText');
+            const reminder = document.getElementById('paymentSlotReminder');
 
             if (!selectedDate || !selectedTime) {
                 if (btn) btn.disabled = true;
-                if (btnText) btnText.textContent = 'Select a Time Slot First';
+                if (btnText) btnText.innerHTML = '<i class="far fa-clock me-1"></i> প্রথমে একটি টাইম স্লট নির্বাচন করুন';
+                if (reminder) {
+                    reminder.className = 'alert alert-warning py-2 px-3 small mb-3 d-flex align-items-center';
+                    reminder.innerHTML = '<i class="fas fa-exclamation-triangle me-2 text-warning fs-5 flex-shrink-0"></i><div style="font-size: 11px; line-height: 1.4;"><strong>আগে টাইম স্লট নির্বাচন করুন:</strong> শিডিউল থেকে সময় নিশ্চিত করার পর এই নম্বরে ফি Send Money করুন।</div>';
+                }
                 return;
             }
 
             if (btn) btn.disabled = false;
+            if (reminder) {
+                reminder.className = 'alert alert-success py-2 px-3 small mb-3 d-flex align-items-center';
+                reminder.innerHTML = '<i class="fas fa-check-circle me-2 text-success fs-5 flex-shrink-0"></i><div style="font-size: 11px; line-height: 1.4;"><strong>স্লট নির্বাচিত হয়েছে!</strong> এবার উপরের নম্বরে ফি পাঠিয়ে TrxID ও প্রেরক নম্বর দিন।</div>';
+            }
             if (btnText) {
                 if (currentType === 'online') {
-                    btnText.textContent = `Proceed to Pay & Confirm (৳${parseFloat(onlineFee).toLocaleString()})`;
+                    btnText.innerHTML = `<i class="fas fa-check-circle me-1"></i> বুকিং নিশ্চিত করুন (৳${parseFloat(onlineFee).toLocaleString()})`;
                 } else {
-                    btnText.textContent = 'Confirm Appointment (Pay at Chamber)';
+                    btnText.innerHTML = '<i class="fas fa-calendar-check me-1"></i> বুকিং নিশ্চিত করুন (চেম্বারে ফি প্রদান)';
                 }
             }
         }

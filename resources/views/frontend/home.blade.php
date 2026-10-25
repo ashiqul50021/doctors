@@ -785,9 +785,14 @@
                                             <i class="fas fa-check-circle verified-badge" title="Verified"></i>
                                         </h4>
                                         <div class="doctor-rating">
-                                            <i class="fas fa-star"></i>
-                                            <span>{{ number_format($doctor->average_rating, 1) }}</span>
-                                            <span class="rating-count">({{ $doctor->review_count }} reviews)</span>
+                                            @if($doctor->review_count > 0)
+                                                <i class="fas fa-star"></i>
+                                                <span>{{ number_format($doctor->average_rating, 1) }}</span>
+                                                <span class="rating-count">({{ $doctor->review_count }} reviews)</span>
+                                            @else
+                                                <i class="fas fa-star" style="color: #cbd5e1;"></i>
+                                                <span class="rating-count text-muted">New Doctor</span>
+                                            @endif
                                         </div>
                                         <div class="doctor-location">
                                             <i class="fas fa-map-marker-alt"></i>
@@ -1681,12 +1686,17 @@
                     var favClass = isFav ? 'active' : '';
                     var favIconClass = isFav ? 'fas' : 'far';
 
+                    var doctorName = doctor.name.startsWith('Dr.') ? doctor.name : 'Dr. ' + doctor.name;
+                    var ratingHtml = doctor.review_count > 0 
+                        ? `<i class="fas fa-star"></i> <span>${parseFloat(doctor.average_rating || 0).toFixed(1)}</span> <span class="rating-count">(${doctor.review_count} reviews)</span>`
+                        : `<i class="fas fa-star" style="color: #cbd5e1;"></i> <span class="rating-count text-muted">New Doctor</span>`;
+
                     var html = `
                         <div class="col-lg-4 col-md-6 col-sm-6 mb-4 doctor-grid-item">
                             <div class="doctor-card-new">
                                 <div class="doctor-img-wrapper">
                                     <a href="/doctor-profile/${doctor.id}">
-                                        <img src="${imageSrc}" class="doctor-img" alt="${doctor.name}">
+                                        <img src="${imageSrc}" class="doctor-img" alt="${doctorName}">
                                     </a>
                                     <div class="doctor-fee-badge">
                                         <span>${fee}</span>
@@ -1698,13 +1708,11 @@
                                 <div class="doctor-info">
                                     <span class="doctor-speciality">${doctor.speciality}</span>
                                     <h4 class="doctor-name">
-                                        <a href="/doctor-profile/${doctor.id}">Dr. ${doctor.name}</a>
+                                        <a href="/doctor-profile/${doctor.id}">${doctorName}</a>
                                         <i class="fas fa-check-circle verified-badge" title="Verified"></i>
                                     </h4>
                                     <div class="doctor-rating">
-                                        <i class="fas fa-star"></i>
-                                        <span>${parseFloat(doctor.average_rating || 0).toFixed(1)}</span>
-                                        <span class="rating-count">(${doctor.review_count || 0} reviews)</span>
+                                        ${ratingHtml}
                                     </div>
                                     <div class="doctor-location">
                                         <i class="fas fa-map-marker-alt"></i>
@@ -3534,14 +3542,14 @@
 
         .doctor-card-new {
             background: #fff;
-            border-radius: 0;
+            border-radius: 12px;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             overflow: hidden;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             height: 100%;
             display: flex;
             flex-direction: column;
-            border: 1px solid #f0f0f0;
+            border: 1px solid #eef2f6;
         }
 
         .doctor-card-new:hover {
@@ -3552,16 +3560,17 @@
 
         .doctor-img-wrapper {
             position: relative;
-            height: 135px;
+            height: 195px;
             overflow: hidden;
-            background: linear-gradient(135deg, #e8f4ff 0%, #f0f8ff 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
         }
 
         .doctor-img-wrapper .doctor-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s;
+            object-position: top center;
+            transition: transform 0.3s ease;
         }
 
         .doctor-card-new:hover .doctor-img {
@@ -3570,15 +3579,16 @@
 
         .doctor-fee-badge {
             position: absolute;
-            top: 8px;
-            left: 8px;
-            background: linear-gradient(135deg, #1D4ED8, #60A5FA);
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #1D4ED8, #3B82F6);
             color: #fff;
             padding: 4px 10px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: 700;
             font-size: 11px;
-            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.25);
+            z-index: 2;
         }
 
         .doctor-info {

@@ -20,13 +20,13 @@ class DashboardController extends Controller
     /**
      * Get the authenticated doctor or redirect.
      */
-    private function getDoctor()
+    private function getDoctor(bool $requireApproved = true)
     {
         $doctor = Auth::user()->doctor;
         if (!$doctor) {
             abort(redirect()->route('home')->with('error', 'Doctor profile not found.'));
         }
-        if ($doctor->status !== 'approved') {
+        if ($requireApproved && $doctor->status !== 'approved') {
             Auth::logout();
             request()->session()->invalidate();
             request()->session()->regenerateToken();
@@ -271,7 +271,7 @@ class DashboardController extends Controller
      */
     public function profileSettings()
     {
-        $doctor = $this->getDoctor();
+        $doctor = $this->getDoctor(false);
         $specialities = \App\Models\Speciality::orderBy('name')->get();
         $districts = \App\Models\District::orderBy('name')->get();
         $areas = collect();
@@ -288,7 +288,7 @@ class DashboardController extends Controller
      */
     public function updateProfileSettings(Request $request)
     {
-        $doctor = $this->getDoctor();
+        $doctor = $this->getDoctor(false);
         $user = Auth::user();
 
         $validated = $request->validate([
@@ -441,8 +441,13 @@ class DashboardController extends Controller
         $doctor->refresh();
 
         if ($doctor->isProfileComplete()) {
-            return redirect()->route('doctors.dashboard')
-                ->with('success', 'Profile updated successfully. Your doctor account is now active.');
+            if ($doctor->status === 'approved') {
+                return redirect()->route('doctors.dashboard')
+                    ->with('success', 'Profile updated successfully. Your doctor account is now active.');
+            }
+
+            return redirect()->route('doctors.profile.settings')
+                ->with('info', 'Profile updated successfully! Your profile is complete and pending admin approval.');
         }
 
         return redirect()->route('doctors.profile.settings')
