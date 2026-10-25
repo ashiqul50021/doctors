@@ -71,6 +71,8 @@ class SiteSettingController extends Controller
             'manual_rocket_number' => 'nullable|string|max:50',
             'manual_rocket_type' => 'nullable|string|max:50',
             'manual_payment_instruction' => 'nullable|string',
+            'terms_conditions' => 'nullable|string',
+            'privacy_policy' => 'nullable|string',
         ]);
 
         // Text settings
@@ -95,7 +97,9 @@ class SiteSettingController extends Controller
             'manual_nagad_type',
             'manual_rocket_number',
             'manual_rocket_type',
-            'manual_payment_instruction'
+            'manual_payment_instruction',
+            'terms_conditions',
+            'privacy_policy',
         ];
 
         // Handle checkboxes explicitly

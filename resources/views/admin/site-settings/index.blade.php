@@ -333,6 +333,35 @@
             </div>
         </div>
 
+        <!-- Legal & Policy Pages -->
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title"><i class="fas fa-file-contract me-2"></i>Legal & Policy Pages (Terms & Privacy)</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('admin.site-settings.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Terms & Conditions Content (HTML / Text)</label>
+                            <textarea class="form-control" name="terms_conditions" rows="8" placeholder="Enter terms and conditions content...">{{ $generalSettings['terms_conditions'] ?? ($settings['terms_conditions'] ?? '') }}</textarea>
+                            <small class="text-muted">You can write plain text or HTML. If left empty, default medical terms will be displayed.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Privacy Policy Content (HTML / Text)</label>
+                            <textarea class="form-control" name="privacy_policy" rows="8" placeholder="Enter privacy policy content...">{{ $generalSettings['privacy_policy'] ?? ($settings['privacy_policy'] ?? '') }}</textarea>
+                            <small class="text-muted">You can write plain text or HTML. If left empty, default privacy policy will be displayed.</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Legal Pages</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
 
     </div>
 @endsection
