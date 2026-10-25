@@ -5,9 +5,38 @@
 @section('content')
 @php
     $fullName = trim($doctor->user->name ?? '');
-    $nameParts = preg_split('/\s+/', $fullName, 2);
+    // Remove "Dr." or "Dr" prefix cleanly for first name parsing
+    $cleanName = preg_replace('/^Dr\.?\s+/i', '', $fullName);
+    $nameParts = preg_split('/\s+/', $cleanName, 2);
     $firstName = old('first_name', $nameParts[0] ?? '');
     $lastName = old('last_name', $nameParts[1] ?? '');
+
+    $requiredFieldsList = [
+        'phone' => 'Phone Number',
+        'gender' => 'Gender',
+        'date_of_birth' => 'Date of Birth',
+        'speciality_id' => 'Speciality',
+        'qualification' => 'Qualification',
+        'registration_number' => 'BMDC Registration No',
+        'registration_date' => 'Registration Date',
+        'bio' => 'Biography',
+        'clinic_name' => 'Clinic Name',
+        'clinic_address' => 'Clinic Address',
+        'district_id' => 'District',
+        'area_id' => 'Area / Police Station',
+    ];
+
+    $completedCount = 0;
+    $missingFields = [];
+    foreach ($requiredFieldsList as $field => $label) {
+        if (!blank($doctor->{$field})) {
+            $completedCount++;
+        } else {
+            $missingFields[] = $label;
+        }
+    }
+    $totalCount = count($requiredFieldsList);
+    $completionPercent = round(($completedCount / $totalCount) * 100);
 
     $services = old('services', implode(', ', json_decode($doctor->services ?? '[]', true) ?: []));
     $languages = old('languages', implode(', ', json_decode($doctor->languages ?? '[]', true) ?: []));
@@ -55,13 +84,43 @@
                 @endif
 
                 @if($doctor->status === 'pending')
-                    <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <div>
-                            @if($doctor->isProfileComplete())
-                                Your profile is complete and currently <strong>pending admin approval</strong>.
-                            @else
-                                Your account status is <strong>pending</strong>. Please fill in all required (<span class="text-danger">*</span>) fields below to submit for admin approval.
+                    <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border-left: 4px solid #0284c7 !important;">
+                        <div class="card-body p-3 p-md-4">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-user-clock text-primary fs-4 me-2"></i>
+                                    <div>
+                                        <h5 class="mb-0 fw-bold text-dark">
+                                            Account Status: <span class="badge bg-warning text-dark px-2 py-1">Pending Approval</span>
+                                        </h5>
+                                        <small class="text-muted">
+                                            @if($doctor->isProfileComplete())
+                                                Your profile details are complete. Waiting for admin review & approval.
+                                            @else
+                                                Please complete all required (<span class="text-danger">*</span>) fields to activate your doctor profile.
+                                            @endif
+                                        </small>
+                                    </div>
+                                </div>
+                                <span class="badge {{ $completionPercent == 100 ? 'bg-success' : 'bg-primary' }} fs-6 px-3 py-2">
+                                    {{ $completionPercent }}% Completed
+                                </span>
+                            </div>
+
+                            <div class="progress my-2" style="height: 8px; border-radius: 4px; background-color: #cbd5e1;">
+                                <div class="progress-bar {{ $completionPercent == 100 ? 'bg-success' : 'bg-primary' }}" 
+                                     role="progressbar" 
+                                     style="width: {{ $completionPercent }}%;" 
+                                     aria-valuenow="{{ $completionPercent }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100"></div>
+                            </div>
+
+                            @if(!empty($missingFields))
+                                <div class="mt-2 text-muted small">
+                                    <strong class="text-dark"><i class="fas fa-exclamation-circle text-danger me-1"></i>Required fields remaining:</strong> 
+                                    <span>{{ implode(', ', array_slice($missingFields, 0, 5)) }}{{ count($missingFields) > 5 ? ' and ' . (count($missingFields) - 5) . ' more...' : '' }}</span>
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -99,11 +158,11 @@
                                                 <img id="profile-preview" src="{{ $profileImage }}" alt="User Image">
                                             </div>
                                             <div class="upload-img">
-                                                <div class="change-photo-btn">
+                                                <div class="change-photo-btn" onclick="document.getElementById('profile_image_input').click();">
                                                     <span><i class="fa fa-upload"></i> Upload Photo</span>
-                                                    <input type="file" class="upload" id="profile_image_input" name="profile_image" accept="image/*">
+                                                    <input type="file" class="upload d-none" id="profile_image_input" name="profile_image" accept="image/*">
                                                 </div>
-                                                <small class="form-text text-muted">Allowed JPG, PNG, GIF or WebP. Auto compressed.</small>
+                                                <small class="form-text text-muted d-block mt-2">Allowed JPG, PNG, GIF or WebP. Auto compressed.</small>
                                             </div>
                                         </div>
                                     </div>

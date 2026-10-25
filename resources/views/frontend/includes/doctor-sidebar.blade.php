@@ -124,55 +124,114 @@
             <div class="profile-det-info">
                 <h3>{{ $doctor->user->name ?? 'Doctor' }}</h3>
                 <div class="patient-details">
-                    <h5 class="mb-0">{{ $doctor->qualification ?? 'MBBS, MD' }} - {{ $doctor->speciality->name ?? 'General' }}</h5>
+                    <h5 class="mb-1">{{ $doctor->qualification ?? 'MBBS, MD' }} - {{ $doctor->speciality->name ?? 'General' }}</h5>
+                    @if($doctor->status === 'pending')
+                        <span class="badge bg-warning text-dark px-2 py-1"><i class="fas fa-clock me-1"></i>Pending Approval</span>
+                    @elseif($doctor->status === 'approved')
+                        <span class="badge bg-success text-white px-2 py-1"><i class="fas fa-check-circle me-1"></i>Verified Doctor</span>
+                    @elseif($doctor->status === 'rejected')
+                        <span class="badge bg-danger text-white px-2 py-1"><i class="fas fa-times-circle me-1"></i>Rejected</span>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
     <div class="dashboard-widget">
+        @php
+            $isDoctorPending = ($doctor->status !== 'approved');
+        @endphp
         <nav class="dashboard-menu">
             <ul>
                 <li class="{{ request()->routeIs('doctors.dashboard') ? 'active' : '' }}">
-                    <a href="{{ route('doctors.dashboard') }}">
-                        <i class="fas fa-columns"></i>
-                        <span>Dashboard</span>
-                    </a>
+                    @if($isDoctorPending)
+                        <a href="javascript:void(0);" class="text-muted" title="Locked until account is approved" style="cursor: not-allowed; opacity: 0.6;">
+                            <i class="fas fa-lock"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    @else
+                        <a href="{{ route('doctors.dashboard') }}">
+                            <i class="fas fa-columns"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    @endif
                 </li>
                 <li class="{{ request()->routeIs('doctors.appointments') ? 'active' : '' }}">
-                    <a href="{{ route('doctors.appointments') }}">
-                        <i class="fas fa-calendar-check"></i>
-                        <span>Appointments</span>
-                    </a>
+                    @if($isDoctorPending)
+                        <a href="javascript:void(0);" class="text-muted" title="Locked until account is approved" style="cursor: not-allowed; opacity: 0.6;">
+                            <i class="fas fa-lock"></i>
+                            <span>Appointments</span>
+                        </a>
+                    @else
+                        <a href="{{ route('doctors.appointments') }}">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Appointments</span>
+                        </a>
+                    @endif
                 </li>
                 <li class="{{ request()->routeIs('doctors.my.patients') ? 'active' : '' }}">
-                    <a href="{{ route('doctors.my.patients') }}">
-                        <i class="fas fa-user-injured"></i>
-                        <span>My Patients</span>
-                    </a>
+                    @if($isDoctorPending)
+                        <a href="javascript:void(0);" class="text-muted" title="Locked until account is approved" style="cursor: not-allowed; opacity: 0.6;">
+                            <i class="fas fa-lock"></i>
+                            <span>My Patients</span>
+                        </a>
+                    @else
+                        <a href="{{ route('doctors.my.patients') }}">
+                            <i class="fas fa-user-injured"></i>
+                            <span>My Patients</span>
+                        </a>
+                    @endif
                 </li>
                 <li class="{{ request()->routeIs('doctors.schedule.timings') ? 'active' : '' }}">
-                    <a href="{{ route('doctors.schedule.timings') }}">
-                        <i class="fas fa-hourglass-start"></i>
-                        <span>Schedule Timings</span>
-                    </a>
+                    @if($isDoctorPending)
+                        <a href="javascript:void(0);" class="text-muted" title="Locked until account is approved" style="cursor: not-allowed; opacity: 0.6;">
+                            <i class="fas fa-lock"></i>
+                            <span>Schedule Timings</span>
+                        </a>
+                    @else
+                        <a href="{{ route('doctors.schedule.timings') }}">
+                            <i class="fas fa-hourglass-start"></i>
+                            <span>Schedule Timings</span>
+                        </a>
+                    @endif
                 </li>
                 <li class="{{ request()->routeIs('doctors.invoices') ? 'active' : '' }}">
-                    <a href="{{ route('doctors.invoices') }}">
-                        <i class="fas fa-file-invoice"></i>
-                        <span>Invoices</span>
-                    </a>
+                    @if($isDoctorPending)
+                        <a href="javascript:void(0);" class="text-muted" title="Locked until account is approved" style="cursor: not-allowed; opacity: 0.6;">
+                            <i class="fas fa-lock"></i>
+                            <span>Invoices</span>
+                        </a>
+                    @else
+                        <a href="{{ route('doctors.invoices') }}">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Invoices</span>
+                        </a>
+                    @endif
                 </li>
                 <li class="{{ request()->routeIs('doctors.reviews') ? 'active' : '' }}">
-                    <a href="{{ route('doctors.reviews') }}">
-                        <i class="fas fa-star"></i>
-                        <span>Reviews</span>
-                    </a>
+                    @if($isDoctorPending)
+                        <a href="javascript:void(0);" class="text-muted" title="Locked until account is approved" style="cursor: not-allowed; opacity: 0.6;">
+                            <i class="fas fa-lock"></i>
+                            <span>Reviews</span>
+                        </a>
+                    @else
+                        <a href="{{ route('doctors.reviews') }}">
+                            <i class="fas fa-star"></i>
+                            <span>Reviews</span>
+                        </a>
+                    @endif
                 </li>
                 <li class="{{ request()->routeIs('chat.doctor') ? 'active' : '' }}">
-                    <a href="{{ route('chat.doctor') }}">
-                        <i class="fas fa-comments"></i>
-                        <span>Message</span>
-                    </a>
+                    @if($isDoctorPending)
+                        <a href="javascript:void(0);" class="text-muted" title="Locked until account is approved" style="cursor: not-allowed; opacity: 0.6;">
+                            <i class="fas fa-lock"></i>
+                            <span>Message</span>
+                        </a>
+                    @else
+                        <a href="{{ route('chat.doctor') }}">
+                            <i class="fas fa-comments"></i>
+                            <span>Message</span>
+                        </a>
+                    @endif
                 </li>
                 <li class="{{ request()->routeIs('doctors.profile.settings') ? 'active' : '' }}">
                     <a href="{{ route('doctors.profile.settings') }}">
