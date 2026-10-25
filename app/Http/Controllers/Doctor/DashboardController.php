@@ -291,6 +291,18 @@ class DashboardController extends Controller
         $doctor = $this->getDoctor(false);
         $user = Auth::user();
 
+        // Normalize phone number to standard format (e.g. 017XXXXXXXX)
+        if ($request->filled('phone')) {
+            $cleanPhone = preg_replace('/[^0-9]/', '', (string)$request->phone);
+            if (str_starts_with($cleanPhone, '880')) {
+                $cleanPhone = substr($cleanPhone, 3);
+            }
+            if (!str_starts_with($cleanPhone, '0') && strlen($cleanPhone) === 10) {
+                $cleanPhone = '0' . $cleanPhone;
+            }
+            $request->merge(['phone' => $cleanPhone]);
+        }
+
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['nullable', 'string', 'max:100'],

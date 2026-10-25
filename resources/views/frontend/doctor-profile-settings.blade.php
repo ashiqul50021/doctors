@@ -197,7 +197,13 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label>Phone Number <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" name="phone" value="{{ old('phone', $doctor->phone) }}" required>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light text-muted fw-semibold border-end-0" style="border-radius: 6px 0 0 6px; border-color: #d1d5db;">+880</span>
+                                            <input type="tel" class="form-control border-start-0" name="phone" required
+                                                value="{{ old('phone', preg_replace('/^(880|0)/', '', $doctor->phone)) }}" placeholder="1XXXXXXXXX" maxlength="11"
+                                                style="border-radius: 0 6px 6px 0;"
+                                                oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.startsWith('880')) this.value = this.value.substring(3); if(this.value.startsWith('0')) this.value = this.value.substring(1);">
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -215,39 +221,17 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label>Date of Birth <span class="text-danger">*</span></label>
-                                        <div class="row gx-2">
-                                            <div class="col-4">
-                                                <select id="dob_day" class="form-control">
-                                                    <option value="">Day</option>
-                                                    @for ($d = 1; $d <= 31; $d++)
-                                                        <option value="{{ sprintf('%02d', $d) }}">{{ $d }}</option>
-                                                    @endfor
-                                                </select>
-                                            </div>
-                                            <div class="col-4">
-                                                <select id="dob_month" class="form-control">
-                                                    <option value="">Month</option>
-                                                    @foreach(['01' => 'Jan', '02' => 'Feb', '03' => 'Mar', '04' => 'Apr', '05' => 'May', '06' => 'Jun', '07' => 'Jul', '08' => 'Aug', '09' => 'Sep', '10' => 'Oct', '11' => 'Nov', '12' => 'Dec'] as $val => $mName)
-                                                        <option value="{{ $val }}">{{ $mName }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-4">
-                                                <select id="dob_year" class="form-control">
-                                                    <option value="">Year</option>
-                                                    @for ($y = date('Y'); $y >= date('Y') - 100; $y--)
-                                                        <option value="{{ $y }}">{{ $y }}</option>
-                                                    @endfor
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <input type="hidden" name="date_of_birth" id="date_of_birth" value="{{ old('date_of_birth', $doctor->date_of_birth) }}">
+                                        <input type="date" class="form-control" name="date_of_birth" id="date_of_birth"
+                                            value="{{ old('date_of_birth', $doctor->date_of_birth) }}"
+                                            max="{{ date('Y-m-d', strtotime('-18 years')) }}" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label>Experience (Years)</label>
-                                        <input type="number" min="0" class="form-control" name="experience_years" value="{{ old('experience_years', $doctor->experience_years) }}">
+                                        <input type="number" min="0" max="70" class="form-control" name="experience_years" value="{{ old('experience_years', $doctor->experience_years) }}" placeholder="e.g. 5">
+                                    </div>
+                                </div>
                                     </div>
                                 </div>
                             </div>
@@ -287,7 +271,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label>Registration Date <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control" name="registration_date" value="{{ old('registration_date', $doctor->registration_date) }}" required>
+                                        <input type="date" class="form-control" name="registration_date" value="{{ old('registration_date', $doctor->registration_date) }}" max="{{ date('Y-m-d') }}" required>
                                     </div>
                                 </div>
 
