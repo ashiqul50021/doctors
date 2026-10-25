@@ -144,8 +144,14 @@
 
                     <div class="mb-3">
                         <label class="split-label">Mobile Number</label>
-                        <input type="text" class="form-control split-input" name="mobile" required
-                            value="{{ old('mobile') }}" placeholder="+1 234 567 8900">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted fw-semibold border-end-0" style="border-radius: 8px 0 0 8px; border-color: #d1d5db;">+880</span>
+                            <input type="tel" class="form-control split-input border-start-0" name="mobile" required
+                                value="{{ old('mobile') }}" placeholder="1XXXXXXXXX" maxlength="11" pattern="(01|1)[0-9]{9}"
+                                style="border-radius: 0 8px 8px 0;"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.startsWith('880')) this.value = this.value.substring(3); if(this.value.startsWith('0')) this.value = this.value.substring(1);">
+                        </div>
+                        <small class="text-muted d-block mt-1" style="font-size: 0.8rem;">Enter your 10 or 11-digit mobile number (e.g. 17XXXXXXXX)</small>
                         @error('mobile') <span class="text-danger small d-block mt-1">{{ $message }}</span> @enderror
                     </div>
 

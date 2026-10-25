@@ -199,12 +199,23 @@ class AuthController extends Controller
     // Handle Doctor Registration
     public function registerDoctor(Request $request)
     {
+        $cleanMobile = preg_replace('/[^0-9]/', '', (string)$request->mobile);
+        if (str_starts_with($cleanMobile, '880')) {
+            $cleanMobile = substr($cleanMobile, 3);
+        }
+        if (!str_starts_with($cleanMobile, '0') && strlen($cleanMobile) === 10) {
+            $cleanMobile = '0' . $cleanMobile;
+        }
+        $request->merge(['mobile' => $cleanMobile]);
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'mobile' => ['required', 'string', 'max:15'],
+            'mobile' => ['required', 'string', 'regex:/^(01)[3-9][0-9]{8}$/'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms_accept' => ['accepted'],
+        ], [
+            'mobile.regex' => 'অনুগ্রহ করে সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমন: 017XXXXXXXX)।',
         ]);
 
         $user = User::create([
@@ -218,7 +229,7 @@ class AuthController extends Controller
         $doctor = Doctor::create([
             'user_id' => $user->id,
             'status' => 'pending',
-            'phone' => $request->mobile, // Assuming phone field exists in doctor table from migration
+            'phone' => $cleanMobile,
             // Speciality and Qualification are now nullable
         ]);
 
