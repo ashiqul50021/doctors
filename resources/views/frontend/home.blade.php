@@ -159,13 +159,13 @@
                         </div>
                     </div>
 
-                    <!-- Card 2: Search Doctor by Specialist -->
+                    <!-- Card 2: Search Doctor by Speciality -->
                     <div class="search-card-wrapper p-2 bg-white shadow-sm">
                         <h5 class="search-box-title d-flex align-items-center gap-2 mb-2 font-weight-bold">
                             <span class="icon-circle d-inline-flex align-items-center justify-content-center">
                                 <i class="fas fa-stethoscope"></i>
                             </span> 
-                            <span>Search Doctor by Specialist</span>
+                            <span>Search Doctor by Speciality</span>
                         </h5>
                         <!-- Filter Search Bar (Location & Speciality) -->
                         <div class="hero-search-bar" id="filter-search-form">

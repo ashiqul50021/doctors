@@ -3996,7 +3996,8 @@ body {
 
 .hero-full-image-wrapper {
     width: 100%;
-    height: 330px;
+    min-height: 330px;
+    height: auto;
     border-radius: 0;
     overflow: hidden;
     position: relative;
@@ -4004,9 +4005,10 @@ body {
 
 .hero-full-image-img {
     width: 100%;
-    height: 100%;
+    height: auto;
+    min-height: 330px;
     object-fit: cover;
-    object-position: center;
+    object-position: top center;
     border-radius: 0;
     display: block;
 }

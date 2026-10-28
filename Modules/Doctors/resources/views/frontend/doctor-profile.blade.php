@@ -497,46 +497,50 @@
                     @endforeach
                 @endif
 
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="doctor-section">
-                            <h5>Languages</h5>
-                            @if(count($languages))
-                                <div class="pill-list">@foreach($languages as $item)<span>{{ $item }}</span>@endforeach</div>
-                            @else
-                                <p class="text-muted mb-0">No languages added.</p>
-                            @endif
-                        </div>
+                @php
+                    $hasLeftCol = count($languages) > 0 || count($services) > 0;
+                    $hasRightCol = count($education) > 0 || count($awards) > 0;
+                @endphp
 
-                        <div class="doctor-section">
-                            <h5>Services</h5>
-                            @if(count($services))
-                                <div class="pill-list">@foreach($services as $item)<span>{{ $item }}</span>@endforeach</div>
-                            @else
-                                <p class="text-muted mb-0">No services listed.</p>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="doctor-section">
-                            <h5>Education</h5>
-                            @if(count($education))
-                                <div class="pill-list">@foreach($education as $item)<span>{{ $item }}</span>@endforeach</div>
-                            @else
-                                <p class="text-muted mb-0">No education history listed.</p>
-                            @endif
-                        </div>
+                @if($hasLeftCol || $hasRightCol)
+                    <div class="row">
+                        @if($hasLeftCol)
+                            <div class="{{ $hasRightCol ? 'col-lg-6' : 'col-12' }}">
+                                @if(count($languages))
+                                    <div class="doctor-section">
+                                        <h5>Languages</h5>
+                                        <div class="pill-list">@foreach($languages as $item)<span>{{ $item }}</span>@endforeach</div>
+                                    </div>
+                                @endif
 
-                        <div class="doctor-section">
-                            <h5>Awards</h5>
-                            @if(count($awards))
-                                <div class="pill-list">@foreach($awards as $item)<span>{{ $item }}</span>@endforeach</div>
-                            @else
-                                <p class="text-muted mb-0">No awards listed.</p>
-                            @endif
-                        </div>
+                                @if(count($services))
+                                    <div class="doctor-section">
+                                        <h5>Services</h5>
+                                        <div class="pill-list">@foreach($services as $item)<span>{{ $item }}</span>@endforeach</div>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+
+                        @if($hasRightCol)
+                            <div class="{{ $hasLeftCol ? 'col-lg-6' : 'col-12' }}">
+                                @if(count($education))
+                                    <div class="doctor-section">
+                                        <h5>Education</h5>
+                                        <div class="pill-list">@foreach($education as $item)<span>{{ $item }}</span>@endforeach</div>
+                                    </div>
+                                @endif
+
+                                @if(count($awards))
+                                    <div class="doctor-section">
+                                        <h5>Awards</h5>
+                                        <div class="pill-list">@foreach($awards as $item)<span>{{ $item }}</span>@endforeach</div>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
                     </div>
-                </div>
+                @endif
 
                 <div class="doctor-section">
                     <h5>Business Hours</h5>

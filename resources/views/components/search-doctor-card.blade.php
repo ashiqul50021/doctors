@@ -46,7 +46,7 @@
                     </span>
                     <span class="badge badge-pill"
                         style="background: #f0f2f5; color: #6c757d; padding: 8px 12px; font-weight: 500;">
-                        <i class="fas fa-briefcase" style="margin-right: 4px;"></i> {{ $experience ?? '5+' }} Years Exp
+                        <i class="fas fa-briefcase" style="margin-right: 4px;"></i> {{ !empty($experience) ? $experience : ((int)($experienceYears ?? 0) > 0 ? $experienceYears . '+ Years Exp' : '1+ Years Exp') }}
                     </span>
                     <span class="badge badge-pill text-capitalize"
                         style="background: #f0f2f5; color: #6c757d; padding: 8px 12px; font-weight: 500;">

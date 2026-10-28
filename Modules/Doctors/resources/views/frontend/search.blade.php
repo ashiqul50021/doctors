@@ -277,6 +277,14 @@
                 @endif
 
                 @forelse($doctors as $doctor)
+                    @php
+                        $isDocOnline = optional($doctor->user)->isOnline() ?? false;
+                        $lastSeen = optional($doctor->user)->last_seen;
+                        $lastSeenText = null;
+                        if (!$isDocOnline && $lastSeen) {
+                            $lastSeenText = 'Last seen ' . \Carbon\Carbon::parse($lastSeen)->diffForHumans();
+                        }
+                    @endphp
                     @include('components.search-doctor-card', [
                         'id' => $doctor->id,
                         'isFavourite' => in_array($doctor->id, $favDoctorIds),
@@ -289,6 +297,9 @@
                         'reviews' => $doctor->review_count,
                         'location' => $doctor->clinic_name ?? ($doctor->clinic_city ?? 'Location'),
                         'qualification' => $doctor->qualification ?? '',
+                        'experienceYears' => (int) ($doctor->experience_years ?? 0),
+                        'isOnline' => $isDocOnline,
+                        'lastSeenText' => $lastSeenText,
                         'price' => ((float) ($doctor->consultation_fee ?? 0)) > 0 ? (float) $doctor->consultation_fee : 'Free',
                         'feeLabel' => 'Consultation Fee',
                         'thumbsUp' => $doctor->average_rating > 0 ? round(($doctor->average_rating / 5) * 100) . '%' : '0%',
@@ -301,7 +312,7 @@
                         <div class="sponsored-ad-card">
                             <div class="card-body p-0 position-relative">
                                 <a href="{{ $ad->link ?? '#' }}" target="_blank">
-                                    <img src="{{ asset($ad->image) }}" class="img-fluid" alt="{{ $ad->title }}" style="width: 100%; max-height: 220px; object-fit: cover;">
+                                    <img src="{{ asset($ad->image) }}" class="img-fluid" alt="{{ $ad->title }}" style="width: 100%; max-height: 220px; object-fit: cover;" onerror="this.closest('.sponsored-ad-card').style.display='none'">
                                 </a>
                                 <span class="badge bg-light text-muted position-absolute" style="top: 12px; right: 12px;">Sponsored</span>
                             </div>
