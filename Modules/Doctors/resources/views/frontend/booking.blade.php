@@ -241,7 +241,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="level-badge"><i class="far fa-calendar-alt me-1"></i> Year</span>
-                                            <span class="level-title">Select Year (বছর)</span>
+                                            <span class="level-title">Select Year</span>
                                         </div>
                                         <span class="text-muted small">Current & Next 2 Years</span>
                                     </div>
@@ -263,7 +263,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="level-badge"><i class="far fa-calendar me-1"></i> Month</span>
-                                            <span class="level-title">Select Month (মাস)</span>
+                                            <span class="level-title">Select Month</span>
                                         </div>
                                         <span id="selectedMonthNameBadge" class="text-primary small fw-semibold"></span>
                                     </div>
@@ -277,7 +277,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-1">
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="level-badge"><i class="fas fa-calendar-day me-1"></i> Day</span>
-                                            <span class="level-title">Select Day (দিন)</span>
+                                            <span class="level-title">Select Day</span>
                                         </div>
                                         <span class="text-muted small" id="doctorVisitingDaysNotice">
                                             <i class="fas fa-calendar-day text-primary me-1"></i> Chamber days: <strong>{{ count($scheduledDays) > 0 ? implode(', ', array_map('ucfirst', $scheduledDays)) : 'Check schedule' }}</strong>
@@ -303,7 +303,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-1">
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="level-badge"><i class="far fa-clock me-1"></i> Time Slot</span>
-                                            <span class="level-title">Select Available Time (সময়)</span>
+                                            <span class="level-title">Select Available Time</span>
                                         </div>
                                     </div>
 
@@ -370,7 +370,7 @@
                                     </span>
                                 @else
                                     <span class="user-status-chip guest">
-                                        <i class="fas fa-bolt text-warning me-1"></i> ফাস্ট গেস্ট বুকিং (একাউন্ট ছাড়াই)
+                                        <i class="fas fa-bolt text-warning me-1"></i> Fast Guest Booking (No Account Required)
                                     </span>
                                 @endauth
                             </div>
@@ -380,7 +380,7 @@
                                     <!-- Full Name -->
                                     <div class="col-md-6">
                                         <label class="custom-form-label" for="patient_name">
-                                            রোগীর পুরো নাম (Patient Full Name) <span class="text-danger">*</span>
+                                            Patient Full Name <span class="text-danger">*</span>
                                         </label>
                                         <div class="custom-input-group">
                                             <span class="input-icon"><i class="far fa-user"></i></span>
@@ -388,7 +388,7 @@
                                                    name="patient_name"
                                                    id="patient_name"
                                                    class="form-control custom-input"
-                                                   placeholder="যেমন: মোঃ আবদুর রহমান"
+                                                   placeholder="e.g. John Doe"
                                                    value="{{ old('patient_name', Auth::check() ? Auth::user()->name : '') }}"
                                                    required>
                                         </div>
@@ -397,7 +397,7 @@
                                     <!-- Phone Number -->
                                     <div class="col-md-6">
                                         <label class="custom-form-label" for="patient_phone">
-                                            মোবাইল ফোন নম্বর (Phone Number) <span class="text-danger">*</span>
+                                            Phone Number <span class="text-danger">*</span>
                                         </label>
                                         <div class="custom-input-group">
                                             <span class="input-icon"><i class="fas fa-phone-alt"></i></span>
@@ -410,14 +410,14 @@
                                                    required>
                                         </div>
                                         <div class="form-helper-text">
-                                            <i class="fas fa-shield-alt text-primary me-1"></i> বুকিং নিশ্চিতকরণ এসএমএস এবং টোকেন এই নম্বরে যাবে।
+                                            <i class="fas fa-shield-alt text-primary me-1"></i> Booking confirmation SMS and token will be sent to this number.
                                         </div>
                                     </div>
 
                                     <!-- Email Address (Optional) -->
                                     <div class="col-md-6">
                                         <label class="custom-form-label" for="patient_email">
-                                            ইমেইল এড্রেস (Email Address) <span class="text-muted fw-normal">(ঐচ্ছিক)</span>
+                                            Email Address <span class="text-muted fw-normal">(Optional)</span>
                                         </label>
                                         <div class="custom-input-group">
                                             <span class="input-icon"><i class="far fa-envelope"></i></span>
@@ -428,13 +428,13 @@
                                                    placeholder="patient@example.com"
                                                    value="{{ old('email', Auth::check() ? Auth::user()->email : '') }}">
                                         </div>
-                                        <div class="form-helper-text">ভিডিও কল লিংক এবং ডিজিটাল প্রেসক্রিপশন ইমেইলে যাবে।</div>
+                                        <div class="form-helper-text">Video consultation link and digital prescription will be sent to this email.</div>
                                     </div>
 
                                     <!-- Reason / Health Concern -->
                                     <div class="col-md-6">
                                         <label class="custom-form-label" for="reason">
-                                            সমস্যার বিবরণ (Health Concern) <span class="text-muted fw-normal">(ঐচ্ছিক)</span>
+                                            Health Concern / Reason <span class="text-muted fw-normal">(Optional)</span>
                                         </label>
                                         <div class="custom-input-group">
                                             <span class="input-icon"><i class="far fa-comment-medical"></i></span>
@@ -442,7 +442,7 @@
                                                    name="reason"
                                                    id="reason"
                                                    class="form-control custom-input"
-                                                   placeholder="যেমন: বুক ব্যথা, মাথা ব্যথা, নিয়মিত চেকআপ"
+                                                   placeholder="e.g. Chest pain, Headache, Regular checkup"
                                                    value="{{ old('reason') }}">
                                         </div>
                                     </div>
@@ -452,9 +452,9 @@
                                         <label class="custom-form-label d-flex align-items-center justify-content-between mb-2">
                                             <span>
                                                 <i class="fas fa-file-medical text-primary me-1"></i> 
-                                                আগের প্রেসক্রিপশন বা টেস্ট রিপোর্ট <span class="text-muted fw-normal">(ঐচ্ছিক)</span>
+                                                Previous Prescription or Medical Reports <span class="text-muted fw-normal">(Optional)</span>
                                             </span>
-                                            <span class="badge bg-light text-muted border">সর্বোচ্চ ৫MB (JPG, PNG, PDF)</span>
+                                            <span class="badge bg-light text-muted border">Max 5MB (JPG, PNG, PDF)</span>
                                         </label>
                                         
                                         <div class="report-dropzone">
@@ -464,8 +464,8 @@
                                                     <i class="fas fa-cloud-upload-alt"></i>
                                                 </div>
                                                 <div class="dropzone-text">
-                                                    <strong>ক্লিক করে প্রেসক্রিপশন বা টেস্ট রিপোর্টের ছবি / PDF যুক্ত করুন</strong>
-                                                    <span>ডাক্তার পরামর্শের পূর্বে আপনার পূর্ববর্তী রিপোর্টগুলো সরাসরি দেখতে পাবেন</span>
+                                                    <strong>Click to attach prescription or report images / PDF</strong>
+                                                    <span>Doctor can review your previous reports before consultation</span>
                                                 </div>
                                             </label>
                                             <div id="file_preview_list" class="file-preview-grid mt-3"></div>
@@ -478,8 +478,8 @@
                                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                             <span class="small text-muted">
                                                 <i class="fas fa-info-circle text-primary me-1"></i> 
-                                                ইতিমধ্যে আমাদের ওয়েবসাইটে একাউন্ট রয়েছে? 
-                                                <a href="{{ route('login') }}" class="text-primary fw-semibold">লগইন করুন</a>
+                                                Already have an account? 
+                                                <a href="{{ route('login') }}" class="text-primary fw-semibold">Login</a>
                                             </span>
                                         </div>
                                     </div>
@@ -563,7 +563,7 @@
                                         <div class="instruction-icon"><i class="fas fa-hand-holding-usd"></i></div>
                                         <div class="instruction-text">
                                             <strong>Pay at Chamber</strong>
-                                            <span>ফি চেম্বারে উপস্থিত হয়ে সরাসরি প্রদান করতে পারবেন। কোনো অগ্রিম ফি নেই।</span>
+                                            <span>Pay consultation fee directly at the chamber. No advance fee required.</span>
                                         </div>
                                     </div>
 
@@ -572,21 +572,21 @@
                                         <div id="paymentSlotReminder" class="alert alert-warning py-2 px-3 small mb-3 d-flex align-items-center" style="border-radius: 6px;">
                                             <i class="fas fa-exclamation-triangle me-2 text-warning fs-5 flex-shrink-0"></i>
                                             <div style="font-size: 11px; line-height: 1.4;">
-                                                <strong>আগে টাইম স্লট নির্বাচন করুন:</strong> শিডিউল থেকে সময় নিশ্চিত করার পর এই নম্বরে ফি Send Money করুন।
+                                                <strong>Please select a time slot first:</strong> Confirm appointment time from schedule before sending money to this number.
                                             </div>
                                         </div>
 
                                         <div class="d-flex align-items-center mb-2 pb-2 border-bottom">
                                             <i class="fas fa-mobile-alt text-primary fs-5 me-2"></i>
                                             <div>
-                                                <strong class="d-block text-dark" style="font-size: 14px;">ম্যানুয়াল মোবাইল ব্যাংকিং পেমেন্ট</strong>
-                                                <small class="text-muted" style="font-size: 12px;">অনলাইন ভিডিও কলের ফি বিকাশ/নগদে পাঠিয়ে তথ্য দিন</small>
+                                                <strong class="d-block text-dark" style="font-size: 14px;">Manual Mobile Banking Payment</strong>
+                                                <small class="text-muted" style="font-size: 12px;">Send consultation fee via bKash/Nagad and provide details</small>
                                             </div>
                                         </div>
 
                                         <!-- Select Payment Method Radios -->
                                         <div class="mb-2">
-                                            <label class="form-label small fw-bold text-muted mb-1" style="font-size: 12px;">পেমেন্ট মেথড বেছে নিন:</label>
+                                            <label class="form-label small fw-bold text-muted mb-1" style="font-size: 12px;">Choose Payment Method:</label>
                                             <div class="d-flex gap-2">
                                                 <label class="btn btn-sm btn-outline-danger flex-fill text-center py-2 payment-radio-btn active" id="btnRadioBkash" style="border-radius: 4px; font-weight: 500; font-size: 12px; cursor: pointer;">
                                                     <input type="radio" name="payment_method" value="bkash" class="d-none" checked onchange="switchManualPayment('bkash')">
@@ -609,7 +609,7 @@
                                         <div class="p-2 mb-2 rounded" style="background: #F0FDF4; border: 1px dashed #86EFAC; font-size: 13px;">
                                             <div id="bkashInfoBox">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="text-danger fw-bold"><i class="fas fa-arrow-circle-right me-1"></i> বিকাশ নম্বর:</span>
+                                                    <span class="text-danger fw-bold"><i class="fas fa-arrow-circle-right me-1"></i> bKash Number:</span>
                                                     <span class="badge bg-danger text-white">{{ $siteSettings['manual_bkash_type'] ?? 'Personal (Send Money)' }}</span>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center mt-1">
@@ -622,7 +622,7 @@
 
                                             <div id="nagadInfoBox" style="display: none;">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="text-warning fw-bold"><i class="fas fa-arrow-circle-right me-1"></i> নগদ নম্বর:</span>
+                                                    <span class="text-warning fw-bold"><i class="fas fa-arrow-circle-right me-1"></i> Nagad Number:</span>
                                                     <span class="badge bg-warning text-dark">{{ $siteSettings['manual_nagad_type'] ?? 'Personal (Send Money)' }}</span>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center mt-1">
@@ -636,7 +636,7 @@
                                             @if(!empty($siteSettings['manual_rocket_number']))
                                             <div id="rocketInfoBox" style="display: none;">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="text-primary fw-bold"><i class="fas fa-arrow-circle-right me-1"></i> রকেট নম্বর:</span>
+                                                    <span class="text-primary fw-bold"><i class="fas fa-arrow-circle-right me-1"></i> Rocket Number:</span>
                                                     <span class="badge bg-primary text-white">{{ $siteSettings['manual_rocket_type'] ?? 'Personal (Send Money)' }}</span>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center mt-1">
@@ -649,7 +649,7 @@
                                             @endif
 
                                             <div class="text-muted mt-2 small" style="font-size: 11px; line-height: 1.4;">
-                                                <i class="fas fa-info-circle text-primary me-1"></i> {{ $siteSettings['manual_payment_instruction'] ?? 'উপরের নম্বরে Send Money করে নিচের বক্সে আপনার প্রেরক নম্বর ও TrxID দিন।' }}
+                                                <i class="fas fa-info-circle text-primary me-1"></i> {{ $siteSettings['manual_payment_instruction'] ?? 'Send Money to the above number and enter your Sender Number & TrxID below.' }}
                                             </div>
                                         </div>
 
@@ -657,7 +657,7 @@
                                         <div class="row g-2">
                                             <div class="col-12 col-sm-6">
                                                 <label class="form-label small fw-semibold text-dark mb-1" style="font-size: 12px;">
-                                                    প্রেরক নম্বর (Sender No) <span class="text-danger">*</span>
+                                                    Sender Number <span class="text-danger">*</span>
                                                 </label>
                                                 <input type="text" class="form-control form-control-sm" name="sender_number" id="sender_number" placeholder="01XXXXXXXXX" value="{{ old('sender_number') }}" style="border-radius: 4px;">
                                             </div>
@@ -665,7 +665,7 @@
                                                 <label class="form-label small fw-semibold text-dark mb-1" style="font-size: 12px;">
                                                     Transaction ID (TrxID) <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="text" class="form-control form-control-sm" name="transaction_id" id="transaction_id" placeholder="যেমন: 9J3K8L2P" value="{{ old('transaction_id') }}" style="border-radius: 4px;">
+                                                <input type="text" class="form-control form-control-sm" name="transaction_id" id="transaction_id" placeholder="e.g. 9J3K8L2P" value="{{ old('transaction_id') }}" style="border-radius: 4px;">
                                             </div>
                                         </div>
                                     </div>
@@ -674,7 +674,7 @@
                                     <div class="mt-4">
                                         <button type="submit" id="btnConfirmBooking" class="btn btn-booking-action w-100" disabled>
                                             <i class="fas fa-calendar-check me-2"></i>
-                                            <span id="submitBtnText">প্রথমে একটি টাইম স্লট নির্বাচন করুন</span>
+                                            <span id="submitBtnText">Please Select a Time Slot</span>
                                         </button>
                                     </div>
 
@@ -682,15 +682,15 @@
                                     <div class="summary-trust-badges mt-4">
                                         <div class="trust-badge-item">
                                             <i class="fas fa-check-circle text-primary"></i>
-                                            <span>১০০% ভেরিফাইড বিশেষজ্ঞ ডাক্তার</span>
+                                            <span>100% Verified Specialist Doctor</span>
                                         </div>
                                         <div class="trust-badge-item">
                                             <i class="fas fa-comment-dots text-primary"></i>
-                                            <span>তাৎক্ষণিক সিরিয়াল টোকেন ও এসএমএস এলার্ট</span>
+                                            <span>Instant Serial Token & SMS Alert</span>
                                         </div>
                                         <div class="trust-badge-item">
                                             <i class="fas fa-shield-alt text-secondary"></i>
-                                            <span>নিরাপদ ও গোপনীয় চিকিৎসা তথ্য</span>
+                                            <span>Safe & Confidential Medical Data</span>
                                         </div>
                                     </div>
 
@@ -1220,10 +1220,10 @@
 
             if (!selectedDate || !selectedTime) {
                 if (btn) btn.disabled = true;
-                if (btnText) btnText.innerHTML = '<i class="far fa-clock me-1"></i> প্রথমে একটি টাইম স্লট নির্বাচন করুন';
+                if (btnText) btnText.innerHTML = '<i class="far fa-clock me-1"></i> Please Select a Time Slot';
                 if (reminder) {
                     reminder.className = 'alert alert-warning py-2 px-3 small mb-3 d-flex align-items-center';
-                    reminder.innerHTML = '<i class="fas fa-exclamation-triangle me-2 text-warning fs-5 flex-shrink-0"></i><div style="font-size: 11px; line-height: 1.4;"><strong>আগে টাইম স্লট নির্বাচন করুন:</strong> শিডিউল থেকে সময় নিশ্চিত করার পর এই নম্বরে ফি Send Money করুন।</div>';
+                    reminder.innerHTML = '<i class="fas fa-exclamation-triangle me-2 text-warning fs-5 flex-shrink-0"></i><div style="font-size: 11px; line-height: 1.4;"><strong>Please select a time slot first:</strong> Confirm appointment time from schedule before sending money to this number.</div>';
                 }
                 return;
             }
@@ -1231,13 +1231,13 @@
             if (btn) btn.disabled = false;
             if (reminder) {
                 reminder.className = 'alert alert-success py-2 px-3 small mb-3 d-flex align-items-center';
-                reminder.innerHTML = '<i class="fas fa-check-circle me-2 text-success fs-5 flex-shrink-0"></i><div style="font-size: 11px; line-height: 1.4;"><strong>স্লট নির্বাচিত হয়েছে!</strong> এবার উপরের নম্বরে ফি পাঠিয়ে TrxID ও প্রেরক নম্বর দিন।</div>';
+                reminder.innerHTML = '<i class="fas fa-check-circle me-2 text-success fs-5 flex-shrink-0"></i><div style="font-size: 11px; line-height: 1.4;"><strong>Slot Selected!</strong> Send fee to the number above and enter TrxID & Sender Number.</div>';
             }
             if (btnText) {
                 if (currentType === 'online') {
-                    btnText.innerHTML = `<i class="fas fa-check-circle me-1"></i> বুকিং নিশ্চিত করুন (৳${parseFloat(onlineFee).toLocaleString()})`;
+                    btnText.innerHTML = `<i class="fas fa-check-circle me-1"></i> Confirm Booking (৳${parseFloat(onlineFee).toLocaleString()})`;
                 } else {
-                    btnText.innerHTML = '<i class="fas fa-calendar-check me-1"></i> বুকিং নিশ্চিত করুন (চেম্বারে ফি প্রদান)';
+                    btnText.innerHTML = '<i class="fas fa-calendar-check me-1"></i> Confirm Booking (Pay at Chamber)';
                 }
             }
         }
@@ -1346,7 +1346,7 @@
                 form.addEventListener('submit', function (e) {
                     if (!selectedDate || !selectedTime) {
                         e.preventDefault();
-                        alert('অনুগ্রহ করে একটি অ্যাপয়েন্টমেন্ট তারিখ ও সময় নির্বাচন করুন।');
+                        alert('Please select an appointment date and time slot.');
                         return false;
                     }
 
@@ -1355,7 +1355,7 @@
                         const tId = document.getElementById('transaction_id')?.value.trim();
                         if (!sNum || !tId) {
                             e.preventDefault();
-                            alert('অনলাইন কনসালটেশনের জন্য অনুগ্রহ করে টাকা পাঠানোর প্রেরক নম্বর (Sender No) এবং Transaction ID (TrxID) পূরণ করুন।');
+                            alert('For online consultation, please provide both Sender Number and Transaction ID (TrxID).');
                             return false;
                         }
                     }
