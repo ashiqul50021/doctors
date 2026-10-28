@@ -38,8 +38,8 @@
                             <small style="margin-left: 6px;">({{ $lastSeenText }})</small>
                         @endif
                     </span>
-                    <span class="badge badge-pill"
-                        style="background: #e2f6ff; color: #0de0fe; padding: 8px 12px; font-weight: 500;">
+                    <span class="badge badge-pill text-capitalize"
+                        style="background: #e0f2fe; color: #0284c7; padding: 8px 12px; font-weight: 600;">
                         <img src="{{ $departmentIcon }}" alt=""
                             style="width: 16px; height: 16px; margin-right: 4px; vertical-align: text-bottom;">
                         {{ $department }}
@@ -48,7 +48,7 @@
                         style="background: #f0f2f5; color: #6c757d; padding: 8px 12px; font-weight: 500;">
                         <i class="fas fa-briefcase" style="margin-right: 4px;"></i> {{ $experience ?? '5+' }} Years Exp
                     </span>
-                    <span class="badge badge-pill"
+                    <span class="badge badge-pill text-capitalize"
                         style="background: #f0f2f5; color: #6c757d; padding: 8px 12px; font-weight: 500;">
                         <i class="fas fa-map-marker-alt" style="margin-right: 4px;"></i> {{ $location }}
                     </span>
@@ -56,9 +56,9 @@
             </div>
 
             <!-- Right: Price & Actions -->
-            <div class="col-md-auto text-center text-md-right mt-3 mt-md-0 border-left-md pl-md-4"
+            <div class="col-md-auto text-center text-md-right mt-3 mt-md-0 border-left-md pl-md-4 pr-md-4"
                 style="border-left: 1px solid #f0f0f0;">
-                <div class="price-box mb-2">
+                <div class="price-box mb-2" style="padding-right: 30px;">
                     <div style="font-size: 0.8rem; color: #6b7280; font-weight: 600; margin-bottom: 2px;">
                         {{ $feeLabel ?? 'Consultation Fee' }}
                     </div>
@@ -73,19 +73,25 @@
                 </div>
 
                 <div class="rating mb-3">
-                    @for($i = 1; $i <= 5; $i++)
-                        <i class="fas fa-star"
-                            style="color: {{ $i <= $rating ? '#f4c150' : '#dedfe0' }}; font-size: 12px;"></i>
-                    @endfor
-                    <span class="d-block mt-1"
-                        style="font-size: 0.85rem; font-weight: 600; color: #272b41;">{{ $thumbsUp }} Positive</span>
+                    @if(!empty($rating) && $rating > 0)
+                        @for($i = 1; $i <= 5; $i++)
+                            <i class="fas fa-star"
+                                style="color: {{ $i <= $rating ? '#f4c150' : '#dedfe0' }}; font-size: 12px;"></i>
+                        @endfor
+                        <span class="d-block mt-1"
+                            style="font-size: 0.85rem; font-weight: 600; color: #272b41;">{{ $thumbsUp }} Positive</span>
+                    @else
+                        <span class="badge badge-light text-muted px-2 py-1" style="font-size: 0.75rem; border: 1px solid #e5e7eb;">
+                            No ratings yet
+                        </span>
+                    @endif
                 </div>
 
                 <div class="actions d-flex flex-column gap-2" style="gap: 10px; min-width: 160px;">
                     <a href="{{ $profileLink }}" class="btn btn-outline-primary btn-sm btn-block"
                         style="border-radius: 50px; font-weight: 600; padding: 8px 20px;">View Profile</a>
                     <a href="{{ $bookingLink }}" class="btn btn-primary btn-sm btn-block"
-                        style="border-radius: 50px; font-weight: 600; padding: 8px 20px; box-shadow: 0 4px 10px rgba(13, 224, 254, 0.4); border: none;">Book
+                        style="border-radius: 50px; font-weight: 600; padding: 8px 20px; box-shadow: 0 4px 12px rgba(27, 85, 226, 0.25); border: none;">Book
                         Now</a>
                 </div>
             </div>
