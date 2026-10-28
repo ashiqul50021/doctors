@@ -320,6 +320,8 @@ class DashboardController extends Controller
             'clinic_names.*' => ['nullable', 'string', 'max:120'],
             'clinic_addresses' => ['nullable', 'array', 'max:10'],
             'clinic_addresses.*' => ['nullable', 'string', 'max:180'],
+            'clinic_fees' => ['nullable', 'array', 'max:10'],
+            'clinic_fees.*' => ['nullable', 'numeric', 'min:0'],
             'district_id' => ['nullable', 'exists:districts,id'],
             'area_id' => [
                 'nullable',
@@ -363,9 +365,10 @@ class DashboardController extends Controller
             $validated['profile_image'] = ImageService::upload($request->file('profile_image'), 'doctors', 80, 400);
         }
 
-        [$clinicNames, $clinicAddresses] = $this->toJsonClinicPairs(
+        [$clinicNames, $clinicAddresses, $clinicFees] = $this->toJsonClinicTriplets(
             $validated['clinic_names'] ?? [],
-            $validated['clinic_addresses'] ?? []
+            $validated['clinic_addresses'] ?? [],
+            $validated['clinic_fees'] ?? []
         );
 
         $updateData = [
@@ -381,6 +384,7 @@ class DashboardController extends Controller
             'bio' => $validated['bio'] ?? null,
             'clinic_name' => $clinicNames,
             'clinic_address' => $clinicAddresses,
+            'clinic_fees' => $clinicFees,
             'district_id' => $validated['district_id'] ?? null,
             'area_id' => $validated['area_id'] ?? null,
             'pricing' => ($request->rating_option === 'price_free') ? 'free' : 'custom',
@@ -466,7 +470,7 @@ class DashboardController extends Controller
             ->with('warning', 'Profile saved, but some required fields are still missing.');
     }
 
-    private function toJsonClinicPairs(array $names, array $addresses): array
+    private function toJsonClinicTriplets(array $names, array $addresses, array $fees = []): array
     {
         $names = array_values(array_map(function ($name) {
             return is_string($name) ? trim($name) : '';
@@ -474,14 +478,19 @@ class DashboardController extends Controller
         $addresses = array_values(array_map(function ($address) {
             return is_string($address) ? trim($address) : '';
         }, $addresses));
+        $fees = array_values(array_map(function ($fee) {
+            return (is_numeric($fee) && (float)$fee >= 0) ? (float)$fee : null;
+        }, $fees));
 
-        $count = max(count($names), count($addresses));
+        $count = max(count($names), count($addresses), count($fees));
         $cleanNames = [];
         $cleanAddresses = [];
+        $cleanFees = [];
 
         for ($i = 0; $i < $count; $i++) {
             $name = $names[$i] ?? '';
             $address = $addresses[$i] ?? '';
+            $fee = $fees[$i] ?? null;
 
             if ($name === '' || $address === '') {
                 continue;
@@ -489,11 +498,13 @@ class DashboardController extends Controller
 
             $cleanNames[] = $name;
             $cleanAddresses[] = $address;
+            $cleanFees[] = $fee;
         }
 
         return [
             empty($cleanNames) ? null : json_encode($cleanNames),
             empty($cleanAddresses) ? null : json_encode($cleanAddresses),
+            empty($cleanFees) ? null : json_encode($cleanFees),
         ];
     }
 

@@ -122,6 +122,11 @@ class Doctor extends Model
         return $this->parseStoredList($this->attributes['clinic_address'] ?? null);
     }
 
+    public function getClinicFeesAttribute(): array
+    {
+        return $this->parseStoredList($this->attributes['clinic_fees'] ?? null);
+    }
+
     public function getPrimaryClinicNameAttribute(): ?string
     {
         return $this->clinic_names[0] ?? null;
@@ -132,24 +137,41 @@ class Doctor extends Model
         return $this->clinic_addresses[0] ?? null;
     }
 
+    public function getPrimaryClinicFeeAttribute(): ?float
+    {
+        $fee = $this->clinic_fees[0] ?? null;
+        if (!empty($fee) && is_numeric($fee) && (float)$fee > 0) {
+            return (float)$fee;
+        }
+        return (float)($this->consultation_fee ?? 0);
+    }
+
     public function getClinicLocationsAttribute(): array
     {
         $names = $this->clinic_names;
         $addresses = $this->clinic_addresses;
-        $count = max(count($names), count($addresses));
+        $fees = $this->clinic_fees;
+        $count = max(count($names), count($addresses), count($fees));
         $locations = [];
 
         for ($i = 0; $i < $count; $i++) {
             $name = $names[$i] ?? null;
             $address = $addresses[$i] ?? null;
+            $fee = $fees[$i] ?? null;
 
             if (blank($name) && blank($address)) {
                 continue;
             }
 
+            $effectiveFee = (!empty($fee) && is_numeric($fee) && (float)$fee > 0)
+                ? (float)$fee
+                : (float)($this->consultation_fee ?? 0);
+
             $locations[] = [
                 'name' => $name ?: 'Main Clinic',
                 'address' => $address,
+                'fee' => $effectiveFee,
+                'custom_fee' => (!empty($fee) && is_numeric($fee) && (float)$fee > 0) ? (float)$fee : null,
             ];
         }
 

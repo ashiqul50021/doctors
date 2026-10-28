@@ -204,11 +204,22 @@ class BookingController extends Controller
             }
         }
 
-        // Use correct fee columns from schema
-        $fee = match ($request->type) {
-            'online' => $doctor->online_fee ?? $doctor->consultation_fee ?? 0,
-            default  => $doctor->consultation_fee ?? 0,
-        };
+        $selectedClinicName = null;
+        if ($request->type === 'offline') {
+            $locations = $doctor->clinic_locations;
+            $idx = $request->input('clinic_index', 0);
+            $loc = $locations[$idx] ?? ($locations[0] ?? null);
+            if ($loc) {
+                $selectedClinicName = $loc['name'] ?? null;
+                $fee = (!empty($loc['fee']) && is_numeric($loc['fee']) && (float)$loc['fee'] > 0)
+                    ? (float)$loc['fee']
+                    : (float)($doctor->consultation_fee ?? 0);
+            } else {
+                $fee = (float)($doctor->consultation_fee ?? 0);
+            }
+        } else {
+            $fee = (float)($doctor->online_fee ?? $doctor->consultation_fee ?? 0);
+        }
 
         $bookingDetails = [
             'doctor_id' => $doctor_id,
@@ -216,6 +227,7 @@ class BookingController extends Controller
             'time' => $request->appointment_time,
             'type' => $request->type,
             'fee' => $fee,
+            'clinic_name' => $selectedClinicName,
         ];
 
         // Store booking details in session

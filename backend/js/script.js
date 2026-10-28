@@ -141,8 +141,12 @@ Version      : 1.0
     // Datatable
 
     if ($('.datatable').length > 0 && $.fn.DataTable) {
-        $('.datatable').DataTable({
-            "bFilter": false,
+        $('.datatable').each(function () {
+            if (!$.fn.DataTable.isDataTable(this)) {
+                $(this).DataTable({
+                    "bFilter": false,
+                });
+            }
         });
     }
 	

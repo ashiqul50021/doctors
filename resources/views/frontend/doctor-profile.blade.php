@@ -234,11 +234,19 @@
                                         <p class="doc-speciality mb-2">{{ $doctor->qualifications }}</p>
                                         <div class="clinic-details mb-0">
                                             @forelse($doctor->clinic_locations as $location)
-                                                <h4 class="clinic-name text-primary font-weight-bold mb-2">
-                                                    {{ $location['name'] ?? 'Main Clinic' }}
-                                                </h4>
-                                                <p class="mb-2"><i class="fas fa-map-marker-alt text-danger me-2"></i>
-                                                    {{ $location['address'] ?? 'Address not available' }}</p>
+                                                <div class="clinic-location-item mb-3 pb-2 {{ !$loop->last ? 'border-bottom' : '' }}">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <h4 class="clinic-name text-primary font-weight-bold mb-0">
+                                                            {{ $location['name'] ?? 'Main Clinic' }}
+                                                        </h4>
+                                                        <span class="badge bg-primary-light text-primary px-2 py-1" style="font-size: 13px;">
+                                                            ৳{{ number_format((float) ($location['fee'] ?? $doctor->consultation_fee ?? 0), 0) }}
+                                                        </span>
+                                                    </div>
+                                                    <p class="mb-1 text-muted"><i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                                        {{ $location['address'] ?? 'Address not available' }}
+                                                    </p>
+                                                </div>
                                             @empty
                                                 <h4 class="clinic-name text-primary font-weight-bold mb-2">Main Clinic</h4>
                                                 <p class="mb-2"><i class="fas fa-map-marker-alt text-danger me-2"></i>

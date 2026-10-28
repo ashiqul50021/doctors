@@ -4,9 +4,10 @@
     $rawName = $doctor->user->name ?? 'Doctor';
     $displayName = preg_match('/^dr\.?\s+/i', $rawName) ? $rawName : 'Dr. ' . $rawName;
     $initialType = old('type', 'offline');
+    $initialChamberFee = $doctor->clinic_locations[0]['fee'] ?? $doctor->consultation_fee ?? 0;
     $initialFee = $initialType === 'online' 
         ? ($doctor->online_fee ?? $doctor->consultation_fee ?? 0) 
-        : ($doctor->consultation_fee ?? 0);
+        : $initialChamberFee;
     $selectedOldDate = old('appointment_date', '');
     $selectedOldTime = old('appointment_time', '');
 @endphp
@@ -121,7 +122,7 @@
                         <div class="doctor-hero-fees">
                             <div class="fee-capsule fee-chamber">
                                 <span class="fee-label"><i class="fas fa-building me-1"></i> Chamber Fee</span>
-                                <span class="fee-amount">৳{{ number_format((float) ($doctor->consultation_fee ?? 0), 0) }}</span>
+                                <span class="fee-amount">৳{{ number_format((float) $initialChamberFee, 0) }}</span>
                             </div>
                             @if(($doctor->online_fee ?? 0) > 0)
                                 <div class="fee-capsule fee-online">
@@ -173,7 +174,7 @@
                                             <div class="mode-text-box">
                                                 <div class="d-flex align-items-center justify-content-between mb-1">
                                                     <span class="mode-title">In-Clinic Chamber Visit</span>
-                                                    <span class="mode-price">৳{{ number_format((float) ($doctor->consultation_fee ?? 0), 0) }}</span>
+                                                    <span class="mode-price" id="chamber-mode-price">৳{{ number_format((float) $initialChamberFee, 0) }}</span>
                                                 </div>
                                                 <p class="mode-desc mb-0">
                                                     {{ $doctor->clinic_name ?: 'Doctor Chamber' }} • Pay fee at clinic • Serial token issued
@@ -213,6 +214,35 @@
                                         </label>
                                     @endif
                                 </div>
+
+                                @if(count($doctor->clinic_locations) > 1)
+                                    <div class="chamber-selector-box mt-3 p-3 border rounded-3 bg-light" id="chamberSelectorWrapper" style="{{ $initialType === 'offline' ? '' : 'display: none;' }}">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <span class="fw-bold text-dark fs-6"><i class="fas fa-hospital-alt text-primary me-2"></i>Select Consultation Chamber</span>
+                                            <span class="text-muted small">Choose your preferred clinic</span>
+                                        </div>
+                                        <div class="row g-2">
+                                            @foreach($doctor->clinic_locations as $cIdx => $loc)
+                                                <div class="col-md-6">
+                                                    <label class="chamber-card-label border rounded-3 p-3 d-flex justify-content-between align-items-center w-100 mb-0 bg-white shadow-sm" style="cursor: pointer; transition: all 0.2s;">
+                                                        <div class="d-flex align-items-center">
+                                                            <input type="radio" name="clinic_index" value="{{ $cIdx }}" class="me-2 chamber-radio" {{ (string) old('clinic_index', 0) === (string) $cIdx ? 'checked' : '' }} data-fee="{{ $loc['fee'] }}" data-clinic-name="{{ $loc['name'] }}" data-clinic-address="{{ $loc['address'] }}">
+                                                            <div>
+                                                                <strong class="d-block text-dark">{{ $loc['name'] }}</strong>
+                                                                <small class="text-muted d-block"><i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $loc['address'] }}</small>
+                                                            </div>
+                                                        </div>
+                                                        <span class="badge bg-primary text-white ms-2 px-2.5 py-1.5" style="font-size: 13px;">
+                                                            ৳{{ number_format((float) $loc['fee'], 0) }}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @elseif(count($doctor->clinic_locations) === 1)
+                                    <input type="hidden" name="clinic_index" value="0" class="chamber-radio" data-fee="{{ $doctor->clinic_locations[0]['fee'] }}" data-clinic-name="{{ $doctor->clinic_locations[0]['name'] }}" data-clinic-address="{{ $doctor->clinic_locations[0]['address'] }}">
+                                @endif
                             </div>
                         </div>
 
@@ -1254,6 +1284,23 @@
             const summaryLocation = document.getElementById('summaryLocation');
             const paymentModeNote = document.getElementById('paymentModeNote');
             const onlinePaymentOptions = document.getElementById('onlinePaymentOptions');
+            const chamberSelectorWrapper = document.getElementById('chamberSelectorWrapper');
+
+            function getSelectedChamberFee() {
+                const checked = document.querySelector('input[name="clinic_index"]:checked') || document.querySelector('input[name="clinic_index"][type="hidden"]');
+                if (checked && checked.dataset.fee) {
+                    return parseFloat(checked.dataset.fee) || 0;
+                }
+                return parseFloat(offlineFee) || 0;
+            }
+
+            function getSelectedChamberName() {
+                const checked = document.querySelector('input[name="clinic_index"]:checked') || document.querySelector('input[name="clinic_index"][type="hidden"]');
+                if (checked && checked.dataset.clinicName) {
+                    return checked.dataset.clinicName;
+                }
+                return clinicName;
+            }
 
             function applyConsultationType(isOnline) {
                 currentType = isOnline ? 'online' : 'offline';
@@ -1261,6 +1308,7 @@
                 // Toggle card active states
                 if (labelOffline) labelOffline.classList.toggle('is-active', !isOnline);
                 if (labelOnline) labelOnline.classList.toggle('is-active', isOnline);
+                if (chamberSelectorWrapper) chamberSelectorWrapper.style.display = isOnline ? 'none' : 'block';
 
                 // Update summary values
                 if (isOnline) {
@@ -1278,13 +1326,17 @@
                     if (sNum) sNum.setAttribute('required', 'required');
                     if (tId) tId.setAttribute('required', 'required');
                 } else {
+                    const curOfflineFee = getSelectedChamberFee();
+                    const curChamberName = getSelectedChamberName();
                     if (summaryApptType) {
                         summaryApptType.textContent = 'In-Clinic Visit';
                         summaryApptType.className = 'row-value badge bg-primary text-white px-2 py-1';
                     }
-                    if (summaryLocation) summaryLocation.textContent = clinicName;
-                    if (summaryFee) summaryFee.textContent = '৳' + parseFloat(offlineFee).toLocaleString();
-                    if (summaryTotal) summaryTotal.textContent = '৳' + parseFloat(offlineFee).toLocaleString();
+                    if (summaryLocation) summaryLocation.textContent = curChamberName;
+                    if (summaryFee) summaryFee.textContent = '৳' + curOfflineFee.toLocaleString();
+                    if (summaryTotal) summaryTotal.textContent = '৳' + curOfflineFee.toLocaleString();
+                    const chamberPriceSpan = document.getElementById('chamber-mode-price');
+                    if (chamberPriceSpan) chamberPriceSpan.textContent = '৳' + curOfflineFee.toLocaleString();
                     if (paymentModeNote) paymentModeNote.style.display = 'flex';
                     if (onlinePaymentOptions) onlinePaymentOptions.style.display = 'none';
                     const sNum = document.getElementById('sender_number');
@@ -1323,6 +1375,20 @@
             if (typeOnline) {
                 typeOnline.addEventListener('change', () => applyConsultationType(true));
             }
+
+            document.querySelectorAll('input[name="clinic_index"]').forEach(el => {
+                el.addEventListener('change', function () {
+                    if (currentType === 'offline') {
+                        const fee = getSelectedChamberFee();
+                        const name = getSelectedChamberName();
+                        if (summaryLocation) summaryLocation.textContent = name;
+                        if (summaryFee) summaryFee.textContent = '৳' + fee.toLocaleString();
+                        if (summaryTotal) summaryTotal.textContent = '৳' + fee.toLocaleString();
+                        const chamberPriceSpan = document.getElementById('chamber-mode-price');
+                        if (chamberPriceSpan) chamberPriceSpan.textContent = '৳' + fee.toLocaleString();
+                    }
+                });
+            });
 
             // Scroller navigation buttons
             const dayScroller = document.getElementById('dayStripScroller');

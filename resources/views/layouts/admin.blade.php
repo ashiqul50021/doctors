@@ -107,8 +107,12 @@
     <script>
         document.addEventListener('livewire:navigated', () => {
             if (window.jQuery && $.fn.DataTable) {
-                $('.datatable:not(.dataTable)').DataTable({
-                    bFilter: false,
+                $('.datatable').each(function () {
+                    if (!$.fn.DataTable.isDataTable(this)) {
+                        $(this).DataTable({
+                            bFilter: false,
+                        });
+                    }
                 });
             }
         });
