@@ -107,6 +107,23 @@
                         </div>
                         <!-- Other static slides can be removed or kept as backups -->
                     @endif
+
+                    <!-- Video Slide -->
+                    <div class="hero-slide-item hero-slide-item-video">
+                        <div class="hero-video-slide-wrapper">
+                            <div class="video-container" id="telemedicineVideoContainer" style="border-radius: 0 !important;">
+                                <div class="video-cover-wrapper" style="background-image: url('{{ asset('uploads/settings/video_cover.png') }}'); border-radius: 0 !important;" onclick="playTelemedicineVideo()">
+                                    <div class="video-cover-overlay"></div>
+                                    <div class="video-play-btn-modern">
+                                        <i class="fas fa-play"></i>
+                                        <div class="video-ripple-modern"></div>
+                                        <div class="video-ripple-modern video-ripple-modern-2"></div>
+                                        <div class="video-ripple-modern video-ripple-modern-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Search Section -->
@@ -474,30 +491,7 @@
     @endif
 
 
-    <!-- Video Section -->
-    <section class="section-video py-4" style="background: transparent !important; margin: 0 !important;">
-        <div class="container">
-            <div class="row justify-content-center">
-                <!-- Video Container (Full Width) -->
-                <div class="col-12 col-lg-10">
-                    <div class="video-wrapper overflow-hidden border" style="border-radius: 0 !important;">
-                        <div class="video-container" id="telemedicineVideoContainer" style="border-radius: 0 !important;">
-                            <div class="video-cover-wrapper" style="background-image: url('{{ asset('uploads/settings/video_cover.png') }}'); border-radius: 0 !important;" onclick="playTelemedicineVideo()">
-                                <div class="video-cover-overlay"></div>
-                                <div class="video-play-btn-modern">
-                                    <i class="fas fa-play"></i>
-                                    <div class="video-ripple-modern"></div>
-                                    <div class="video-ripple-modern video-ripple-modern-2"></div>
-                                    <div class="video-ripple-modern video-ripple-modern-3"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- /Video Section -->
+
 
     <!-- Clinic and Specialities -->
     {{-- <section class="section section-specialities">
@@ -1280,6 +1274,12 @@
                             arrows: false
                         }
                     }]
+                });
+
+                $slider.off('beforeChange.videoReset').on('beforeChange.videoReset', function (event, slick, currentSlide, nextSlide) {
+                    if (currentSlide !== nextSlide && typeof resetTelemedicineVideo === 'function') {
+                        resetTelemedicineVideo();
+                    }
                 });
 
                 setTimeout(function () {
@@ -3933,6 +3933,48 @@
             display: block;
         }
 
+        /* Responsive video slide banner style */
+        .hero-video-slide-wrapper {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            border-radius: 0;
+            background: #000;
+        }
+
+        .hero-video-slide-wrapper .video-container {
+            width: 100%;
+            position: relative;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            padding-bottom: 0;
+            overflow: hidden;
+            border-radius: 0;
+        }
+
+        @supports not (aspect-ratio: 16 / 9) {
+            .hero-video-slide-wrapper .video-container {
+                height: 0;
+                padding-bottom: 56.25%;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .video-play-btn-modern {
+                width: 60px;
+                height: 60px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .video-play-btn-modern {
+                width: 48px;
+                height: 48px;
+                font-size: 16px;
+            }
+        }
+
         /* Mobile Dropdown Popup Style */
         @media (max-width: 991px) {
             .section-hero-doctime {
@@ -4323,13 +4365,44 @@
 
         function playTelemedicineVideo() {
             const container = document.getElementById('telemedicineVideoContainer');
-            container.innerHTML = `
-                <iframe src="https://www.youtube.com/embed/zNHq9gD2uqc?autoplay=1&rel=0" title="Platform Introduction Video"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-                </iframe>
-            `;
+            if (container) {
+                container.innerHTML = `
+                    <iframe src="https://www.youtube.com/embed/zNHq9gD2uqc?autoplay=1&rel=0" title="Platform Introduction Video"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                `;
+            }
+            if (typeof $ !== 'undefined' && typeof $.fn.slick !== 'undefined') {
+                var $slider = $('.hero-slider');
+                if ($slider.length && $slider.hasClass('slick-initialized')) {
+                    $slider.slick('slickPause');
+                }
+            }
+        }
+
+        function resetTelemedicineVideo() {
+            const container = document.getElementById('telemedicineVideoContainer');
+            if (container && container.querySelector('iframe')) {
+                container.innerHTML = `
+                    <div class="video-cover-wrapper" style="background-image: url('{{ asset('uploads/settings/video_cover.png') }}'); border-radius: 0 !important;" onclick="playTelemedicineVideo()">
+                        <div class="video-cover-overlay"></div>
+                        <div class="video-play-btn-modern">
+                            <i class="fas fa-play"></i>
+                            <div class="video-ripple-modern"></div>
+                            <div class="video-ripple-modern video-ripple-modern-2"></div>
+                            <div class="video-ripple-modern video-ripple-modern-3"></div>
+                        </div>
+                    </div>
+                `;
+                if (typeof $ !== 'undefined' && typeof $.fn.slick !== 'undefined') {
+                    var $slider = $('.hero-slider');
+                    if ($slider.length && $slider.hasClass('slick-initialized')) {
+                        $slider.slick('slickPlay');
+                    }
+                }
+            }
         }
     </script>
 @endpush

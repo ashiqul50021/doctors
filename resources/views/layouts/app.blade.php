@@ -342,6 +342,11 @@
                             }
                         }]
                     });
+                    $slider.off('beforeChange.videoReset').on('beforeChange.videoReset', function (event, slick, currentSlide, nextSlide) {
+                        if (currentSlide !== nextSlide && typeof resetTelemedicineVideo === 'function') {
+                            resetTelemedicineVideo();
+                        }
+                    });
                     setTimeout(function () {
                         if ($slider.hasClass('slick-initialized')) {
                             $slider.slick('setPosition');
