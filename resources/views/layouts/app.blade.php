@@ -328,6 +328,7 @@
                         infinite: true,
                         speed: 500,
                         fade: true,
+                        adaptiveHeight: true,
                         cssEase: 'linear',
                         slidesToShow: 1,
                         slidesToScroll: 1,

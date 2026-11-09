@@ -4015,35 +4015,61 @@ body {
 
 @media (max-width: 991px) {
     .hero-full-image-wrapper {
+        min-height: unset;
         height: auto;
         border-radius: 0;
     }
 
     .hero-full-image-img {
+        min-height: unset;
         height: auto;
-        max-height: 320px;
-        object-fit: cover;
+        max-height: none;
+        object-fit: contain;
         border-radius: 0;
     }
 }
 
 @media (max-width: 767px) {
+    .hero-full-image-wrapper {
+        min-height: unset;
+        height: auto;
+    }
+
     .hero-full-image-img {
-        max-height: 260px;
+        min-height: unset;
+        max-height: none;
+        height: auto;
+        object-fit: contain;
         border-radius: 0;
     }
 }
 
 @media (max-width: 575px) {
+    .hero-full-image-wrapper {
+        min-height: unset;
+        height: auto;
+    }
+
     .hero-full-image-img {
-        max-height: 210px;
+        min-height: unset;
+        max-height: none;
+        height: auto;
+        object-fit: contain;
         border-radius: 0;
     }
 }
 
 @media (max-width: 480px) {
+    .hero-full-image-wrapper {
+        min-height: unset;
+        height: auto;
+    }
+
     .hero-full-image-img {
-        max-height: 180px;
+        min-height: unset;
+        max-height: none;
+        height: auto;
+        object-fit: contain;
         border-radius: 0;
     }
 }
