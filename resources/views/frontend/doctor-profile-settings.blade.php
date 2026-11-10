@@ -865,13 +865,15 @@
             return isValid;
         }
 
-        // Real-time input invalid removal
-        profileForm.addEventListener('input', function (e) {
-            if (e.target && e.target.classList.contains('is-invalid')) {
-                if (e.target.value.trim() !== '') {
-                    e.target.classList.remove('is-invalid');
+        // Real-time input invalid removal (handles input and select/date change)
+        ['input', 'change'].forEach(eventType => {
+            profileForm.addEventListener(eventType, function (e) {
+                if (e.target && e.target.classList.contains('is-invalid')) {
+                    if (e.target.value && e.target.value.trim() !== '') {
+                        e.target.classList.remove('is-invalid');
+                    }
                 }
-            }
+            });
         });
 
         if (nextBtn) {

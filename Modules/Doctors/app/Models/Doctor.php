@@ -157,17 +157,19 @@ class Doctor extends Model
         return $locations;
     }
 
-    private function parseStoredList(?string $rawValue): array
+    private function parseStoredList($rawValue): array
     {
         if (blank($rawValue)) {
             return [];
         }
 
-        $decoded = json_decode($rawValue, true);
+        if (is_array($rawValue)) {
+            return array_values($rawValue);
+        }
+
+        $decoded = json_decode((string) $rawValue, true);
         if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-            return array_values(array_filter(array_map(function ($item) {
-                return is_string($item) ? trim($item) : '';
-            }, $decoded)));
+            return array_values($decoded);
         }
 
         return [trim((string) $rawValue)];
