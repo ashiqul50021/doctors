@@ -1261,7 +1261,7 @@
                     infinite: true,
                     speed: 500,
                     fade: true,
-                    adaptiveHeight: true,
+                    adaptiveHeight: false,
                     cssEase: 'linear',
                     slidesToShow: 1,
                     slidesToScroll: 1,
@@ -1276,6 +1276,28 @@
                     }]
                 });
 
+                function syncVideoSlideHeight() {
+                    var $refSlide = $slider.find('.hero-slide-item:not(.hero-slide-item-video)').first();
+                    if ($refSlide.length) {
+                        var h = $refSlide.outerHeight();
+                        if (h > 50) {
+                            $slider.find('.hero-slide-item-video, .hero-video-slide-wrapper, .hero-video-slide-wrapper .video-container').css({
+                                'height': h + 'px',
+                                'min-height': h + 'px',
+                                'max-height': h + 'px'
+                            });
+                        }
+                    }
+                }
+
+                $slider.on('init setPosition', function () {
+                    syncVideoSlideHeight();
+                });
+
+                $(window).off('resize.heroSliderSync').on('resize.heroSliderSync', function () {
+                    syncVideoSlideHeight();
+                });
+
                 $slider.off('beforeChange.videoReset').on('beforeChange.videoReset', function (event, slick, currentSlide, nextSlide) {
                     if (currentSlide !== nextSlide && typeof resetTelemedicineVideo === 'function') {
                         resetTelemedicineVideo();
@@ -1284,6 +1306,7 @@
 
                 setTimeout(function () {
                     if ($slider.hasClass('slick-initialized')) {
+                        syncVideoSlideHeight();
                         $slider.slick('setPosition');
                     }
                 }, 100);

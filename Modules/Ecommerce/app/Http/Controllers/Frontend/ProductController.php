@@ -670,8 +670,10 @@ class ProductController extends Controller
         $shipping = $request->has('shipping_charge') ? (float) $request->shipping_charge : 0;
         $grandTotal = max(0, $total - $discount + $shipping);
 
+        $totalAgentCommission = 0;
+
         try {
-            $order = DB::transaction(function () use ($cart, $request, $total, $discount, $couponCode, $grandTotal, $patient, $agent, $coupon, $shipping) {
+            $order = DB::transaction(function () use ($cart, $request, $total, $discount, $couponCode, $grandTotal, $patient, $agent, $coupon, $shipping, &$totalAgentCommission) {
                 $this->stockService->reserveCart($cart);
 
                 if ($coupon) {
@@ -697,9 +699,20 @@ class ProductController extends Controller
                     'notes' => $request->notes,
                 ]);
 
+                // Proportionate discount factor per item if coupon discount exists
+                $discountFactor = $total > 0 ? max(0, ($total - $discount) / $total) : 1;
+
                 foreach ($cart as $cartKey => $item) {
                     $productId = $this->resolveCartProductId($cartKey, $item);
                     $product = Product::find($productId);
+                    $itemTotal = (float) $item['price'] * (int) $item['quantity'];
+                    $netItemTotal = $itemTotal * $discountFactor;
+
+                    $itemCommission = 0;
+                    if ($agent && $agent->can_sell_products && $product) {
+                        $itemCommission = $product->calculateAgentCommission($item['quantity'], $netItemTotal, $agent);
+                        $totalAgentCommission += $itemCommission;
+                    }
 
                     OrderItem::create([
                         'order_id' => $order->id,
@@ -709,7 +722,8 @@ class ProductController extends Controller
                         'variant_label' => $item['variant_label'] ?? null,
                         'quantity' => $item['quantity'],
                         'price' => $item['price'],
-                        'total' => $item['price'] * $item['quantity'],
+                        'total' => $itemTotal,
+                        'agent_commission' => $itemCommission,
                     ]);
                 }
 
@@ -717,20 +731,15 @@ class ProductController extends Controller
             });
 
             // Create pending Agent Transaction if applicable
-            if ($agent && $agent->can_sell_products) {
-                $commissionBase = max(0, $total - $discount);
-                $commission = $commissionBase * ($agent->product_commission_rate / 100);
-                
-                if ($commission > 0) {
-                    \Modules\Agents\Models\AgentTransaction::create([
-                        'agent_id' => $agent->id,
-                        'type' => 'commission_product',
-                        'amount' => $commission,
-                        'description' => 'Commission of ৳' . number_format($commission, 2) . ' pending for Order #' . $order->order_number . ' (Customer: ' . $request->name . ')',
-                        'reference_id' => $order->order_number,
-                        'status' => 'pending',
-                    ]);
-                }
+            if ($agent && $agent->can_sell_products && $totalAgentCommission > 0) {
+                \Modules\Agents\Models\AgentTransaction::create([
+                    'agent_id' => $agent->id,
+                    'type' => 'commission_product',
+                    'amount' => round($totalAgentCommission, 2),
+                    'description' => 'Commission of ৳' . number_format($totalAgentCommission, 2) . ' pending for Order #' . $order->order_number . ' (Customer: ' . $request->name . ')',
+                    'reference_id' => $order->order_number,
+                    'status' => 'pending',
+                ]);
             }
         } catch (ValidationException $exception) {
             return $this->handleInventoryException($request, $exception);

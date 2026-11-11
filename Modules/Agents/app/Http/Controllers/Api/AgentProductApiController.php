@@ -48,11 +48,16 @@ class AgentProductApiController extends Controller
         $subtotal = 0;
         $orderItems = [];
 
+        $totalCommission = 0;
+
         foreach ($items as $item) {
             $product = Product::findOrFail($item['product_id']);
             $price = $product->sale_price ?? $product->price;
             $total = $price * $item['quantity'];
             $subtotal += $total;
+
+            $itemCommission = $product->calculateAgentCommission($item['quantity'], $total, $agent);
+            $totalCommission += $itemCommission;
 
             $orderItems[] = [
                 'product_id' => $product->id,
@@ -60,15 +65,13 @@ class AgentProductApiController extends Controller
                 'price' => $price,
                 'quantity' => $item['quantity'],
                 'total' => $total,
+                'commission' => $itemCommission,
             ];
         }
 
         $deliveryFee = 60.00; // Flat delivery fee
         $grandTotal = $subtotal + $deliveryFee;
-
-        // Calculate Agent Commission (e.g. 5%)
-        $commissionRate = (float) \App\Models\SiteSetting::get('agent_product_commission_percent', 5.00);
-        $commissionAmount = ($subtotal * $commissionRate) / 100;
+        $commissionAmount = round($totalCommission, 2);
 
         $order = \Illuminate\Support\Facades\DB::transaction(function () use ($agent, $request, $subtotal, $deliveryFee, $grandTotal, $orderItems, $commissionAmount) {
             $o = Order::create([

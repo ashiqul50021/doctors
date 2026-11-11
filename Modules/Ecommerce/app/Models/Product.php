@@ -189,5 +189,33 @@ class Product extends Model
 
         return $activeCampaign->calculateCampaignPrice((float) $this->price, $customPrice);
     }
+
+    /**
+     * Calculate agent commission for this product.
+     *
+     * @param int|float $quantity
+     * @param float $itemTotal Total amount paid for this item (price * quantity - item discount)
+     * @param mixed $agent
+     * @return float
+     */
+    public function calculateAgentCommission($quantity = 1, float $itemTotal = 0.0, $agent = null): float
+    {
+        $commissionType = $this->agent_commission_type ?? 'percentage';
+        $commissionValue = $this->agent_commission_value !== null ? (float) $this->agent_commission_value : null;
+
+        // 1. Custom Fixed Commission per unit (e.g. ৳50 per item)
+        if ($commissionType === 'fixed' && $commissionValue !== null) {
+            return round($commissionValue * (float) $quantity, 2);
+        }
+
+        // 2. Custom Percentage Commission on item total (e.g. 10%)
+        if ($commissionType === 'percentage' && $commissionValue !== null) {
+            return round(($itemTotal * $commissionValue) / 100, 2);
+        }
+
+        // 3. Fallback to Agent's specific product_commission_rate or default 5%
+        $fallbackRate = $agent?->product_commission_rate !== null ? (float) $agent->product_commission_rate : 5.00;
+        return round(($itemTotal * $fallbackRate) / 100, 2);
+    }
 }
 

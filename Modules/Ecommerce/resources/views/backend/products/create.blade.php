@@ -184,6 +184,34 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Agent Commission Settings -->
+                            <div class="card border border-info mt-4 mb-3">
+                                <div class="card-header bg-info-subtle py-2 d-flex align-items-center">
+                                    <h6 class="mb-0 text-dark fw-bold"><i class="fas fa-hand-holding-usd text-info me-2"></i> Agent Commission Settings (Optional)</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group">
+                                                <label class="fw-semibold">Commission Type</label>
+                                                <select name="agent_commission_type" class="form-select">
+                                                    <option value="percentage" {{ old('agent_commission_type', 'percentage') == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
+                                                    <option value="fixed" {{ old('agent_commission_type') == 'fixed' ? 'selected' : '' }}>Fixed Amount per Unit (৳)</option>
+                                                </select>
+                                                <small class="text-muted">Choose whether commission is calculated as % of sale price or fixed ৳ per item.</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group">
+                                                <label class="fw-semibold">Commission Value</label>
+                                                <input type="number" step="0.01" min="0" name="agent_commission_value" class="form-control" placeholder="Leave empty for Agent default rate" value="{{ old('agent_commission_value') }}">
+                                                <small class="text-muted">Example: <strong>10</strong> for 10% or <strong>50</strong> for ৳50/unit. Leave empty to fallback to agent's default profile rate.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="mt-4">
                                 @include('ecommerce::backend.products.partials.variant-manager', ['variantRows' => $variantRows])
                             </div>

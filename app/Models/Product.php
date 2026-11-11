@@ -156,4 +156,24 @@ class Product extends Model
 
         return $this->approvedProductReviews()->count();
     }
+
+    /**
+     * Calculate agent commission for this product.
+     */
+    public function calculateAgentCommission($quantity = 1, float $itemTotal = 0.0, $agent = null): float
+    {
+        $commissionType = $this->agent_commission_type ?? 'percentage';
+        $commissionValue = $this->agent_commission_value !== null ? (float) $this->agent_commission_value : null;
+
+        if ($commissionType === 'fixed' && $commissionValue !== null) {
+            return round($commissionValue * (float) $quantity, 2);
+        }
+
+        if ($commissionType === 'percentage' && $commissionValue !== null) {
+            return round(($itemTotal * $commissionValue) / 100, 2);
+        }
+
+        $fallbackRate = $agent?->product_commission_rate !== null ? (float) $agent->product_commission_rate : 5.00;
+        return round(($itemTotal * $fallbackRate) / 100, 2);
+    }
 }
