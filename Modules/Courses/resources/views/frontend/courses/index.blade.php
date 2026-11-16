@@ -93,6 +93,19 @@
                                             style="font-size: 13px; line-height: 1.5; height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
                                             {{ $course->short_description }}
                                         </p>
+
+                                        <!-- Agent Commission Info -->
+                                        @if(auth()->check() && auth()->user()->role === 'agent')
+                                            <div class="bg-light p-2 rounded mb-3 text-start">
+                                                <small class="text-muted fw-bold d-block mb-1"><i class="fas fa-commission text-success me-1"></i>Your Commission:</small>
+                                                @php
+                                                    $agentCommission = auth()->user()->agent?->course_commission_rate ?? 0;
+                                                    $commissionAmount = ($course->price * $agentCommission) / 100;
+                                                @endphp
+                                                <span class="badge bg-success">{{ $agentCommission }}% (৳{{ number_format($commissionAmount, 2) }})</span>
+                                            </div>
+                                        @endif
+
                                         <div class="course-footer">
                                             <div class="course-instructor">
                                                 <img src="{{ $course->instructor && $course->instructor->profile ? asset($course->instructor->profile) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"

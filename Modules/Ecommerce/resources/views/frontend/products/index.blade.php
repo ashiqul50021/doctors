@@ -170,6 +170,29 @@
                                         <a href="{{ route('ecommerce.products.show', $product->id) }}">{{ $product->name }}</a>
                                     </h4>
 
+                                    <!-- Agent Commission Info -->
+                                    @if(auth()->check() && auth()->user()->role === 'agent' && ($product->agent_commission_value || $product->coupon_commission_value))
+                                        <div style="margin-bottom: 8px; padding: 6px 8px; background: #f0f9ff; border-radius: 4px; border-left: 3px solid #0ea5e9;">
+                                            <small class="text-muted fw-bold d-block mb-1"><i class="fas fa-commission text-success" style="font-size: 11px;"></i> Commission</small>
+                                            @if($product->agent_commission_value)
+                                                @if($product->agent_commission_type === 'fixed')
+                                                    <span class="badge bg-success" style="font-size: 10px;">৳{{ number_format($product->agent_commission_value, 2) }}/unit</span>
+                                                @else
+                                                    <span class="badge bg-success" style="font-size: 10px;">{{ $product->agent_commission_value }}%</span>
+                                                @endif
+                                            @endif
+                                            @if($product->coupon_commission_value)
+                                                <span style="display: block; margin-top: 3px; font-size: 10px; color: #ffc107; font-weight: bold;">
+                                                    @if($product->coupon_commission_type === 'fixed')
+                                                        Coupon: ৳{{ number_format($product->coupon_commission_value, 2) }}/unit
+                                                    @else
+                                                        Coupon: {{ $product->coupon_commission_value }}%
+                                                    @endif
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endif
+
                                     <div class="product-footer">
                                         <div class="product-price-tag">
                                             @if($hasVariants)

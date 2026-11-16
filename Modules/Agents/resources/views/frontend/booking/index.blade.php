@@ -81,6 +81,15 @@
                                                 <span class="font-weight-bold text-dark">৳{{ number_format($doc->online_fee ?? $doc->consultation_fee, 2) }}</span>
                                             </div>
                                         </div>
+
+                                        <!-- Agent Commission Info -->
+                                        <div class="bg-light p-2 rounded mb-4 text-start">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <small class="text-muted fw-bold"><i class="fas fa-commission text-success me-1"></i> Your Commission:</small>
+                                                <span class="badge bg-success">৳{{ number_format($bookingCommission, 2) }}</span>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Per appointment booked with this doctor</small>
+                                        </div>
                                         
                                         <a href="{{ route('agent.booking', $doc->id) }}" class="btn btn-primary w-100 mt-auto py-2">
                                             Book Appointment

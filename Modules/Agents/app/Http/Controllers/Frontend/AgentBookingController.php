@@ -41,8 +41,9 @@ class AgentBookingController extends Controller
 
         $doctors = $query->paginate(9);
         $specialities = Speciality::all();
+        $bookingCommission = $agent->booking_commission_rate ?? 0;
 
-        return view('agents::frontend.booking.index', compact('doctors', 'specialities'));
+        return view('agents::frontend.booking.index', compact('doctors', 'specialities', 'bookingCommission'));
     }
 
     public function booking($doctorId)
