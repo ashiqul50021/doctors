@@ -177,6 +177,12 @@
                         <span>Wallet & Payouts</span>
                     </a>
                 </li>
+                <li class="{{ request()->routeIs('agent.commissions') ? 'active' : '' }}">
+                    <a href="{{ route('agent.commissions') }}">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Commission Breakdown</span>
+                    </a>
+                </li>
                 <li>
                     <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();">
                         <i class="fas fa-sign-out-alt"></i>

@@ -659,8 +659,10 @@ class ProductController extends Controller
         // Check for agent context (either coupon, direct order, or referral link)
         $refCode = session('ref_code') ?? request()->cookie('ref_code');
         $agent = null;
+        $viaCoupon = false;
         if ($coupon && $coupon->agent_id) {
             $agent = $coupon->agent;
+            $viaCoupon = true;
         } elseif (auth()->check() && auth()->user()->role === 'agent') {
             $agent = auth()->user()->agent;
         } elseif ($refCode) {
@@ -673,7 +675,7 @@ class ProductController extends Controller
         $totalAgentCommission = 0;
 
         try {
-            $order = DB::transaction(function () use ($cart, $request, $total, $discount, $couponCode, $grandTotal, $patient, $agent, $coupon, $shipping, &$totalAgentCommission) {
+            $order = DB::transaction(function () use ($cart, $request, $total, $discount, $couponCode, $grandTotal, $patient, $agent, $coupon, $shipping, $viaCoupon, &$totalAgentCommission) {
                 $this->stockService->reserveCart($cart);
 
                 if ($coupon) {
@@ -710,7 +712,10 @@ class ProductController extends Controller
 
                     $itemCommission = 0;
                     if ($agent && $agent->can_sell_products && $product) {
-                        $itemCommission = $product->calculateAgentCommission($item['quantity'], $netItemTotal, $agent);
+                        // Coupon orders use the product's coupon commission settings (falls back to agent commission)
+                        $itemCommission = $viaCoupon
+                            ? $product->calculateCouponCommission($item['quantity'], $netItemTotal, $agent)
+                            : $product->calculateAgentCommission($item['quantity'], $netItemTotal, $agent);
                         $totalAgentCommission += $itemCommission;
                     }
 
@@ -736,7 +741,7 @@ class ProductController extends Controller
                     'agent_id' => $agent->id,
                     'type' => 'commission_product',
                     'amount' => round($totalAgentCommission, 2),
-                    'description' => 'Commission of ৳' . number_format($totalAgentCommission, 2) . ' pending for Order #' . $order->order_number . ' (Customer: ' . $request->name . ')',
+                    'description' => 'Commission of ৳' . number_format($totalAgentCommission, 2) . ' pending for Order #' . $order->order_number . ' (Customer: ' . $request->name . ')' . ($viaCoupon ? ' via coupon ' . $couponCode : ''),
                     'reference_id' => $order->order_number,
                     'status' => 'pending',
                 ]);

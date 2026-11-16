@@ -28,6 +28,7 @@ Route::middleware(['web', 'guest'])->prefix('agent')->name('agent.')->group(func
 Route::middleware(['web', 'auth', 'role:agent'])->prefix('agent')->name('agent.')->group(function () {
     Route::get('/dashboard', [AgentDashboardController::class, 'index'])->name('dashboard');
     Route::get('/wallet', [AgentDashboardController::class, 'wallet'])->name('wallet');
+    Route::get('/commissions', [AgentDashboardController::class, 'commissions'])->name('commissions');
     Route::post('/payout-request', [AgentDashboardController::class, 'payoutRequest'])->name('payout.request');
     Route::post('/profile-image/upload', [AgentDashboardController::class, 'uploadProfileImage'])->name('profile-image.upload');
     Route::post('/coupon/check', [AgentDashboardController::class, 'checkCouponAvailability'])->name('coupon.check');

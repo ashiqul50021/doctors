@@ -202,6 +202,13 @@
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
+                                        <label>Cost Price (Optional)</label>
+                                        <input type="number" step="0.01" name="cost_price" id="productCostPriceInput" class="form-control" value="{{ old('cost_price', $product->cost_price) }}">
+                                        <small class="text-muted">What the business paid to acquire/buy this product. Used to calculate profit margin and decide seller commissions.</small>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
                                             <label class="mb-0">Sale Price (Optional)</label>
                                             <span id="liveDiscountBadge" class="badge bg-danger text-white fs-6 px-2 py-1" style="display: none;">0% OFF</span>
@@ -284,6 +291,33 @@
                                 </div>
                             </div>
 
+                            <!-- Coupon Commission Settings -->
+                            <div class="card border border-warning mt-3 mb-3">
+                                <div class="card-header bg-warning-subtle py-2 d-flex align-items-center">
+                                    <h6 class="mb-0 text-dark fw-bold"><i class="fas fa-ticket-alt text-warning me-2"></i> Coupon Commission Settings (Optional)</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group">
+                                                <label class="fw-semibold">Commission Type</label>
+                                                <select name="coupon_commission_type" class="form-select">
+                                                    <option value="percentage" {{ old('coupon_commission_type', $product->coupon_commission_type ?? 'percentage') == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
+                                                    <option value="fixed" {{ old('coupon_commission_type', $product->coupon_commission_type) == 'fixed' ? 'selected' : '' }}>Fixed Amount per Unit (৳)</option>
+                                                </select>
+                                                <small class="text-muted">Applies when a customer orders using an agent's coupon code.</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group">
+                                                <label class="fw-semibold">Commission Value</label>
+                                                <input type="number" step="0.01" min="0" name="coupon_commission_value" class="form-control" placeholder="Leave empty to use Agent Commission above" value="{{ old('coupon_commission_value', $product->coupon_commission_value) }}">
+                                                <small class="text-muted">Example: <strong>10</strong> for 10% or <strong>50</strong> for ৳50/unit. Leave empty to fall back to the Agent Commission settings above.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="mt-4">
                                 @include('ecommerce::backend.products.partials.variant-manager', ['variantRows' => $variantRows])
                             </div>

@@ -217,5 +217,29 @@ class Product extends Model
         $fallbackRate = $agent?->product_commission_rate !== null ? (float) $agent->product_commission_rate : 5.00;
         return round(($itemTotal * $fallbackRate) / 100, 2);
     }
-}
 
+    /**
+     * Calculate commission for this product when the order was placed using an agent's coupon code.
+     * Falls back to the regular agent commission when no coupon commission value is set.
+     *
+     * @param int|float $quantity
+     * @param float $itemTotal Total amount paid for this item (price * quantity - item discount)
+     * @param mixed $agent
+     * @return float
+     */
+    public function calculateCouponCommission($quantity = 1, float $itemTotal = 0.0, $agent = null): float
+    {
+        $commissionType = $this->coupon_commission_type ?? 'percentage';
+        $commissionValue = $this->coupon_commission_value !== null ? (float) $this->coupon_commission_value : null;
+
+        if ($commissionType === 'fixed' && $commissionValue !== null) {
+            return round($commissionValue * (float) $quantity, 2);
+        }
+
+        if ($commissionType === 'percentage' && $commissionValue !== null) {
+            return round(($itemTotal * $commissionValue) / 100, 2);
+        }
+
+        return $this->calculateAgentCommission($quantity, $itemTotal, $agent);
+    }
+}

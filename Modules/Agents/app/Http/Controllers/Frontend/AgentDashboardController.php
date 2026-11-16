@@ -62,8 +62,47 @@ class AgentDashboardController extends Controller
         $transactions = AgentTransaction::where('agent_id', $agent->id)
             ->latest()
             ->paginate(10);
-            
+
         return view('agents::frontend.wallet', compact('agent', 'transactions'));
+    }
+
+    public function commissions()
+    {
+        $agent = Auth::user()->agent;
+
+        // Tab 1: Product Commissions
+        $productCommissions = \Modules\Ecommerce\Models\Product::where(function ($query) {
+            $query->whereNotNull('agent_commission_value')
+                  ->orWhereNotNull('coupon_commission_value');
+        })
+        ->select('id', 'name', 'sale_price', 'agent_commission_type', 'agent_commission_value', 'coupon_commission_type', 'coupon_commission_value')
+        ->orderBy('name')
+        ->get();
+
+        // Tab 2: Booking Commissions (from agent profile)
+        $doctors = \App\Models\Doctor::where('status', 'active')
+            ->with('user:id,name,phone,avatar')
+            ->select('id', 'user_id', 'speciality_id', 'consultation_fee')
+            ->get();
+
+        $bookingCommission = $agent->booking_commission_rate ?? 0;
+
+        // Tab 3: Course Commissions (from agent profile)
+        $courses = \Modules\Courses\Models\Course::where('is_active', true)
+            ->select('id', 'title', 'price', 'instructor_id')
+            ->orderBy('title')
+            ->get();
+
+        $courseCommission = $agent->course_commission_rate ?? 0;
+
+        return view('agents::frontend.commissions', compact(
+            'agent',
+            'productCommissions',
+            'doctors',
+            'bookingCommission',
+            'courses',
+            'courseCommission'
+        ));
     }
 
     public function payoutRequest(Request $request)
