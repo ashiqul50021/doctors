@@ -166,7 +166,7 @@
                                 </div>
                             </nav>
                             <div class="tab-content p-4" id="nav-items-tabContent">
-                                <!-- Products Tab - Grid Layout (Home Page Style) -->
+                                <!-- Products Tab - Grid Layout (Home Page Exact Style) -->
                                 <div class="tab-pane fade show active" id="nav-products" role="tabpanel" aria-labelledby="nav-products-tab">
                                     <div class="row">
                                         @forelse ($agentProducts as $product)
@@ -175,63 +175,56 @@
                                             @endphp
                                             <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-grid-item">
                                                 <div class="product-card-modern">
-                                                    <!-- Stock Badge -->
                                                     <div class="stock-badge in-stock">
                                                         IN STOCK
                                                     </div>
 
-                                                    <!-- Product Image -->
                                                     <div class="product-image-container">
                                                         <a href="#" class="product-image-link">
                                                             <img src="{{ $productImage ? asset($productImage) : asset('assets/img/products/default-product.png') }}"
-                                                                class="product-main-img" alt="{{ $product->name }}" style="width: 100%; height: 200px; object-fit: cover;">
+                                                                class="product-main-img" alt="{{ $product->name }}">
                                                         </a>
                                                     </div>
 
-                                                    <!-- Product Details -->
                                                     <div class="product-details">
-                                                        <!-- Rating -->
                                                         <div class="product-rating">
                                                             <i class="fas fa-star"></i>
                                                             <span class="rating-value">0.0</span>
                                                             <span class="review-count">(0)</span>
                                                         </div>
 
-                                                        <!-- Category -->
-                                                        <div class="product-brand">{{ $product->category->name ?? 'MEDICINE' }}</div>
+                                                        <div class="product-brand">{{ strtoupper($product->category->name ?? 'MEDICINE') }}</div>
 
-                                                        <!-- Product Name -->
                                                         <h4 class="product-name">
                                                             <a href="#">{{ $product->name }}</a>
                                                         </h4>
 
-                                                        <!-- Commission Info -->
-                                                        <div style="margin-bottom: 8px; padding: 6px 8px; background: #f0f9ff; border-radius: 4px; border-left: 3px solid #0ea5e9;">
-                                                            <small style="color: #666; display: block; margin-bottom: 4px; font-weight: 600; font-size: 11px;">
-                                                                <i class="fas fa-commission text-success" style="font-size: 11px; margin-right: 2px;"></i>Commission
-                                                            </small>
-                                                            @if($product->agent_commission_type === 'percent')
-                                                                <span class="badge bg-success" style="font-size: 10px;">
-                                                                    {{ $product->agent_commission_value ?? 0 }}%
-                                                                </span>
-                                                            @else
-                                                                <span class="badge bg-success" style="font-size: 10px;">
-                                                                    ৳{{ number_format($product->agent_commission_value ?? 0, 0) }}
-                                                                </span>
-                                                            @endif
-                                                        </div>
+                                                        <!-- Commission Info (Home Page Style) -->
+                                                        @if($product->agent_commission_value || $product->coupon_commission_value)
+                                                            <div style="margin-bottom: 8px; padding: 6px 8px; background: #f0f9ff; border-radius: 4px; border-left: 3px solid #0ea5e9;">
+                                                                <small class="text-muted fw-bold d-block mb-1" style="font-size: 11px;">
+                                                                    <i class="fas fa-commission text-success" style="font-size: 11px;"></i> Commission
+                                                                </small>
+                                                                @if($product->agent_commission_value)
+                                                                    @if($product->agent_commission_type === 'percent')
+                                                                        <span class="badge bg-success" style="font-size: 10px;">{{ $product->agent_commission_value }}%</span>
+                                                                    @else
+                                                                        <span class="badge bg-success" style="font-size: 10px;">৳{{ number_format($product->agent_commission_value, 2) }}</span>
+                                                                    @endif
+                                                                @endif
+                                                            </div>
+                                                        @endif
 
-                                                        <!-- Price & Actions -->
                                                         <div class="product-footer">
                                                             <div class="product-price-tag">
                                                                 <span class="price-current">৳{{ number_format($product->sale_price, 0) }}</span>
                                                             </div>
 
                                                             <div class="btn-group-modern">
-                                                                <button type="button" class="btn-cart-modern" title="Add to Cart" onclick="alert('Product: {{ addslashes($product->name) }}\n\nPrice: ৳{{ number_format($product->sale_price, 0) }}\n\nCommission: {{ $product->agent_commission_type === 'percent' ? $product->agent_commission_value . '%' : '৳' . number_format($product->agent_commission_value, 0) }}')">
+                                                                <button type="button" class="btn-cart-modern" title="Add to Cart">
                                                                     <i class="fas fa-shopping-cart"></i>
                                                                 </button>
-                                                                <button type="button" class="btn-buy-modern" onclick="alert('Product: {{ addslashes($product->name) }}\n\nPrice: ৳{{ number_format($product->sale_price, 0) }}\n\nCommission: {{ $product->agent_commission_type === 'percent' ? $product->agent_commission_value . '%' : '৳' . number_format($product->agent_commission_value, 0) }}')">
+                                                                <button type="button" class="btn-buy-modern">
                                                                     Buy
                                                                 </button>
                                                             </div>
@@ -241,9 +234,9 @@
                                             </div>
                                         @empty
                                             <div class="col-12">
-                                                <div class="text-center py-5">
-                                                    <i class="fas fa-box-open text-muted" style="font-size: 3rem;"></i>
-                                                    <p class="text-muted mt-3">No products available yet.</p>
+                                                <div class="empty-state text-center">
+                                                    <h4 class="mb-2">No products found</h4>
+                                                    <p class="mb-3">No products available yet.</p>
                                                 </div>
                                             </div>
                                         @endforelse
