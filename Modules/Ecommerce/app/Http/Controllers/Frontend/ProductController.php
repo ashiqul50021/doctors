@@ -280,7 +280,7 @@ class ProductController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $products = $query->take(8)->latest()->get()
+        $products = $query->take(4)->latest()->get()
             ->map(function (Product $product) {
                 return [
                     'id' => $product->id,

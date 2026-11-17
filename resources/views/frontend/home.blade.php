@@ -550,14 +550,19 @@
 
                         <!-- Categories -->
                         <div class="filter-section">
-                            <h5 class="filter-title"><i class="fas fa-list"></i> Categories</h5>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h5 class="filter-title mb-0"><i class="fas fa-list"></i> Categories</h5>
+                                <a href="{{ route('ecommerce.products') }}" class="small text-primary fw-medium text-decoration-none">
+                                    See All <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+                                </a>
+                            </div>
                             <div class="category-list" id="homeCategoryList">
                                 <label class="category-item home-cat-root active-cat" id="cat-all-label">
                                     <input type="radio" name="product_category" value="all" checked>
                                     <span class="category-name">All Products</span>
                                 </label>
 
-                                @foreach($productCategories as $category)
+                                @foreach($productCategories->take(4) as $category)
                                     @if($category->children->isNotEmpty())
                                         {{-- Parent with children --}}
                                         <div class="home-cat-group" id="hcg-{{ $category->id }}">
@@ -705,8 +710,8 @@
 
                     <!-- View All Button -->
                     <div class="text-center mt-4">
-                        <a href="{{ route('ecommerce.products') }}" class="btn-view-all-arrow">
-                            View All Products <i class="fas fa-arrow-right"></i>
+                        <a href="{{ route('ecommerce.products') }}" class="btn-view-all-arrow" id="homeProductSeeAllBtn">
+                            See All Products <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -739,7 +744,12 @@
 
                         <!-- Specialities -->
                         <div class="filter-section">
-                            <h5 class="filter-title"><i class="fas fa-stethoscope"></i> Speciality</h5>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h5 class="filter-title mb-0"><i class="fas fa-stethoscope"></i> Speciality</h5>
+                                <a href="{{ route('doctors.search') }}" class="small text-primary fw-medium text-decoration-none">
+                                    See All <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+                                </a>
+                            </div>
                             <div class="select-wrapper">
                                 <select name="doctor_speciality" id="doctorSpecialitySelect" class="form-control form-select select-modern">
                                     <option value="all">All Doctors</option>
@@ -757,7 +767,7 @@
                 <div class="col-lg-9 col-md-8">
                     <div class="row" id="doctorsGrid">
                         @foreach($doctors as $doctor)
-                            <div class="col-lg-4 col-md-6 col-sm-6 mb-4 doctor-grid-item">
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3 doctor-grid-item">
                                 <div class="doctor-card-new">
                                     <div class="doctor-img-wrapper">
                                         <a href="{{ route('doctors.profile', $doctor->id) }}">
@@ -808,8 +818,8 @@
 
                     <!-- View All Button -->
                     <div class="text-center mt-4">
-                        <a href="{{ route('doctors.search') }}" class="btn-view-all-arrow">
-                            View All Doctors <i class="fas fa-arrow-right"></i>
+                        <a href="{{ route('doctors.search') }}" class="btn-view-all-arrow" id="homeDoctorSeeAllBtn">
+                            See All Doctors <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -1488,11 +1498,28 @@
                 grid.html(skeletonHtml);
             }
 
+            function updateSeeAllProductLink() {
+                var selectedCat = $('input[name="product_category"]:checked').val();
+                var searchVal = $('#productSearchInput').val();
+                var seeAllUrl = "{{ route('ecommerce.products') }}";
+                var params = [];
+                if (selectedCat && selectedCat !== 'all') {
+                    params.push('category=' + encodeURIComponent(selectedCat));
+                }
+                if (searchVal && searchVal.trim()) {
+                    params.push('search=' + encodeURIComponent(searchVal.trim()));
+                }
+                if (params.length > 0) {
+                    seeAllUrl += '?' + params.join('&');
+                }
+                $('#homeProductSeeAllBtn').attr('href', seeAllUrl);
+            }
+
             function filterProducts() {
                 var category = $('input[name="product_category"]:checked').val();
                 var search = $('#productSearchInput').val();
 
-                renderProductSkeletons(8);
+                renderProductSkeletons(4);
 
                 $.ajax({
                     url: '/api/products/filter',
@@ -1633,11 +1660,13 @@
                     parentGroup.style.display = 'block';
                 }
 
+                updateSeeAllProductLink();
                 filterProducts();
             });
 
             // Search input with debounce
             $('#productSearchInput').on('keyup', function () {
+                updateSeeAllProductLink();
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(function () {
                     filterProducts();
@@ -1646,13 +1675,30 @@
             // Doctor filtering functionality
             var doctorSearchTimeout;
 
-            function renderDoctorSkeletons(count = 6) {
+            function updateSeeAllDoctorLink() {
+                var speciality = $('#doctorSpecialitySelect').val();
+                var search = $('#doctorSearchInput').val();
+                var seeAllUrl = "{{ route('doctors.search') }}";
+                var params = [];
+                if (speciality && speciality !== 'all') {
+                    params.push('speciality_id=' + encodeURIComponent(speciality));
+                }
+                if (search && search.trim()) {
+                    params.push('keywords=' + encodeURIComponent(search.trim()));
+                }
+                if (params.length > 0) {
+                    seeAllUrl += '?' + params.join('&');
+                }
+                $('#homeDoctorSeeAllBtn').attr('href', seeAllUrl);
+            }
+
+            function renderDoctorSkeletons(count = 4) {
                 var grid = $('#doctorsGrid');
                 grid.empty();
                 var skeletonHtml = '';
                 for (var i = 0; i < count; i++) {
                     skeletonHtml += `
-                        <div class="col-lg-4 col-md-6 col-sm-6 mb-4 doctor-skeleton-item">
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3 doctor-skeleton-item">
                             <div class="doctor-card-skeleton">
                                 <div class="skeleton-doc-img-wrap">
                                     <div class="skeleton-doc-fee skeleton-shimmer"></div>
@@ -1679,7 +1725,7 @@
                 var speciality = $('#doctorSpecialitySelect').val();
                 var search = $('#doctorSearchInput').val();
 
-                renderDoctorSkeletons(6);
+                renderDoctorSkeletons(4);
 
                 $.ajax({
                     url: '{{ route('api.doctors.filter') }}',
@@ -1716,7 +1762,7 @@
                         : `<i class="fas fa-star" style="color: #cbd5e1;"></i> <span class="rating-count text-muted">New Doctor</span>`;
 
                     var html = `
-                        <div class="col-lg-4 col-md-6 col-sm-6 mb-4 doctor-grid-item">
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3 doctor-grid-item">
                             <div class="doctor-card-new">
                                 <div class="doctor-img-wrapper">
                                     <a href="/doctor-profile/${doctor.id}">
@@ -1760,11 +1806,13 @@
 
             // Doctor speciality filter change
             $('#doctorSpecialitySelect').on('change', function () {
+                updateSeeAllDoctorLink();
                 filterDoctors();
             });
 
             // Doctor search input with debounce
             $('#doctorSearchInput').on('keyup', function () {
+                updateSeeAllDoctorLink();
                 clearTimeout(doctorSearchTimeout);
                 doctorSearchTimeout = setTimeout(function () {
                     filterDoctors();
@@ -4306,6 +4354,68 @@
             }
             .product-card-modern .btn-cart-modern i {
                 font-size: 12px !important;
+            }
+
+            /* Doctor Card Mobile 2-Column Responsive Styling */
+            .doctor-card-new .doctor-img-wrapper {
+                height: 130px !important;
+            }
+            .doctor-card-new .doctor-fee-badge {
+                top: 6px !important;
+                left: 6px !important;
+                padding: 2px 6px !important;
+                font-size: 9px !important;
+            }
+            .doctor-card-new .fav-btn {
+                top: 6px !important;
+                right: 6px !important;
+                width: 26px !important;
+                height: 26px !important;
+                font-size: 11px !important;
+            }
+            .doctor-card-new .doctor-info {
+                padding: 8px !important;
+            }
+            .doctor-card-new .doctor-speciality {
+                font-size: 9px !important;
+                padding: 2px 5px !important;
+                margin-bottom: 2px !important;
+            }
+            .doctor-card-new .doctor-name {
+                font-size: 11.5px !important;
+                margin-bottom: 3px !important;
+                min-height: unset !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+            .doctor-card-new .doctor-rating {
+                font-size: 10px !important;
+                margin-bottom: 2px !important;
+            }
+            .doctor-card-new .doctor-rating i {
+                font-size: 10px !important;
+            }
+            .doctor-card-new .doctor-location {
+                font-size: 10px !important;
+                margin-bottom: 6px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+            .doctor-card-new .doctor-buttons {
+                flex-direction: column !important;
+                gap: 4px !important;
+            }
+            .doctor-card-new .btn-view-details,
+            .doctor-card-new .btn-book-appointment {
+                padding: 4px 4px !important;
+                font-size: 10px !important;
+                height: 26px !important;
+                line-height: 1.4 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
             }
         }
 

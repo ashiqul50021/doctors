@@ -25,7 +25,7 @@ class HomeController extends Controller
         $doctors = Doctor::with(['user', 'speciality', 'reviews'])
                          ->where('status', 'approved')
                          ->whereHas('user') // Ensure user exists
-                         ->take(10)
+                         ->take(4)
                          ->get();
 
         $productCategories = \App\Models\ProductCategory::with([
@@ -35,6 +35,7 @@ class HomeController extends Controller
             ->whereNull('parent_id')
             ->where('is_active', true)
             ->orderBy('name')
+            ->take(4)
             ->get();
 
         // Get top categories
@@ -54,7 +55,7 @@ class HomeController extends Controller
                           ->with(['category', 'variants'])
                           ->withCount('approvedProductReviews as reviews_count')
                           ->withAvg('approvedProductReviews as rating', 'rating')
-                          ->take(8)
+                          ->take(4)
                           ->latest()
                           ->get();
 
@@ -103,7 +104,7 @@ class HomeController extends Controller
             });
         }
 
-        $doctors = $query->latest()->take(24)->get()->map(function ($doctor) {
+        $doctors = $query->latest()->take(4)->get()->map(function ($doctor) {
             return [
                 'id' => $doctor->id,
                 'name' => $doctor->user->name ?? 'Doctor',

@@ -166,7 +166,7 @@
                                 </div>
                             </nav>
                             <div class="tab-content p-4" id="nav-items-tabContent">
-                                <!-- Products Tab - Grid Layout (Home Page Exact Style) -->
+                                <!-- Products Tab - EXACT Home Page Card Design -->
                                 <div class="tab-pane fade show active" id="nav-products" role="tabpanel" aria-labelledby="nav-products-tab">
                                     <div class="row">
                                         @forelse ($agentProducts as $product)
@@ -180,7 +180,7 @@
                                                     </div>
 
                                                     <div class="product-image-container">
-                                                        <a href="#" class="product-image-link">
+                                                        <a href="{{ route('ecommerce.products.show', $product->id) }}" class="product-image-link">
                                                             <img src="{{ $productImage ? asset($productImage) : asset('assets/img/products/default-product.png') }}"
                                                                 class="product-main-img" alt="{{ $product->name }}">
                                                         </a>
@@ -193,23 +193,20 @@
                                                             <span class="review-count">(0)</span>
                                                         </div>
 
-                                                        <div class="product-brand">{{ strtoupper($product->category->name ?? 'MEDICINE') }}</div>
+                                                        <div class="product-brand">{{ $product->category->name ?? 'Medicine' }}</div>
 
                                                         <h4 class="product-name">
-                                                            <a href="#">{{ $product->name }}</a>
+                                                            <a href="{{ route('ecommerce.products.show', $product->id) }}">{{ $product->name }}</a>
                                                         </h4>
 
-                                                        <!-- Commission Info (Home Page Style) -->
                                                         @if($product->agent_commission_value || $product->coupon_commission_value)
                                                             <div style="margin-bottom: 8px; padding: 6px 8px; background: #f0f9ff; border-radius: 4px; border-left: 3px solid #0ea5e9;">
-                                                                <small class="text-muted fw-bold d-block mb-1" style="font-size: 11px;">
-                                                                    <i class="fas fa-commission text-success" style="font-size: 11px;"></i> Commission
-                                                                </small>
+                                                                <small class="text-muted fw-bold d-block mb-1"><i class="fas fa-commission text-success" style="font-size: 11px;"></i> Commission</small>
                                                                 @if($product->agent_commission_value)
                                                                     @if($product->agent_commission_type === 'percent')
                                                                         <span class="badge bg-success" style="font-size: 10px;">{{ $product->agent_commission_value }}%</span>
                                                                     @else
-                                                                        <span class="badge bg-success" style="font-size: 10px;">৳{{ number_format($product->agent_commission_value, 2) }}</span>
+                                                                        <span class="badge bg-success" style="font-size: 10px;">৳{{ number_format($product->agent_commission_value, 2) }}/unit</span>
                                                                     @endif
                                                                 @endif
                                                             </div>
@@ -220,14 +217,19 @@
                                                                 <span class="price-current">৳{{ number_format($product->sale_price, 0) }}</span>
                                                             </div>
 
-                                                            <div class="btn-group-modern">
-                                                                <button type="button" class="btn-cart-modern" title="Add to Cart">
-                                                                    <i class="fas fa-shopping-cart"></i>
-                                                                </button>
-                                                                <button type="button" class="btn-buy-modern">
-                                                                    Buy
-                                                                </button>
-                                                            </div>
+                                                            <form action="{{ route('ecommerce.cart.add') }}" method="POST" class="product-actions-form">
+                                                                @csrf
+                                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                                <input type="hidden" name="quantity" value="1">
+                                                                <div class="btn-group-modern">
+                                                                    <button type="submit" class="btn-cart-modern" title="Add to Cart">
+                                                                        <i class="fas fa-shopping-cart"></i>
+                                                                    </button>
+                                                                    <button type="submit" name="buy_now" value="1" class="btn-buy-modern">
+                                                                        Buy
+                                                                    </button>
+                                                                </div>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -236,7 +238,8 @@
                                             <div class="col-12">
                                                 <div class="empty-state text-center">
                                                     <h4 class="mb-2">No products found</h4>
-                                                    <p class="mb-3">No products available yet.</p>
+                                                    <p class="mb-3">Try another keyword or clear your filters.</p>
+                                                    <a href="{{ route('ecommerce.products') }}" class="btn btn-filter">View All Products</a>
                                                 </div>
                                             </div>
                                         @endforelse
