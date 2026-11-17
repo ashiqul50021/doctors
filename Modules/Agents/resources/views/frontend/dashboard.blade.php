@@ -166,28 +166,61 @@
                                 </div>
                             </nav>
                             <div class="tab-content p-4" id="nav-items-tabContent">
-                                <!-- Products Tab - Grid Layout -->
+                                <!-- Products Tab - Grid Layout (Home Page Style) -->
                                 <div class="tab-pane fade show active" id="nav-products" role="tabpanel" aria-labelledby="nav-products-tab">
                                     <div class="row">
                                         @forelse ($agentProducts as $product)
-                                            <div class="col-md-6 col-lg-4 col-xl-3 mb-3">
-                                                <div class="card h-100 shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
-                                                    <div class="card-body">
-                                                        <h6 class="card-title font-weight-bold text-dark mb-2" style="min-height: 45px;">{{ $product->name }}</h6>
-                                                        <div class="mb-3">
-                                                            <span class="badge bg-primary mb-2">Price: ৳{{ number_format($product->sale_price, 0) }}</span>
+                                            <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                                                <div class="product-card-modern" style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; height: 100%; display: flex; flex-direction: column; transition: all 0.3s ease;">
+                                                    <!-- Stock Badge -->
+                                                    <div class="stock-badge" style="position: absolute; top: 10px; right: 10px; background: #10b981; color: white; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 600; z-index: 10;">
+                                                        IN STOCK
+                                                    </div>
+
+                                                    <!-- Product Image -->
+                                                    <div class="product-image-container" style="position: relative; width: 100%; height: 200px; overflow: hidden; background: #f3f4f6;">
+                                                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                                            <i class="fas fa-box" style="font-size: 60px; color: white; opacity: 0.3;"></i>
                                                         </div>
-                                                        <div class="mb-3">
-                                                            <small class="text-muted d-block mb-1">Commission:</small>
-                                                            <span class="badge bg-success-light text-success">
-                                                                @if($product->agent_commission_type === 'percent')
+                                                    </div>
+
+                                                    <!-- Product Details -->
+                                                    <div class="product-details" style="padding: 15px; flex: 1; display: flex; flex-direction: column;">
+                                                        <!-- Category -->
+                                                        <div class="product-brand" style="color: #6b7280; font-size: 12px; margin-bottom: 8px;">{{ $product->category->name ?? 'Health & Wellness' }}</div>
+
+                                                        <!-- Product Name -->
+                                                        <h5 class="product-name" style="font-weight: 600; margin-bottom: 10px; color: #111827; min-height: 40px;">
+                                                            {{ $product->name }}
+                                                        </h5>
+
+                                                        <!-- Commission Info -->
+                                                        <div style="margin-bottom: 12px; padding: 10px; background: #f0fdf4; border-radius: 6px; border-left: 3px solid #22c55e;">
+                                                            <small style="color: #666; display: block; margin-bottom: 4px; font-weight: 600;">
+                                                                <i class="fas fa-dollar-sign" style="color: #22c55e; margin-right: 4px;"></i>Commission
+                                                            </small>
+                                                            @if($product->agent_commission_type === 'percent')
+                                                                <span class="badge" style="background: #22c55e; color: white; font-size: 12px; padding: 4px 8px;">
                                                                     {{ $product->agent_commission_value ?? 0 }}%
-                                                                @else
+                                                                </span>
+                                                            @else
+                                                                <span class="badge" style="background: #22c55e; color: white; font-size: 12px; padding: 4px 8px;">
                                                                     ৳{{ number_format($product->agent_commission_value ?? 0, 0) }}
-                                                                @endif
-                                                            </span>
+                                                                </span>
+                                                            @endif
                                                         </div>
-                                                        <button class="btn btn-sm btn-primary w-100" onclick="alert('Product: {{ $product->name }}\nPrice: ৳{{ number_format($product->sale_price, 0) }}\nCommission: {{ $product->agent_commission_type === 'percent' ? $product->agent_commission_value . '%' : '৳' . number_format($product->agent_commission_value, 0) }}')">View Details</button>
+
+                                                        <!-- Price -->
+                                                        <div class="product-price-tag" style="margin-top: auto; padding-top: 10px; border-top: 1px solid #e5e7eb;">
+                                                            <div style="font-size: 20px; font-weight: 700; color: #111827;">
+                                                                ৳{{ number_format($product->sale_price, 0) }}
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Action Button -->
+                                                        <button onclick="alert('Product: {{ addslashes($product->name) }}\n\nPrice: ৳{{ number_format($product->sale_price, 0) }}\n\nCommission: {{ $product->agent_commission_type === 'percent' ? $product->agent_commission_value . '%' : '৳' . number_format($product->agent_commission_value, 0) }}')" class="btn btn-primary w-100 mt-3" style="font-weight: 600; padding: 10px; border-radius: 6px;">
+                                                            View Details
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
