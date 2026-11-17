@@ -138,17 +138,9 @@ Version      : 1.0
 		$('[data-toggle="tooltip"]').tooltip();
 	}
 	
-    // Datatable
-
-    if ($('.datatable').length > 0 && $.fn.DataTable) {
-        $('.datatable').each(function () {
-            if (!$.fn.DataTable.isDataTable(this)) {
-                $(this).DataTable({
-                    "bFilter": false,
-                });
-            }
-        });
-    }
+    // Datatable - Only initialize if not already done by Livewire
+    // Skip initialization here as it's handled in admin.blade.php livewire:navigated event
+    // to prevent duplicate initialization
 	
 	// Email Inbox
 

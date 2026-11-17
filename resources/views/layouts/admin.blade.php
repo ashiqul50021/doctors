@@ -104,19 +104,6 @@
     <!-- Custom JS -->
     <script src="{{ asset('backend/js/script.js') }}?v={{ @filemtime(base_path('backend/js/script.js')) }}"></script>
     @livewireScripts
-    <script>
-        document.addEventListener('livewire:navigated', () => {
-            if (window.jQuery && $.fn.DataTable) {
-                $('.datatable').each(function () {
-                    if (!$.fn.DataTable.isDataTable(this)) {
-                        $(this).DataTable({
-                            bFilter: false,
-                        });
-                    }
-                });
-            }
-        });
-    </script>
 </body>
 
 </html>

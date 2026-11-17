@@ -25,7 +25,7 @@
                 </div>
                 <div class="card-body pt-0">
                     <div class="table-responsive">
-                        <table class="table table-hover table-center datatable">
+                        <table id="appointmentsTable" class="table table-hover table-center">
                             <thead>
                                 <tr>
                                     <th>Doctor Name</th>
@@ -44,33 +44,47 @@
                                                 <a href="#" class="avatar avatar-sm me-2">
                                                     <img class="avatar-img rounded-circle"
                                                         src="{{ $appointment->doctor?->user?->profile_image ? asset($appointment->doctor->user->profile_image) : asset('backend/img/doctors/doctor-default.jpg') }}"
-                                                        alt="Doctor">
+                                                        alt="Doctor"
+                                                        style="width: 40px; height: 40px; object-fit: cover;">
                                                 </a>
-                                                <a href="#">Dr. {{ $appointment->doctor?->user?->name ?? 'N/A' }}</a>
+                                                <a href="#" class="text-dark">Dr. {{ $appointment->doctor?->user?->name ?? 'N/A' }}</a>
                                             </div>
                                         </td>
-                                        <td>{{ $appointment->doctor?->speciality?->name ?? '-' }}</td>
+                                        <td>
+                                            <span class="text-muted">{{ $appointment->doctor?->speciality?->name ?? 'General' }}</span>
+                                        </td>
                                         <td>
                                             <div class="table-avatar">
                                                 <a href="#" class="avatar avatar-sm me-2">
                                                     <img class="avatar-img rounded-circle"
                                                         src="{{ $appointment->patient?->user?->profile_image ? asset($appointment->patient->user->profile_image) : asset('backend/img/patients/patient-default.jpg') }}"
-                                                        alt="Patient">
+                                                        alt="Patient"
+                                                        style="width: 40px; height: 40px; object-fit: cover;">
                                                 </a>
-                                                <a href="#">{{ $appointment->patient?->user?->name ?? 'N/A' }}</a>
+                                                <a href="#" class="text-dark">{{ $appointment->patient?->user?->name ?? 'N/A' }}</a>
                                             </div>
                                         </td>
                                         <td>
-                                            {{ $appointment->appointment_date?->format('d M Y') }}<br>
-                                            <span class="text-primary d-block small">{{ $appointment->appointment_time ?? 'N/A' }}</span>
+                                            <small class="d-block">{{ $appointment->appointment_date?->format('d M Y') ?? 'N/A' }}</small>
+                                            <span class="text-primary small">{{ $appointment->appointment_time ?? 'N/A' }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-{{ $appointment->status === 'completed' ? 'success' : ($appointment->status === 'cancelled' ? 'danger' : 'primary') }}">
-                                                {{ ucfirst($appointment->status ?? 'pending') }}
-                                            </span>
+                                            @if($appointment->status === 'completed')
+                                                <span class="badge bg-success">Completed</span>
+                                            @elseif($appointment->status === 'cancelled')
+                                                <span class="badge bg-danger">Cancelled</span>
+                                            @elseif($appointment->status === 'confirmed')
+                                                <span class="badge bg-info">Confirmed</span>
+                                            @else
+                                                <span class="badge bg-warning">{{ ucfirst($appointment->status ?? 'Pending') }}</span>
+                                            @endif
                                         </td>
                                         <td class="text-end">
-                                            {{ $appointment->consultation_fee ? '৳' . number_format($appointment->consultation_fee, 2) : '-' }}
+                                            @if($appointment->consultation_fee && $appointment->consultation_fee > 0)
+                                                <strong>৳{{ number_format($appointment->consultation_fee, 2) }}</strong>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -92,23 +106,57 @@
         .table-avatar {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .table-avatar img {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
+        .table-avatar .avatar-img {
+            border: 1px solid #ddd;
+            padding: 2px;
         }
 
         .table-avatar a {
             text-decoration: none;
-            color: #333;
             font-weight: 500;
         }
 
         .table-avatar a:hover {
             color: #007bff;
         }
+
+        #appointmentsTable thead th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        #appointmentsTable tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .text-dark {
+            color: #333;
+        }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize DataTable only once
+            if ($.fn.DataTable) {
+                const table = $('#appointmentsTable');
+                if (table.length && !$.fn.DataTable.isDataTable(table[0])) {
+                    table.DataTable({
+                        "pageLength": 10,
+                        "bFilter": true,
+                        "bInfo": true,
+                        "language": {
+                            "paginate": {
+                                "previous": "Previous",
+                                "next": "Next"
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    </script>
 @endsection
