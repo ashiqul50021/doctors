@@ -945,12 +945,13 @@
     <script>
         const domain = 'meet.jit.si';
         const roomName = "{{ $roomName }}";
-        const displayName = "{{ $displayName }}";
+        const displayName = {{ json_encode($displayName) }};
         const isPatient = {{ $isPatient ? 'true' : 'false' }};
         const shouldInitNow = {{ ($isServing || $isDoctor || $isAdmin) ? 'true' : 'false' }};
 
         let jitsiApiInstance = null;
         let pollTimer = null;
+        let statusAbortController = null;
 
         // Sound chime when doctor calls
         function playChime() {
@@ -1033,7 +1034,14 @@
 
         // 2. Poll Waiting Room Status for Patient
         function pollQueueStatus() {
-            fetch("{{ route('appointment.consultation.status', $appointment->id) }}")
+            if (statusAbortController) {
+                statusAbortController.abort();
+            }
+            statusAbortController = new AbortController();
+
+            fetch("{{ route('appointment.consultation.status', $appointment->id) }}", {
+                signal: statusAbortController.signal
+            })
                 .then(res => res.json())
                 .then(data => {
                     if (data.is_serving) {
@@ -1066,7 +1074,11 @@
                         }
                     }
                 })
-                .catch(err => console.error('Status poll error:', err));
+                .catch(err => {
+                    if (err.name !== 'AbortError') {
+                        console.error('Status poll error:', err);
+                    }
+                });
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -1075,6 +1087,12 @@
             } else if (isPatient) {
                 pollTimer = setInterval(pollQueueStatus, 4000);
             }
+        });
+
+        // Cleanup polling on page unload
+        window.addEventListener('beforeunload', function () {
+            if (pollTimer) clearInterval(pollTimer);
+            if (statusAbortController) statusAbortController.abort();
         });
 
         // 2. Toggle Side Panel

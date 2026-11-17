@@ -22,7 +22,7 @@ class ConsultationController extends Controller
         $user = Auth::user();
         $isDoctor = ($user->doctor && $user->doctor->id === $appointment->doctor_id);
         $isPatient = ($user->patient && $user->patient->id === $appointment->patient_id);
-        $isAdmin = ($user->role === 'admin' || !empty($user->is_admin));
+        $isAdmin = ($user->role === 'admin' || (bool)$user->is_admin);
 
         // Security check
         if (!$isDoctor && !$isPatient && !$isAdmin) {
@@ -39,9 +39,9 @@ class ConsultationController extends Controller
         }
 
         $servingApptId = Cache::get("doctor_{$appointment->doctor_id}_online_serving_appt_id");
-        
-        // If doctor or admin, always let them in; if patient, they are serving if doctor called them or if servingApptId == this appointment
-        $isServing = $isDoctor || $isAdmin || ($servingApptId == $appointment->id);
+
+        // If doctor or admin, always let them in; if patient, they are serving if doctor called them or if servingApptId === this appointment
+        $isServing = $isDoctor || $isAdmin || ($servingApptId === (string)$appointment->id);
 
         $servingAppt = $servingApptId ? Appointment::find($servingApptId) : null;
         $servingToken = $servingAppt?->token_number;
@@ -59,7 +59,10 @@ class ConsultationController extends Controller
         }
 
         $videoService = new VideoCallService();
-        $roomName = $appointment->meeting_link ? $videoService->getRoomName($appointment->meeting_link) : 'room-' . $appointment->id;
+        if (!$videoService->isReady() || !$appointment->meeting_link) {
+            return back()->with('error', 'Meeting link is not available. Please contact support.');
+        }
+        $roomName = $videoService->getRoomName($appointment->meeting_link);
 
         $displayName = $isDoctor
             ? ('Dr. ' . ($appointment->doctor->user->name ?? 'Doctor'))
@@ -102,7 +105,7 @@ class ConsultationController extends Controller
         $appointment = Appointment::findOrFail($id);
 
         $servingApptId = Cache::get("doctor_{$appointment->doctor_id}_online_serving_appt_id");
-        $isServing = ($servingApptId == $appointment->id);
+        $isServing = ($servingApptId === (string)$appointment->id);
 
         $servingAppt = $servingApptId ? Appointment::find($servingApptId) : null;
 
@@ -136,6 +139,7 @@ class ConsultationController extends Controller
             return redirect()->back()->with('error', 'Unauthorized action.');
         }
 
+
         // Mark current completed if requested
         if ($request->input('complete_current', 1)) {
             $appointment->status = 'completed';
@@ -151,7 +155,7 @@ class ConsultationController extends Controller
             ->first();
 
         if ($nextAppt) {
-            Cache::put("doctor_{$appointment->doctor_id}_online_serving_appt_id", $nextAppt->id, now()->endOfDay());
+            Cache::put("doctor_{$appointment->doctor_id}_online_serving_appt_id", (string)$nextAppt->id, now()->endOfDay());
             if ($nextAppt->status === 'pending') {
                 $nextAppt->status = 'confirmed';
                 $nextAppt->save();
@@ -179,13 +183,13 @@ class ConsultationController extends Controller
         $appointment->status = 'completed';
         $appointment->save();
 
-        // Clear active serving tokens if it was this appointment
+        // Clear active serving tokens if it was this appointment (using strict comparison)
         $onlineServing = Cache::get("doctor_{$appointment->doctor_id}_online_serving_appt_id");
-        if ($onlineServing == $appointment->id) {
+        if ($onlineServing === (string)$appointment->id) {
             Cache::forget("doctor_{$appointment->doctor_id}_online_serving_appt_id");
         }
         $offlineServing = Cache::get("doctor_{$appointment->doctor_id}_serving_appt_id");
-        if ($offlineServing == $appointment->id) {
+        if ($offlineServing === (string)$appointment->id) {
             Cache::forget("doctor_{$appointment->doctor_id}_serving_appt_id");
         }
 
@@ -198,5 +202,12 @@ class ConsultationController extends Controller
         }
 
         return redirect()->back()->with('success', 'Consultation marked as completed.');
+    }
+
+    protected function authorizeDoctor($user, $appointment)
+    {
+        if (!$user->doctor || $appointment->doctor_id !== $user->doctor->id) {
+            throw new \Illuminate\Auth\AuthorizationException('Unauthorized action.');
+        }
     }
 }

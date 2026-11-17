@@ -50,25 +50,41 @@ class GoogleMeetService
             return false;
         }
 
-        $token = json_decode(file_get_contents($this->tokenPath), true);
-        $this->client->setAccessToken($token);
+        try {
+            $token = json_decode(file_get_contents($this->tokenPath), true);
+            $this->client->setAccessToken($token);
 
-        // If token is expired, try refreshing
-        if ($this->client->isAccessTokenExpired()) {
-            if ($this->client->getRefreshToken()) {
-                $this->client->fetchAccessTokenWithRefreshToken($this->client->getRefreshToken());
-                $newToken = $this->client->getAccessToken();
-                // Keep refresh token
-                if (!isset($newToken['refresh_token']) && isset($token['refresh_token'])) {
-                    $newToken['refresh_token'] = $token['refresh_token'];
+            // If token is expired, try refreshing
+            if ($this->client->isAccessTokenExpired()) {
+                if ($this->client->getRefreshToken()) {
+                    try {
+                        $this->client->fetchAccessTokenWithRefreshToken($this->client->getRefreshToken());
+                        $newToken = $this->client->getAccessToken();
+
+                        if (!$newToken || isset($newToken['error'])) {
+                            Log::error('Token refresh failed: ' . ($newToken['error'] ?? 'Unknown error'));
+                            return false;
+                        }
+
+                        // Keep refresh token
+                        if (!isset($newToken['refresh_token']) && isset($token['refresh_token'])) {
+                            $newToken['refresh_token'] = $token['refresh_token'];
+                        }
+                        file_put_contents($this->tokenPath, json_encode($newToken));
+                        return true;
+                    } catch (\Exception $e) {
+                        Log::error('Token refresh exception: ' . $e->getMessage());
+                        return false;
+                    }
                 }
-                file_put_contents($this->tokenPath, json_encode($newToken));
-                return true;
+                return false;
             }
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Token validation error: ' . $e->getMessage());
             return false;
         }
-
-        return true;
     }
 
     /**
