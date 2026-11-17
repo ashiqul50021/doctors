@@ -170,57 +170,72 @@
                                 <div class="tab-pane fade show active" id="nav-products" role="tabpanel" aria-labelledby="nav-products-tab">
                                     <div class="row">
                                         @forelse ($agentProducts as $product)
-                                            <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
-                                                <div class="product-card-modern" style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; height: 100%; display: flex; flex-direction: column; transition: all 0.3s ease;">
+                                            @php
+                                                $productImage = $product->image ?? ($product->gallery[0] ?? null);
+                                            @endphp
+                                            <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-grid-item">
+                                                <div class="product-card-modern">
                                                     <!-- Stock Badge -->
-                                                    <div class="stock-badge" style="position: absolute; top: 10px; right: 10px; background: #10b981; color: white; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 600; z-index: 10;">
+                                                    <div class="stock-badge in-stock">
                                                         IN STOCK
                                                     </div>
 
                                                     <!-- Product Image -->
-                                                    <div class="product-image-container" style="position: relative; width: 100%; height: 200px; overflow: hidden; background: #f3f4f6;">
-                                                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                                            <i class="fas fa-box" style="font-size: 60px; color: white; opacity: 0.3;"></i>
-                                                        </div>
+                                                    <div class="product-image-container">
+                                                        <a href="#" class="product-image-link">
+                                                            <img src="{{ $productImage ? asset($productImage) : asset('assets/img/products/default-product.png') }}"
+                                                                class="product-main-img" alt="{{ $product->name }}" style="width: 100%; height: 200px; object-fit: cover;">
+                                                        </a>
                                                     </div>
 
                                                     <!-- Product Details -->
-                                                    <div class="product-details" style="padding: 15px; flex: 1; display: flex; flex-direction: column;">
+                                                    <div class="product-details">
+                                                        <!-- Rating -->
+                                                        <div class="product-rating">
+                                                            <i class="fas fa-star"></i>
+                                                            <span class="rating-value">0.0</span>
+                                                            <span class="review-count">(0)</span>
+                                                        </div>
+
                                                         <!-- Category -->
-                                                        <div class="product-brand" style="color: #6b7280; font-size: 12px; margin-bottom: 8px;">{{ $product->category->name ?? 'Health & Wellness' }}</div>
+                                                        <div class="product-brand">{{ $product->category->name ?? 'MEDICINE' }}</div>
 
                                                         <!-- Product Name -->
-                                                        <h5 class="product-name" style="font-weight: 600; margin-bottom: 10px; color: #111827; min-height: 40px;">
-                                                            {{ $product->name }}
-                                                        </h5>
+                                                        <h4 class="product-name">
+                                                            <a href="#">{{ $product->name }}</a>
+                                                        </h4>
 
                                                         <!-- Commission Info -->
-                                                        <div style="margin-bottom: 12px; padding: 10px; background: #f0fdf4; border-radius: 6px; border-left: 3px solid #22c55e;">
-                                                            <small style="color: #666; display: block; margin-bottom: 4px; font-weight: 600;">
-                                                                <i class="fas fa-dollar-sign" style="color: #22c55e; margin-right: 4px;"></i>Commission
+                                                        <div style="margin-bottom: 8px; padding: 6px 8px; background: #f0f9ff; border-radius: 4px; border-left: 3px solid #0ea5e9;">
+                                                            <small style="color: #666; display: block; margin-bottom: 4px; font-weight: 600; font-size: 11px;">
+                                                                <i class="fas fa-commission text-success" style="font-size: 11px; margin-right: 2px;"></i>Commission
                                                             </small>
                                                             @if($product->agent_commission_type === 'percent')
-                                                                <span class="badge" style="background: #22c55e; color: white; font-size: 12px; padding: 4px 8px;">
+                                                                <span class="badge bg-success" style="font-size: 10px;">
                                                                     {{ $product->agent_commission_value ?? 0 }}%
                                                                 </span>
                                                             @else
-                                                                <span class="badge" style="background: #22c55e; color: white; font-size: 12px; padding: 4px 8px;">
+                                                                <span class="badge bg-success" style="font-size: 10px;">
                                                                     ৳{{ number_format($product->agent_commission_value ?? 0, 0) }}
                                                                 </span>
                                                             @endif
                                                         </div>
 
-                                                        <!-- Price -->
-                                                        <div class="product-price-tag" style="margin-top: auto; padding-top: 10px; border-top: 1px solid #e5e7eb;">
-                                                            <div style="font-size: 20px; font-weight: 700; color: #111827;">
-                                                                ৳{{ number_format($product->sale_price, 0) }}
+                                                        <!-- Price & Actions -->
+                                                        <div class="product-footer">
+                                                            <div class="product-price-tag">
+                                                                <span class="price-current">৳{{ number_format($product->sale_price, 0) }}</span>
+                                                            </div>
+
+                                                            <div class="btn-group-modern">
+                                                                <button type="button" class="btn-cart-modern" title="Add to Cart" onclick="alert('Product: {{ addslashes($product->name) }}\n\nPrice: ৳{{ number_format($product->sale_price, 0) }}\n\nCommission: {{ $product->agent_commission_type === 'percent' ? $product->agent_commission_value . '%' : '৳' . number_format($product->agent_commission_value, 0) }}')">
+                                                                    <i class="fas fa-shopping-cart"></i>
+                                                                </button>
+                                                                <button type="button" class="btn-buy-modern" onclick="alert('Product: {{ addslashes($product->name) }}\n\nPrice: ৳{{ number_format($product->sale_price, 0) }}\n\nCommission: {{ $product->agent_commission_type === 'percent' ? $product->agent_commission_value . '%' : '৳' . number_format($product->agent_commission_value, 0) }}')">
+                                                                    Buy
+                                                                </button>
                                                             </div>
                                                         </div>
-
-                                                        <!-- Action Button -->
-                                                        <button onclick="alert('Product: {{ addslashes($product->name) }}\n\nPrice: ৳{{ number_format($product->sale_price, 0) }}\n\nCommission: {{ $product->agent_commission_type === 'percent' ? $product->agent_commission_value . '%' : '৳' . number_format($product->agent_commission_value, 0) }}')" class="btn btn-primary w-100 mt-3" style="font-weight: 600; padding: 10px; border-radius: 6px;">
-                                                            View Details
-                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
