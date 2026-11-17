@@ -149,80 +149,6 @@
                         </div>
                     </div>
 
-                    <!-- Referral Links Card -->
-                    <div class="card mt-4 shadow-sm">
-                        <div class="card-header bg-white border-bottom-0 pt-4 px-4">
-                            <h4 class="card-title font-weight-bold mb-0">Your Affiliate Referral Links</h4>
-                            <p class="text-muted mb-0 small">Share these links with customers. Anyone purchasing via these links will earn you commissions.</p>
-                        </div>
-                        <div class="card-body px-4 pb-4">
-                            @if ($agent->can_sell_products)
-                                <div class="mb-3">
-                                    <label class="form-label font-weight-bold text-muted small">Products Shop Link</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" value="{{ url('/products?ref=' . $agent->referral_code) }}" id="product_ref_link" readonly>
-                                        <button class="btn btn-outline-primary" type="button" onclick="copyLink('product_ref_link')">Copy Link</button>
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if ($agent->can_sell_courses)
-                                <div class="mb-0">
-                                    <label class="form-label font-weight-bold text-muted small">Online Courses Link</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" value="{{ url('/courses?ref=' . $agent->referral_code) }}" id="course_ref_link" readonly>
-                                        <button class="btn btn-outline-primary" type="button" onclick="copyLink('course_ref_link')">Copy Link</button>
-                                    </div>
-                                </div>
-                            @endif
-
-                            @php
-                                $linkedCoupon = $agent->coupons()->first();
-                            @endphp
-                            <div class="mt-4 pt-3 border-top">
-                                <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
-                                    <div>
-                                        <label class="form-label font-weight-bold text-muted small mb-0">Your Personal Discount Coupon Code</label>
-                                        <p class="text-muted mb-0 small">Customers can use this coupon at checkout to get a discount. You will still receive your referral commission!</p>
-                                    </div>
-                                    @if ($linkedCoupon && $linkedCoupon->status)
-                                        <span class="badge bg-success-light text-success font-weight-bold px-2 py-1 mt-1 mt-md-0" id="couponDiscountBadge">
-                                            {{ $linkedCoupon->type == 'percent' ? $linkedCoupon->amount . '%' : '৳' . number_format($linkedCoupon->amount, 0) }} OFF
-                                        </span>
-                                    @endif
-                                </div>
-
-                                <form id="agentCouponForm" class="mt-2">
-                                    <div class="input-group" style="max-width: 480px;">
-                                        <span class="input-group-text bg-light"><i class="fas fa-tag text-primary"></i></span>
-                                        <input type="text" 
-                                               class="form-control font-weight-bold text-uppercase" 
-                                               id="coupon_code_input" 
-                                               placeholder="e.g. {{ strtoupper($agent->referral_code) }}" 
-                                               value="{{ $linkedCoupon ? $linkedCoupon->code : '' }}" 
-                                               maxlength="50"
-                                               autocomplete="off"
-                                               style="letter-spacing: 1.5px;">
-                                        <button class="btn btn-primary" type="button" id="saveCouponBtn" disabled>
-                                            <span class="spinner-border spinner-border-sm d-none" id="saveCouponSpinner" role="status"></span>
-                                            <span id="saveCouponBtnText">{{ $linkedCoupon ? 'Update' : 'Save' }}</span>
-                                        </button>
-                                        <button class="btn btn-outline-secondary {{ $linkedCoupon ? '' : 'd-none' }}" type="button" id="copyCouponBtn" onclick="copyLink('coupon_code_input')" title="Copy Coupon Code">
-                                            <i class="fas fa-copy"></i>
-                                        </button>
-                                    </div>
-                                    <div id="couponFeedback" class="mt-2 small" style="min-height: 22px;">
-                                        @if ($linkedCoupon)
-                                            <span class="text-success"><i class="fas fa-check-circle me-1"></i> Current Active Coupon: <strong>{{ $linkedCoupon->code }}</strong></span>
-                                        @else
-                                            <span class="text-muted"><i class="fas fa-info-circle me-1"></i> Type your preferred coupon code to check availability and save.</span>
-                                        @endif
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- New Tabs Section: Products, Appointments, Courses -->
                     <div class="card mt-4 shadow-sm">
                         <div class="card-body px-0 py-0">
@@ -240,45 +166,39 @@
                                 </div>
                             </nav>
                             <div class="tab-content p-4" id="nav-items-tabContent">
-                                <!-- Products Tab -->
+                                <!-- Products Tab - Grid Layout -->
                                 <div class="tab-pane fade show active" id="nav-products" role="tabpanel" aria-labelledby="nav-products-tab">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-center mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Product Name</th>
-                                                    <th>Price</th>
-                                                    <th>Commission Type</th>
-                                                    <th>Commission Value</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse ($agentProducts as $product)
-                                                    <tr>
-                                                        <td>
-                                                            <strong>{{ $product->name }}</strong>
-                                                        </td>
-                                                        <td>৳{{ number_format($product->sale_price, 2) }}</td>
-                                                        <td>
-                                                            <span class="badge bg-primary-light">
-                                                                {{ ucfirst($product->agent_commission_type ?? 'flat') }}
+                                    <div class="row">
+                                        @forelse ($agentProducts as $product)
+                                            <div class="col-md-6 col-lg-4 col-xl-3 mb-3">
+                                                <div class="card h-100 shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title font-weight-bold text-dark mb-2" style="min-height: 45px;">{{ $product->name }}</h6>
+                                                        <div class="mb-3">
+                                                            <span class="badge bg-primary mb-2">Price: ৳{{ number_format($product->sale_price, 0) }}</span>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <small class="text-muted d-block mb-1">Commission:</small>
+                                                            <span class="badge bg-success-light text-success">
+                                                                @if($product->agent_commission_type === 'percent')
+                                                                    {{ $product->agent_commission_value ?? 0 }}%
+                                                                @else
+                                                                    ৳{{ number_format($product->agent_commission_value ?? 0, 0) }}
+                                                                @endif
                                                             </span>
-                                                        </td>
-                                                        <td>
-                                                            @if($product->agent_commission_type === 'percent')
-                                                                {{ $product->agent_commission_value ?? 0 }}%
-                                                            @else
-                                                                ৳{{ number_format($product->agent_commission_value ?? 0, 2) }}
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="4" class="text-center py-4 text-muted">No products available yet.</td>
-                                                    </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
+                                                        </div>
+                                                        <button class="btn btn-sm btn-primary w-100" onclick="alert('Product: {{ $product->name }}\nPrice: ৳{{ number_format($product->sale_price, 0) }}\nCommission: {{ $product->agent_commission_type === 'percent' ? $product->agent_commission_value . '%' : '৳' . number_format($product->agent_commission_value, 0) }}')">View Details</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="col-12">
+                                                <div class="text-center py-5">
+                                                    <i class="fas fa-box-open text-muted" style="font-size: 3rem;"></i>
+                                                    <p class="text-muted mt-3">No products available yet.</p>
+                                                </div>
+                                            </div>
+                                        @endforelse
                                     </div>
                                 </div>
 
@@ -358,6 +278,80 @@
                                         </table>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Referral Links Card -->
+                    <div class="card mt-4 shadow-sm">
+                        <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                            <h4 class="card-title font-weight-bold mb-0">Your Affiliate Referral Links</h4>
+                            <p class="text-muted mb-0 small">Share these links with customers. Anyone purchasing via these links will earn you commissions.</p>
+                        </div>
+                        <div class="card-body px-4 pb-4">
+                            @if ($agent->can_sell_products)
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold text-muted small">Products Shop Link</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" value="{{ url('/products?ref=' . $agent->referral_code) }}" id="product_ref_link" readonly>
+                                        <button class="btn btn-outline-primary" type="button" onclick="copyLink('product_ref_link')">Copy Link</button>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if ($agent->can_sell_courses)
+                                <div class="mb-0">
+                                    <label class="form-label font-weight-bold text-muted small">Online Courses Link</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" value="{{ url('/courses?ref=' . $agent->referral_code) }}" id="course_ref_link" readonly>
+                                        <button class="btn btn-outline-primary" type="button" onclick="copyLink('course_ref_link')">Copy Link</button>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @php
+                                $linkedCoupon = $agent->coupons()->first();
+                            @endphp
+                            <div class="mt-4 pt-3 border-top">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
+                                    <div>
+                                        <label class="form-label font-weight-bold text-muted small mb-0">Your Personal Discount Coupon Code</label>
+                                        <p class="text-muted mb-0 small">Customers can use this coupon at checkout to get a discount. You will still receive your referral commission!</p>
+                                    </div>
+                                    @if ($linkedCoupon && $linkedCoupon->status)
+                                        <span class="badge bg-success-light text-success font-weight-bold px-2 py-1 mt-1 mt-md-0" id="couponDiscountBadge">
+                                            {{ $linkedCoupon->type == 'percent' ? $linkedCoupon->amount . '%' : '৳' . number_format($linkedCoupon->amount, 0) }} OFF
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <form id="agentCouponForm" class="mt-2">
+                                    <div class="input-group" style="max-width: 480px;">
+                                        <span class="input-group-text bg-light"><i class="fas fa-tag text-primary"></i></span>
+                                        <input type="text" 
+                                               class="form-control font-weight-bold text-uppercase" 
+                                               id="coupon_code_input" 
+                                               placeholder="e.g. {{ strtoupper($agent->referral_code) }}" 
+                                               value="{{ $linkedCoupon ? $linkedCoupon->code : '' }}" 
+                                               maxlength="50"
+                                               autocomplete="off"
+                                               style="letter-spacing: 1.5px;">
+                                        <button class="btn btn-primary" type="button" id="saveCouponBtn" disabled>
+                                            <span class="spinner-border spinner-border-sm d-none" id="saveCouponSpinner" role="status"></span>
+                                            <span id="saveCouponBtnText">{{ $linkedCoupon ? 'Update' : 'Save' }}</span>
+                                        </button>
+                                        <button class="btn btn-outline-secondary {{ $linkedCoupon ? '' : 'd-none' }}" type="button" id="copyCouponBtn" onclick="copyLink('coupon_code_input')" title="Copy Coupon Code">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <div id="couponFeedback" class="mt-2 small" style="min-height: 22px;">
+                                        @if ($linkedCoupon)
+                                            <span class="text-success"><i class="fas fa-check-circle me-1"></i> Current Active Coupon: <strong>{{ $linkedCoupon->code }}</strong></span>
+                                        @else
+                                            <span class="text-muted"><i class="fas fa-info-circle me-1"></i> Type your preferred coupon code to check availability and save.</span>
+                                        @endif
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
