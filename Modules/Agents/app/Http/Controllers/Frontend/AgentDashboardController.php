@@ -43,6 +43,27 @@ class AgentDashboardController extends Controller
             ->take(5)
             ->get();
 
+        // For new tabs section
+        $agentProducts = \Modules\Ecommerce\Models\Product::where(function ($query) {
+            $query->whereNotNull('agent_commission_value')
+                  ->orWhereNotNull('coupon_commission_value');
+        })
+        ->select('id', 'name', 'sale_price', 'agent_commission_type', 'agent_commission_value')
+        ->limit(10)
+        ->get();
+
+        $allAppointments = Appointment::with(['doctor.user', 'doctor.speciality', 'patient.user'])
+            ->where('agent_id', $agent->id)
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        $allCourses = \Modules\Courses\Models\Enrollment::with(['course', 'course.instructor'])
+            ->where('agent_id', $agent->id)
+            ->latest()
+            ->limit(10)
+            ->get();
+
         return view('agents::frontend.dashboard', compact(
             'agent',
             'availableBalance',
@@ -52,7 +73,10 @@ class AgentDashboardController extends Controller
             'coursesCount',
             'recentBookings',
             'recentOrders',
-            'recentTransactions'
+            'recentTransactions',
+            'agentProducts',
+            'allAppointments',
+            'allCourses'
         ));
     }
 

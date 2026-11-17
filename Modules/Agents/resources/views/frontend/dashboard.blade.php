@@ -362,6 +362,145 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- New Tabs Section: Products, Appointments, Courses -->
+                    <div class="card mt-4 shadow-sm">
+                        <div class="card-body px-0 py-0">
+                            <nav>
+                                <div class="nav nav-tabs nav-tabs-solid px-4 pt-3 border-bottom-0" id="nav-items-tab" role="tablist">
+                                    <button class="nav-link active" id="nav-products-tab" data-bs-toggle="tab" data-bs-target="#nav-products" type="button" role="tab" aria-controls="nav-products" aria-selected="true">
+                                        <i class="fas fa-box me-2"></i>Products
+                                    </button>
+                                    <button class="nav-link" id="nav-appointments-tab" data-bs-toggle="tab" data-bs-target="#nav-appointments" type="button" role="tab" aria-controls="nav-appointments" aria-selected="false">
+                                        <i class="fas fa-calendar-check me-2"></i>Appointments
+                                    </button>
+                                    <button class="nav-link" id="nav-courses-tab" data-bs-toggle="tab" data-bs-target="#nav-courses" type="button" role="tab" aria-controls="nav-courses" aria-selected="false">
+                                        <i class="fas fa-graduation-cap me-2"></i>Courses
+                                    </button>
+                                </div>
+                            </nav>
+                            <div class="tab-content p-4" id="nav-items-tabContent">
+                                <!-- Products Tab -->
+                                <div class="tab-pane fade show active" id="nav-products" role="tabpanel" aria-labelledby="nav-products-tab">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-center mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product Name</th>
+                                                    <th>Price</th>
+                                                    <th>Commission Type</th>
+                                                    <th>Commission Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse ($agentProducts as $product)
+                                                    <tr>
+                                                        <td>
+                                                            <strong>{{ $product->name }}</strong>
+                                                        </td>
+                                                        <td>৳{{ number_format($product->sale_price, 2) }}</td>
+                                                        <td>
+                                                            <span class="badge bg-primary-light">
+                                                                {{ ucfirst($product->agent_commission_type ?? 'flat') }}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            @if($product->agent_commission_type === 'percent')
+                                                                {{ $product->agent_commission_value ?? 0 }}%
+                                                            @else
+                                                                ৳{{ number_format($product->agent_commission_value ?? 0, 2) }}
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="4" class="text-center py-4 text-muted">No products available yet.</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Appointments Tab -->
+                                <div class="tab-pane fade" id="nav-appointments" role="tabpanel" aria-labelledby="nav-appointments-tab">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-center mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Doctor</th>
+                                                    <th>Patient</th>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Fee</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse ($allAppointments as $appointment)
+                                                    <tr>
+                                                        <td>
+                                                            <strong>Dr. {{ $appointment->doctor->user->name ?? 'N/A' }}</strong><br>
+                                                            <small class="text-muted">{{ $appointment->doctor->speciality->name ?? '' }}</small>
+                                                        </td>
+                                                        <td>{{ $appointment->patient->user->name ?? 'N/A' }}</td>
+                                                        <td>{{ $appointment->appointment_date->format('d M Y') }}</td>
+                                                        <td>{{ date('h:i A', strtotime($appointment->appointment_time)) }}</td>
+                                                        <td>৳{{ number_format($appointment->consultation_fee ?? 0, 2) }}</td>
+                                                        <td>
+                                                            <span class="badge rounded-pill bg-{{ $appointment->status === 'completed' ? 'success' : ($appointment->status === 'confirmed' ? 'info' : ($appointment->status === 'pending' ? 'warning' : 'danger')) }}-light">
+                                                                {{ ucfirst($appointment->status) }}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="6" class="text-center py-4 text-muted">No appointments booked yet.</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Courses Tab -->
+                                <div class="tab-pane fade" id="nav-courses" role="tabpanel" aria-labelledby="nav-courses-tab">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-center mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Course Title</th>
+                                                    <th>Instructor</th>
+                                                    <th>Enrollment Date</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse ($allCourses as $enrollment)
+                                                    <tr>
+                                                        <td>
+                                                            <strong>{{ $enrollment->course->title ?? 'N/A' }}</strong>
+                                                        </td>
+                                                        <td>{{ $enrollment->course->instructor->name ?? 'N/A' }}</td>
+                                                        <td>{{ $enrollment->created_at->format('d M Y') }}</td>
+                                                        <td>
+                                                            <span class="badge rounded-pill bg-{{ $enrollment->status === 'active' ? 'success' : ($enrollment->status === 'completed' ? 'info' : 'warning') }}-light">
+                                                                {{ ucfirst($enrollment->status ?? 'active') }}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="4" class="text-center py-4 text-muted">No course enrollments yet.</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
