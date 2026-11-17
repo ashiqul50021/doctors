@@ -20,82 +20,66 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-body">
+                <div class="card-header">
+                    <h4 class="card-title">All Appointments</h4>
+                </div>
+                <div class="card-body pt-0">
                     <div class="table-responsive">
-                        <table class="datatable table table-hover table-center mb-0">
+                        <table class="table table-hover table-center datatable">
                             <thead>
                                 <tr>
                                     <th>Doctor Name</th>
                                     <th>Speciality</th>
                                     <th>Patient Name</th>
-                                    <th>Apointment Time</th>
+                                    <th>Appointment Time</th>
                                     <th>Status</th>
                                     <th class="text-end">Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <h2 class="table-avatar">
-                                            <a href="profile.html" class="avatar avatar-sm me-2"><img
-                                                    class="avatar-img rounded-circle"
-                                                    src="{{ asset('backend/img/doctors/doctor-thumb-01.jpg') }}"
-                                                    alt="User Image"></a>
-                                            <a href="profile.html">Dr. Ruby Perrin</a>
-                                        </h2>
-                                    </td>
-                                    <td>Dental</td>
-                                    <td>
-                                        <h2 class="table-avatar">
-                                            <a href="profile.html" class="avatar avatar-sm me-2"><img
-                                                    class="avatar-img rounded-circle"
-                                                    src="{{ asset('backend/img/patients/patient1.jpg') }}"
-                                                    alt="User Image"></a>
-                                            <a href="profile.html">Charlene Reed </a>
-                                        </h2>
-                                    </td>
-                                    <td>9 Nov 2019 <span class="text-primary d-block">11.00 AM - 11.15 AM</span></td>
-                                    <td>
-                                        <div class="status-toggle">
-                                            <input type="checkbox" id="status_1" class="check" checked>
-                                            <label for="status_1" class="checktoggle">checkbox</label>
-                                        </div>
-                                    </td>
-                                    <td class="text-end">
-                                        $200.00
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <h2 class="table-avatar">
-                                            <a href="profile.html" class="avatar avatar-sm me-2"><img
-                                                    class="avatar-img rounded-circle"
-                                                    src="{{ asset('backend/img/doctors/doctor-thumb-02.jpg') }}"
-                                                    alt="User Image"></a>
-                                            <a href="profile.html">Dr. Darren Elder</a>
-                                        </h2>
-                                    </td>
-                                    <td>Dental</td>
-                                    <td>
-                                        <h2 class="table-avatar">
-                                            <a href="profile.html" class="avatar avatar-sm me-2"><img
-                                                    class="avatar-img rounded-circle"
-                                                    src="{{ asset('backend/img/patients/patient2.jpg') }}"
-                                                    alt="User Image"></a>
-                                            <a href="profile.html">Travis Trimble </a>
-                                        </h2>
-                                    </td>
-                                    <td>5 Nov 2019 <span class="text-primary d-block">11.00 AM - 11.35 AM</span></td>
-                                    <td>
-                                        <div class="status-toggle">
-                                            <input type="checkbox" id="status_2" class="check" checked>
-                                            <label for="status_2" class="checktoggle">checkbox</label>
-                                        </div>
-                                    </td>
-                                    <td class="text-end">
-                                        $300.00
-                                    </td>
-                                </tr>
+                                @forelse($appointments ?? [] as $appointment)
+                                    <tr>
+                                        <td>
+                                            <div class="table-avatar">
+                                                <a href="#" class="avatar avatar-sm me-2">
+                                                    <img class="avatar-img rounded-circle"
+                                                        src="{{ $appointment->doctor?->user?->profile_image ? asset($appointment->doctor->user->profile_image) : asset('backend/img/doctors/doctor-default.jpg') }}"
+                                                        alt="Doctor">
+                                                </a>
+                                                <a href="#">Dr. {{ $appointment->doctor?->user?->name ?? 'N/A' }}</a>
+                                            </div>
+                                        </td>
+                                        <td>{{ $appointment->doctor?->speciality?->name ?? '-' }}</td>
+                                        <td>
+                                            <div class="table-avatar">
+                                                <a href="#" class="avatar avatar-sm me-2">
+                                                    <img class="avatar-img rounded-circle"
+                                                        src="{{ $appointment->patient?->user?->profile_image ? asset($appointment->patient->user->profile_image) : asset('backend/img/patients/patient-default.jpg') }}"
+                                                        alt="Patient">
+                                                </a>
+                                                <a href="#">{{ $appointment->patient?->user?->name ?? 'N/A' }}</a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {{ $appointment->appointment_date?->format('d M Y') }}<br>
+                                            <span class="text-primary d-block small">{{ $appointment->appointment_time ?? 'N/A' }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ $appointment->status === 'completed' ? 'success' : ($appointment->status === 'cancelled' ? 'danger' : 'primary') }}">
+                                                {{ ucfirst($appointment->status ?? 'pending') }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            {{ $appointment->consultation_fee ? '৳' . number_format($appointment->consultation_fee, 2) : '-' }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <p class="text-muted">No appointments found</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -103,4 +87,28 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .table-avatar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-avatar img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+        }
+
+        .table-avatar a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .table-avatar a:hover {
+            color: #007bff;
+        }
+    </style>
 @endsection
