@@ -1120,6 +1120,77 @@
                 });
             }
 
+            // Required field validation across wizard tabs
+            const productForm = document.getElementById('productMainForm');
+            if (productForm) {
+                productForm.setAttribute('novalidate', 'novalidate');
+
+                const requiredRules = [
+                    { selector: '[name="name"]', tab: 'general-tab', message: 'Product name is required.' },
+                    { selector: '[name="product_category_id"]', tab: 'general-tab', message: 'Please select a category.' },
+                    { selector: '[name="image"]', tab: 'general-tab', message: 'Primary image is required.' },
+                    { selector: '[name="price"]', tab: 'pricing-tab', message: 'Price is required.' },
+                    { selector: '[name="stock"]', tab: 'pricing-tab', message: 'Stock is required.' },
+                ];
+
+                function clearFieldError(field) {
+                    field.classList.remove('is-invalid');
+                    const msg = field.parentElement.querySelector('.js-required-msg');
+                    if (msg) msg.remove();
+                }
+
+                function showFieldError(field, message) {
+                    clearFieldError(field);
+                    field.classList.add('is-invalid');
+                    const msg = document.createElement('div');
+                    msg.className = 'js-required-msg text-danger small mt-1';
+                    msg.textContent = message;
+                    field.insertAdjacentElement('afterend', msg);
+                }
+
+                requiredRules.forEach(rule => {
+                    const field = productForm.querySelector(rule.selector);
+                    if (!field) return;
+                    ['input', 'change'].forEach(evt => field.addEventListener(evt, () => {
+                        if (field.type === 'file' ? field.files.length : String(field.value).trim() !== '') {
+                            clearFieldError(field);
+                        }
+                    }));
+                });
+
+                productForm.addEventListener('submit', function(e) {
+                    let firstInvalid = null;
+                    let firstTab = null;
+
+                    requiredRules.forEach(rule => {
+                        const field = productForm.querySelector(rule.selector);
+                        if (!field) return;
+                        const empty = field.type === 'file'
+                            ? field.files.length === 0
+                            : String(field.value).trim() === '';
+                        if (empty) {
+                            showFieldError(field, rule.message);
+                            if (!firstInvalid) {
+                                firstInvalid = field;
+                                firstTab = rule.tab;
+                            }
+                        } else {
+                            clearFieldError(field);
+                        }
+                    });
+
+                    if (firstInvalid) {
+                        e.preventDefault();
+                        const tabEl = document.getElementById(firstTab);
+                        if (tabEl) tabEl.click();
+                        setTimeout(() => {
+                            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            firstInvalid.focus({ preventScroll: true });
+                        }, 200);
+                    }
+                });
+            }
+
             // Live Preview Updates
             function updateSimSections() {
                 const simContainer = document.getElementById('simSectionsContainer');
