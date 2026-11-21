@@ -552,9 +552,6 @@
                         <div class="filter-section">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <h5 class="filter-title mb-0"><i class="fas fa-list"></i> Categories</h5>
-                                <a href="{{ route('ecommerce.products') }}" class="small text-primary fw-medium text-decoration-none">
-                                    See All <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
-                                </a>
                             </div>
                             <div class="category-list" id="homeCategoryList">
                                 <label class="category-item home-cat-root active-cat" id="cat-all-label">
@@ -562,10 +559,10 @@
                                     <span class="category-name">All Products</span>
                                 </label>
 
-                                @foreach($productCategories->take(4) as $category)
+                                @foreach($productCategories as $category)
                                     @if($category->children->isNotEmpty())
                                         {{-- Parent with children --}}
-                                        <div class="home-cat-group" id="hcg-{{ $category->id }}">
+                                        <div class="home-cat-group {{ $loop->iteration > 4 ? 'extra-cat d-none' : '' }}" id="hcg-{{ $category->id }}">
                                             <label class="category-item home-cat-root"
                                                 onclick="toggleHomeCat(event, 'hcg-{{ $category->id }}-children')">
                                                 <input type="radio" name="product_category" value="{{ $category->id }}">
@@ -607,13 +604,18 @@
                                         </div>
                                     @else
                                         {{-- Leaf category --}}
-                                        <label class="category-item home-cat-root">
+                                        <label class="category-item home-cat-root {{ $loop->iteration > 4 ? 'extra-cat d-none' : '' }}">
                                             <input type="radio" name="product_category" value="{{ $category->id }}">
                                             <span class="category-name">{{ $category->name }}</span>
                                         </label>
                                     @endif
                                 @endforeach
                             </div>
+                            @if($productCategories->count() > 4)
+                                <button type="button" id="toggleAllCategoriesBtn" class="btn btn-sm btn-outline-primary w-100 mt-2">
+                                    See All Categories
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -1643,6 +1645,14 @@
                     }
                 }
             };
+
+            // Show / hide extra categories
+            $('#toggleAllCategoriesBtn').on('click', function () {
+                var $extras = $('#homeCategoryList .extra-cat');
+                var hidden = $extras.first().hasClass('d-none');
+                $extras.toggleClass('d-none', !hidden);
+                $(this).text(hidden ? 'Show Less' : 'See All Categories');
+            });
 
             // Category filter change — update active class + filter products
             $('body').on('change', 'input[name="product_category"]', function () {

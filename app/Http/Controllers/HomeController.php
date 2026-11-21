@@ -35,7 +35,6 @@ class HomeController extends Controller
             ->whereNull('parent_id')
             ->where('is_active', true)
             ->orderBy('name')
-            ->take(4)
             ->get();
 
         // Get top categories
