@@ -3579,12 +3579,13 @@
             }
 
             .category-list {
-                flex-direction: row;
-                flex-wrap: wrap;
+                flex-direction: column;
+                flex-wrap: nowrap;
             }
 
             .category-item {
                 flex: 0 0 auto;
+                width: 100%;
             }
 
             .speciality-list {
