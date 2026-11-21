@@ -50,13 +50,21 @@ class HomeController extends Controller
         $districts = District::orderBy('name')->get();
 
         // Get products for homepage grid
-        $products = Product::where('is_active', true)
+        // One random product per category (re-randomized on every page load)
+        $randomIds = Product::where('is_active', true)
+                          ->whereNotNull('product_category_id')
+                          ->inRandomOrder()
+                          ->get(['id', 'product_category_id'])
+                          ->unique('product_category_id')
+                          ->take(4)
+                          ->pluck('id');
+
+        $products = Product::whereIn('id', $randomIds)
                           ->with(['category', 'variants'])
                           ->withCount('approvedProductReviews as reviews_count')
                           ->withAvg('approvedProductReviews as rating', 'rating')
-                          ->take(4)
-                          ->latest()
-                          ->get();
+                          ->get()
+                          ->shuffle();
 
         // Get active health packages
         $healthPackages = \App\Models\HealthPackage::active()->ordered()->get();
