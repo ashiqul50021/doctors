@@ -228,8 +228,15 @@ class ProductController extends Controller
             });
         }
 
-        $products = $query->latest()->paginate(12);
-        
+        // Random order; the seed is kept in session so pagination doesn't repeat products.
+        // A fresh seed is generated whenever the first page is opened.
+        if (!$request->filled('page') || (int) $request->page <= 1 || !$request->session()->has('products_random_seed')) {
+            $request->session()->put('products_random_seed', random_int(1, 999999));
+        }
+        $products = $query->inRandomOrder($request->session()->get('products_random_seed'))
+            ->paginate(12)
+            ->withQueryString();
+
         $categories = ProductCategory::with([
                 'children' => function($query) {
                     $query->where('is_active', true)->orderBy('name');

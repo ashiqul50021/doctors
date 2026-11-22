@@ -138,7 +138,7 @@
                             $productReviewCount = (int) ($product->reviews_count ?? 0);
                             $productRating = $productReviewCount > 0 ? (float) ($product->rating ?? 0) : 0;
                         @endphp
-                        <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-grid-item">
+                        <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-3 mb-md-4 product-grid-item">
                             <div class="product-card-modern">
                                 <div class="stock-badge {{ $availableStock > 0 ? 'in-stock' : 'out-of-stock' }}">
                                     {{ $availableStock > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
@@ -767,7 +767,7 @@
             let skeletonHtml = '';
             for (let i = 0; i < count; i++) {
                 skeletonHtml += `
-                    <div class="col-lg-4 col-md-6 col-sm-6 mb-4 product-skeleton-item">
+                    <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-3 mb-md-4 product-skeleton-item">
                         <div class="product-card-skeleton">
                             <div class="skeleton-img-wrap">
                                 <div class="skeleton-badge skeleton-shimmer"></div>
