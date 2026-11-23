@@ -88,6 +88,12 @@
                     <li class="{{ request()->routeIs('ecommerce.admin.sellers.*') ? 'active' : '' }}">
                         <a href="{{ route('ecommerce.admin.sellers.index') }}" wire:navigate><i class="fe fe-users"></i> <span>Sellers List</span></a>
                     </li>
+                    <li class="{{ request()->routeIs('admin.suppliers.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.suppliers.index') }}" wire:navigate><i class="fe fe-users"></i> <span>Suppliers List</span></a>
+                    </li>
+                    <li class="{{ request()->routeIs('admin.buyers.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.buyers.index') }}" wire:navigate><i class="fe fe-users"></i> <span>Buyers List</span></a>
+                    </li>
                     <li class="{{ request()->routeIs('ecommerce.admin.seller-products.*') ? 'active' : '' }}">
                         <a href="{{ route('ecommerce.admin.seller-products.index') }}" wire:navigate><i class="fe fe-box"></i> <span>Seller Products</span></a>
                     </li>

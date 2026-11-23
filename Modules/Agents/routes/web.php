@@ -14,7 +14,7 @@ use Modules\Agents\Http\Controllers\Backend\AdminAgentController;
 |--------------------------------------------------------------------------
 */
 Route::middleware(['web', 'guest'])->prefix('agent')->name('agent.')->group(function () {
-    Route::get('/login', [AgentAuthController::class, 'showLoginForm'])->name('login');
+    Route::redirect('/login', '/login')->name('login');
     Route::post('/login', [AgentAuthController::class, 'login'])->name('login.submit');
     Route::get('/register', [AgentAuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [AgentAuthController::class, 'register'])->name('register.submit');

@@ -25,6 +25,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/doctors/{doctor}/schedule', [App\Http\Controllers\Admin\DoctorScheduleController::class, 'update'])->name('doctors.schedule.update');
     Route::delete('/doctors/schedule/{id}', [App\Http\Controllers\Admin\DoctorScheduleController::class, 'destroy'])->name('doctors.schedule.destroy');
 
+    // Supplier & Buyer Management
+    Route::get('/suppliers', [App\Http\Controllers\Admin\SupplierController::class, 'index'])->name('suppliers.index');
+    Route::patch('/suppliers/{id}/status', [App\Http\Controllers\Admin\SupplierController::class, 'updateStatus'])->name('suppliers.update-status');
+    Route::get('/buyers', [App\Http\Controllers\Admin\SupplierController::class, 'buyers'])->name('buyers.index');
+
     // Order Management
     Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');

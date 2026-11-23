@@ -29,7 +29,7 @@ class RoleMiddleware
                 return redirect()->route('agent.login');
             }
 
-            return redirect()->route('patient.login');
+            return redirect()->route('login');
         }
 
         $user = Auth::user();
@@ -43,6 +43,10 @@ class RoleMiddleware
                 return redirect()->route('agent.dashboard');
             } elseif ($user->role === 'seller') {
                 return redirect()->route('ecommerce.seller.dashboard');
+            } elseif ($user->role === 'supplier') {
+                return redirect()->route('supplier.dashboard');
+            } elseif ($user->role === 'buyer') {
+                return redirect('/');
             }
             return redirect()->route('patient.dashboard');
         }

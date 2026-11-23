@@ -62,6 +62,25 @@ class AuthController extends Controller
                     }
                 }
 
+                // Fallback: check buyer / seller / supplier / agent phones
+                if (!$user) {
+                    $profileModels = [
+                        \App\Models\BuyerProfile::class,
+                        \Modules\Ecommerce\Models\SellerProfile::class,
+                        \App\Models\SupplierProfile::class,
+                        \Modules\Agents\Models\Agent::class,
+                    ];
+                    foreach ($profileModels as $model) {
+                        $profile = $model::where('phone', $cleanPhone)
+                            ->orWhere('phone', 'like', '%' . $last10)
+                            ->latest()->first();
+                        if ($profile && $profile->user) {
+                            $user = $profile->user;
+                            break;
+                        }
+                    }
+                }
+
                 // Fallback: check User auto-generated email
                 if (!$user) {
                     $user = User::where('email', 'like', 'patient_' . $cleanPhone . '%')
@@ -79,11 +98,16 @@ class AuthController extends Controller
                 ]);
             }
 
+            // Roles that need admin approval cannot log in until approved.
+            if ($blocked = $this->approvalBlockMessage($user)) {
+                return back()->withErrors(['login' => $blocked])->withInput();
+            }
+
             Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
 
             // Redirect based on role
-            return $this->redirectAuthenticatedUser($user);
+            return $this->redirectUser($user);
         }
 
         return back()->withErrors([
@@ -180,17 +204,66 @@ class AuthController extends Controller
 
     private function redirectAuthenticatedUser(User $user): RedirectResponse
     {
-        if ($user->role === 'doctor') {
-            return $this->redirectDoctorAfterAuth($user->doctor);
+        return $this->redirectUser($user);
+    }
+
+    /**
+     * Message explaining why this user cannot log in yet, or null if allowed.
+     * Doctors are not blocked here: they get the profile/pending page instead.
+     */
+    private function approvalBlockMessage(User $user): ?string
+    {
+        switch ($user->role) {
+            case 'seller':
+                $status = $user->sellerProfile->status ?? null;
+                if ($status === 'pending') {
+                    return 'Your seller account is pending admin approval.';
+                }
+                if ($status === 'suspended') {
+                    return 'Your seller account has been suspended.';
+                }
+                return $status ? null : 'Seller profile not found for this account.';
+            case 'agent':
+                $status = $user->agent->status ?? null;
+                if ($status === 'pending') {
+                    return 'Your agent account is pending admin approval.';
+                }
+                if ($status === 'suspended') {
+                    return 'Your agent account has been suspended.';
+                }
+                return $status ? null : 'Agent profile not found for this account.';
+            case 'supplier':
+                $status = $user->supplierProfile->status ?? null;
+                if ($status === 'pending') {
+                    return 'Your supplier account is pending admin approval.';
+                }
+                if ($status === 'rejected') {
+                    return 'Your supplier application was rejected.';
+                }
+                if ($status === 'suspended') {
+                    return 'Your supplier account has been suspended.';
+                }
+                return $status ? null : 'Supplier profile not found for this account.';
         }
-        if ($user->role === 'seller') {
-            return redirect()->route('ecommerce.seller.dashboard');
-        }
-        if ($user->role === 'agent') {
-            return redirect()->route('agent.dashboard');
-        }
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
+
+        return null;
+    }
+
+    public function redirectUser(User $user): RedirectResponse
+    {
+        switch ($user->role) {
+            case 'doctor':
+                return $this->redirectDoctorAfterAuth($user->doctor);
+            case 'seller':
+                return redirect()->route('ecommerce.seller.dashboard');
+            case 'agent':
+                return redirect()->route('agent.dashboard');
+            case 'supplier':
+                return redirect()->route('supplier.dashboard');
+            case 'buyer':
+                return redirect('/');
+            case 'admin':
+                return redirect()->route('admin.dashboard');
         }
 
         return redirect()->route('patient.dashboard');

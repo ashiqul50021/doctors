@@ -82,6 +82,16 @@ class User extends Authenticatable
         return $this->hasOne(\Modules\Ecommerce\Models\SellerProfile::class);
     }
 
+    public function supplierProfile()
+    {
+        return $this->hasOne(SupplierProfile::class);
+    }
+
+    public function buyerProfile()
+    {
+        return $this->hasOne(BuyerProfile::class);
+    }
+
     public function isAgent(): bool
     {
         return $this->role === 'agent';

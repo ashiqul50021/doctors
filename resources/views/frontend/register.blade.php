@@ -132,7 +132,7 @@
                 <img src="{{ !empty($siteSettings['logo']) ? asset($siteSettings['logo']) : asset('assets/img/logo.png') }}"
                     class="form-header-logo" alt="Logo">
 
-                <h3 class="form-title">Patient Register</h3>
+                <h3 class="form-title">Patient Sign Up</h3>
                 <p class="form-subtitle">Create an account to manage your appointments</p>
 
                 <form action="{{ route('register.submit') }}" method="POST">

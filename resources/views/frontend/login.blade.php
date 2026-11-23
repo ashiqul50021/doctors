@@ -153,7 +153,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('patient.login.submit') }}" method="POST">
+                <form action="{{ route('login.submit') }}" method="POST">
                     @csrf
 
                     <div class="mb-3">

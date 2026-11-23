@@ -31,18 +31,25 @@ Route::view('/voice-call', 'frontend.voice-call')->name('voice.call');
 Route::view('/video-call', 'frontend.video-call')->name('video.call');
 
 // Auth Routes
-Route::get('/patient/login', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('patient.login');
+// One shared login for every role: the old role-specific login URLs now redirect to /login.
+Route::redirect('/patient/login', '/login')->name('patient.login');
 Route::post('/patient/login', [App\Http\Controllers\AuthController::class, 'login'])->name('patient.login.submit');
-Route::get('/doctor/login', [App\Http\Controllers\AuthController::class, 'showDoctorLoginForm'])->name('doctor.login');
+Route::redirect('/doctor/login', '/login')->name('doctor.login');
 Route::post('/doctor/login', [App\Http\Controllers\AuthController::class, 'doctorLogin'])->name('doctor.login.submit');
 
 // Legacy login aliases (keep for compatibility with existing links/middleware)
 Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login.submit');
-Route::get('/register', [App\Http\Controllers\AuthController::class, 'showPatientRegisterForm'])->name('register');
+// Sign up: one chooser page, then a role-specific form.
+Route::get('/register', [App\Http\Controllers\SignupController::class, 'choose'])->name('register');
+Route::get('/signup', [App\Http\Controllers\SignupController::class, 'choose'])->name('signup');
+Route::get('/signup/patient', [App\Http\Controllers\AuthController::class, 'showPatientRegisterForm'])->name('signup.patient');
+Route::get('/signup/{role}', [App\Http\Controllers\SignupController::class, 'showForm'])->whereIn('role', ['buyer', 'seller', 'supplier'])->name('signup.form');
+Route::post('/signup/{role}', [App\Http\Controllers\SignupController::class, 'submit'])->whereIn('role', ['buyer', 'seller', 'supplier'])->name('signup.submit');
 Route::post('/register', [App\Http\Controllers\AuthController::class, 'registerPatient'])->name('register.submit');
 Route::get('/doctor-register', [App\Http\Controllers\AuthController::class, 'showDoctorRegisterForm'])->name('doctor.register');
 Route::post('/doctor-register', [App\Http\Controllers\AuthController::class, 'registerDoctor'])->name('doctor.register.submit');
+Route::middleware(['auth', 'role:supplier'])->get('/supplier/dashboard', [App\Http\Controllers\Supplier\DashboardController::class, 'index'])->name('supplier.dashboard');
 Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 Route::post('/heartbeat', function (Request $request) {
     \Illuminate\Support\Facades\Cache::put('user-online-' . $request->user()->id, true, now()->addMinutes(3));
