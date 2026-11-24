@@ -82,6 +82,15 @@
         font-weight: 600;
         text-decoration: none;
     }
+
+    /* Hide Sign Up button on account pages */
+    body.account-page .nav-link[href*="register"] {
+        display: none !important;
+    }
+
+    body.account-page .mobile-btn-signup {
+        display: none !important;
+    }
 </style>
 <header class="header">
     <nav class="navbar navbar-expand-lg header-nav">

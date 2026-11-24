@@ -50,6 +50,7 @@
             font-weight: 700;
             color: #1f2937;
             margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
 
         .form-subtitle {
