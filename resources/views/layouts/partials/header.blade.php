@@ -82,6 +82,15 @@
         font-weight: 600;
         text-decoration: none;
     }
+
+    /* Hide Sign Up button on account pages */
+    body.account-page .nav-link[href*="register"] {
+        display: none !important;
+    }
+
+    body.account-page .mobile-btn-signup {
+        display: none !important;
+    }
 </style>
 <header class="header">
     <nav class="navbar navbar-expand-lg header-nav">
@@ -173,7 +182,7 @@
                 <!-- Mobile Menu Buttons -->
                 <div class="mobile-menu-buttons">
                     <a class="mobile-btn-login" href="{{ route('login') }}">
-                        <i class="fas fa-sign-in-alt"></i> Login
+                        <i class="fas fa-sign-in-alt"></i> Sign In
                     </a>
                     <a class="mobile-btn-signup" href="{{ route('register') }}">
                         <i class="fas fa-user-plus"></i> Sign Up
@@ -197,7 +206,7 @@
                         <a class="nav-link btn text-white ms-2 px-3 py-2" href="{{ route('register') }}" style="background: #2563eb !important; border: 1.5px solid #2563eb !important; border-radius: 4px !important; font-size: 14px; font-weight: 600; box-shadow: 0 4px 10px rgba(37,99,235,0.2) !important;">Sign Up</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn ms-2 px-3 py-2" href="{{ route('login') }}" style="border: 1.5px solid #2563eb !important; color: #2563eb !important; border-radius: 4px !important; font-size: 14px; font-weight: 600; background: #ffffff !important;">Login</a>
+                        <a class="nav-link btn ms-2 px-3 py-2" href="{{ route('login') }}" style="border: 1.5px solid #2563eb !important; color: #2563eb !important; border-radius: 4px !important; font-size: 14px; font-weight: 600; background: #ffffff !important;">Sign In</a>
                     </li>
                 @else
                     <li class="nav-item dropdown has-arrow logged-item">
