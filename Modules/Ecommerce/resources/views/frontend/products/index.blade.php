@@ -199,10 +199,18 @@
                                                 <span class="d-block text-muted small mb-1">From</span>
                                             @endif
 
-                                            <span class="price-current">৳{{ number_format($displayPrice, 0) }}</span>
+                                            <div class="price-display">
+                                                @if($displayPrice < $displayRegularPrice)
+                                                    <small class="price-label">Now</small>
+                                                @endif
+                                                <span class="price-current">৳{{ number_format($displayPrice, 0) }}</span>
+                                            </div>
 
                                             @if($displayPrice < $displayRegularPrice)
-                                                <span class="price-original">৳{{ number_format($displayRegularPrice, 0) }}</span>
+                                                <div class="price-original-wrapper">
+                                                    <small class="price-label">Was</small>
+                                                    <span class="price-original">৳{{ number_format($displayRegularPrice, 0) }}</span>
+                                                </div>
                                             @endif
                                         </div>
 
@@ -218,9 +226,10 @@
                                                 <div class="btn-group-modern">
                                                     <button type="submit" class="btn-cart-modern" title="Add to Cart" {{ $availableStock < 1 ? 'disabled' : '' }}>
                                                         <i class="fas fa-shopping-cart"></i>
+                                                        <span class="btn-text">Add</span>
                                                     </button>
                                                     <button type="submit" name="buy_now" value="1" class="btn-buy-modern" {{ $availableStock < 1 ? 'disabled' : '' }}>
-                                                        Buy
+                                                        Buy Now
                                                     </button>
                                                 </div>
                                             </form>
@@ -633,6 +642,34 @@
         color: #272b41;
     }
 
+    .price-display {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-bottom: 2px;
+    }
+
+    .price-label {
+        font-size: 10px;
+        color: #666;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .price-current {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1D4ED8;
+    }
+
+    .price-original-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 8px;
+    }
+
     .price-original {
         font-size: 12px;
         color: #999;
@@ -649,8 +686,9 @@
     }
 
     .btn-cart-modern {
-        width: 38px;
+        min-width: 60px;
         height: 38px;
+        padding: 0 10px;
         border-radius: 8px;
         border: 2px solid #1D4ED8;
         background: transparent;
@@ -658,8 +696,21 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        gap: 6px;
         cursor: pointer;
         transition: all 0.2s;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .btn-cart-modern .btn-text {
+        display: none;
+    }
+
+    @media (min-width: 768px) {
+        .btn-cart-modern .btn-text {
+            display: inline;
+        }
     }
 
     .btn-cart-modern:hover {
