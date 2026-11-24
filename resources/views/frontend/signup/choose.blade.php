@@ -7,7 +7,7 @@
 @section('content')
     <style>
         .main-wrapper { padding: 0; margin: 0; background-color: #fff; }
-        .signup-choose { max-width: 760px; margin: 0 auto; padding: 60px 16px; }
+        .signup-choose { max-width: 760px; margin: 0 auto; margin-top: 100px; padding: 60px 16px; }
         .signup-choose h3 { font-size: 2rem; font-weight: 700; color: #1f2937; margin-bottom: .5rem; text-align: center; line-height: 1.2; }
         .signup-choose .sub { color: #6b7280; text-align: center; margin-bottom: 2rem; }
         .role-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }

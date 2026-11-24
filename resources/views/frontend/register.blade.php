@@ -23,6 +23,7 @@
             align-items: center;
             justify-content: center;
             background: #fff;
+            margin-top: 80px;
         }
 
         /* Right Side - Form */
