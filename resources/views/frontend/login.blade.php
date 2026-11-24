@@ -134,8 +134,8 @@
                 <img src="{{ !empty($siteSettings['logo']) ? asset($siteSettings['logo']) : asset('assets/img/logo.png') }}"
                     class="form-header-logo" alt="Invision Logo">
 
-                <h3 class="form-title">Login</h3>
-                <p class="form-subtitle">Enter your credentials to login to your account</p>
+                <h3 class="form-title">Sign In</h3>
+                <p class="form-subtitle">Enter your credentials to access your account</p>
 
                 @if (session('success'))
                     <div class="alert alert-success" role="alert">
