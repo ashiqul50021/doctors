@@ -23,6 +23,7 @@
             align-items: center;
             justify-content: center;
             background: #fff;
+            margin-top: 80px;
         }
 
         /* Right Side - Form */
@@ -50,6 +51,7 @@
             font-weight: 700;
             color: #1f2937;
             margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
 
         .form-subtitle {
@@ -141,10 +143,10 @@
                         <button class="btn split-btn" type="submit">Send Reset Link</button>
                     </div>
 
-                    <div class="text-center mt-4">
-                        <span style="font-size: 0.875rem; color: #4b5563;">Remember your password? <a
+                    <div class="text-center mt-5" style="padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+                        <span style="font-size: 0.95rem; color: #4b5563;">Remember your password? <a
                                 href="{{ route('login') }}"
-                                style="color: #345cce; font-weight: 600; text-decoration: none;">Sign In</a></span>
+                                style="color: #345cce; font-weight: 700; text-decoration: none;">Sign In</a></span>
                     </div>
                 </form>
             </div>

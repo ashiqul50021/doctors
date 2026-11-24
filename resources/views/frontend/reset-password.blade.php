@@ -23,6 +23,7 @@
             align-items: center;
             justify-content: center;
             background: #fff;
+            margin-top: 80px;
         }
 
         /* Right Side - Form */
@@ -50,6 +51,7 @@
             font-weight: 700;
             color: #1f2937;
             margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
 
         .form-subtitle {
