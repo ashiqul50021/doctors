@@ -63,7 +63,12 @@ class SearchController extends Controller
             $query->where('area_id', $request->area_id);
         }
 
-        $doctors = $query->paginate(10);
+        // Random order; the seed is kept in session so pagination doesn't repeat doctors.
+        // A fresh seed is generated whenever the first page is opened.
+        if (!$request->filled('page') || (int) $request->page <= 1 || !$request->session()->has('doctors_random_seed')) {
+            $request->session()->put('doctors_random_seed', random_int(1, 999999));
+        }
+        $doctors = $query->inRandomOrder($request->session()->get('doctors_random_seed'))->paginate(10);
         $specialities = Speciality::where('is_active', true)->get();
         $districts = District::orderBy('name')->get();
         $areas = collect();

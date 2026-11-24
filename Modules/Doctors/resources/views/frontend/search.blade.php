@@ -3,6 +3,7 @@
 @section('title', 'Search Doctors - abcsheba')
 
 @push('styles')
+@include('components.doctor-card-compact-styles')
 <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-datetimepicker.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/plugins/fancybox/jquery.fancybox.min.css') }}">
@@ -276,6 +277,30 @@
                     </div>
                 @endif
 
+                @if($doctors->isNotEmpty())
+                    {{-- Mobile: compact cards, two per row --}}
+                    <div class="row g-2 d-md-none doctor-compact-grid mb-3">
+                        @foreach($doctors as $doctor)
+                            <div class="col-6">
+                                @include('components.doctor-card-compact', [
+                                    'id' => $doctor->id,
+                                    'isFavourite' => in_array($doctor->id, $favDoctorIds),
+                                    'image' => $doctor->profile_image ? asset($doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-01.jpg'),
+                                    'name' => str_starts_with($doctor->user->name ?? '', 'Dr.') ? $doctor->user->name : 'Dr. ' . ($doctor->user->name ?? ''),
+                                    'speciality' => $doctor->speciality->name ?? 'General',
+                                    'rawRating' => $doctor->average_rating,
+                                    'reviews' => $doctor->review_count,
+                                    'location' => $doctor->clinic_name ?? ($doctor->area->name ?? 'Dhaka'),
+                                    'price' => ((float) ($doctor->consultation_fee ?? 0)) > 0 ? (float) $doctor->consultation_fee : 'Free',
+                                    'profileLink' => route('doctors.profile', $doctor->id),
+                                    'bookingLink' => route('booking', $doctor->id),
+                                ])
+                            </div>
+                        @endforeach
+                    </div>
+                    {{-- Tablet / desktop: the wide list cards --}}
+                    <div class="d-none d-md-block">
+                @endif
                 @forelse($doctors as $doctor)
                     @php
                         $isDocOnline = optional($doctor->user)->isOnline() ?? false;
@@ -326,6 +351,9 @@
                         <a href="{{ route('doctors.search') }}" class="btn btn-primary mt-2">Reset Filters</a>
                     </div>
                 @endforelse
+                @if($doctors->isNotEmpty())
+                    </div>
+                @endif
 
                 @if($doctors->count() > 0)
                     <div class="load-more text-center mt-4">
