@@ -731,6 +731,34 @@
                 <p class="sub-title mb-0" style="color: #64748b; font-size: 14px;">Meet our expert doctors and book your appointment today</p>
             </div>
 
+            <!-- Doctor type cards -->
+            <div class="row g-3 mb-3 doctor-type-row">
+                <div class="col-6">
+                    <div class="doctor-type-card" id="typeMbbsCard" role="button" tabindex="0">
+                        <div class="doctor-type-text">
+                            <span class="dt-label">Instant</span>
+                            <span class="dt-title">MBBS Doctor</span>
+                            <span class="dt-price">৳ 100.00</span>
+                        </div>
+                        <div class="doctor-type-photos">
+                            <img src="{{ asset('assets/img/doctors/doctor-01.jpg') }}" alt="MBBS Doctor">
+                            <img src="{{ asset('assets/img/doctors/doctor-02.jpg') }}" alt="MBBS Doctor" class="second">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="doctor-type-card active" id="typeSpecialistCard" role="button" tabindex="0">
+                        <div class="doctor-type-text">
+                            <span class="dt-label">Specialist</span>
+                            <span class="dt-title">Doctor</span>
+                        </div>
+                        <div class="doctor-type-photos">
+                            <img src="{{ asset('assets/img/doctors/doctor-05.jpg') }}" alt="Specialist Doctor">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row g-3">
                 <!-- Sidebar Filter -->
                 <div class="col-lg-3 col-md-4 mb-3">
@@ -754,7 +782,7 @@
                             </div>
                             <div class="select-wrapper">
                                 <select name="doctor_speciality" id="doctorSpecialitySelect" class="form-control form-select select-modern">
-                                    <option value="all">All Doctors</option>
+                                    <option value="all">All Specialists</option>
                                     @foreach($searchSpecialities as $speciality)
                                         <option value="{{ $speciality->id }}">{{ $speciality->name }}</option>
                                     @endforeach
@@ -1731,6 +1759,32 @@
                 grid.html(skeletonHtml);
             }
 
+            // Doctor type cards: 'mbbs' (General Physician) or 'specialist' (everyone else)
+            var gpSpecialityId = '{{ !empty($gpSpecialityId) ? $gpSpecialityId : '' }}';
+            var doctorGroup = 'specialist';
+
+            function setDoctorGroup(group) {
+                doctorGroup = group;
+                $('#typeMbbsCard').toggleClass('active', group === 'mbbs');
+                $('#typeSpecialistCard').toggleClass('active', group === 'specialist');
+            }
+
+            $('#typeMbbsCard').on('click keypress', function (e) {
+                if (e.type === 'keypress' && e.key !== 'Enter') return;
+                setDoctorGroup('mbbs');
+                if (gpSpecialityId) $('#doctorSpecialitySelect').val(gpSpecialityId);
+                updateSeeAllDoctorLink();
+                filterDoctors();
+            });
+
+            $('#typeSpecialistCard').on('click keypress', function (e) {
+                if (e.type === 'keypress' && e.key !== 'Enter') return;
+                setDoctorGroup('specialist');
+                $('#doctorSpecialitySelect').val('all');
+                updateSeeAllDoctorLink();
+                filterDoctors();
+            });
+
             function filterDoctors() {
                 var speciality = $('#doctorSpecialitySelect').val();
                 var search = $('#doctorSearchInput').val();
@@ -1740,7 +1794,7 @@
                 $.ajax({
                     url: '{{ route('api.doctors.filter') }}',
                     type: 'GET',
-                    data: { speciality: speciality, search: search },
+                    data: { speciality: speciality, search: search, group: doctorGroup },
                     success: function (doctors) {
                         renderDoctors(doctors);
                     },
@@ -1816,6 +1870,8 @@
 
             // Doctor speciality filter change
             $('#doctorSpecialitySelect').on('change', function () {
+                // Picking the GP speciality means MBBS; anything else is the specialist group
+                setDoctorGroup(gpSpecialityId && $(this).val() === String(gpSpecialityId) ? 'mbbs' : 'specialist');
                 updateSeeAllDoctorLink();
                 filterDoctors();
             });
@@ -1835,6 +1891,43 @@
 @push('styles')
     @include('ecommerce::components.skeletons.styles')
     <style>
+        /* Doctor type cards (MBBS / Specialist) */
+        .doctor-type-card {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 120px;
+            padding: 14px 14px 14px 18px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, #f3e8f5 0%, #e0eef8 55%, #dbe9f7 100%);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+            cursor: pointer;
+            overflow: hidden;
+            transition: all .2s ease;
+        }
+        .doctor-type-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 99, 235, .15); }
+        .doctor-type-card.active { border-color: #2563eb; box-shadow: 0 6px 16px rgba(37, 99, 235, .22); }
+        .doctor-type-text { display: flex; flex-direction: column; line-height: 1.25; z-index: 1; }
+        .doctor-type-text .dt-label { font-size: 15px; color: #1e293b; }
+        .doctor-type-text .dt-title { font-size: 17px; font-weight: 700; color: #0f172a; }
+        .doctor-type-text .dt-price { margin-top: 6px; font-size: 18px; font-weight: 600; color: #0e9cb8; }
+        .doctor-type-photos { display: flex; align-items: flex-end; flex-shrink: 0; }
+        .doctor-type-photos img {
+            width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: top;
+            border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+        }
+        .doctor-type-photos img.second { margin-left: -16px; }
+        @media (max-width: 575px) {
+            .doctor-type-card { min-height: 110px; padding: 12px 8px 12px 12px; }
+            .doctor-type-text .dt-label { font-size: 13px; }
+            .doctor-type-text .dt-title { font-size: 14px; }
+            .doctor-type-text .dt-price { font-size: 15px; }
+            .doctor-type-photos img { width: 46px; height: 46px; }
+            .doctor-type-photos img.second { margin-left: -14px; }
+        }
+
         /* Modern styled dropdown select */
         .select-modern {
             width: 100%;

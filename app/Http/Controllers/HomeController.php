@@ -22,9 +22,14 @@ class HomeController extends Controller
         $specialities = Speciality::where('is_active', true)->take(10)->get();
         $searchSpecialities = Speciality::where('is_active', true)->get();
         // Fetch doctors who are approved and have an active user account
+        // Initial home list: random specialist doctors (everyone except General Physicians)
+        $gpSpecialityIds = $this->gpSpecialityIds();
+        $gpSpecialityId = $gpSpecialityIds[0] ?? null;
         $doctors = Doctor::with(['user', 'speciality', 'reviews'])
                          ->where('status', 'approved')
                          ->whereHas('user') // Ensure user exists
+                         ->whereNotIn('speciality_id', $gpSpecialityIds)
+                         ->inRandomOrder()
                          ->take(4)
                          ->get();
 
@@ -82,6 +87,7 @@ class HomeController extends Controller
             'specialities',
             'searchSpecialities',
             'doctors',
+            'gpSpecialityId',
             'productCategories',
             'topCategories',
             'bannerSettings',
@@ -102,6 +108,11 @@ class HomeController extends Controller
         $speciality = $request->string('speciality')->toString();
         if ($speciality !== '' && $speciality !== 'all') {
             $query->where('speciality_id', (int) $speciality);
+        } elseif ($request->string('group')->toString() === 'mbbs') {
+            $query->whereIn('speciality_id', $this->gpSpecialityIds());
+        } else {
+            // Default / "specialist": everyone except General Physicians
+            $query->whereNotIn('speciality_id', $this->gpSpecialityIds());
         }
 
         $search = trim((string) $request->input('search'));
@@ -111,7 +122,7 @@ class HomeController extends Controller
             });
         }
 
-        $doctors = $query->latest()->take(4)->get()->map(function ($doctor) {
+        $doctors = $query->inRandomOrder()->take(4)->get()->map(function ($doctor) {
             return [
                 'id' => $doctor->id,
                 'name' => $doctor->user->name ?? 'Doctor',
@@ -127,5 +138,16 @@ class HomeController extends Controller
         });
 
         return response()->json($doctors);
+    }
+
+    /**
+     * IDs of the "General Physician" (MBBS / GP) speciality.
+     * Always returns at least one value so whereIn / whereNotIn stay valid.
+     */
+    private function gpSpecialityIds(): array
+    {
+        $ids = Speciality::where('name', 'like', '%General Physician%')->pluck('id')->all();
+
+        return $ids ?: [0];
     }
 }
