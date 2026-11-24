@@ -340,9 +340,18 @@
     }
 
     .category-list {
-        max-height: 380px;
-        overflow: auto;
-        padding-right: 4px;
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+    }
+
+    @media (max-height: 1200px) {
+        .category-list {
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 4px;
+        }
     }
 
     .category-item {
