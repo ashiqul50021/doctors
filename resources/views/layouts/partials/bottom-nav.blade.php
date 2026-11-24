@@ -1,7 +1,7 @@
 <div class="bottom-nav-container d-md-none">
     <div class="bottom-nav-menu">
         <!-- Home -->
-        <a href="{{ route('home') }}" wire:navigate class="nav-item {{ Route::is('home') ? 'active' : '' }}">
+        <a href="{{ route('home') }}" wire:navigate class="nav-item {{ Route::is('home') && request('view') !== 'doctors' ? 'active' : '' }}">
             <div class="nav-icon-container">
                 <i class="fas fa-home"></i>
             </div>
@@ -27,8 +27,8 @@
         </a>
 
         <!-- Doctors -->
-        <a href="{{ route('doctors.search') }}" wire:navigate
-            class="nav-item {{ Route::is('search') || Route::is('doctors.profile') ? 'active' : '' }}">
+        <a href="{{ route('home', ['view' => 'doctors']) }}" wire:navigate
+            class="nav-item {{ Route::is('doctors.*') || (Route::is('home') && request('view') === 'doctors') ? 'active' : '' }}">
             <div class="nav-icon-container">
                 <i class="fas fa-user-md"></i>
             </div>

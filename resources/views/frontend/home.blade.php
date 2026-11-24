@@ -10,6 +10,7 @@
 @section('title', ($siteSettings['site_name'] ?? 'abcsheba') . ' - ' . ($siteSettings['site_tagline'] ?? 'Doctor Appointment Booking'))
 
 @section('content')
+    @php $doctorsView = request('view') === 'doctors'; @endphp
     <!-- Home Banner - DocTime Inspired -->
     <section class="section-hero-doctime">
         <!-- Background Wave Pattern -->
@@ -265,6 +266,7 @@
     </section>
     <!-- /Home Banner -->
 
+    @unless($doctorsView)
     @if(!empty($homeCampaign) && $homeCampaign->isRunning())
         <!-- Live Campaign Flash Deal Section -->
         <section class="section-home-campaign py-4 my-2">
@@ -493,6 +495,8 @@
 
 
 
+    @endunless
+
     <!-- Clinic and Specialities -->
     {{-- <section class="section section-specialities">
         <div class="container">
@@ -528,6 +532,7 @@
     <!-- Clinic and Specialities -->
 
     <!-- Medical Products -->
+@unless($doctorsView)
     <section class="section section-products py-4" style="background-color: transparent;">
         <div class="container">
             <div class="section-header text-center mb-3">
@@ -722,6 +727,7 @@
         </div>
     </section>
     <!-- /Medical Products -->
+    @endunless
 
     <!-- Popular Doctors -->
     <section class="section section-doctor py-4" style="background-color: transparent;">
@@ -859,6 +865,7 @@
     </section>
     <!-- /Popular Doctors -->
 
+@unless($doctorsView)
     <!-- Health Packages Section -->
     @php
         $packagesToDisplay = (isset($healthPackages) && $healthPackages->count() > 0) ? $healthPackages : collect([
@@ -959,7 +966,9 @@
         </div>
     </section>
     <!-- /Health Packages Section -->
+    @endunless
 
+@unless($doctorsView)
     <!-- Health Courses Section -->
     <section class="section section-courses py-4" style="background-color: transparent;">
         <div class="container">
@@ -1071,9 +1080,11 @@
         </div>
     </section>
     <!-- /Health Courses Section -->
+    @endunless
 
 
 
+@unless($doctorsView)
     <!-- Blog Section -->
     <section class="section section-blogs py-4" style="background-color: transparent;">
         <div class="container">
@@ -1151,9 +1162,11 @@
         </div>
     </section>
     <!-- /Blog Section -->
+    @endunless
 
 
 
+@unless($doctorsView)
     <!-- Testimonials Section -->
     <section class="section section-testimonials py-4" style="background-color: transparent;">
         <div class="container">
@@ -1229,6 +1242,7 @@
         </div>
     </section>
     <!-- /Testimonials Section -->
+    @endunless
 
 
 @endsection

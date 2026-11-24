@@ -154,8 +154,11 @@
                                 </li>
                             @else
                                 {{-- Single menu item --}}
-                                <li class="{{ request()->url() == $menu->getUrl() ? 'active' : '' }}">
-                                    <a href="{{ $menu->getUrl() }}" wire:navigate @if($menu->open_in_new_tab) target="_blank" @endif>
+                                @php
+                                    $menuUrl = $menu->getUrl() === route('doctors.search') ? route('home', ['view' => 'doctors']) : $menu->getUrl();
+                                @endphp
+                                <li class="{{ request()->fullUrl() == $menuUrl || request()->url() == $menuUrl ? 'active' : '' }}">
+                                    <a href="{{ $menuUrl }}" wire:navigate @if($menu->open_in_new_tab) target="_blank" @endif>
                                         @if($menu->icon)<i class="{{ $menu->icon }}"></i> @endif
                                         {{ $menu->title }}
                                     </a>
@@ -164,11 +167,11 @@
                         @endforeach
                     @else
                         {{-- Default menu if no database menus --}}
-                        <li class="{{ request()->routeIs('home') ? 'active' : '' }}">
+                        <li class="{{ request()->routeIs('home') && request('view') !== 'doctors' ? 'active' : '' }}">
                             <a href="{{ route('home') }}" wire:navigate>Home</a>
                         </li>
-                        <li class="{{ request()->routeIs('doctors.*') ? 'active' : '' }}">
-                            <a href="{{ route('doctors.search') }}" wire:navigate>Doctors</a>
+                        <li class="{{ request()->routeIs('doctors.*') || (request()->routeIs('home') && request('view') === 'doctors') ? 'active' : '' }}">
+                            <a href="{{ route('home', ['view' => 'doctors']) }}" wire:navigate>Doctors</a>
                         </li>
                         <li class="{{ request()->routeIs('ecommerce.*') ? 'active' : '' }}">
                             <a href="{{ route('ecommerce.products') }}" wire:navigate style="text-transform: capitalize;">Products</a>
