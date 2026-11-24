@@ -153,7 +153,7 @@
                                             }
                                         @endphp
                                         <img src="{{ $image ? asset($image) : asset('assets/img/products/default-product.png') }}"
-                                            class="product-main-img" alt="{{ $product->name }}">
+                                            class="product-main-img" alt="{{ $product->name ?? 'Health Product' }}" title="{{ $product->name ?? 'Health Product' }}">
                                     </a>
                                 </div>
 
