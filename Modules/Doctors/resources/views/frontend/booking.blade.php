@@ -266,65 +266,49 @@
 
                             <div class="section-card-body">
                                 
-                                <!-- 1. Year Selector -->
+                                <!-- 1-3. Year / Month / Day: compact dropdown boxes -->
                                 <div class="selection-level">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="level-badge"><i class="far fa-calendar-alt me-1"></i> Year</span>
-                                            <span class="level-title">Select Year</span>
-                                        </div>
-                                        <span class="text-muted small">Current & Next 2 Years</span>
-                                    </div>
-                                    <div class="year-pills-wrap" id="yearSelector">
-                                        @foreach($availableYears as $y)
-                                            <button type="button"
-                                                    class="year-pill-btn {{ $loop->first ? 'active' : '' }}"
-                                                    data-year="{{ $y }}"
-                                                    onclick="selectYear({{ $y }})">
-                                                <i class="far fa-calendar-alt"></i>
-                                                <span>{{ $y }}</span>
+                                    <div class="dt-select-row">
+                                        <div class="dt-dropdown" id="yearDropdown">
+                                            <span class="dt-label">Year</span>
+                                            <button type="button" class="dt-trigger" onclick="toggleDtDropdown(event, 'yearDropdown')">
+                                                <span id="yearTriggerText">{{ $initialDate->year }}</span>
+                                                <i class="fas fa-chevron-down"></i>
                                             </button>
-                                        @endforeach
-                                    </div>
-                                </div>
-
-                                <!-- 2. Month Selector -->
-                                <div class="selection-level">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="level-badge"><i class="far fa-calendar me-1"></i> Month</span>
-                                            <span class="level-title">Select Month</span>
+                                            <div class="dt-menu" id="yearSelector">
+                                                @foreach($availableYears as $y)
+                                                    <button type="button"
+                                                            class="year-pill-btn dt-option {{ $y == $initialDate->year ? 'active' : '' }}"
+                                                            data-year="{{ $y }}"
+                                                            onclick="selectYear({{ $y }})">{{ $y }}</button>
+                                                @endforeach
+                                            </div>
                                         </div>
-                                        <span id="selectedMonthNameBadge" class="text-primary small fw-semibold"></span>
-                                    </div>
-                                    <div class="month-pills-scroller" id="monthSelector">
-                                        <!-- Rendered dynamically by JS -->
-                                    </div>
-                                </div>
 
-                                <!-- 3. Day Selector -->
-                                <div class="selection-level">
-                                    <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-1">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="level-badge"><i class="fas fa-calendar-day me-1"></i> Day</span>
-                                            <span class="level-title">Select Day</span>
+                                        <div class="dt-dropdown" id="monthDropdown">
+                                            <span class="dt-label">Month</span>
+                                            <button type="button" class="dt-trigger" onclick="toggleDtDropdown(event, 'monthDropdown')">
+                                                <span id="monthTriggerText">{{ strtoupper($initialDate->format('M')) }}</span>
+                                                <i class="fas fa-chevron-down"></i>
+                                            </button>
+                                            <div class="dt-menu" id="monthSelector">
+                                                <!-- Rendered dynamically by JS -->
+                                            </div>
                                         </div>
-                                        <span class="text-muted small" id="doctorVisitingDaysNotice">
-                                            <i class="fas fa-calendar-day text-primary me-1"></i> Chamber days: <strong>{{ count($scheduledDays) > 0 ? implode(', ', array_map('ucfirst', $scheduledDays)) : 'Check schedule' }}</strong>
-                                        </span>
-                                    </div>
 
-                                    <!-- Day Scroller Strip -->
-                                    <div class="day-strip-wrapper">
-                                        <button type="button" class="date-nav-btn" id="prevDayBtn" title="Previous Days">
-                                            <i class="fas fa-chevron-left"></i>
-                                        </button>
-                                        <div class="day-strip-scroller" id="dayStripScroller">
-                                            <!-- Rendered dynamically by JS -->
+                                        <div class="dt-dropdown" id="dayDropdown">
+                                            <span class="dt-label">Day</span>
+                                            <button type="button" class="dt-trigger" onclick="toggleDtDropdown(event, 'dayDropdown')">
+                                                <span id="dayTriggerText">{{ $initialDate->format('d D') }}</span>
+                                                <i class="fas fa-chevron-down"></i>
+                                            </button>
+                                            <div class="dt-menu dt-menu-days" id="dayStripScroller">
+                                                <!-- Rendered dynamically by JS -->
+                                            </div>
                                         </div>
-                                        <button type="button" class="date-nav-btn" id="nextDayBtn" title="Next Days">
-                                            <i class="fas fa-chevron-right"></i>
-                                        </button>
+                                    </div>
+                                    <div class="text-muted small mt-2" id="doctorVisitingDaysNotice">
+                                        <i class="fas fa-calendar-day text-primary me-1"></i> Chamber days: <strong>{{ count($scheduledDays) > 0 ? implode(', ', array_map('ucfirst', $scheduledDays)) : 'Check schedule' }}</strong>
                                     </div>
                                 </div>
 
@@ -748,6 +732,43 @@
     </div>
 
     <!-- Booking Interactive Logic -->
+    <style>
+        .dt-select-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .dt-dropdown { position: relative; }
+        .dt-dropdown .dt-label { display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px; }
+        .dt-trigger {
+            width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 6px;
+            padding: 10px 12px; background: #fff; border: 1.5px solid #cbd5e1; border-radius: 10px;
+            font-weight: 700; font-size: 14px; color: #0f172a; cursor: pointer; transition: all .2s;
+        }
+        .dt-trigger i { font-size: 11px; color: #94a3b8; transition: transform .2s; }
+        .dt-dropdown.is-open .dt-trigger { border-color: #1d4ed8; box-shadow: 0 4px 14px rgba(29, 78, 216, .12); }
+        .dt-dropdown.is-open .dt-trigger i { transform: rotate(180deg); color: #1d4ed8; }
+        .dt-menu {
+            display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 100%; z-index: 30;
+            background: #fff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 6px;
+            box-shadow: 0 16px 36px rgba(15, 23, 42, .16); max-height: 260px; overflow-y: auto;
+        }
+        .dt-dropdown.is-open .dt-menu { display: block; }
+        #dayDropdown .dt-menu { left: auto; right: 0; min-width: 160px; }
+        .dt-menu .dt-option {
+            display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+            padding: 8px 10px; margin: 0; border: 0; border-radius: 8px; background: transparent;
+            font-size: 13px; font-weight: 600; color: #1e293b; cursor: pointer; white-space: nowrap;
+        }
+        .dt-menu .dt-option:hover { background: #eff6ff; color: #1d4ed8; }
+        .dt-menu .dt-option.active { background: #1d4ed8; color: #fff; }
+        .dt-menu .dt-option.disabled { color: #94a3b8; cursor: not-allowed; background: transparent; }
+        .dt-menu .dt-option .day-date-number { min-width: 20px; font-weight: 700; }
+        .dt-menu .dt-option .day-status-badge { margin-left: auto; font-size: 10px; font-weight: 600; color: #94a3b8; }
+        .dt-menu .dt-option.active .day-status-badge { color: #dbeafe; }
+        #slotMenuGrid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        #slotMenuGrid .dropdown-slot-item { padding: 8px 6px; justify-content: center; font-size: 12px; }
+        @media (max-width: 575px) {
+            .dt-select-row { gap: 6px; }
+            .dt-trigger { padding: 9px 8px; font-size: 13px; }
+        }
+    </style>
     <script>
         const doctorId = {{ $doctor->id }};
         const getSlotsUrl = "{{ route('booking.slots', $doctor->id) }}";
@@ -798,6 +819,9 @@
             document.querySelectorAll('.year-pill-btn').forEach(btn => {
                 btn.classList.toggle('active', parseInt(btn.getAttribute('data-year')) === selectedYear);
             });
+            const yearTrigger = document.getElementById('yearTriggerText');
+            if (yearTrigger) yearTrigger.textContent = selectedYear;
+            closeDtDropdowns();
 
             // If current year is selected and current month was in the past, reset to todayMonth
             if (selectedYear === todayYear && selectedMonth < todayMonth) {
@@ -819,13 +843,17 @@
                 badge.textContent = `${monthNames[selectedMonth - 1]} ${selectedYear}`;
             }
 
+            const monthTrigger = document.getElementById('monthTriggerText');
+            if (monthTrigger) monthTrigger.textContent = monthShortNames[selectedMonth - 1].toUpperCase();
+
             for (let m = 1; m <= 12; m++) {
                 const isPast = (selectedYear === todayYear && m < todayMonth);
+                if (isPast) continue; // past months are not shown
                 const isActive = (selectedMonth === m);
 
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = `month-pill-btn ${isActive ? 'active' : ''} ${isPast ? 'disabled' : ''}`;
+                btn.className = `month-pill-btn dt-option ${isActive ? 'active' : ''}`;
                 btn.setAttribute('data-month', m);
                 btn.textContent = monthShortNames[m - 1];
 
@@ -841,6 +869,7 @@
 
         function selectMonth(m) {
             selectedMonth = parseInt(m);
+            closeDtDropdowns();
             renderMonths();
             renderDays();
         }
@@ -864,6 +893,7 @@
                 const shortDay = dayShortNames[weekdayIndex];
 
                 const isPast = (dateStr < todayDateStr);
+                if (isPast) continue; // past days are not shown
                 const isScheduled = scheduledDays.includes(weekdayName);
                 const isOff = offDates.includes(dateStr);
                 const isSelectable = (!isPast && isScheduled && !isOff);
@@ -886,15 +916,16 @@
                     badgeClass = 'empty';
                 }
 
-                card.className = `day-picker-card ${isSelectable ? 'available' : 'disabled'}`;
+                card.className = `day-picker-card dt-option ${isSelectable ? 'available' : 'disabled'}`;
+                card.setAttribute('data-label', `${String(d).padStart(2, '0')} ${shortDay}`);
 
                 const isToday = (dateStr === todayDateStr);
-                const weekdayDisplay = isToday ? 'TODAY' : shortDay;
+                const weekdayDisplay = isToday ? 'Today' : shortDay;
 
                 card.innerHTML = `
-                    <span class="day-weekday">${weekdayDisplay}</span>
                     <span class="day-date-number">${d}</span>
-                    <span class="day-status-badge ${badgeClass}">${badgeText}</span>
+                    <span class="day-weekday">${weekdayDisplay}</span>
+                    ${isSelectable ? '' : `<span class="day-status-badge ${badgeClass}">${badgeText}</span>`}
                 `;
 
                 if (isSelectable) {
@@ -930,7 +961,8 @@
                     selectedTime = null;
                     document.getElementById('appointment_date').value = '';
                     document.getElementById('appointment_time').value = '';
-                    document.getElementById('activeDateTitle').textContent = `${monthNames[selectedMonth - 1]} ${selectedYear}`;
+                    const dayTrigger = document.getElementById('dayTriggerText');
+                    if (dayTrigger) dayTrigger.textContent = '--';
                     document.getElementById('dynamicSlotsGridContainer').innerHTML = '';
                     document.getElementById('slotsEmptyNotice').style.display = 'block';
                     document.getElementById('slotsEmptyTitle').textContent = 'No Visiting Days in ' + monthNames[selectedMonth - 1];
@@ -940,9 +972,8 @@
                 }
             } else {
                 const activeCard = scroller.querySelector(`.day-picker-card.active`);
-                if (activeCard) {
-                    activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-                }
+                const dayTrigger = document.getElementById('dayTriggerText');
+                if (activeCard && dayTrigger) dayTrigger.textContent = activeCard.getAttribute('data-label');
             }
         }
 
@@ -952,12 +983,38 @@
             document.querySelectorAll('.day-picker-card').forEach(c => {
                 c.classList.toggle('active', c.getAttribute('data-date') === dateStr);
             });
+            const activeDayCard = document.querySelector(`.day-picker-card[data-date="${dateStr}"]`);
+            const dayTrigger = document.getElementById('dayTriggerText');
+            if (activeDayCard && dayTrigger) dayTrigger.textContent = activeDayCard.getAttribute('data-label');
+            closeDtDropdowns();
 
             const activeTitle = document.getElementById('activeDateTitle');
             if (activeTitle) activeTitle.textContent = formattedDate;
 
             loadSlots(dateStr, formattedDate);
         }
+
+        // Year / Month / Day dropdown helpers
+        function closeDtDropdowns(exceptId) {
+            document.querySelectorAll('.dt-dropdown.is-open').forEach(dd => {
+                if (dd.id !== exceptId) dd.classList.remove('is-open');
+            });
+        }
+
+        function toggleDtDropdown(e, id) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            closeDtDropdowns(id);
+            const slotDd = document.getElementById('customSlotDropdown');
+            if (slotDd) slotDd.classList.remove('is-open');
+            const dd = document.getElementById(id);
+            if (dd) dd.classList.toggle('is-open');
+        }
+
+        // Time range text for the "Select available time" box, e.g. "04:00 PM to 10:40 PM"
+        let currentSlotRange = '';
 
         // 4. AJAX Slot Fetching & UI Rendering
         function loadSlots(dateStr, formattedDate) {
@@ -1091,6 +1148,9 @@
             });
 
             const hasActiveSelection = !!selectedDisplay;
+            currentSlotRange = availableSlots.length > 1
+                ? `${availableSlots[0].display} to ${availableSlots[availableSlots.length - 1].display}`
+                : availableSlots[0].display;
 
             let html = `
                 <div class="custom-slot-dropdown" id="customSlotDropdown">
@@ -1103,9 +1163,9 @@
                                 <i class="${hasActiveSelection ? 'fas fa-check text-primary' : 'far fa-clock'}"></i>
                             </div>
                             <div class="trigger-text">
-                                <span class="trigger-label">${hasActiveSelection ? 'Selected Time' : 'Available Time'}</span>
+                                <span class="trigger-label">${hasActiveSelection ? 'Selected Time' : 'Select available time'}</span>
                                 <span class="trigger-selected" id="triggerSelectedText">
-                                    ${hasActiveSelection ? selectedDisplay : 'Click to select time'}
+                                    ${hasActiveSelection ? selectedDisplay : currentSlotRange}
                                 </span>
                             </div>
                         </div>
@@ -1156,6 +1216,7 @@
                 e.preventDefault();
                 e.stopPropagation();
             }
+            closeDtDropdowns();
             const dd = document.getElementById('customSlotDropdown');
             if (dd) {
                 dd.classList.toggle('is-open');
@@ -1216,7 +1277,7 @@
             const triggerChip = document.getElementById('triggerSlotsCount');
 
             if (trigger) trigger.classList.remove('has-selected');
-            if (triggerText) triggerText.textContent = 'Click to select a time slot';
+            if (triggerText) triggerText.textContent = currentSlotRange || 'Click to select a time slot';
             if (triggerIcon) triggerIcon.innerHTML = `<i class="far fa-clock"></i>`;
 
             const banner = document.getElementById('selectedSlotIndicator');
@@ -1541,6 +1602,9 @@
                 const dd = document.getElementById('customSlotDropdown');
                 if (dd && !dd.contains(e.target)) {
                     dd.classList.remove('is-open');
+                }
+                if (!e.target.closest('.dt-dropdown')) {
+                    closeDtDropdowns();
                 }
             });
 
