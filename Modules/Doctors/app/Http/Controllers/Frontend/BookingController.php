@@ -15,6 +15,9 @@ use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
+    /** Length of one appointment slot, in minutes. */
+    private const SLOT_MINUTES = 20;
+
     /**
      * Show booking page with available time slots.
      */
@@ -179,20 +182,18 @@ class BookingController extends Controller
                 $start = \Carbon\Carbon::parse($dateStr . ' ' . $sched->start_time);
                 $end   = \Carbon\Carbon::parse($dateStr . ' ' . $sched->end_time);
 
-                $timeKey = $start->format('H:i:s');
-                $isBooked = false;
+                // Split the visiting hours into fixed 20-minute slots (e.g. 04:00 PM, 04:20 PM, ...)
+                $bookedTimes = $type === 'online' ? $bookedOnline : $bookedOffline;
+                for ($slot = $start->copy(); $slot->lt($end); $slot->addMinutes(self::SLOT_MINUTES)) {
+                    $isBooked = in_array($slot->format('H:i'), $bookedTimes, true)
+                        || ($date->isToday() && $slot->lte(now()));
 
-                // Both offline and online use serial token queues within doctor's schedule hours
-                // Slots are only marked booked if the time has already passed today
-                if ($date->isToday() && $end->lt(now())) {
-                    $isBooked = true;
+                    $subdividedSlots[$type][] = [
+                        'time_key'   => $slot->format('H:i:s'),
+                        'display'    => $slot->format('h:i A'),
+                        'is_booked'  => $isBooked,
+                    ];
                 }
-
-                $subdividedSlots[$type][] = [
-                    'time_key'   => $start->format('H:i:s'),
-                    'display'    => $start->format('g:i A') . ' - ' . $end->format('g:i A'),
-                    'is_booked'  => $isBooked,
-                ];
             }
         }
 
@@ -212,6 +213,25 @@ class BookingController extends Controller
         ]);
 
         $doctor = Doctor::findOrFail($doctor_id);
+
+        // The chosen 20-minute slot must still be free
+        $slotTaken = Appointment::where('doctor_id', $doctor->id)
+            ->where('appointment_date', $request->appointment_date)
+            ->where('type', $request->type)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereTime('appointment_time', \Carbon\Carbon::parse($request->appointment_time)->format('H:i:s'))
+            ->exists();
+        if ($slotTaken) {
+            return redirect()->back()
+                ->withErrors(['appointment_time' => 'This time slot has just been booked. Please choose another time.'])
+                ->withInput();
+        }
+        $slotStart = \Carbon\Carbon::parse($request->appointment_date . ' ' . $request->appointment_time);
+        if ($slotStart->lte(now())) {
+            return redirect()->back()
+                ->withErrors(['appointment_time' => 'This time slot has already passed. Please choose another time.'])
+                ->withInput();
+        }
 
         // Check if selected time slot has already passed for today
         $dateObj = \Carbon\Carbon::parse($request->appointment_date);

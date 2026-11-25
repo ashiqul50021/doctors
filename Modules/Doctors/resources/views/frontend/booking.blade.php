@@ -846,29 +846,37 @@
             const monthTrigger = document.getElementById('monthTriggerText');
             if (monthTrigger) monthTrigger.textContent = monthShortNames[selectedMonth - 1].toUpperCase();
 
-            for (let m = 1; m <= 12; m++) {
-                const isPast = (selectedYear === todayYear && m < todayMonth);
-                if (isPast) continue; // past months are not shown
-                const isActive = (selectedMonth === m);
+            // Every upcoming month across all available years (e.g. Nov 2026, Dec 2026, Jan 2027 ...)
+            availableYears.forEach(yr => {
+                yr = parseInt(yr);
+                for (let m = 1; m <= 12; m++) {
+                    if (yr < todayYear || (yr === todayYear && m < todayMonth)) continue; // past months are not shown
+                    const isActive = (selectedYear === yr && selectedMonth === m);
 
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `month-pill-btn dt-option ${isActive ? 'active' : ''}`;
-                btn.setAttribute('data-month', m);
-                btn.textContent = monthShortNames[m - 1];
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `month-pill-btn dt-option ${isActive ? 'active' : ''}`;
+                    btn.setAttribute('data-month', m);
+                    btn.setAttribute('data-year', yr);
+                    btn.innerHTML = `${monthShortNames[m - 1]} <span class="ms-auto small opacity-75">${yr}</span>`;
+                    btn.onclick = () => selectMonth(m, yr);
 
-                if (!isPast) {
-                    btn.onclick = () => selectMonth(m);
-                } else {
-                    btn.title = 'Past month';
+                    scroller.appendChild(btn);
                 }
-
-                scroller.appendChild(btn);
-            }
+            });
         }
 
-        function selectMonth(m) {
+        function selectMonth(m, yr) {
             selectedMonth = parseInt(m);
+            if (yr && parseInt(yr) !== selectedYear) {
+                // Picking a month of another year also switches the Year box
+                selectedYear = parseInt(yr);
+                document.querySelectorAll('.year-pill-btn').forEach(btn => {
+                    btn.classList.toggle('active', parseInt(btn.getAttribute('data-year')) === selectedYear);
+                });
+                const yearTrigger = document.getElementById('yearTriggerText');
+                if (yearTrigger) yearTrigger.textContent = selectedYear;
+            }
             closeDtDropdowns();
             renderMonths();
             renderDays();
@@ -1010,7 +1018,13 @@
             const slotDd = document.getElementById('customSlotDropdown');
             if (slotDd) slotDd.classList.remove('is-open');
             const dd = document.getElementById(id);
-            if (dd) dd.classList.toggle('is-open');
+            if (dd) {
+                dd.classList.toggle('is-open');
+                // Scroll the list so the selected option is visible
+                const menu = dd.querySelector('.dt-menu');
+                const active = menu ? menu.querySelector('.dt-option.active') : null;
+                if (menu && active) menu.scrollTop = active.offsetTop - 6;
+            }
         }
 
         // Time range text for the "Select available time" box, e.g. "04:00 PM to 10:40 PM"
