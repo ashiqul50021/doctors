@@ -609,8 +609,8 @@
                                         <div class="d-flex align-items-center mb-2 pb-2 border-bottom">
                                             <i class="fas fa-mobile-alt text-primary fs-5 me-2"></i>
                                             <div>
-                                                <strong class="d-block text-dark" style="font-size: 14px;">Manual Mobile Banking Payment</strong>
-                                                <small class="text-muted" style="font-size: 12px;">Send consultation fee via bKash/Nagad and provide details</small>
+                                                <strong class="d-block text-dark" style="font-size: 14px;">Online Payment</strong>
+                                                <small class="text-muted" style="font-size: 12px;">Pay by bKash / Nagad (manual) or SSLCommerz (card, mobile banking)</small>
                                             </div>
                                         </div>
 
@@ -632,9 +632,20 @@
                                                     <i class="fas fa-wallet me-1"></i> Rocket
                                                 </label>
                                                 @endif
+                                                <label class="btn btn-sm btn-outline-success flex-fill text-center py-2 payment-radio-btn" id="btnRadioSslcommerz" style="border-radius: 4px; font-weight: 500; font-size: 12px; cursor: pointer;">
+                                                    <input type="radio" name="payment_method" value="sslcommerz" class="d-none" onchange="switchManualPayment('sslcommerz')">
+                                                    <i class="fas fa-credit-card me-1"></i> SSLCommerz
+                                                </label>
                                             </div>
                                         </div>
 
+                                        <!-- SSLCommerz: redirect to the secure gateway, no manual details needed -->
+                                        <div id="sslczInfoBox" class="p-2 mb-2 rounded" style="display: none; background: #F0FDF4; border: 1px dashed #86EFAC; font-size: 12px; line-height: 1.5;">
+                                            <i class="fas fa-lock text-success me-1"></i>
+                                            After you confirm, you will be taken to the secure <strong>SSLCommerz</strong> page to pay by card, bKash, Nagad, Rocket or internet banking. Your appointment is confirmed once the payment succeeds.
+                                        </div>
+
+                                        <div id="manualPaymentFields">
                                         <!-- Payment Account Number Display -->
                                         <div class="p-2 mb-2 rounded" style="background: #F0FDF4; border: 1px dashed #86EFAC; font-size: 13px;">
                                             <div id="bkashInfoBox">
@@ -698,6 +709,7 @@
                                                 <input type="text" class="form-control form-control-sm" name="transaction_id" id="transaction_id" placeholder="e.g. 9J3K8L2P" value="{{ old('transaction_id') }}" style="border-radius: 4px;">
                                             </div>
                                         </div>
+                                        </div><!-- /manualPaymentFields -->
                                     </div>
 
                                     <!-- Submit Action Button -->
@@ -1321,10 +1333,7 @@
                     if (summaryTotal) summaryTotal.textContent = '৳' + parseFloat(onlineFee).toLocaleString();
                     if (paymentModeNote) paymentModeNote.style.display = 'none';
                     if (onlinePaymentOptions) onlinePaymentOptions.style.display = 'block';
-                    const sNum = document.getElementById('sender_number');
-                    const tId = document.getElementById('transaction_id');
-                    if (sNum) sNum.setAttribute('required', 'required');
-                    if (tId) tId.setAttribute('required', 'required');
+                    setManualFieldsRequired(isManualPaymentSelected());
                 } else {
                     const curOfflineFee = getSelectedChamberFee();
                     const curChamberName = getSelectedChamberName();
@@ -1416,7 +1425,7 @@
                         return false;
                     }
 
-                    if (currentType === 'online') {
+                    if (currentType === 'online' && isManualPaymentSelected()) {
                         const sNum = document.getElementById('sender_number')?.value.trim();
                         const tId = document.getElementById('transaction_id')?.value.trim();
                         if (!sNum || !tId) {
@@ -1429,8 +1438,33 @@
             }
 
             // Global Manual Payment Helpers
+            window.isManualPaymentSelected = function() {
+                const checked = document.querySelector('input[name="payment_method"]:checked');
+                return !checked || checked.value !== 'sslcommerz';
+            };
+
+            window.setManualFieldsRequired = function(required) {
+                ['sender_number', 'transaction_id'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    if (required) el.setAttribute('required', 'required');
+                    else el.removeAttribute('required');
+                });
+            };
+
             window.switchManualPayment = function(method) {
                 document.querySelectorAll('.payment-radio-btn').forEach(btn => btn.classList.remove('active'));
+                const manualFields = document.getElementById('manualPaymentFields');
+                const sslczBox = document.getElementById('sslczInfoBox');
+                const isSslcz = method === 'sslcommerz';
+                if (manualFields) manualFields.style.display = isSslcz ? 'none' : 'block';
+                if (sslczBox) sslczBox.style.display = isSslcz ? 'block' : 'none';
+                setManualFieldsRequired(!isSslcz);
+                if (isSslcz) {
+                    const btn = document.getElementById('btnRadioSslcommerz');
+                    if (btn) btn.classList.add('active');
+                    return;
+                }
                 const bkashBox = document.getElementById('bkashInfoBox');
                 const nagadBox = document.getElementById('nagadInfoBox');
                 const rocketBox = document.getElementById('rocketInfoBox');

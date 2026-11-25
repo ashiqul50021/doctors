@@ -175,7 +175,11 @@
                                                 @if(session('sender_number'))
                                                     | প্রেরক: <strong>{{ session('sender_number') }}</strong>
                                                 @endif
+                                                @if(session('payment_method') === 'sslcommerz')
+                                                    <div class="text-muted small mt-1">Payment completed via SSLCommerz. Your appointment is confirmed.</div>
+                                                @else
                                                 <div class="text-muted small mt-1">অ্যাডমিন/ডাক্তার ট্রানজেকশন ভেরিফাই করে অ্যাপয়েন্টমেন্ট চূড়ান্তভাবে নিশ্চিত করবেন।</div>
+                                                @endif
                                             </div>
                                         @endif
                                     </div>
