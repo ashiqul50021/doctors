@@ -791,6 +791,19 @@
                                         </div>
                                     @endforelse
                                 </div>
+
+                                <!-- Add more sections (shown once at least one section exists) -->
+                                <div id="add-more-sections-bar" class="border border-2 border-dashed rounded-3 p-3 text-center mt-2" style="{{ count($existingSections) > 0 ? '' : 'display: none;' }} border-style: dashed !important;">
+                                    <p class="text-muted small mb-2"><i class="fas fa-plus-circle text-primary me-1"></i> Need another section? Add as many as you like.</p>
+                                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                        <button type="button" class="btn btn-primary btn-sm" id="btn-add-more-standard">
+                                            <i class="fas fa-file-alt me-1"></i> Add More Text & Image Section
+                                        </button>
+                                        <button type="button" class="btn btn-info btn-sm text-dark" id="btn-add-more-image">
+                                            <i class="fas fa-image me-1"></i> Add More Image Only Section
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1224,6 +1237,9 @@
                 }
             });
 
+            const addMoreBar = document.getElementById('add-more-sections-bar');
+            if (addMoreBar) addMoreBar.style.display = items.length > 0 ? 'block' : 'none';
+
             const noAlert = document.getElementById('no-custom-sections-alert');
             if (items.length === 0) {
                 if (!noAlert) {
@@ -1344,6 +1360,9 @@
 
             customSectionsContainer.appendChild(sectionDiv);
             updateSectionBadges();
+            sectionDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const firstField = sectionDiv.querySelector('input[type="text"], textarea, input[type="file"]');
+            if (firstField) setTimeout(() => firstField.focus({ preventScroll: true }), 300);
         }
 
         if (addStandardSectionBtn) {
@@ -1364,6 +1383,14 @@
             }
 
             if (e.target && (e.target.id === 'btn-add-first-image' || e.target.closest('#btn-add-first-image'))) {
+                createNewSection('image_only');
+            }
+
+            if (e.target && e.target.closest('#btn-add-more-standard')) {
+                createNewSection('standard');
+            }
+
+            if (e.target && e.target.closest('#btn-add-more-image')) {
                 createNewSection('image_only');
             }
 

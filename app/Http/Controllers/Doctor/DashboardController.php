@@ -480,6 +480,13 @@ class DashboardController extends Controller
             return back()->withErrors($scheduleErrors)->withInput();
         }
 
+        // designation / organization_name need the 2026_11_27 migration; skip them until it has run
+        foreach (['designation', 'organization_name'] as $column) {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('doctors', $column)) {
+                unset($updateData[$column]);
+            }
+        }
+
         $doctor->update($updateData);
 
         foreach (['offline', 'online'] as $type) {
