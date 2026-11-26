@@ -7,7 +7,7 @@
     .doctor-page {
         background: linear-gradient(180deg, #f8fbff 0%, #f5f7fb 100%);
         min-height: 100vh;
-        padding: 120px 0 60px;
+        padding: 100px 0 24px;
     }
 
     .doctor-shell {
@@ -19,7 +19,7 @@
     }
 
     .doctor-hero {
-        padding: 28px;
+        padding: 20px;
         background: radial-gradient(circle at top right, #dbeafe 0%, #eff6ff 38%, #fff 100%);
         border-bottom: 1px solid #e5eaf3;
     }
@@ -50,8 +50,15 @@
     .doctor-chip-row {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 14px;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .doctor-designation {
+        margin: 0 0 8px;
+        color: #1e3a8a;
+        font-weight: 700;
+        font-size: 15px;
     }
 
     .doctor-chip {
@@ -95,30 +102,30 @@
     .doctor-metrics {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
+        gap: 6px;
     }
 
     .metric {
-        padding: 11px 12px;
-        border-radius: 12px;
+        padding: 7px 10px;
+        border-radius: 10px;
         border: 1px solid #e5eaf3;
         background: #fff;
-        font-size: 13px;
+        font-size: 12.5px;
         color: #475569;
+        line-height: 1.3;
     }
 
     .metric strong {
-        display: block;
-        font-size: 16px;
+        font-size: 14px;
         color: #0f172a;
-        margin-top: 2px;
+        white-space: nowrap;
     }
 
     .doctor-actions {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-top: 18px;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-top: 12px;
         max-width: 480px;
     }
 
@@ -145,19 +152,19 @@
     }
 
     .doctor-content {
-        padding: 26px;
+        padding: 16px;
     }
 
     .doctor-section {
         border: 1px solid #e5eaf3;
-        border-radius: 16px;
+        border-radius: 14px;
         background: #fff;
-        padding: 20px;
-        margin-bottom: 16px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
     }
 
     .doctor-section h5 {
-        margin: 0 0 12px;
+        margin: 0 0 8px;
         font-size: 18px;
         font-weight: 800;
         color: #0f172a;
@@ -166,29 +173,26 @@
     .detail-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px 14px;
+        gap: 6px 10px;
     }
 
     .detail-item {
         border: 1px solid #e8edf5;
-        border-radius: 12px;
+        border-radius: 10px;
         background: #fafcff;
-        padding: 10px 12px;
+        padding: 7px 10px;
+        font-size: 13.5px;
+        line-height: 1.35;
     }
 
     .detail-item .label {
-        font-size: 12px;
         color: #64748b;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .2px;
+        font-weight: 600;
     }
 
     .detail-item .value {
-        font-size: 14px;
         color: #0f172a;
         font-weight: 600;
-        margin-top: 3px;
         word-break: break-word;
     }
 
@@ -210,7 +214,7 @@
 
     .schedule-list {
         display: grid;
-        gap: 10px;
+        gap: 6px;
     }
 
     .schedule-row {
@@ -218,8 +222,8 @@
         justify-content: space-between;
         gap: 10px;
         border: 1px solid #e8edf5;
-        border-radius: 12px;
-        padding: 10px 12px;
+        border-radius: 10px;
+        padding: 7px 10px;
         background: #fff;
     }
 
@@ -256,21 +260,42 @@
 
     @media (max-width: 991.98px) {
         .doctor-page {
-            padding-top: 95px;
+            padding-top: 80px;
+        }
+
+        .doctor-hero {
+            padding: 14px;
+        }
+
+        .doctor-hero .row {
+            --bs-gutter-y: 0.5rem;
         }
 
         .doctor-avatar {
-            width: 130px;
-            height: 130px;
-            margin-bottom: 14px;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 4px;
         }
 
         .doctor-name {
-            font-size: 26px;
+            font-size: 22px;
+            margin-bottom: 4px;
         }
 
-        .detail-grid,
+        .doctor-content {
+            padding: 10px;
+        }
+
+        .doctor-section {
+            padding: 12px;
+        }
+
+        /* fee / experience stay two per row on phones */
         .doctor-metrics {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .detail-grid {
             grid-template-columns: 1fr;
         }
     }
@@ -335,11 +360,6 @@
                     <div class="col-lg-6 col-md-8">
                         <h1 class="doctor-name">{{ $doctor->user->name }}</h1>
                         <p class="doctor-subtitle">{{ $doctor->qualification ?? $doctor->qualifications ?? 'Medical Specialist' }}</p>
-                        @if(!empty($doctor->designation) || !empty($doctor->organization_name))
-                            <p class="doctor-subtitle mb-2" style="font-weight: 600;">
-                                {{ $doctor->designation }}{{ !empty($doctor->designation) && !empty($doctor->organization_name) ? ', ' : '' }}{{ $doctor->organization_name }}
-                            </p>
-                        @endif
                         <div class="doctor-chip-row">
                             <span class="doctor-chip">
                                 @if($specialityImage)
@@ -354,6 +374,12 @@
                                 {{ $isOnline ? 'Online Now' : 'Offline' }}{{ !$isOnline && $lastSeen ? ' • Last seen ' . $lastSeen : '' }}
                             </span>
                         </div>
+                        @if(!empty($doctor->designation) || !empty($doctor->organization_name))
+                            <p class="doctor-designation">
+                                <i class="fas fa-briefcase-medical me-1"></i>
+                                {{ $doctor->designation }}{{ !empty($doctor->designation) && !empty($doctor->organization_name) ? ', ' : '' }}{{ $doctor->organization_name }}
+                            </p>
+                        @endif
                         <div class="doctor-rating mb-2">
                             @if($doctor->review_count > 0)
                                 @for($i = 1; $i <= 5; $i++)
@@ -374,31 +400,16 @@
                             <a href="{{ route('booking', $doctor->id) }}" class="btn btn-primary">
                                 <i class="fas fa-calendar-check"></i> Book Appointment
                             </a>
-                            @if($canChat)
-                                <a href="{{ route('chat', ['user_id' => $doctor->user_id]) }}" class="btn btn-outline-primary">
-                                    <i class="far fa-comment-dots"></i> Chat
-                                </a>
-                            @else
-                                <a href="javascript:void(0);" class="btn btn-outline-secondary" onclick="toastr.warning('এই ডাক্তারের সাথে চ্যাট করতে প্রথমে একটি অ্যাপয়েন্টমেন্ট বুক করুন।')">
-                                    <i class="far fa-comment-dots"></i> Chat
-                                </a>
-                            @endif
-                            <a href="{{ route('voice.call') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-phone-alt"></i> Voice Call
-                            </a>
-                            <a href="{{ route('video.call') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-video"></i> Video Call
-                            </a>
                         </div>
                     </div>
                     <div class="col-lg-3">
                         <div class="doctor-metrics">
-                            <div class="metric">Consultation Fee<strong>৳{{ number_format((float) ($doctor->consultation_fee ?? 0), 0) }}</strong></div>
-                            <div class="metric">Experience<strong>{{ (int) ($doctor->experience_years ?? 0) }} years</strong></div>
-                            <div class="metric">Availability<strong>Accepting Patients</strong></div>
-                            <div class="metric">Home Visit<strong>{{ !empty($doctor->home_visit) ? 'Available' : 'No' }}</strong></div>
-                            <div class="metric">Online Consult<strong>{{ !empty($doctor->online_consultation) ? 'Available' : 'No' }}</strong></div>
-                            <div class="metric">Online Fee<strong>৳{{ number_format((float) ($doctor->online_fee ?? 0), 0) }}</strong></div>
+                            <div class="metric">Consultation Fee: <strong>৳{{ number_format((float) ($doctor->consultation_fee ?? 0), 0) }}</strong></div>
+                            <div class="metric">Experience: <strong>{{ (int) ($doctor->experience_years ?? 0) }} yrs</strong></div>
+                            <div class="metric">Availability: <strong>Accepting</strong></div>
+                            <div class="metric">Home Visit: <strong>{{ !empty($doctor->home_visit) ? 'Yes' : 'No' }}</strong></div>
+                            <div class="metric">Online Consult: <strong>{{ !empty($doctor->online_consultation) ? 'Yes' : 'No' }}</strong></div>
+                            <div class="metric">Online Fee: <strong>৳{{ number_format((float) ($doctor->online_fee ?? 0), 0) }}</strong></div>
                         </div>
                     </div>
                 </div>
@@ -413,20 +424,20 @@
                 <div class="doctor-section">
                     <h5>Professional Details</h5>
                     <div class="detail-grid">
-                        <div class="detail-item"><div class="label">Gender</div><div class="value">{{ $doctor->gender ? ucfirst($doctor->gender) : 'N/A' }}</div></div>
-                        <div class="detail-item"><div class="label">Registration No</div><div class="value">{{ $doctor->registration_number ?? 'Verified' }}</div></div>
-                        <div class="detail-item"><div class="label">Clinic / Hospital</div><div class="value">{{ $doctor->clinic_name ?? 'N/A' }}</div></div>
-                        <div class="detail-item"><div class="label">Location</div><div class="value">{{ ($doctor->area->name ?? '') . ($doctor->area && $doctor->district ? ', ' : '') . ($doctor->district->name ?? 'Dhaka') }}</div></div>
-                        <div class="detail-item"><div class="label">Clinic Address</div><div class="value">{{ $doctor->clinic_address ?? 'Available upon booking' }}</div></div>
-                        <div class="detail-item"><div class="label">Contact / Helpline</div><div class="value">{{ $doctor->phone ?? 'Support Available' }}</div></div>
+                        <div class="detail-item"><span class="label">Gender:</span> <span class="value">{{ $doctor->gender ? ucfirst($doctor->gender) : 'N/A' }}</span></div>
+                        <div class="detail-item"><span class="label">Registration No:</span> <span class="value">{{ $doctor->registration_number ?? 'Verified' }}</span></div>
+                        <div class="detail-item"><span class="label">Clinic / Hospital:</span> <span class="value">{{ $doctor->clinic_name ?? 'N/A' }}</span></div>
+                        <div class="detail-item"><span class="label">Location:</span> <span class="value">{{ ($doctor->area->name ?? '') . ($doctor->area && $doctor->district ? ', ' : '') . ($doctor->district->name ?? 'Dhaka') }}</span></div>
+                        <div class="detail-item"><span class="label">Clinic Address:</span> <span class="value">{{ $doctor->clinic_address ?? 'Available upon booking' }}</span></div>
+                        <div class="detail-item"><span class="label">Contact / Helpline:</span> <span class="value">{{ $doctor->phone ?? 'Support Available' }}</span></div>
                         @if(!empty($doctor->website) && $doctor->website !== 'N/A')
-                            <div class="detail-item"><div class="label">Website</div><div class="value"><a href="{{ $doctor->website }}" target="_blank" class="text-primary">{{ $doctor->website }}</a></div></div>
+                            <div class="detail-item"><span class="label">Website:</span> <span class="value"><a href="{{ $doctor->website }}" target="_blank" class="text-primary">{{ $doctor->website }}</a></span></div>
                         @endif
                         @if(!empty($doctor->facebook) && $doctor->facebook !== 'N/A')
-                            <div class="detail-item"><div class="label">Facebook</div><div class="value"><a href="{{ $doctor->facebook }}" target="_blank" class="text-primary">Profile</a></div></div>
+                            <div class="detail-item"><span class="label">Facebook:</span> <span class="value"><a href="{{ $doctor->facebook }}" target="_blank" class="text-primary">Profile</a></span></div>
                         @endif
                         @if(!empty($doctor->linkedin) && $doctor->linkedin !== 'N/A')
-                            <div class="detail-item"><div class="label">LinkedIn</div><div class="value"><a href="{{ $doctor->linkedin }}" target="_blank" class="text-primary">Profile</a></div></div>
+                            <div class="detail-item"><span class="label">LinkedIn:</span> <span class="value"><a href="{{ $doctor->linkedin }}" target="_blank" class="text-primary">Profile</a></span></div>
                         @endif
                     </div>
                 </div>
