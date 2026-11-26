@@ -172,7 +172,15 @@
         justify-content: space-between;
         align-items: center;
         margin-top: 25px;
+        /* keep the buttons above any floating/sticky element so clicks always reach them */
+        position: relative;
+        z-index: 20;
     }
+    .wizard-btn-bar .btn { cursor: pointer; transition: background-color .2s, box-shadow .2s, transform .1s; }
+    #submit-profile-btn:hover, #submit-profile-btn:focus { background-color: #059669 !important; border-color: #059669 !important; box-shadow: 0 4px 12px rgba(16, 185, 129, .35); }
+    #next-step-btn:hover, #next-step-btn:focus { background-color: #1e40af !important; border-color: #1e40af !important; box-shadow: 0 4px 12px rgba(41, 88, 183, .35); }
+    .wizard-btn-bar .btn:active { transform: translateY(1px); }
+    .wizard-step-pane .is-invalid { border-color: #dc3545 !important; }
     @media (max-width: 768px) {
         .wizard-step-title { font-size: 11px; }
         .wizard-step-desc { display: none; }
