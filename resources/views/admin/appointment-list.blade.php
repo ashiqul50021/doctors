@@ -65,7 +65,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <small class="d-block">{{ $appointment->appointment_date?->format('d M Y') ?? 'N/A' }}</small>
+                                            <small class="d-block">{{ $appointment->appointment_date?->format('d/m/Y') ?? 'N/A' }}</small>
                                             <span class="text-primary small">{{ $appointment->appointment_time ?? 'N/A' }}</span>
                                         </td>
                                         <td>

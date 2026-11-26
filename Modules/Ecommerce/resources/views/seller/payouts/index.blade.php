@@ -141,7 +141,7 @@
                                         <span class="badge badge-warning">Pending Review</span>
                                     @endif
                                 </td>
-                                <td>{{ $payout->created_at->format('d M Y, h:i A') }}</td>
+                                <td>{{ $payout->created_at->format('d/m/Y, h:i A') }}</td>
                                 <td>{{ $payout->admin_note ?? '-' }}</td>
                             </tr>
                             @empty

@@ -251,7 +251,7 @@
                                 <span class="info-label">Invoice Reference</span>
                                 <h3 class="text-primary fw-bold mb-1 fs-5">#INV-{{ sprintf('%04d', $appointment->id) }}</h3>
                                 <p class="text-muted small mb-0">
-                                    <strong>Issued Date:</strong> {{ $appointment->created_at->format('d M Y') }}
+                                    <strong>Issued Date:</strong> {{ $appointment->created_at->format('d/m/Y') }}
                                 </p>
                             </div>
                         </div>
@@ -374,7 +374,7 @@
                                         <td>
                                             <div class="fw-semibold text-dark">{{ ucfirst($appointment->type) }} Consultation</div>
                                             <div class="text-muted small mt-1">
-                                                <i class="fas fa-calendar-alt me-1"></i> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}
+                                                <i class="fas fa-calendar-alt me-1"></i> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y') }}
                                                 <span class="mx-2">|</span>
                                                 <i class="far fa-clock me-1"></i> {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}
                                             </div>

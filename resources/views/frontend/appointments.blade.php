@@ -38,7 +38,8 @@
         margin: 0;
         white-space: nowrap;
     }
-    .filter-bar input[type="date"] {
+    .filter-bar input[type="date"],
+    .filter-bar input.flatpickr-alt {
         border: 1px solid #d0d7e2;
         border-radius: 8px;
         padding: 7px 12px;
@@ -47,6 +48,7 @@
         outline: none;
         transition: border-color .2s;
     }
+    .filter-bar input.flatpickr-alt:focus,
     .filter-bar input[type="date"]:focus { border-color: #20c0f3; }
     .filter-bar .btn-filter {
         background: #20c0f3;
@@ -94,6 +96,7 @@
     .print-card .print-label h5 { margin: 0 0 2px; font-size: 1rem; font-weight: 700; }
     .print-card .print-label p  { margin: 0; font-size: .82rem; opacity: .8; }
     .print-card input[type="date"],
+    .print-card input.flatpickr-alt,
     .print-card select {
         border: 1px solid rgba(255,255,255,.4);
         background: rgba(255,255,255,.15);
@@ -104,8 +107,10 @@
         outline: none;
         transition: background .2s;
     }
+    .print-card input.flatpickr-alt::placeholder,
     .print-card input[type="date"]::placeholder { color: rgba(255,255,255,.7); }
     .print-card input[type="date"]:focus,
+    .print-card input.flatpickr-alt:focus,
     .print-card select:focus { background: rgba(255,255,255,.25); }
     .print-card select option { color: #1a2e44; background: #fff; }
     .print-card .btn-print {
@@ -237,7 +242,7 @@
                         @endif
                         @if($filterDate)
                             <span class="ms-auto" style="font-size:.85rem;color:#5a6a85;">
-                                ফলাফল: <strong>{{ \Carbon\Carbon::parse($filterDate)->format('d M Y') }}</strong>
+                                ফলাফল: <strong>{{ \Carbon\Carbon::parse($filterDate)->format('d/m/Y') }}</strong>
                             </span>
                         @endif
                     </div>
@@ -296,7 +301,7 @@
                                     <a href="#">{{ optional(optional($appointment->patient)->user)->name ?? 'Unknown Patient' }}</a>
                                 </h3>
                                 <div class="patient-details">
-                                    <h5><i class="far fa-clock"></i> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}, {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}</h5>
+                                    <h5><i class="far fa-clock"></i> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y') }}, {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}</h5>
                                     @if(optional(optional($appointment->patient)->user)->email)
                                         <h5><i class="fas fa-envelope"></i> {{ $appointment->patient->user->email }}</h5>
                                     @endif
@@ -330,7 +335,7 @@
                                     $patientN = optional(optional($appointment->patient)->user)->name ?? 'Patient';
                                     $docN = Auth::user()->name ?? 'Doctor';
                                     $tknTxt = $appointment->token_number ? " (টোকেন: {$appointment->token_number})" : "";
-                                    $dateTxt = \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y');
+                                    $dateTxt = \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y');
                                     $timeTxt = \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A');
                                     $waReminder = rawurlencode("আসসালামু আলাইকুম {$patientN}, Dr. {$docN} এর চেম্বার থেকে জানাচ্ছি: আপনার অ্যাপয়েন্টমেন্ট {$dateTxt} তারিখে {$timeTxt} এ নির্ধারিত রয়েছে{$tknTxt}। সময়মতো চেম্বারে উপস্থিত থাকার জন্য অনুরোধ করা হচ্ছে। ধন্যবাদ, abcsheba");
                                 @endphp
@@ -391,7 +396,7 @@
                                     <div class="modal-body text-start">
                                         <div class="alert alert-info py-2 px-3 small mb-3">
                                             <strong>রোগীর নাম:</strong> {{ optional(optional($appointment->patient)->user)->name ?? 'Patient' }} |
-                                            <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}
+                                            <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y') }}
                                             @if($appointment->token_number) | <strong>টোকেন:</strong> {{ $appointment->token_number }} @endif
                                         </div>
                                         <div class="row g-3">
@@ -461,7 +466,7 @@
                                     <a href="#">{{ optional(optional($appointment->patient)->user)->name ?? 'Unknown Patient' }}</a>
                                 </h3>
                                 <div class="patient-details">
-                                    <h5><i class="far fa-clock"></i> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}, {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}</h5>
+                                    <h5><i class="far fa-clock"></i> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y') }}, {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}</h5>
                                     @if(optional(optional($appointment->patient)->user)->email)
                                         <h5><i class="fas fa-envelope"></i> {{ $appointment->patient->user->email }}</h5>
                                     @endif
@@ -494,7 +499,7 @@
                                     $waNum = str_starts_with($cleanP, '01') ? ('88' . $cleanP) : (str_starts_with($cleanP, '8801') ? $cleanP : ('880' . ltrim($cleanP, '0')));
                                     $patientN = optional(optional($appointment->patient)->user)->name ?? 'Patient';
                                     $docN = Auth::user()->name ?? 'Doctor';
-                                    $dateTxt = \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y');
+                                    $dateTxt = \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y');
                                     $timeTxt = \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A');
                                     $meetTxt = $appointment->meeting_link ? ("\\nভিডিও লিংক: " . $appointment->meeting_link) : "";
                                     $waReminder = rawurlencode("আসসালামু আলাইকুম {$patientN}, Dr. {$docN} এর সাথে আপনার অনলাইন ভিডিও কনসালটেশন {$dateTxt} তারিখে {$timeTxt} এ নির্ধারিত রয়েছে।{$meetTxt}\\nসময়মতো যুক্ত হওয়ার অনুরোধ করা হচ্ছে। ধন্যবাদ, abcsheba");
@@ -561,7 +566,7 @@
                                     <div class="modal-body text-start">
                                         <div class="alert alert-info py-2 px-3 small mb-3">
                                             <strong>রোগীর নাম:</strong> {{ optional(optional($appointment->patient)->user)->name ?? 'Patient' }} |
-                                            <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}
+                                            <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y') }}
                                             @if($appointment->token_number) | <strong>টোকেন:</strong> {{ $appointment->token_number }} @endif
                                         </div>
                                         <div class="row g-3">

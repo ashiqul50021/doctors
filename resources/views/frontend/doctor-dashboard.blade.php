@@ -293,7 +293,7 @@
                                                 <div class="dash-widget-info">
                                                     <h6>Today Patient</h6>
                                                     <h3>{{ $todayPatients }}</h3>
-                                                    <p class="text-muted">{{ now()->format('d, M Y') }}</p>
+                                                    <p class="text-muted">{{ now()->format('d/m/Y') }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -374,7 +374,7 @@
                                                                             </a>
                                                                         </h2>
                                                                     </td>
-                                                                    <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }} <span class="d-block text-info font-weight-600">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span></td>
+                                                                    <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d/m/Y') }} <span class="d-block text-info font-weight-600">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span></td>
                                                                     <td>{{ $appt->reason ?? 'General' }}</td>
                                                                     <td>
                                                                         @if($appt->token_number)
@@ -424,7 +424,7 @@
                                                                                     $patientN = optional(optional($appt->patient)->user)->name ?? 'Patient';
                                                                                     $docN = Auth::user()->name ?? 'Doctor';
                                                                                     $tknTxt = $appt->token_number ? " (টোকেন: {$appt->token_number})" : "";
-                                                                                    $dateTxt = \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y');
+                                                                                    $dateTxt = \Carbon\Carbon::parse($appt->appointment_date)->format('d/m/Y');
                                                                                     $timeTxt = \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A');
                                                                                     $waReminder = rawurlencode("আসসালামু আলাইকুম {$patientN}, Dr. {$docN} এর চেম্বার/ক্লিনিক থেকে জানাচ্ছি: আপনার অ্যাপয়েন্টমেন্ট {$dateTxt} তারিখে {$timeTxt} এ নির্ধারিত রয়েছে{$tknTxt}। সময়মতো উপস্থিত থাকার জন্য অনুরোধ করা হচ্ছে। ধন্যবাদ, abcsheba");
                                                                                 @endphp
@@ -507,7 +507,7 @@
                                                                                 <div class="modal-body text-start">
                                                                                     <div class="alert alert-info py-2 px-3 small mb-3">
                                                                                         <strong>রোগীর নাম:</strong> {{ optional(optional($appt->patient)->user)->name ?? 'Patient' }} |
-                                                                                        <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }}
+                                                                                        <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appt->appointment_date)->format('d/m/Y') }}
                                                                                         @if($appt->token_number) | <strong>টোকেন:</strong> {{ $appt->token_number }} @endif
                                                                                     </div>
                                                                                     <div class="row g-3">
@@ -730,7 +730,7 @@
                                                                             </a>
                                                                         </h2>
                                                                     </td>
-                                                                    <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }} <span class="d-block text-info font-weight-600">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span></td>
+                                                                    <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d/m/Y') }} <span class="d-block text-info font-weight-600">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span></td>
                                                                     <td>{{ $appt->reason ?? 'General' }}</td>
                                                                     <td>
                                                                         @if($appt->token_number)
@@ -880,7 +880,7 @@
                                                                                 <div class="modal-body text-start">
                                                                                     <div class="alert alert-info py-2 px-3 small mb-3">
                                                                                         <strong>রোগীর নাম:</strong> {{ optional(optional($appt->patient)->user)->name ?? 'Patient' }} |
-                                                                                        <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }}
+                                                                                        <strong>তারিখ:</strong> {{ \Carbon\Carbon::parse($appt->appointment_date)->format('d/m/Y') }}
                                                                                         @if($appt->token_number) | <strong>টোকেন:</strong> {{ $appt->token_number }} @endif
                                                                                     </div>
                                                                                     <div class="row g-3">

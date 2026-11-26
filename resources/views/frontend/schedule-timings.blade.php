@@ -277,7 +277,7 @@
                                                     @foreach($offDays as $offDay)
                                                         <tr>
                                                             <td>
-                                                                <span class="fw-semibold">{{ $offDay->off_date->format('d M, Y') }}</span>
+                                                                <span class="fw-semibold">{{ $offDay->off_date->format('d/m/Y') }}</span>
                                                             </td>
                                                             <td>{{ $offDay->off_date->format('l') }}</td>
                                                             <td>

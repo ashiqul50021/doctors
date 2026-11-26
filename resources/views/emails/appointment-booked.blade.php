@@ -6,7 +6,7 @@ Dear {{ $appointment->patient->user->name }},
 Your appointment with **Dr. {{ $appointment->doctor->user->name }}** has been successfully booked.
 
 **Appointment Details:**
-- **Date:** {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}
+- **Date:** {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y') }}
 - **Time:** {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}
 - **Type:** <span style="text-transform: uppercase">{{ $appointment->type }}</span>
 - **Consulting Fee:** ৳{{ $appointment->fee }}

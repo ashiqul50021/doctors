@@ -781,7 +781,7 @@
 
         // Preloaded initial data
         const initialDateStr = "{{ $initialDate->format('Y-m-d') }}";
-        const initialFormattedDate = "{{ $initialDate->format('l, d M Y') }}";
+        const initialFormattedDate = "{{ $initialDate->format('l, d/m/Y') }}";
         const preloadedSlots = @json($subdividedSlots);
 
         // Slots cache dictionary: { "2026-10-18": { offline: [...], online: [...] } }
@@ -937,12 +937,9 @@
                 `;
 
                 if (isSelectable) {
-                    const formattedDate = dateObj.toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    });
+                    // e.g. "Thursday, 26/11/2026"
+                    const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long' }) + ', '
+                        + String(d).padStart(2, '0') + '/' + String(selectedMonth).padStart(2, '0') + '/' + selectedYear;
 
                     card.onclick = () => selectDay(dateStr, formattedDate);
 

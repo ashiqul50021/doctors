@@ -175,7 +175,7 @@
                             <div class="campaign-content-body">
                                 <h3 class="campaign-title-text">{{ $upcoming->title }}</h3>
                                 <p class="text-muted small mb-0">
-                                    <i class="fas fa-calendar-alt me-1"></i> Starts on {{ $upcoming->start_date->format('d M, Y h:i A') }}
+                                    <i class="fas fa-calendar-alt me-1"></i> Starts on {{ $upcoming->start_date->format('d/m/Y h:i A') }}
                                 </p>
                             </div>
                         </div>

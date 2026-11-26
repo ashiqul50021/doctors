@@ -54,7 +54,7 @@
                                         </td>
                                         <td>
                                             @if($coupon->expiry_date)
-                                                {{ $coupon->expiry_date->format('d M Y') }}
+                                                {{ $coupon->expiry_date->format('d/m/Y') }}
                                                 @if($coupon->expiry_date->isPast())
                                                     <span class="badge bg-danger-light">Expired</span>
                                                 @endif

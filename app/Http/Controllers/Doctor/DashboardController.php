@@ -751,7 +751,7 @@ class DashboardController extends Controller
             'reason' => $request->reason,
         ]);
 
-        return redirect()->back()->with('success', 'Off day added successfully for ' . \Carbon\Carbon::parse($request->off_date)->format('d M Y') . '.');
+        return redirect()->back()->with('success', 'Off day added successfully for ' . \Carbon\Carbon::parse($request->off_date)->format('d/m/Y') . '.');
     }
 
     /**

@@ -32,7 +32,7 @@
                                     @endif
                                     @if($review->appointment)
                                     <small class="text-muted">
-                                        Appointment: {{ \Carbon\Carbon::parse($review->appointment->appointment_date)->format('d M Y') }}
+                                        Appointment: {{ \Carbon\Carbon::parse($review->appointment->appointment_date)->format('d/m/Y') }}
                                     </small>
                                     @endif
                                 </div>

@@ -49,7 +49,7 @@
                                         <td>{{ $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)->age : 'N/A' }}</td>
                                         <td>{{ $patient->address ?? 'N/A' }}</td>
                                         <td>{{ $patient->phone ?? 'N/A' }}</td>
-                                        <td>{{ $patient->appointments->isNotEmpty() ? $patient->appointments->max('appointment_date')->format('d M Y') : 'N/A' }}</td>
+                                        <td>{{ $patient->appointments->isNotEmpty() ? $patient->appointments->max('appointment_date')->format('d/m/Y') : 'N/A' }}</td>
                                         <td class="text-end">৳{{ number_format($patient->appointments->sum('fee') ?? 0, 2) }}</td>
                                     </tr>
                                 @endforeach

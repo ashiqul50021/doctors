@@ -362,7 +362,7 @@
                             </div>
                             <div class="col-sm-6 text-sm-right">
                                 <div class="billing-info text-end">
-                                    <h4 class="d-block">{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}</h4>
+                                    <h4 class="d-block">{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y') }}</h4>
                                     <span class="d-block text-muted font-weight-bold">#APT{{ sprintf('%04d', $appointment->id) }}</span>
                                 </div>
                             </div>

@@ -496,7 +496,7 @@
                                                             <small class="text-muted">{{ $appointment->doctor->speciality->name ?? '' }}</small>
                                                         </td>
                                                         <td>{{ $appointment->patient->user->name ?? 'N/A' }}</td>
-                                                        <td>{{ $appointment->appointment_date->format('d M Y') }}</td>
+                                                        <td>{{ $appointment->appointment_date->format('d/m/Y') }}</td>
                                                         <td>{{ date('h:i A', strtotime($appointment->appointment_time)) }}</td>
                                                         <td>৳{{ number_format($appointment->consultation_fee ?? 0, 2) }}</td>
                                                         <td>
@@ -534,7 +534,7 @@
                                                             <strong>{{ $enrollment->course->title ?? 'N/A' }}</strong>
                                                         </td>
                                                         <td>{{ $enrollment->course->instructor->name ?? 'N/A' }}</td>
-                                                        <td>{{ $enrollment->created_at->format('d M Y') }}</td>
+                                                        <td>{{ $enrollment->created_at->format('d/m/Y') }}</td>
                                                         <td>
                                                             <span class="badge rounded-pill bg-{{ $enrollment->status === 'active' ? 'success' : ($enrollment->status === 'completed' ? 'info' : 'warning') }}-light">
                                                                 {{ ucfirst($enrollment->status ?? 'active') }}
@@ -661,7 +661,7 @@
                                                             <small class="text-muted">{{ $appt->doctor->speciality->name ?? '' }}</small>
                                                         </td>
                                                         <td>{{ $appt->patient->user->name ?? 'N/A' }}</td>
-                                                        <td>{{ $appt->appointment_date->format('d M Y') }}</td>
+                                                        <td>{{ $appt->appointment_date->format('d/m/Y') }}</td>
                                                         <td>{{ date('h:i A', strtotime($appt->appointment_time)) }}</td>
                                                         <td>৳{{ number_format($appt->fee, 2) }}</td>
                                                         <td>
@@ -702,7 +702,7 @@
                                                             <small class="text-muted">{{ $order->customer_phone }}</small>
                                                         </td>
                                                         <td>৳{{ number_format($order->total, 2) }}</td>
-                                                        <td>{{ $order->created_at->format('d M Y') }}</td>
+                                                        <td>{{ $order->created_at->format('d/m/Y') }}</td>
                                                         <td>
                                                             <span class="badge rounded-pill bg-{{ $order->status === 'delivered' ? 'success' : ($order->status === 'cancelled' ? 'danger' : 'info') }}-light">
                                                                 {{ ucfirst($order->status) }}
@@ -736,7 +736,7 @@
                                             <tbody>
                                                 @forelse ($recentTransactions as $tx)
                                                     <tr>
-                                                        <td>{{ $tx->created_at->format('d M Y, h:i A') }}</td>
+                                                        <td>{{ $tx->created_at->format('d/m/Y, h:i A') }}</td>
                                                         <td>
                                                             <span class="badge bg-{{ in_array($tx->type, ['commission_booking', 'commission_product', 'commission_course']) ? 'success' : 'danger' }}">
                                                                 {{ str_replace('_', ' ', ucfirst($tx->type)) }}

@@ -50,7 +50,7 @@
                                                 <a href="#">{{ $order->customer_name }}</a>
                                             </h2>
                                         </td>
-                                        <td>{{ $order->created_at->format('d M Y') }} <span
+                                        <td>{{ $order->created_at->format('d/m/Y') }} <span
                                                 class="text-primary d-block">{{ $order->created_at->format('h:i A') }}</span>
                                         </td>
                                         <td>{{ $order->items_count ?? $order->items()->count() }} Items</td>

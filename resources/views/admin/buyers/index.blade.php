@@ -37,7 +37,7 @@
                                 <td>{{ $buyer->user->email ?? 'N/A' }}</td>
                                 <td>{{ $buyer->phone }}</td>
                                 <td>{{ $buyer->address ?: '-' }}</td>
-                                <td>{{ $buyer->created_at->format('d M Y') }}</td>
+                                <td>{{ $buyer->created_at->format('d/m/Y') }}</td>
                             </tr>
                             @empty
                             <tr>

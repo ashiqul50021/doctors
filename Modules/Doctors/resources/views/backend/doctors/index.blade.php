@@ -49,7 +49,7 @@
                                     </h2>
                                 </td>
                                 <td>{{ $doctor->speciality->name ?? 'N/A' }}</td>
-                                <td>{{ $doctor->created_at->format('d M Y') }} <br><small>{{ $doctor->created_at->format('h:i A') }}</small></td>
+                                <td>{{ $doctor->created_at->format('d/m/Y') }} <br><small>{{ $doctor->created_at->format('h:i A') }}</small></td>
                                 <td>
                                     @if($doctor->status === 'pending')
                                         <div class="d-flex gap-2">

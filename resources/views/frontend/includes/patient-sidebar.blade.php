@@ -8,7 +8,7 @@
                 <h3>{{ Auth::user()->name }}</h3>
                 <div class="patient-details">
                     @if(Auth::user()->patient && Auth::user()->patient->date_of_birth)
-                        <h5><i class="fas fa-birthday-cake"></i> {{ \Carbon\Carbon::parse(Auth::user()->patient->date_of_birth)->format('d M Y') }}, {{ \Carbon\Carbon::parse(Auth::user()->patient->date_of_birth)->age }} years</h5>
+                        <h5><i class="fas fa-birthday-cake"></i> {{ \Carbon\Carbon::parse(Auth::user()->patient->date_of_birth)->format('d/m/Y') }}, {{ \Carbon\Carbon::parse(Auth::user()->patient->date_of_birth)->age }} years</h5>
                     @else
                         <h5><i class="fas fa-birthday-cake"></i> Date of Birth not set</h5>
                     @endif

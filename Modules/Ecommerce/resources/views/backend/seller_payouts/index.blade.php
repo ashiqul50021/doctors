@@ -143,7 +143,7 @@
                             <tbody>
                                 @forelse ($payouts as $payout)
                                     <tr>
-                                        <td>{{ $payout->created_at->format('d M Y, h:i A') }}</td>
+                                        <td>{{ $payout->created_at->format('d/m/Y, h:i A') }}</td>
                                         <td>
                                             <strong>{{ $payout->sellerProfile->store_name ?? 'N/A' }}</strong><br>
                                             <small class="text-muted">{{ $payout->seller->name ?? '' }}</small>

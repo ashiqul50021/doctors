@@ -116,7 +116,7 @@ class BookingController extends Controller
         return response()->json([
             'status' => 'success',
             'date' => $dateStr,
-            'formatted_date' => $date->format('l, d M Y'),
+            'formatted_date' => $date->format('l, d/m/Y'),
             'day_name' => $date->format('l'),
             'slots' => $slots
         ]);

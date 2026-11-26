@@ -206,7 +206,7 @@
 
                                     <div class="col-6" style="color: #64748B;">অ্যাপয়েন্টমেন্ট তারিখ:</div>
                                     <div class="col-6 text-end fw-semibold" style="color: #0F172A;">
-                                        {{ session('date') ? \Carbon\Carbon::parse(session('date'))->format('d M Y (l)') : '-' }}
+                                        {{ session('date') ? \Carbon\Carbon::parse(session('date'))->format('d/m/Y (l)') : '-' }}
                                     </div>
 
                                     <div class="col-6" style="color: #64748B;">সময় ও স্লট:</div>
@@ -246,7 +246,7 @@
 
                             @php
                                 $docName = str_starts_with(strtolower(session('doctor_name') ?? ''), 'dr.') ? session('doctor_name') : 'Dr. ' . (session('doctor_name') ?? 'Doctor');
-                                $formattedDate = session('date') ? \Carbon\Carbon::parse(session('date'))->format('d M Y (l)') : date('d M Y');
+                                $formattedDate = session('date') ? \Carbon\Carbon::parse(session('date'))->format('d/m/Y (l)') : date('d/m/Y');
                                 $formattedTime = session('time') ? \Carbon\Carbon::parse(session('time'))->format('g:i A') : '';
                                 $patientName = session('patient_name') ?? 'Patient';
                                 $patientPhone = session('patient_phone') ?? '';

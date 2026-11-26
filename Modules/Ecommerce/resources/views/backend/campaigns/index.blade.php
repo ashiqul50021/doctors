@@ -67,8 +67,8 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div><strong>{{ $campaign->start_date->format('d M, Y h:i A') }}</strong></div>
-                                        <div class="text-muted small">to {{ $campaign->end_date->format('d M, Y h:i A') }}</div>
+                                        <div><strong>{{ $campaign->start_date->format('d/m/Y h:i A') }}</strong></div>
+                                        <div class="text-muted small">to {{ $campaign->end_date->format('d/m/Y h:i A') }}</div>
                                     </td>
                                     <td>
                                         @if($campaign->discount_type === 'percentage')

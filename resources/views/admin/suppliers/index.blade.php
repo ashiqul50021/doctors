@@ -49,7 +49,7 @@
                                 <td>{{ $supplier->phone }}</td>
                                 <td>{{ $supplier->trade_license_no ?: '-' }}</td>
                                 <td style="max-width: 240px;">{{ \Illuminate\Support\Str::limit($supplier->products_description, 80) ?: '-' }}</td>
-                                <td>{{ $supplier->created_at->format('d M Y') }}</td>
+                                <td>{{ $supplier->created_at->format('d/m/Y') }}</td>
                                 <td>
                                     @if($supplier->status === 'approved')
                                         <span class="badge rounded-pill bg-success-light">Approved</span>

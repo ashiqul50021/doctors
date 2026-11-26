@@ -78,13 +78,13 @@
                                                                     </a>
                                                                 </h2>
                                                             </td>
-                                                            <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }} <span class="d-block text-info">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span>
+                                                            <td>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('d/m/Y') }} <span class="d-block text-info">{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</span>
                                                             </td>
-                                                            <td>{{ $appt->created_at->format('d M Y') }}</td>
+                                                            <td>{{ $appt->created_at->format('d/m/Y') }}</td>
                                                             <td>৳{{ $appt->fee }}</td>
                                                             <td>
                                                                 @if($appt->status === 'completed')
-                                                                    {{ \Carbon\Carbon::parse($appt->appointment_date)->addDays(7)->format('d M Y') }}
+                                                                    {{ \Carbon\Carbon::parse($appt->appointment_date)->addDays(7)->format('d/m/Y') }}
                                                                 @else
                                                                     -
                                                                 @endif
@@ -164,7 +164,7 @@
                                                     <tbody>
                                                         @forelse($prescriptions ?? [] as $prescription)
                                                         <tr>
-                                                            <td>{{ $prescription->created_at->format('d M Y') }}</td>
+                                                            <td>{{ $prescription->created_at->format('d/m/Y') }}</td>
                                                             <td>Prescription {{ $prescription->id }}</td>
                                                             <td>
                                                                 <h2 class="table-avatar">
@@ -266,7 +266,7 @@
                                                                 </h2>
                                                             </td>
                                                             <td>৳{{ number_format($appt->fee, 2) }}</td>
-                                                            <td>{{ $appt->created_at->format('d M Y') }}</td>
+                                                            <td>{{ $appt->created_at->format('d/m/Y') }}</td>
                                                             <td class="text-end">
                                                                 <div class="table-action">
                                                                     <a href="{{ route('invoice.view', $appt->id) }}"

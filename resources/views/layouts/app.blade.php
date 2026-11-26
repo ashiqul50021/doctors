@@ -305,6 +305,7 @@
         </script>
     @endauth
 
+    @include('layouts.partials.date-format')
     @stack('scripts')
 
     <!-- Custom JS -->

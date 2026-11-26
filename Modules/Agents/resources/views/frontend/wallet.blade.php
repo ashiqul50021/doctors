@@ -116,7 +116,7 @@
                                     <tbody>
                                         @forelse ($transactions as $tx)
                                             <tr>
-                                                <td>{{ $tx->created_at->format('d M Y, h:i A') }}</td>
+                                                <td>{{ $tx->created_at->format('d/m/Y, h:i A') }}</td>
                                                 <td>
                                                     <span class="badge bg-{{ in_array($tx->type, ['commission_booking', 'commission_product', 'commission_course']) ? 'success' : 'danger' }}">
                                                         {{ str_replace('_', ' ', ucfirst($tx->type)) }}

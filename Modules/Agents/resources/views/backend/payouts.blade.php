@@ -128,7 +128,7 @@
                             <tbody>
                                 @forelse ($payouts as $payout)
                                     <tr>
-                                        <td>{{ $payout->created_at->format('d M Y, h:i A') }}</td>
+                                        <td>{{ $payout->created_at->format('d/m/Y, h:i A') }}</td>
                                         <td>
                                             <strong>{{ $payout->agent->user->name ?? 'N/A' }}</strong><br>
                                             <code class="text-primary">{{ $payout->agent->referral_code ?? '' }}</code>

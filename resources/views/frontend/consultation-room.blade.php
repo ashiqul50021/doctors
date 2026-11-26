@@ -630,7 +630,7 @@
                 @endif
                 <span>Appointment <strong>#{{ $appointment->id }}</strong></span>
                 <span>•</span>
-                <span>{{ $appointment->appointment_date->format('d M, Y') }} at {{ $appointment->appointment_time->format('h:i A') }}</span>
+                <span>{{ $appointment->appointment_date->format('d/m/Y') }} at {{ $appointment->appointment_time->format('h:i A') }}</span>
                 <span>•</span>
                 <span class="status-badge-inline status-{{ $appointment->status }}" id="apptStatusBadge">
                     {{ ucfirst($appointment->status) }}

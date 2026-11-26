@@ -214,7 +214,7 @@
                             <div class="booking-summary">
                                 <div class="booking-item-wrap">
                                     <ul class="booking-date">
-                                        <li>Date <span>{{ \Carbon\Carbon::parse($booking['date'])->format('d M Y') }}</span>
+                                        <li>Date <span>{{ \Carbon\Carbon::parse($booking['date'])->format('d/m/Y') }}</span>
                                         </li>
                                         <li>Time <span>{{ \Carbon\Carbon::parse($booking['time'])->format('h:i A') }}</span>
                                         </li>

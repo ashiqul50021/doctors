@@ -99,6 +99,7 @@
         @endif
     </script>
 
+    @include('layouts.partials.date-format')
     @stack('scripts')
 
     <!-- Custom JS -->

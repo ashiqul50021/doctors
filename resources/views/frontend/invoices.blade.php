@@ -38,7 +38,7 @@
                                             </h2>
                                         </td>
                                         <td>৳{{ number_format($invoice->fee, 2) }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($invoice->appointment_date)->format('d M Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($invoice->appointment_date)->format('d/m/Y') }}</td>
                                         <td>
                                             <span class="badge bg-{{ $invoice->status == 'completed' ? 'success' : 'info' }}">
                                                 {{ ucfirst($invoice->status) }}
