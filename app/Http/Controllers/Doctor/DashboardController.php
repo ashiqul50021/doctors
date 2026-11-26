@@ -269,6 +269,8 @@ class DashboardController extends Controller
     /**
      * Profile Settings page
      */
+    private const WEEK_DAYS = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+
     public function profileSettings()
     {
         $doctor = $this->getDoctor(false);
@@ -311,6 +313,8 @@ class DashboardController extends Controller
             'date_of_birth' => ['nullable', 'date'],
             'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
             'qualification' => ['nullable', 'string', 'max:255'],
+            'designation' => ['nullable', 'string', 'max:255'],
+            'organization_name' => ['nullable', 'string', 'max:255'],
             'speciality_id' => ['nullable', 'exists:specialities,id'],
             'registration_number' => ['nullable', 'string', 'max:255'],
             'registration_date' => ['nullable', 'date'],
@@ -345,6 +349,12 @@ class DashboardController extends Controller
             'services' => ['nullable', 'string'],
             'education' => ['nullable', 'string'],
             'awards' => ['nullable', 'string'],
+            'schedule' => ['nullable', 'array'],
+            'schedule.*.changed' => ['nullable', 'boolean'],
+            'schedule.*.days' => ['nullable', 'array'],
+            'schedule.*.days.*' => ['string', Rule::in(self::WEEK_DAYS)],
+            'schedule.*.from' => ['nullable', 'date_format:H:i'],
+            'schedule.*.to' => ['nullable', 'date_format:H:i'],
             'custom_sections' => ['nullable', 'array'],
             'custom_sections.*.type' => ['nullable', 'string', 'in:standard,image_only'],
             'custom_sections.*.title' => ['nullable', 'string', 'max:255'],
@@ -377,6 +387,8 @@ class DashboardController extends Controller
             'date_of_birth' => $validated['date_of_birth'] ?? null,
             'profile_image' => $validated['profile_image'] ?? $doctor->profile_image,
             'qualification' => $validated['qualification'] ?? null,
+            'designation' => $validated['designation'] ?? null,
+            'organization_name' => $validated['organization_name'] ?? null,
             'speciality_id' => $validated['speciality_id'] ?? null,
             'registration_number' => $validated['registration_number'] ?? null,
             'registration_date' => $validated['registration_date'] ?? null,
@@ -452,7 +464,45 @@ class DashboardController extends Controller
             $updateData['custom_sections'] = $customSections;
         }
 
+        // Chamber / online schedule picked in the wizard (only when the doctor changed it)
+        $scheduleErrors = [];
+        foreach (['offline' => 'Chamber', 'online' => 'Online consultation'] as $type => $label) {
+            $block = $request->input("schedule.$type");
+            if (!is_array($block) || empty($block['changed'])) {
+                continue;
+            }
+            $days = array_values(array_intersect(self::WEEK_DAYS, (array) ($block['days'] ?? [])));
+            if (!empty($days) && (empty($block['from']) || empty($block['to']) || $block['to'] <= $block['from'])) {
+                $scheduleErrors["schedule.$type.to"] = "$label schedule: the end time must be later than the start time.";
+            }
+        }
+        if ($scheduleErrors) {
+            return back()->withErrors($scheduleErrors)->withInput();
+        }
+
         $doctor->update($updateData);
+
+        foreach (['offline', 'online'] as $type) {
+            $block = $request->input("schedule.$type");
+            if (!is_array($block) || empty($block['changed'])) {
+                continue;
+            }
+            $days = array_values(array_intersect(self::WEEK_DAYS, (array) ($block['days'] ?? [])));
+
+            // Replace this type's weekly schedule with the one chosen in the form
+            Schedule::where('doctor_id', $doctor->id)->where('type', $type)->delete();
+            foreach ($days as $day) {
+                Schedule::create([
+                    'doctor_id' => $doctor->id,
+                    'type' => $type,
+                    'day' => $day,
+                    'start_time' => $block['from'] . ':00',
+                    'end_time' => $block['to'] . ':00',
+                    'slot_duration' => 20,
+                    'is_available' => true,
+                ]);
+            }
+        }
 
         $doctor->refresh();
 

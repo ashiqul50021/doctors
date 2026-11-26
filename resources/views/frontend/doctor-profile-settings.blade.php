@@ -176,6 +176,14 @@
         position: relative;
         z-index: 20;
     }
+    .schedule-day-chip { position: relative; margin: 0; cursor: pointer; }
+    .schedule-day-chip input { position: absolute; opacity: 0; pointer-events: none; }
+    .schedule-day-chip span {
+        display: inline-block; padding: 6px 14px; border: 1.5px solid #cbd5e1; border-radius: 20px;
+        font-size: 13px; font-weight: 600; color: #334155; background: #fff; transition: all .15s; user-select: none;
+    }
+    .schedule-day-chip input:checked + span { background: #2958B7; border-color: #2958B7; color: #fff; }
+    .schedule-all-chip input:checked + span { background: #10b981; border-color: #10b981; }
     .wizard-btn-bar .btn { cursor: pointer; transition: background-color .2s, box-shadow .2s, transform .1s; }
     #submit-profile-btn:hover, #submit-profile-btn:focus { background-color: #059669 !important; border-color: #059669 !important; box-shadow: 0 4px 12px rgba(16, 185, 129, .35); }
     #next-step-btn:hover, #next-step-btn:focus { background-color: #1e40af !important; border-color: #1e40af !important; box-shadow: 0 4px 12px rgba(41, 88, 183, .35); }
@@ -430,6 +438,19 @@
 
                                     <div class="col-md-6">
                                         <div class="mb-3">
+                                            <label class="form-label fw-semibold">Designation</label>
+                                            <input type="text" class="form-control" name="designation" value="{{ old('designation', $doctor->designation) }}" placeholder="e.g. Assistant Professor, Consultant">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Organization Name</label>
+                                            <input type="text" class="form-control" name="organization_name" value="{{ old('organization_name', $doctor->organization_name) }}" placeholder="e.g. Dhaka Medical College Hospital">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
                                             <label class="form-label fw-semibold">BMDC Registration Number <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control" name="registration_number" value="{{ old('registration_number', $doctor->registration_number) }}" placeholder="e.g. A-12345" required>
                                         </div>
@@ -548,6 +569,15 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-md-12">
+                                        @include('frontend.includes.schedule-picker', [
+                                            'type' => 'offline',
+                                            'title' => 'Chamber Schedule Timings',
+                                            'icon' => 'fas fa-clinic-medical',
+                                            'schedules' => $doctor->schedules->where('type', 'offline'),
+                                        ])
+                                    </div>
+
                                     <div class="col-md-6">
                                         <div class="card p-3 border mb-3">
                                             <div class="form-check form-switch mb-2">
@@ -568,6 +598,15 @@
                                             <label class="form-label small text-muted">Home Visit Fee (৳)</label>
                                             <input type="number" step="0.01" min="0" class="form-control" name="home_visit_fee" value="{{ old('home_visit_fee', $doctor->home_visit_fee) }}" placeholder="e.g. 1000">
                                         </div>
+                                    </div>
+
+                                    <div class="col-md-12" id="online-schedule-wrapper">
+                                        @include('frontend.includes.schedule-picker', [
+                                            'type' => 'online',
+                                            'title' => 'Online Consultation Schedule Timings',
+                                            'icon' => 'fas fa-video',
+                                            'schedules' => $doctor->schedules->where('type', 'online'),
+                                        ])
                                     </div>
                                 </div>
                             </div>
@@ -990,6 +1029,19 @@
                 });
             }
 
+            // Schedule pickers: end time must be after start time when days are selected
+            document.querySelectorAll('.schedule-picker').forEach(function (picker) {
+                const wrapper = picker.closest('#online-schedule-wrapper');
+                if (wrapper && wrapper.style.display === 'none') return;
+                const anyDay = picker.querySelectorAll('.schedule-day:checked').length > 0;
+                const toSel = picker.querySelector('.schedule-to');
+                const fromSel = picker.querySelector('.schedule-from');
+                if (anyDay && toSel.value <= fromSel.value) {
+                    showFieldError(toSel, 'End time must be after start time.');
+                    if (!firstInvalid) { firstInvalid = toSel; firstStep = 3; }
+                }
+            });
+
             if (firstInvalid) {
                 e.preventDefault();
                 updateStepUI(firstStep);
@@ -1006,6 +1058,57 @@
                 submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
             }
         });
+
+        // Weekly schedule pickers (Chamber / Online)
+        function fmtTime(v) {
+            const [h, m] = v.split(':').map(Number);
+            return String(((h + 11) % 12) + 1).padStart(2, '0') + ':' + String(m).padStart(2, '0') + (h < 12 ? ' AM' : ' PM');
+        }
+        document.querySelectorAll('.schedule-picker').forEach(function (picker) {
+            const allBox = picker.querySelector('.schedule-all-days');
+            const dayBoxes = picker.querySelectorAll('.schedule-day');
+            const fromSel = picker.querySelector('.schedule-from');
+            const toSel = picker.querySelector('.schedule-to');
+            const changed = picker.querySelector('.schedule-changed');
+            const summary = picker.querySelector('.schedule-summary');
+
+            function refresh() {
+                const checked = Array.from(dayBoxes).filter(b => b.checked);
+                allBox.checked = checked.length === dayBoxes.length;
+                if (checked.length === 0) {
+                    summary.textContent = 'No days selected';
+                    summary.className = 'small text-muted fw-semibold schedule-summary';
+                } else if (toSel.value <= fromSel.value) {
+                    summary.textContent = 'End time must be after start time';
+                    summary.className = 'small text-danger fw-semibold schedule-summary';
+                } else {
+                    const days = checked.length === dayBoxes.length ? 'Every day' : checked.map(b => b.nextElementSibling.textContent).join(', ');
+                    summary.textContent = days + ': ' + fmtTime(fromSel.value) + ' - ' + fmtTime(toSel.value);
+                    summary.className = 'small text-primary fw-semibold schedule-summary';
+                }
+            }
+            function markChanged() { changed.value = 1; refresh(); }
+
+            allBox.addEventListener('change', function () {
+                dayBoxes.forEach(b => b.checked = allBox.checked);
+                markChanged();
+            });
+            dayBoxes.forEach(b => b.addEventListener('change', markChanged));
+            fromSel.addEventListener('change', markChanged);
+            toSel.addEventListener('change', markChanged);
+            refresh();
+        });
+
+        // Online schedule only matters when online consultation is switched on
+        const onlineToggle = document.getElementById('online_consultation');
+        const onlineScheduleWrapper = document.getElementById('online-schedule-wrapper');
+        function syncOnlineSchedule() {
+            if (onlineToggle && onlineScheduleWrapper) {
+                onlineScheduleWrapper.style.display = onlineToggle.checked ? 'block' : 'none';
+            }
+        }
+        if (onlineToggle) onlineToggle.addEventListener('change', syncOnlineSchedule);
+        syncOnlineSchedule();
 
         // Other UI logic (District/Area, Clinic Rows, Profile Photo, Custom Sections)
         const districtSelect = document.getElementById('district_id');

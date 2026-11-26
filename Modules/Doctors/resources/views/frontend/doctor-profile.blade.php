@@ -335,6 +335,11 @@
                     <div class="col-lg-6 col-md-8">
                         <h1 class="doctor-name">{{ $doctor->user->name }}</h1>
                         <p class="doctor-subtitle">{{ $doctor->qualification ?? $doctor->qualifications ?? 'Medical Specialist' }}</p>
+                        @if(!empty($doctor->designation) || !empty($doctor->organization_name))
+                            <p class="doctor-subtitle mb-2" style="font-weight: 600;">
+                                {{ $doctor->designation }}{{ !empty($doctor->designation) && !empty($doctor->organization_name) ? ', ' : '' }}{{ $doctor->organization_name }}
+                            </p>
+                        @endif
                         <div class="doctor-chip-row">
                             <span class="doctor-chip">
                                 @if($specialityImage)
