@@ -295,7 +295,7 @@
                     </ul>
                 </div>
 
-                <form id="doctor-profile-form" action="{{ route('doctors.profile.settings.update') }}" method="POST" enctype="multipart/form-data">
+                <form id="doctor-profile-form" action="{{ route('doctors.profile.settings.update') }}" method="POST" enctype="multipart/form-data" novalidate>
                     @csrf
 
                     <!-- STEP 1: Basic Information -->
@@ -840,20 +840,22 @@
             const activePane = document.getElementById('step-pane-' + currentStep);
             if (!activePane) return true;
 
-            const requiredInputs = activePane.querySelectorAll('input[required], select[required], textarea[required]');
+            const inputs = activePane.querySelectorAll('input, select, textarea');
             let isValid = true;
             let firstInvalid = null;
 
-            requiredInputs.forEach(input => {
-                // If it is inside a display:none container or disabled, skip
-                if (input.offsetParent === null && input.type !== 'hidden') return;
+            inputs.forEach(input => {
+                // Skip disabled, hidden and display:none fields
+                if (input.disabled || input.type === 'hidden' || input.type === 'file') return;
+                if (input.offsetParent === null) return;
 
-                if (!input.value || input.value.trim() === '') {
+                if (!input.checkValidity()) {
                     isValid = false;
-                    input.classList.add('is-invalid');
+                    const label = fieldLabel(input);
+                    showFieldError(input, input.validity.valueMissing ? label + ' is required.' : label + ': ' + input.validationMessage);
                     if (!firstInvalid) firstInvalid = input;
                 } else {
-                    input.classList.remove('is-invalid');
+                    clearFieldError(input);
                 }
             });
 
@@ -908,23 +910,92 @@
             });
         });
 
-        // Form submission validation
+        // Form submission validation.
+        // The form uses novalidate: the browser cannot show its own message for a field that sits
+        // on a hidden wizard step, so it used to block the submit silently. We validate every step
+        // here instead, jump to the step with the problem and show the message under the field.
+        function isHiddenInsidePane(el, pane) {
+            let node = el.parentElement;
+            while (node && node !== pane) {
+                if (window.getComputedStyle(node).display === 'none') return true;
+                node = node.parentElement;
+            }
+            return false;
+        }
+
+        function fieldLabel(el) {
+            const box = el.closest('.mb-3, .form-group, [class*="col-"]');
+            const label = box ? box.querySelector('label') : null;
+            return label ? label.textContent.replace('*', '').trim() : (el.name || 'This field');
+        }
+
+        function showFieldError(el, message) {
+            el.classList.add('is-invalid');
+            const holder = el.closest('.input-group') || el;
+            let msg = holder.parentElement.querySelector('.js-field-error');
+            if (!msg) {
+                msg = document.createElement('div');
+                msg.className = 'js-field-error text-danger small mt-1';
+                holder.insertAdjacentElement('afterend', msg);
+            }
+            msg.textContent = message;
+        }
+
+        function clearFieldError(el) {
+            el.classList.remove('is-invalid');
+            const holder = el.closest('.input-group') || el;
+            const msg = holder.parentElement ? holder.parentElement.querySelector('.js-field-error') : null;
+            if (msg) msg.remove();
+        }
+
+        profileForm.addEventListener('input', e => { if (e.target.checkValidity && e.target.checkValidity()) clearFieldError(e.target); });
+        profileForm.addEventListener('change', e => { if (e.target.checkValidity && e.target.checkValidity()) clearFieldError(e.target); });
+
         profileForm.addEventListener('submit', function (e) {
-            // Check all steps required inputs before submitting
+            let firstInvalid = null;
+            let firstStep = null;
+
             for (let step = 1; step <= totalSteps; step++) {
                 const pane = document.getElementById('step-pane-' + step);
-                const reqs = pane.querySelectorAll('input[required], select[required], textarea[required]');
-                let paneValid = true;
-                for (let r of reqs) {
-                    if (!r.value || r.value.trim() === '') {
-                        paneValid = false;
-                        r.classList.add('is-invalid');
-                        updateStepUI(step);
-                        r.focus();
-                        e.preventDefault();
-                        return false;
+                if (!pane) continue;
+                pane.querySelectorAll('input, select, textarea').forEach(el => {
+                    if (el.disabled || el.type === 'hidden' || isHiddenInsidePane(el, pane)) return;
+                    if (el.type === 'file' && !el.required) {
+                        // optional file: only check the size limit (10 MB)
+                        const tooBig = Array.from(el.files || []).some(f => f.size > 10 * 1024 * 1024);
+                        if (tooBig) {
+                            showFieldError(el, 'Image is larger than 10 MB. Please choose a smaller image.');
+                            if (!firstInvalid) { firstInvalid = el; firstStep = step; }
+                        }
+                        return;
                     }
-                }
+                    if (!el.checkValidity()) {
+                        const label = fieldLabel(el);
+                        const message = el.validity.valueMissing
+                            ? label + ' is required.'
+                            : label + ': ' + el.validationMessage;
+                        showFieldError(el, message);
+                        if (!firstInvalid) { firstInvalid = el; firstStep = step; }
+                    } else {
+                        clearFieldError(el);
+                    }
+                });
+            }
+
+            if (firstInvalid) {
+                e.preventDefault();
+                updateStepUI(firstStep);
+                setTimeout(() => {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstInvalid.focus({ preventScroll: true });
+                }, 350);
+                return false;
+            }
+
+            // Prevent double submits while uploading
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
             }
         });
 
