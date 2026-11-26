@@ -480,10 +480,18 @@ class DashboardController extends Controller
             return back()->withErrors($scheduleErrors)->withInput();
         }
 
-        // designation / organization_name need the 2026_11_27 migration; skip them until it has run
+        // designation / organization_name come from the 2026_11_27 migration. If that migration
+        // has not been run on this server, add the columns here so the values are not lost.
         foreach (['designation', 'organization_name'] as $column) {
             if (!\Illuminate\Support\Facades\Schema::hasColumn('doctors', $column)) {
-                unset($updateData[$column]);
+                try {
+                    \Illuminate\Support\Facades\Schema::table('doctors', function ($table) use ($column) {
+                        $table->string($column)->nullable();
+                    });
+                } catch (\Throwable $e) {
+                    report($e);
+                    unset($updateData[$column]);
+                }
             }
         }
 
