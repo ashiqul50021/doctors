@@ -128,7 +128,6 @@
                                 <div class="step-indicator">1</div>
                                 <div>
                                     <h5 class="section-heading mb-0">Choose Consultation Mode</h5>
-                                    <p class="section-subheading mb-0">Select in-person chamber consultation or online video call</p>
                                 </div>
                             </div>
 
@@ -227,7 +226,6 @@
                                     <div class="step-indicator">2</div>
                                     <div>
                                         <h5 class="section-heading mb-0">Select Date & Time Slot</h5>
-                                        <p class="section-subheading mb-0">Pick Year, Month, Day, and choose your preferred time slot</p>
                                     </div>
                                 </div>
 
@@ -348,19 +346,14 @@
                                     <div class="step-indicator">3</div>
                                     <div>
                                         <h5 class="section-heading mb-0">Patient Information</h5>
-                                        <p class="section-subheading mb-0">Provide patient details for appointment booking & SMS confirmation</p>
                                     </div>
                                 </div>
 
-                                @auth
-                                    <span class="user-status-chip">
-                                        <i class="fas fa-user-check text-primary me-1"></i> Logged in as {{ Auth::user()->name }}
-                                    </span>
-                                @else
+                                @guest
                                     <span class="user-status-chip guest">
                                         <i class="fas fa-bolt text-warning me-1"></i> Fast Guest Booking (No Account Required)
                                     </span>
-                                @endauth
+                                @endguest
                             </div>
 
                             <div class="section-card-body">

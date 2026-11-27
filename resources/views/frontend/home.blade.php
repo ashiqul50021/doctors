@@ -944,7 +944,7 @@
 
             <!-- Packages Grid -->
             <div class="row g-3 justify-content-center">
-                @foreach($packagesToDisplay as $package)
+                @foreach($packagesToDisplay->take(2) as $package)
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="health-package-card {{ $package->is_featured ? 'featured' : '' }}">
                         @if($package->is_featured)
