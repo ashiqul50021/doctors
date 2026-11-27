@@ -548,11 +548,11 @@
                                                     <div class="clinic-row border rounded p-3 mb-2 bg-light">
                                                         <div class="row form-row align-items-end g-2">
                                                             <div class="col-md-4">
-                                                                <label class="form-label small fw-semibold">Clinic / Hospital Name</label>
+                                                                <label class="form-label small fw-semibold">Chamber</label>
                                                                 <input type="text" class="form-control" name="clinic_names[]" value="{{ $clinicRow['name'] }}" placeholder="e.g. Dhanmondi Chamber" required>
                                                             </div>
                                                             <div class="col-md-5">
-                                                                <label class="form-label small fw-semibold">Chamber Address</label>
+                                                                <label class="form-label small fw-semibold">Address</label>
                                                                 <input type="text" class="form-control" name="clinic_addresses[]" value="{{ $clinicRow['address'] }}" placeholder="e.g. Road 27, Dhanmondi, Dhaka" required>
                                                             </div>
                                                             <div class="col-md-2">
@@ -1161,11 +1161,11 @@
                 row.innerHTML = `
                     <div class="row form-row align-items-end g-2">
                         <div class="col-md-4">
-                            <label class="form-label small fw-semibold">Clinic / Hospital Name</label>
+                            <label class="form-label small fw-semibold">Chamber</label>
                             <input type="text" class="form-control" name="clinic_names[]" placeholder="e.g. Dhanmondi Chamber" required>
                         </div>
                         <div class="col-md-5">
-                            <label class="form-label small fw-semibold">Chamber Address</label>
+                            <label class="form-label small fw-semibold">Address</label>
                             <input type="text" class="form-control" name="clinic_addresses[]" placeholder="e.g. Road 27, Dhanmondi, Dhaka" required>
                         </div>
                         <div class="col-md-2">
