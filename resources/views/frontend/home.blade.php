@@ -1057,41 +1057,11 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Course 3 -->
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <div class="course-card">
-                        <div class="course-thumbnail">
-                            <img src="{{ asset('assets/img/features/feature-03.jpg') }}" alt="Mental Health">
-                            <div class="play-overlay">
-                                <i class="fas fa-play-circle"></i>
-                            </div>
-                            <span class="course-badge free">Free</span>
-                        </div>
-                        <div class="course-content">
-                            <div class="course-meta">
-                                <span><i class="fas fa-clock"></i> 1h 45m</span>
-                                <span><i class="fas fa-book"></i> 6 Lessons</span>
-                            </div>
-                            <h4 class="course-title">Mental Health & Wellness</h4>
-                            <p class="course-desc">Techniques for stress management, anxiety relief, and maintaining
-                                positive mental health.</p>
-                            <div class="course-footer">
-                                <div class="course-instructor">
-                                    <img src="{{ asset('assets/img/doctors/doctor-thumb-03.jpg') }}" alt="Instructor">
-                                    <span>Dr. Emily Brown</span>
-                                </div>
-                                <a href="{{ route('ecommerce.products') }}" class="btn-enroll">Enroll <i
-                                        class="fas fa-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- View All Button -->
             <div class="text-center mt-4">
-                <a href="{{ route('ecommerce.products') }}" class="btn-view-all-arrow">
+                <a href="{{ route('courses.index') }}" class="btn-view-all-arrow">
                     View All Courses <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
@@ -1137,36 +1107,6 @@
                             <div class="blog-date">06 SEP 2025</div>
                             <h4 class="blog-title"><a href="#">The Benefits of Regular Checkups</a></h4>
                             <p class="blog-text">Regular health checkups are vital for early detection and prevention...</p>
-                            <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 col-sm-12 mb-3">
-                    <div class="blog-grid">
-                        <div class="blog-grid-img">
-                            <a href="#">
-                                <img src="{{ asset('assets/img/img-03.jpg') }}" class="img-fluid" alt="Blog Image">
-                            </a>
-                        </div>
-                        <div class="blog-grid-info">
-                            <div class="blog-date">07 SEP 2025</div>
-                            <h4 class="blog-title"><a href="#">Healthy Living Tips</a></h4>
-                            <p class="blog-text">Simple lifestyle changes can lead to significant health improvements...</p>
-                            <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 col-sm-12 mb-3">
-                    <div class="blog-grid">
-                        <div class="blog-grid-img">
-                            <a href="#">
-                                <img src="{{ asset('assets/img/img-04.jpg') }}" class="img-fluid" alt="Blog Image">
-                            </a>
-                        </div>
-                        <div class="blog-grid-info">
-                            <div class="blog-date">08 SEP 2025</div>
-                            <h4 class="blog-title"><a href="#">Understanding Mental Health</a></h4>
-                            <p class="blog-text">Mental health is just as important as physical health. Find out why...</p>
                             <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
