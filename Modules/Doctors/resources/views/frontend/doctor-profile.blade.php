@@ -85,6 +85,23 @@
         gap: 3px;
     }
 
+    .doctor-hero-place {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 14px;
+        font-size: 14px;
+        color: #334155;
+        margin-bottom: 4px;
+    }
+
+    .doctor-hero-place i {
+        color: #2958B7;
+    }
+
+    .doctor-hero-rating {
+        margin-top: 10px;
+    }
+
     .doctor-rating i {
         color: #cbd5e1;
     }
@@ -336,7 +353,6 @@
     $languages = $parseList($doctor->languages ?? null);
     $isOnline = optional($doctor->user)->isOnline();
     $lastSeen = optional($doctor->user?->last_seen_at)->diffForHumans();
-    $locationText = $doctor->clinic_address ?? trim(($doctor->area->name ?? '') . ', ' . ($doctor->district->name ?? ''), ', ');
 
     $canChat = false;
     if (auth()->check()) {
@@ -384,22 +400,20 @@
                                 {{ $doctor->designation }}{{ !empty($doctor->designation) && !empty($doctor->organization_name) ? ', ' : '' }}{{ $doctor->organization_name }}
                             </p>
                         @endif
-                        <div class="doctor-rating mb-2">
-                            @if($doctor->review_count > 0)
-                                @for($i = 1; $i <= 5; $i++)
-                                    <i class="fas fa-star {{ $i <= round($doctor->average_rating) ? 'filled' : '' }}"></i>
-                                @endfor
-                                <span class="muted">{{ number_format($doctor->average_rating, 1) }} ({{ $doctor->review_count }} reviews)</span>
-                            @else
-                                @for($i = 1; $i <= 5; $i++)
-                                    <i class="fas fa-star"></i>
-                                @endfor
-                                <span class="muted">New Doctor (0 reviews)</span>
-                            @endif
-                        </div>
-                        <div class="text-muted">
-                            <i class="fas fa-map-marker-alt me-2"></i>{{ $locationText !== '' ? $locationText : 'Location not provided' }}
-                        </div>
+                        @php
+                            $heroChambers = collect($doctor->clinic_locations)->pluck('name')->filter()->implode(', ');
+                            $heroLocation = trim(($doctor->area->name ?? '') . ', ' . ($doctor->district->name ?? ''), ', ');
+                        @endphp
+                        @if($heroChambers !== '' || $heroLocation !== '')
+                            <div class="doctor-hero-place">
+                                @if($heroChambers !== '')
+                                    <span><i class="fas fa-clinic-medical me-1"></i><strong>Chamber:</strong> {{ $heroChambers }}</span>
+                                @endif
+                                @if($heroLocation !== '')
+                                    <span><i class="fas fa-map-marker-alt me-1"></i><strong>Location:</strong> {{ $heroLocation }}</span>
+                                @endif
+                            </div>
+                        @endif
                         <div class="doctor-actions">
                             <a href="{{ route('booking', $doctor->id) }}" class="btn btn-primary">
                                 <i class="fas fa-calendar-check"></i> Book Appointment
@@ -416,6 +430,14 @@
                             <div class="metric">Online Fee: <strong>৳{{ number_format((float) ($doctor->online_fee ?? 0), 0) }}</strong></div>
                         </div>
                     </div>
+                </div>
+                <div class="doctor-rating doctor-hero-rating">
+                    @for($i = 1; $i <= 5; $i++)
+                        <i class="fas fa-star {{ $doctor->review_count > 0 && $i <= round($doctor->average_rating) ? 'filled' : '' }}"></i>
+                    @endfor
+                    <span class="muted">
+                        {{ $doctor->review_count > 0 ? number_format($doctor->average_rating, 1) . ' ' : '' }}({{ $doctor->review_count }} reviews)
+                    </span>
                 </div>
             </div>
 
