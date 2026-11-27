@@ -185,6 +185,10 @@
         line-height: 1.35;
     }
 
+    .detail-item-full {
+        grid-column: 1 / -1;
+    }
+
     .detail-item .label {
         color: #0f172a;
         font-weight: 700;
@@ -437,6 +441,40 @@
                             <div class="detail-item"><span class="label">Location:</span> <span class="value">{{ $doctorLocation }}</span></div>
                             <div class="detail-item"><span class="label">Address:</span> <span class="value">Available upon booking</span></div>
                         @endforelse
+                        @php
+                            // Group schedules that share the same time range: "Saturday, Monday" / "05:00 PM - 07:30 PM"
+                            $weekOrder = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                            $scheduleGroups = function ($type) use ($doctor, $weekOrder) {
+                                $groups = [];
+                                foreach ($doctor->schedules->where('type', $type)->where('is_available', '!=', 0) as $sc) {
+                                    $time = \Carbon\Carbon::parse($sc->start_time)->format('h:i A') . ' - ' . \Carbon\Carbon::parse($sc->end_time)->format('h:i A');
+                                    $groups[$time][] = strtolower(trim($sc->day));
+                                }
+                                $result = [];
+                                foreach ($groups as $time => $days) {
+                                    $days = array_values(array_intersect($weekOrder, array_unique($days)));
+                                    if (empty($days)) continue;
+                                    $result[] = [
+                                        'days' => count($days) === 7 ? 'All days' : implode(', ', array_map('ucfirst', $days)),
+                                        'time' => $time,
+                                    ];
+                                }
+                                return $result;
+                            };
+                            $chamberHours = $scheduleGroups('offline');
+                            $onlineHours = !empty($doctor->online_consultation) ? $scheduleGroups('online') : [];
+                        @endphp
+                        @foreach($chamberHours as $hours)
+                            <div class="detail-item"><span class="label">Days:</span> <span class="value">{{ $hours['days'] }}</span></div>
+                            <div class="detail-item"><span class="label">Time:</span> <span class="value">{{ $hours['time'] }}</span></div>
+                        @endforeach
+                        @if(!empty($doctor->online_consultation))
+                            <div class="detail-item detail-item-full"><span class="label">Online Consultation:</span> <span class="value">Yes</span></div>
+                            @foreach($onlineHours as $hours)
+                                <div class="detail-item"><span class="label">Days:</span> <span class="value">{{ $hours['days'] }}</span></div>
+                                <div class="detail-item"><span class="label">Time:</span> <span class="value">{{ $hours['time'] }}</span></div>
+                            @endforeach
+                        @endif
                         <div class="detail-item"><span class="label">Contact / Helpline:</span> <span class="value">{{ $doctor->phone ?? 'Support Available' }}</span></div>
                         @if(!empty($doctor->website) && $doctor->website !== 'N/A')
                             <div class="detail-item"><span class="label">Website:</span> <span class="value"><a href="{{ $doctor->website }}" target="_blank" class="text-primary">{{ $doctor->website }}</a></span></div>
@@ -565,42 +603,6 @@
                         @endif
                     </div>
                 @endif
-
-                <div class="doctor-section">
-                    <h5>Business Hours</h5>
-                    @php
-                        $offlineSchedules = $doctor->schedules->where('type', 'offline');
-                        $onlineSchedules = $doctor->schedules->where('type', 'online');
-                    @endphp
-
-                    @if($offlineSchedules->count() || $onlineSchedules->count())
-                        @if($offlineSchedules->count())
-                            <h6 class="fw-bold text-primary mt-2 mb-2"><i class="fas fa-building me-1"></i> Chamber Consultation</h6>
-                            <div class="schedule-list mb-3">
-                                @foreach($offlineSchedules as $schedule)
-                                    <div class="schedule-row">
-                                        <span class="day">{{ $schedule->day }}</span>
-                                        <span>{{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}</span>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-
-                        @if($onlineSchedules->count())
-                            <h6 class="fw-bold text-primary mt-3 mb-2"><i class="fas fa-video me-1"></i> Video Consultation</h6>
-                            <div class="schedule-list">
-                                @foreach($onlineSchedules as $schedule)
-                                    <div class="schedule-row">
-                                        <span class="day">{{ $schedule->day }}</span>
-                                        <span>{{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}</span>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-                    @else
-                        <p class="text-muted mb-0">No schedules available.</p>
-                    @endif
-                </div>
 
                 <div class="doctor-section mb-0">
                     <h5>Patient Reviews</h5>
