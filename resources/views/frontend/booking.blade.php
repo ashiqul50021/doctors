@@ -2,7 +2,7 @@
 
 @php
     $rawName = $doctor->user->name ?? 'Doctor';
-    $displayName = preg_match('/^dr\.?\s+/i', $rawName) ? $rawName : 'Dr. ' . $rawName;
+    $displayName = preg_match('/\bdr\.?\s+/i', $rawName) ? $rawName : 'Dr. ' . $rawName;
     $initialType = old('type', 'offline');
     $initialChamberFee = $doctor->clinic_locations[0]['fee'] ?? $doctor->consultation_fee ?? 0;
     $initialFee = $initialType === 'online' 
@@ -62,78 +62,52 @@
                 </div>
             @endif
 
-            <!-- Doctor Spotlight Hero Card -->
-            <div class="booking-hero-card">
-                <div class="card-body p-4">
-                    <div class="doctor-hero-grid">
-                        <div class="doctor-hero-left">
-                            <div class="doctor-avatar-wrap">
-                                <img src="{{ $doctor->profile_image ? asset($doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-02.jpg') }}"
-                                     alt="{{ $displayName }}"
-                                     onerror="this.src='{{ asset('assets/img/doctors/doctor-thumb-02.jpg') }}'"
-                                     class="doctor-hero-avatar">
-                                <span class="doctor-verified-badge" title="Verified Specialist Doctor">
-                                    <i class="fas fa-check"></i>
-                                </span>
-                            </div>
-
-                            <div class="doctor-hero-details">
-                                <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                                    <h3 class="doctor-hero-name mb-0">
-                                        <a href="{{ route('doctors.profile', $doctor->id) }}">{{ $displayName }}</a>
-                                    </h3>
-                                    @if($doctor->speciality)
-                                        <span class="speciality-pill">
-                                            @if($doctor->speciality->image)
-                                                <img src="{{ asset($doctor->speciality->image) }}" alt="" class="speciality-icon">
-                                            @else
-                                                <i class="fas fa-stethoscope"></i>
-                                            @endif
-                                            {{ $doctor->speciality->name }}
-                                        </span>
-                                    @endif
-                                </div>
-
-                                @if($doctor->qualifications)
-                                    <p class="doctor-qualifications mb-1">{{ $doctor->qualifications }}</p>
+            <!-- Doctor hero: same top part as the doctor profile page -->
+            @php
+                $bkChambers = collect($doctor->clinic_locations)->pluck('name')->filter()->implode(', ');
+                $bkLocation = trim(($doctor->area->name ?? '') . ', ' . ($doctor->district->name ?? ''), ', ');
+                $bkOnline = optional($doctor->user)->isOnline();
+            @endphp
+            <div class="bk-hero">
+                <div class="bk-hero-photo">
+                    <a href="{{ route('doctors.profile', $doctor->id) }}">
+                        <img src="{{ $doctor->profile_image ? asset($doctor->profile_image) : asset('assets/img/doctors/doctor-thumb-02.jpg') }}"
+                             alt="{{ $displayName }}"
+                             onerror="this.src='{{ asset('assets/img/doctors/doctor-thumb-02.jpg') }}'">
+                    </a>
+                </div>
+                <div class="bk-hero-body">
+                    <h3 class="bk-hero-name"><a href="{{ route('doctors.profile', $doctor->id) }}">{{ $displayName }}</a></h3>
+                    @if($doctor->qualification)
+                        <p class="bk-hero-qual">{{ $doctor->qualification }}</p>
+                    @endif
+                    <div class="bk-hero-chips">
+                        @if($doctor->speciality)
+                            <span class="bk-chip">
+                                @if($doctor->speciality->image)
+                                    <img src="{{ asset($doctor->speciality->image) }}" alt="">
+                                @else
+                                    <i class="fas fa-stethoscope"></i>
                                 @endif
-
-                                <div class="doctor-meta-row">
-                                    <div class="doctor-meta-item">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <i class="fas fa-star {{ $i <= ($doctor->average_rating ?? 5) ? 'text-warning' : 'text-muted-star' }}"></i>
-                                        @endfor
-                                        <span class="rating-text ms-1">({{ $doctor->review_count ?? 0 }} reviews)</span>
-                                    </div>
-
-                                    @if($doctor->clinic_name || $doctor->clinic_address)
-                                        <div class="doctor-meta-item">
-                                            <i class="fas fa-map-marker-alt text-danger"></i>
-                                            <span class="chamber-location">
-                                                {{ $doctor->clinic_name ? $doctor->clinic_name . ' - ' : '' }}{{ $doctor->clinic_address ?: ($doctor->clinic_city ?: 'Chamber') }}
-                                            </span>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Right Fees & Profile Link -->
-                        <div class="doctor-hero-fees">
-                            <div class="fee-capsule fee-chamber">
-                                <span class="fee-label"><i class="fas fa-building me-1"></i> Chamber Fee</span>
-                                <span class="fee-amount">৳{{ number_format((float) $initialChamberFee, 0) }}</span>
-                            </div>
-                            @if(($doctor->online_fee ?? 0) > 0)
-                                <div class="fee-capsule fee-online">
-                                    <span class="fee-label"><i class="fas fa-video me-1"></i> Video Fee</span>
-                                    <span class="fee-amount">৳{{ number_format((float) $doctor->online_fee, 0) }}</span>
-                                </div>
-                            @endif
-                            <a href="{{ route('doctors.profile', $doctor->id) }}" class="btn btn-outline-secondary btn-sm py-2 px-3 d-none d-md-inline-flex align-items-center" style="border-radius: 6px; font-weight: 600;">
-                                <i class="far fa-user me-1"></i> View Profile
-                            </a>
-                        </div>
+                                {{ $doctor->speciality->name }}
+                            </span>
+                        @endif
+                        <span class="bk-chip {{ $bkOnline ? 'online' : '' }}">{{ $bkOnline ? 'Online Now' : 'Offline' }}</span>
+                    </div>
+                    @if($doctor->short_designation)
+                        <p class="bk-hero-desig"><i class="fas fa-briefcase-medical me-1"></i> {{ $doctor->short_designation }}</p>
+                    @endif
+                    @if($bkChambers !== '')
+                        <div class="bk-hero-line"><i class="fas fa-clinic-medical"></i><strong>Chamber:</strong> {{ $bkChambers }}</div>
+                    @endif
+                    @if($bkLocation !== '')
+                        <div class="bk-hero-line"><i class="fas fa-map-marker-alt"></i><strong>Location:</strong> {{ $bkLocation }}</div>
+                    @endif
+                    <div class="bk-hero-fees">
+                        <span class="bk-fee"><i class="fas fa-building"></i> Chamber Fee: <strong>৳{{ number_format((float) $initialChamberFee, 0) }}</strong></span>
+                        @if(($doctor->online_fee ?? 0) > 0)
+                            <span class="bk-fee online"><i class="fas fa-video"></i> Video Fee: <strong>৳{{ number_format((float) $doctor->online_fee, 0) }}</strong></span>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -733,6 +707,47 @@
 
     <!-- Booking Interactive Logic -->
     <style>
+        .bk-hero {
+            display: flex; gap: 20px; align-items: flex-start;
+            background: linear-gradient(135deg, #eff6ff 0%, #ffffff 60%);
+            border: 1px solid #e5eaf3; border-radius: 18px; padding: 18px; margin-bottom: 16px;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, .05);
+        }
+        .bk-hero-photo img {
+            width: 130px; height: 130px; object-fit: cover; object-position: top center;
+            border-radius: 18px; border: 4px solid #fff; box-shadow: 0 6px 18px rgba(15, 23, 42, .12);
+        }
+        .bk-hero-body { flex: 1; min-width: 0; }
+        .bk-hero-name { font-size: 24px; font-weight: 800; margin: 0 0 2px; line-height: 1.2; }
+        .bk-hero-name a { color: #0f172a; text-decoration: none; }
+        .bk-hero-qual { margin: 0 0 8px; color: #334155; font-weight: 600; font-size: 14px; }
+        .bk-hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+        .bk-chip {
+            display: inline-flex; align-items: center; gap: 6px; border: 1px solid #dbe5f3; background: #fff;
+            color: #1e293b; border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 700;
+        }
+        .bk-chip img { width: 18px; height: 18px; }
+        .bk-chip.online { background: #dcfce7; border-color: #86efac; color: #166534; }
+        .bk-hero-desig { margin: 0 0 6px; color: #1e3a8a; font-weight: 700; font-size: 15px; }
+        .bk-hero-line { font-size: 14px; color: #334155; margin-bottom: 3px; }
+        .bk-hero-line i { color: #2958B7; width: 18px; }
+        .bk-hero-line strong { color: #0f172a; margin-right: 4px; }
+        .bk-hero-fees { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .bk-fee {
+            display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 10px;
+            background: #fff; border: 1px solid #e5eaf3; font-size: 13px; color: #475569;
+        }
+        .bk-fee i { color: #64748b; }
+        .bk-fee strong { color: #0f172a; font-size: 15px; }
+        .bk-fee.online { background: #eff6ff; border-color: #bfdbfe; }
+        .bk-fee.online i, .bk-fee.online strong { color: #1d4ed8; }
+        @media (max-width: 767.98px) {
+            .bk-hero { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px; }
+            .bk-hero-photo { text-align: center; }
+            .bk-hero-photo img { width: 120px; height: 120px; }
+            .bk-hero-name { font-size: 22px; }
+        }
+
         .dt-select-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .dt-dropdown { position: relative; }
         .dt-dropdown .dt-label { display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px; }
