@@ -90,18 +90,49 @@
         border-radius: 8px;
     }
     @media print {
-        header, footer, .main-header, .header, .mobile-bottom-nav, .action-buttons-wrap, .whatsapp-box {
+        @page { size: A4; margin: 8mm; }
+        html, body { background: #FFFFFF !important; }
+        header, footer, .main-header, .header, .mobile-bottom-nav, .bottom-nav-container,
+        .action-buttons-wrap, .whatsapp-box, .no-print, .back-to-top, #back-to-top {
             display: none !important;
         }
-        .content, .booking-success-wrapper {
+        .main-wrapper, .content, .booking-success-wrapper {
             padding: 0 !important;
+            margin: 0 !important;
             background: #FFFFFF !important;
             min-height: auto !important;
+        }
+        .booking-success-wrapper .container,
+        .booking-success-wrapper .row > [class*="col-"] {
+            max-width: 100% !important;
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
         }
         .booking-success-card {
             border: none !important;
             box-shadow: none !important;
+            font-size: 12px !important;
         }
+        .booking-success-header {
+            padding: 10px !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .booking-success-icon {
+            width: 36px !important;
+            height: 36px !important;
+            font-size: 16px !important;
+            margin-bottom: 4px !important;
+        }
+        .booking-success-header h3 { font-size: 16px !important; }
+        .booking-success-card .p-4, .booking-success-card .p-md-4, .booking-success-card .p-md-5 { padding: 10px !important; }
+        .booking-success-card .mb-4 { margin-bottom: 8px !important; }
+        .booking-success-card .mb-3 { margin-bottom: 6px !important; }
+        .booking-info-box { padding: 10px !important; }
+        .booking-success-card .row.g-2 { font-size: 12px !important; --bs-gutter-y: 0.2rem; }
+        .booking-success-card .card-body { padding: 8px 10px !important; }
+        .booking-success-card, .booking-info-box, .booking-success-card .card { break-inside: avoid; page-break-inside: avoid; }
     }
 </style>
 @endpush
@@ -194,7 +225,7 @@
                                 <div class="row g-2" style="font-size: 14px;">
                                     <div class="col-6" style="color: #64748B;">ডাক্তারের নাম:</div>
                                     <div class="col-6 text-end fw-bold" style="color: #0F172A;">
-                                        {{ str_starts_with(strtolower(session('doctor_name') ?? ''), 'dr.') ? session('doctor_name') : 'Dr. ' . (session('doctor_name') ?? 'Doctor') }}
+                                        {{ preg_match('/\bdr\.?\s/i', session('doctor_name') ?? '') ? session('doctor_name') : 'Dr. ' . (session('doctor_name') ?? 'Doctor') }}
                                     </div>
 
                                     @if(session('patient_name'))
@@ -223,6 +254,13 @@
                                         @endif
                                     </div>
 
+                                    @if(session()->has('fee'))
+                                        <div class="col-6" style="color: #64748B;">টাকার পরিমাণ (Amount):</div>
+                                        <div class="col-6 text-end fw-bold" style="color: #0F172A; font-size: 16px;">
+                                            ৳{{ number_format((float) session('fee'), 0) }}
+                                        </div>
+                                    @endif
+
                                     @if(session('transaction_id'))
                                         <div class="col-6" style="color: #64748B;">পেমেন্ট স্ট্যাটাস:</div>
                                         <div class="col-6 text-end">
@@ -245,7 +283,7 @@
                             </div>
 
                             @php
-                                $docName = str_starts_with(strtolower(session('doctor_name') ?? ''), 'dr.') ? session('doctor_name') : 'Dr. ' . (session('doctor_name') ?? 'Doctor');
+                                $docName = preg_match('/\bdr\.?\s/i', session('doctor_name') ?? '') ? session('doctor_name') : 'Dr. ' . (session('doctor_name') ?? 'Doctor');
                                 $formattedDate = session('date') ? \Carbon\Carbon::parse(session('date'))->format('d/m/Y (l)') : date('d/m/Y');
                                 $formattedTime = session('time') ? \Carbon\Carbon::parse(session('time'))->format('g:i A') : '';
                                 $patientName = session('patient_name') ?? 'Patient';

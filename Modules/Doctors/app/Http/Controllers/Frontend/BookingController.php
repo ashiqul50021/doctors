@@ -511,6 +511,7 @@ class BookingController extends Controller
             'type' => $booking['type'],
             'doctor_name' => $doctor->user->name ?? 'Doctor',
             'doctor_user_id' => $doctor->user_id,
+            'fee' => $appointment->fee ?? $booking['fee'] ?? null,
             'date' => $booking['date'],
             'time' => $booking['time'],
             'payment_method' => $appointment->payment_method,

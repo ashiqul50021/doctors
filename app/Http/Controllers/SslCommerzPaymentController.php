@@ -163,6 +163,7 @@ class SslCommerzPaymentController extends Controller
             'type' => $appointment->type,
             'doctor_name' => $doctor->user->name ?? 'Doctor',
             'doctor_user_id' => $doctor ? $doctor->user_id : null,
+            'fee' => $appointment->fee,
             'date' => $appointment->appointment_date,
             'time' => $appointment->appointment_time,
             'payment_method' => $appointment->payment_method,
