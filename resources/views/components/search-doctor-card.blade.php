@@ -34,9 +34,9 @@
                 @endif
                 <div class="mb-3" style="font-size: 0.88rem; color: #475569;">
                     @if(!empty($chamber))
-                        <span class="me-3"><i class="fas fa-clinic-medical text-primary me-1"></i>{{ $chamber }}</span>
+                        <span class="me-3"><i class="fas fa-clinic-medical text-primary me-1"></i><strong>Chamber:</strong> {{ $chamber }}</span>
                     @endif
-                    <span><i class="fas fa-map-marker-alt text-primary me-1"></i>{{ $location }}</span>
+                    <span><i class="fas fa-map-marker-alt text-primary me-1"></i><strong>Location:</strong> {{ $location }}</span>
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 mb-3" style="gap: 10px;">

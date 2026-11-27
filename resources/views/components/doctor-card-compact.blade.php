@@ -23,9 +23,9 @@
             <div class="doctor-desig">{{ $designation }}</div>
         @endif
         @if(!empty($chamber))
-            <div class="doctor-place"><i class="fas fa-clinic-medical"></i><span>{{ $chamber }}</span></div>
+            <div class="doctor-place"><i class="fas fa-clinic-medical"></i><span><strong>Chamber:</strong> {{ $chamber }}</span></div>
         @endif
-        <div class="doctor-place"><i class="fas fa-map-marker-alt"></i><span>{{ $location }}</span></div>
+        <div class="doctor-place"><i class="fas fa-map-marker-alt"></i><span><strong>Location:</strong> {{ $location }}</span></div>
         <div class="doctor-rating doctor-card-rating">
             @if(($reviews ?? 0) > 0)
                 <i class="fas fa-star"></i>

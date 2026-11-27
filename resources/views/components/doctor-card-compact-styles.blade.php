@@ -74,6 +74,7 @@
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .doctor-card-new .doctor-place span { overflow: hidden; text-overflow: ellipsis; }
     .doctor-card-new .doctor-place i { color: #1D4ED8; width: 11px; text-align: center; flex-shrink: 0; }
+    .doctor-card-new .doctor-place strong { color: #0f172a; font-weight: 700; }
     .doctor-card-new .doctor-card-rating { margin: 4px 0 8px; }
     .doctor-card-new .doctor-card-rating i.empty { color: #cbd5e1; }
     @media (max-width: 767.98px) {

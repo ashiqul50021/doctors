@@ -160,6 +160,7 @@
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .doctor-card-new .doctor-place span { overflow: hidden; text-overflow: ellipsis; }
     .doctor-card-new .doctor-place i { color: #1D4ED8; width: 11px; text-align: center; flex-shrink: 0; }
+    .doctor-card-new .doctor-place strong { color: #0f172a; font-weight: 700; }
     .doctor-card-new .doctor-card-rating { margin: 4px 0 8px; }
     .doctor-card-new .doctor-card-rating i.empty { color: #cbd5e1; }
     @media (max-width: 767.98px) {
@@ -843,9 +844,9 @@
                                             <div class="doctor-desig">{{ $doctor->short_designation }}</div>
                                         @endif
                                         @if($doctor->clinic_name)
-                                            <div class="doctor-place"><i class="fas fa-clinic-medical"></i><span>{{ $doctor->clinic_name }}</span></div>
+                                            <div class="doctor-place"><i class="fas fa-clinic-medical"></i><span><strong>Chamber:</strong> {{ $doctor->clinic_name }}</span></div>
                                         @endif
-                                        <div class="doctor-place"><i class="fas fa-map-marker-alt"></i><span>{{ $doctor->short_location }}</span></div>
+                                        <div class="doctor-place"><i class="fas fa-map-marker-alt"></i><span><strong>Location:</strong> {{ $doctor->short_location }}</span></div>
                                         <div class="doctor-rating doctor-card-rating">
                                             @if($doctor->review_count > 0)
                                                 <i class="fas fa-star"></i>
@@ -1798,7 +1799,7 @@
                         : `<i class="fas fa-star empty"></i> <span class="rating-count">(0 reviews)</span>`;
                     var esc = function (v) { return $('<div>').text(v || '').html(); };
                     var desigHtml = doctor.designation ? `<div class="doctor-desig">${esc(doctor.designation)}</div>` : '';
-                    var chamberHtml = doctor.clinic_name ? `<div class="doctor-place"><i class="fas fa-clinic-medical"></i><span>${esc(doctor.clinic_name)}</span></div>` : '';
+                    var chamberHtml = doctor.clinic_name ? `<div class="doctor-place"><i class="fas fa-clinic-medical"></i><span><strong>Chamber:</strong> ${esc(doctor.clinic_name)}</span></div>` : '';
 
                     var html = `
                         <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3 doctor-grid-item">
@@ -1822,7 +1823,7 @@
                                     </h4>
                                     ${desigHtml}
                                     ${chamberHtml}
-                                    <div class="doctor-place"><i class="fas fa-map-marker-alt"></i><span>${esc(doctor.location || 'Dhaka')}</span></div>
+                                    <div class="doctor-place"><i class="fas fa-map-marker-alt"></i><span><strong>Location:</strong> ${esc(doctor.location || 'Dhaka')}</span></div>
                                     <div class="doctor-rating doctor-card-rating">
                                         ${ratingHtml}
                                     </div>
