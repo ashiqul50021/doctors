@@ -426,9 +426,15 @@
                     <div class="detail-grid">
                         <div class="detail-item"><span class="label">Gender:</span> <span class="value">{{ $doctor->gender ? ucfirst($doctor->gender) : 'N/A' }}</span></div>
                         <div class="detail-item"><span class="label">Registration No:</span> <span class="value">{{ $doctor->registration_number ?? 'Verified' }}</span></div>
-                        <div class="detail-item"><span class="label">Clinic / Hospital:</span> <span class="value">{{ $doctor->clinic_name ?? 'N/A' }}</span></div>
+                        @forelse($doctor->clinic_locations as $i => $chamber)
+                            @php $n = $i > 0 ? ' ' . ($i + 1) : ''; @endphp
+                            <div class="detail-item"><span class="label">Chamber{{ $n }}:</span> <span class="value">{{ $chamber['name'] }}</span></div>
+                            <div class="detail-item"><span class="label">Address{{ $n }}:</span> <span class="value">{{ $chamber['address'] ?: 'Available upon booking' }}</span></div>
+                        @empty
+                            <div class="detail-item"><span class="label">Chamber:</span> <span class="value">N/A</span></div>
+                            <div class="detail-item"><span class="label">Address:</span> <span class="value">Available upon booking</span></div>
+                        @endforelse
                         <div class="detail-item"><span class="label">Location:</span> <span class="value">{{ ($doctor->area->name ?? '') . ($doctor->area && $doctor->district ? ', ' : '') . ($doctor->district->name ?? 'Dhaka') }}</span></div>
-                        <div class="detail-item"><span class="label">Clinic Address:</span> <span class="value">{{ $doctor->clinic_address ?? 'Available upon booking' }}</span></div>
                         <div class="detail-item"><span class="label">Contact / Helpline:</span> <span class="value">{{ $doctor->phone ?? 'Support Available' }}</span></div>
                         @if(!empty($doctor->website) && $doctor->website !== 'N/A')
                             <div class="detail-item"><span class="label">Website:</span> <span class="value"><a href="{{ $doctor->website }}" target="_blank" class="text-primary">{{ $doctor->website }}</a></span></div>

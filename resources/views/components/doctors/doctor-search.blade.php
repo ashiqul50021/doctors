@@ -42,7 +42,7 @@
                             <div>
                                 <h4 class="font-bold text-lg text-gray-800">{{ $doc->name ?? 'Dr. Specialist' }}</h4>
                                 <p class="text-sm text-blue-600 font-semibold">{{ $doc->designation ?? 'Consultant Specialist' }}</p>
-                                <p class="text-xs text-gray-500 mt-1">📍 Chamber: {{ $doc->address ?? 'Main Branch' }}</p>
+                                <p class="text-xs text-gray-500 mt-1">📍 Address: {{ $doc->address ?? 'Main Branch' }}</p>
                             </div>
                         </div>
 

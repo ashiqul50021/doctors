@@ -20,8 +20,8 @@
         'registration_number' => 'BMDC Registration No',
         'registration_date' => 'Registration Date',
         'bio' => 'Biography',
-        'clinic_name' => 'Clinic Name',
-        'clinic_address' => 'Clinic Address',
+        'clinic_name' => 'Chamber',
+        'clinic_address' => 'Address',
         'district_id' => 'District',
         'area_id' => 'Area / Police Station',
     ];
@@ -548,11 +548,11 @@
                                                     <div class="clinic-row border rounded p-3 mb-2 bg-light">
                                                         <div class="row form-row align-items-end g-2">
                                                             <div class="col-md-4">
-                                                                <label class="form-label small fw-semibold">Chamber</label>
+                                                                <label class="form-label small fw-semibold chamber-label">Chamber{{ $index > 0 ? ' ' . ($index + 1) : '' }}</label>
                                                                 <input type="text" class="form-control" name="clinic_names[]" value="{{ $clinicRow['name'] }}" placeholder="e.g. Dhanmondi Chamber" required>
                                                             </div>
                                                             <div class="col-md-5">
-                                                                <label class="form-label small fw-semibold">Address</label>
+                                                                <label class="form-label small fw-semibold address-label">Address{{ $index > 0 ? ' ' . ($index + 1) : '' }}</label>
                                                                 <input type="text" class="form-control" name="clinic_addresses[]" value="{{ $clinicRow['address'] }}" placeholder="e.g. Road 27, Dhanmondi, Dhaka" required>
                                                             </div>
                                                             <div class="col-md-2">
@@ -1136,6 +1136,12 @@
             if (!clinicRows) return;
             const rows = clinicRows.querySelectorAll('.clinic-row');
             rows.forEach((row, index) => {
+                // Chamber, Chamber 2, Chamber 3 ...
+                const suffix = index > 0 ? ' ' + (index + 1) : '';
+                const chamberLabel = row.querySelector('.chamber-label');
+                const addressLabel = row.querySelector('.address-label');
+                if (chamberLabel) chamberLabel.textContent = 'Chamber' + suffix;
+                if (addressLabel) addressLabel.textContent = 'Address' + suffix;
                 const removeBtn = row.querySelector('.remove-clinic-row');
                 if (removeBtn) {
                     removeBtn.disabled = rows.length === 1 && index === 0;
@@ -1161,11 +1167,11 @@
                 row.innerHTML = `
                     <div class="row form-row align-items-end g-2">
                         <div class="col-md-4">
-                            <label class="form-label small fw-semibold">Chamber</label>
+                            <label class="form-label small fw-semibold chamber-label">Chamber</label>
                             <input type="text" class="form-control" name="clinic_names[]" placeholder="e.g. Dhanmondi Chamber" required>
                         </div>
                         <div class="col-md-5">
-                            <label class="form-label small fw-semibold">Address</label>
+                            <label class="form-label small fw-semibold address-label">Address</label>
                             <input type="text" class="form-control" name="clinic_addresses[]" placeholder="e.g. Road 27, Dhanmondi, Dhaka" required>
                         </div>
                         <div class="col-md-2">
