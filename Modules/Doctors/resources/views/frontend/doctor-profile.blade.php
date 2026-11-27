@@ -168,6 +168,15 @@
         padding: 11px 18px;
     }
 
+    /* extra Book Appointment buttons inside the page body */
+    .doctor-actions-inline {
+        margin: 0 auto 10px;
+    }
+
+    .doctor-actions-last {
+        margin: 12px auto 0;
+    }
+
     .doctor-content {
         padding: 16px;
     }
@@ -553,6 +562,12 @@
                     </div>
                 </div>
 
+                <div class="doctor-actions doctor-actions-inline">
+                    <a href="{{ route('booking', $doctor->id) }}" class="btn btn-primary">
+                        <i class="fas fa-calendar-check"></i> Book Appointment
+                    </a>
+                </div>
+
                 {{-- Dynamic Custom Profile Sections --}}
                 @if(!empty($doctor->custom_sections) && is_iterable($doctor->custom_sections))
                     @foreach($doctor->custom_sections as $sec)
@@ -689,6 +704,12 @@
                     @empty
                         <p class="text-muted mb-0">No reviews yet.</p>
                     @endforelse
+                </div>
+
+                <div class="doctor-actions doctor-actions-inline doctor-actions-last">
+                    <a href="{{ route('booking', $doctor->id) }}" class="btn btn-primary">
+                        <i class="fas fa-calendar-check"></i> Book Appointment
+                    </a>
                 </div>
             </div>
         </div>
