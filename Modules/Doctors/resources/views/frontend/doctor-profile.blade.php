@@ -29,6 +29,7 @@
         height: 180px;
         border-radius: 20px;
         object-fit: cover;
+        object-position: center center;
         border: 4px solid #fff;
         box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
     }

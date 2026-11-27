@@ -1792,7 +1792,7 @@
                     var favClass = isFav ? 'active' : '';
                     var favIconClass = isFav ? 'fas' : 'far';
 
-                    var doctorName = doctor.name.startsWith('Dr.') ? doctor.name : 'Dr. ' + doctor.name;
+                    var doctorName = /\bdr\.?\s/i.test(doctor.name) ? doctor.name : 'Dr. ' + doctor.name;
                     var ratingHtml = doctor.review_count > 0 
                         ? `<i class="fas fa-star"></i> <span>${parseFloat(doctor.average_rating || 0).toFixed(1)}</span> <span class="rating-count">(${doctor.review_count} reviews)</span>`
                         : `<i class="fas fa-star empty"></i> <span class="rating-count">(0 reviews)</span>`;
@@ -1889,7 +1889,7 @@
         .doctor-type-text .dt-price { margin-top: 6px; font-size: 18px; font-weight: 600; color: #0e9cb8; }
         .doctor-type-photos { display: flex; align-items: flex-end; flex-shrink: 0; }
         .doctor-type-photos img {
-            width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: top;
+            width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: center center;
             border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
         }
         .doctor-type-photos img.second { margin-left: -16px; }
@@ -3719,7 +3719,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: top center;
+            object-position: center center;
             transition: transform 0.3s ease;
         }
 

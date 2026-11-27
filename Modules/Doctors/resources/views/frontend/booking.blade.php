@@ -707,7 +707,7 @@
             box-shadow: 0 6px 20px rgba(15, 23, 42, .05);
         }
         .bk-hero-photo img {
-            width: 130px; height: 130px; object-fit: cover; object-position: top center;
+            width: 130px; height: 130px; object-fit: cover; object-position: center center;
             border-radius: 18px; border: 4px solid #fff; box-shadow: 0 6px 18px rgba(15, 23, 42, .12);
         }
         .bk-hero-body { flex: 1; min-width: 0; }

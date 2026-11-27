@@ -73,7 +73,7 @@
                                                                             alt="User Image">
                                                                     </a>
                                                                     <a href="{{ route('doctors.profile', $appt->doctor->id) }}" style="text-decoration: none;">
-                                                                        {{ str_starts_with(strtolower($appt->doctor->user->name), 'dr.') ? $appt->doctor->user->name : 'Dr. ' . $appt->doctor->user->name }}
+                                                                        {{ preg_match('/\bdr\.?\s/i', (string) ($appt->doctor->user->name)) ? $appt->doctor->user->name : 'Dr. ' . $appt->doctor->user->name }}
                                                                         <span>{{ $appt->doctor->speciality->name ?? 'General' }}</span>
                                                                     </a>
                                                                 </h2>
@@ -175,7 +175,7 @@
                                                                             alt="User Image">
                                                                     </a>
                                                                     <a href="{{ route('doctors.profile', $prescription->doctor_id) }}" style="text-decoration: none;">
-                                                                        {{ str_starts_with(strtolower(optional(optional($prescription->doctor)->user)->name ?? ''), 'dr.') ? optional(optional($prescription->doctor)->user)->name : 'Dr. ' . (optional(optional($prescription->doctor)->user)->name ?? 'Unknown') }}
+                                                                        {{ preg_match('/\bdr\.?\s/i', (string) (optional(optional($prescription->doctor)->user)->name ?? '')) ? optional(optional($prescription->doctor)->user)->name : 'Dr. ' . (optional(optional($prescription->doctor)->user)->name ?? 'Unknown') }}
                                                                         <span>{{ optional($prescription->doctor)->speciality->name ?? 'General' }}</span>
                                                                     </a>
                                                                 </h2>
@@ -260,7 +260,7 @@
                                                                             alt="User Image">
                                                                     </a>
                                                                     <a href="{{ route('doctors.profile', $appt->doctor->id) }}" style="text-decoration: none;">
-                                                                        {{ str_starts_with(strtolower($appt->doctor->user->name), 'dr.') ? $appt->doctor->user->name : 'Dr. ' . $appt->doctor->user->name }}
+                                                                        {{ preg_match('/\bdr\.?\s/i', (string) ($appt->doctor->user->name)) ? $appt->doctor->user->name : 'Dr. ' . $appt->doctor->user->name }}
                                                                         <span>{{ $appt->doctor->speciality->name ?? 'General' }}</span>
                                                                     </a>
                                                                 </h2>

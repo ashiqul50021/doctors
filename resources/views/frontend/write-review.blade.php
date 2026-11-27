@@ -45,7 +45,7 @@
                                     <div class="doc-info-cont ms-2">
                                         <h4 class="doc-name mb-1">
                                             <a href="{{ route('doctors.profile', $appointment->doctor->id) }}" style="text-decoration: none; color: #333; font-weight: 600;">
-                                                {{ str_starts_with(strtolower($appointment->doctor->user->name), 'dr.') ? $appointment->doctor->user->name : 'Dr. ' . $appointment->doctor->user->name }}
+                                                {{ preg_match('/\bdr\.?\s/i', (string) ($appointment->doctor->user->name)) ? $appointment->doctor->user->name : 'Dr. ' . $appointment->doctor->user->name }}
                                             </a>
                                         </h4>
                                         <p class="doc-speciality text-muted mb-0">{{ $appointment->doctor->speciality->name ?? 'General Specialist' }}</p>

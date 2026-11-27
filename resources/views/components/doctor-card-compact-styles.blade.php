@@ -10,7 +10,7 @@
         position: relative; height: 195px; overflow: hidden;
         background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     }
-    .doctor-card-new .doctor-img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+    .doctor-card-new .doctor-img { width: 100%; height: 100%; object-fit: cover; object-position: center center; }
     .doctor-card-new .doctor-fee-badge {
         position: absolute; top: 10px; left: 10px; z-index: 2;
         background: linear-gradient(135deg, #1D4ED8, #3B82F6); color: #fff;

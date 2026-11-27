@@ -220,7 +220,7 @@
                             <div class="doctor-info">
                                 <span class="doctor-speciality">{{ $doctor->speciality->name ?? 'General' }}</span>
                                 <h4 class="doctor-name">
-                                    <a href="{{ route('doctors.profile', $doctor->id) }}">{{ str_starts_with(strtolower($doctor->user->name), 'dr.') ? $doctor->user->name : 'Dr. ' . $doctor->user->name }}</a>
+                                    <a href="{{ route('doctors.profile', $doctor->id) }}">{{ preg_match('/\bdr\.?\s/i', (string) ($doctor->user->name)) ? $doctor->user->name : 'Dr. ' . $doctor->user->name }}</a>
                                     @if($doctor->is_verified)
                                         <i class="fas fa-check-circle verified-badge" title="Verified" style="color: #09e5ab;"></i>
                                     @endif

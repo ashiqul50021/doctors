@@ -196,7 +196,7 @@
                                         alt="User Image">
                                 </a>
                                 <div class="booking-info">
-                                    <h4><a href="{{ route('doctors.profile', $doctor->id) }}" style="text-decoration: none;">{{ str_starts_with(strtolower($doctor->user->name), 'dr.') ? $doctor->user->name : 'Dr. ' . $doctor->user->name }}</a></h4>
+                                    <h4><a href="{{ route('doctors.profile', $doctor->id) }}" style="text-decoration: none;">{{ preg_match('/\bdr\.?\s/i', (string) ($doctor->user->name)) ? $doctor->user->name : 'Dr. ' . $doctor->user->name }}</a></h4>
                                     <div class="rating">
                                         @for($i = 1; $i <= 5; $i++)
                                             <i class="fas fa-star {{ $i <= $doctor->average_rating ? 'filled' : '' }}"></i>

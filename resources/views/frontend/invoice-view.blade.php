@@ -266,7 +266,7 @@
                                         <i class="fas fa-user-md text-primary"></i> Invoice From
                                     </div>
                                     <div class="info-value">
-                                        <strong class="text-dark fs-6">{{ str_starts_with(strtolower($appointment->doctor->user->name), 'dr.') ? $appointment->doctor->user->name : 'Dr. ' . $appointment->doctor->user->name }}</strong>
+                                        <strong class="text-dark fs-6">{{ preg_match('/\bdr\.?\s/i', (string) ($appointment->doctor->user->name)) ? $appointment->doctor->user->name : 'Dr. ' . $appointment->doctor->user->name }}</strong>
                                         @if($appointment->doctor->qualification)
                                             <div class="text-secondary small fw-medium mt-1">{{ $appointment->doctor->qualification }}</div>
                                         @endif
