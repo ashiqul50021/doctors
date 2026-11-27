@@ -110,6 +110,12 @@ class Doctor extends Model
         return $addresses[0] ?? null;
     }
 
+    /** Sanitized "About Me" HTML (old plain-text bios become paragraphs). */
+    public function getBioHtmlAttribute(): ?string
+    {
+        return \App\Support\HtmlSanitizer::fromStored($this->attributes['bio'] ?? null);
+    }
+
     /** "Assistant Professor, Combined Military Hospital" for the short doctor cards. */
     public function getShortDesignationAttribute(): ?string
     {

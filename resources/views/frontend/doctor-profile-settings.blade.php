@@ -624,7 +624,10 @@
                                     <div class="col-md-12">
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold">Doctor Biography / About Me <span class="text-danger">*</span></label>
-                                            <textarea class="form-control" rows="6" name="bio" style="min-height: 150px; resize: vertical;" placeholder="Write a detailed biography about your medical career, specialities, achievements, patient care philosophy..." required>{{ old('bio', $doctor->bio) }}</textarea>
+                                            <div class="rich-editor-wrap">
+                                                <textarea class="form-control rich-editor-source" id="bio-editor" rows="6" name="bio" placeholder="Write a detailed biography about your medical career, specialities, achievements, patient care philosophy..." required>{{ old('bio', $doctor->bio_html) }}</textarea>
+                                            </div>
+                                            <small class="text-muted">Word-er moto lekha format korte parben: bold, italic, underline, font size, rong, list, table, alignment.</small>
                                         </div>
                                     </div>
 
@@ -832,6 +835,60 @@
 @endsection
 
 @push('scripts')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.js"></script>
+<style>
+    .rich-editor-wrap { position: relative; }
+    /* keep the source textarea in the layout (1px, invisible) so the wizard can validate and scroll to it */
+    .rich-editor-wrap textarea.rich-editor-source {
+        display: block !important; position: absolute; top: 0; left: 0;
+        width: 1px; height: 1px; opacity: 0; pointer-events: none; padding: 0; border: 0;
+    }
+    .rich-editor-wrap .note-editor.note-frame { border-radius: 8px; border-color: #dee2e6; }
+    .rich-editor-wrap .note-toolbar { background: #f8fafc; border-radius: 8px 8px 0 0; }
+    .rich-editor-wrap .note-editable { min-height: 180px; font-size: 15px; line-height: 1.6; background: #fff; }
+    .rich-editor-wrap:has(.is-invalid) .note-editor.note-frame { border-color: #dc3545; }
+</style>
+<script>
+    // "About Me" rich text editor (Word-like toolbar)
+    (function () {
+        if (!window.jQuery || !jQuery.fn.summernote) return;
+        const $bio = jQuery('#bio-editor');
+        if (!$bio.length) return;
+        const textarea = $bio.get(0);
+        const startValue = textarea.value;
+
+        function sync() {
+            textarea.value = $bio.summernote('isEmpty') ? '' : $bio.summernote('code');
+            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        $bio.summernote({
+            placeholder: textarea.getAttribute('placeholder'),
+            height: 220,
+            dialogsInBody: true,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'hr']],
+                ['view', ['undo', 'redo', 'fullscreen']]
+            ],
+            fontSizes: ['10', '12', '14', '15', '16', '18', '20', '24', '28'],
+            callbacks: {
+                onChange: sync,
+                onPaste: function () { setTimeout(sync, 0); }
+            }
+        });
+        // summernote empties the textarea for "<p><br></p>"; keep the real start value
+        textarea.value = startValue;
+        // the wizard focuses the textarea when it is invalid: send the cursor to the editor
+        textarea.addEventListener('focus', function () { $bio.summernote('focus'); });
+    })();
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         let currentStep = 1;
@@ -991,7 +1048,7 @@
 
         function showFieldError(el, message) {
             el.classList.add('is-invalid');
-            const holder = el.closest('.input-group') || el;
+            const holder = el.closest('.input-group, .rich-editor-wrap') || el;
             let msg = holder.parentElement.querySelector('.js-field-error');
             if (!msg) {
                 msg = document.createElement('div');
@@ -1003,7 +1060,7 @@
 
         function clearFieldError(el) {
             el.classList.remove('is-invalid');
-            const holder = el.closest('.input-group') || el;
+            const holder = el.closest('.input-group, .rich-editor-wrap') || el;
             const msg = holder.parentElement ? holder.parentElement.querySelector('.js-field-error') : null;
             if (msg) msg.remove();
         }

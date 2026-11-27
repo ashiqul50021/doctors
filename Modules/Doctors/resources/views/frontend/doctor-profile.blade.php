@@ -202,6 +202,45 @@
         line-height: 1.35;
     }
 
+    .doctor-bio {
+        color: #334155;
+        font-size: 14.5px;
+        line-height: 1.6;
+        word-break: break-word;
+    }
+
+    .doctor-bio > :last-child {
+        margin-bottom: 0;
+    }
+
+    .doctor-bio p {
+        margin-bottom: 8px;
+    }
+
+    .doctor-bio ul,
+    .doctor-bio ol {
+        padding-left: 22px;
+        margin-bottom: 8px;
+    }
+
+    .doctor-bio table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 8px;
+    }
+
+    .doctor-bio th,
+    .doctor-bio td {
+        border: 1px solid #e2e8f0;
+        padding: 5px 8px;
+    }
+
+    .doctor-bio blockquote {
+        border-left: 3px solid #2958B7;
+        padding-left: 10px;
+        color: #475569;
+    }
+
     .detail-item-full {
         grid-column: 1 / -1;
     }
@@ -444,7 +483,11 @@
             <div class="doctor-content">
                 <div class="doctor-section">
                     <h5>About Doctor</h5>
-                    <p class="mb-0 text-muted">{{ $doctor->bio ?? 'No biography added yet.' }}</p>
+                    @if($doctor->bio_html)
+                        <div class="doctor-bio">{!! $doctor->bio_html !!}</div>
+                    @else
+                        <p class="mb-0 text-muted">No biography added yet.</p>
+                    @endif
                 </div>
 
                 <div class="doctor-section">

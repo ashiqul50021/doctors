@@ -393,7 +393,7 @@ class DashboardController extends Controller
             'registration_number' => $validated['registration_number'] ?? null,
             'registration_date' => $validated['registration_date'] ?? null,
             'experience_years' => $validated['experience_years'] ?? 0,
-            'bio' => $validated['bio'] ?? null,
+            'bio' => \App\Support\HtmlSanitizer::clean($validated['bio'] ?? null),
             'clinic_name' => $clinicNames,
             'clinic_address' => $clinicAddresses,
             'clinic_fees' => $clinicFees,
