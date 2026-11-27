@@ -152,7 +152,22 @@
                         color: #475569 !important;
                         opacity: 1 !important;
                     }
-                </style>
+                
+    /* designation / chamber / location lines on the short doctor card */
+    .doctor-card-new .doctor-desig { font-size: 11px; font-weight: 600; color: #1e3a8a; line-height: 1.3; margin-bottom: 4px;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .doctor-card-new .doctor-place { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 11px; color: #475569;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .doctor-card-new .doctor-place span { overflow: hidden; text-overflow: ellipsis; }
+    .doctor-card-new .doctor-place i { color: #1D4ED8; width: 11px; text-align: center; flex-shrink: 0; }
+    .doctor-card-new .doctor-card-rating { margin: 4px 0 8px; }
+    .doctor-card-new .doctor-card-rating i.empty { color: #cbd5e1; }
+    @media (max-width: 767.98px) {
+        .doctor-card-new .doctor-desig { font-size: 10px; margin-bottom: 3px; }
+        .doctor-card-new .doctor-place { font-size: 10px; margin-bottom: 2px; }
+        .doctor-card-new .doctor-card-rating { margin: 3px 0 6px; }
+    }
+</style>
                 <div class="hero-search-section">
                     <!-- Card 1: Search Doctor by Name -->
                     <div class="search-card-wrapper mb-2 p-2 bg-white shadow-sm">
@@ -824,19 +839,22 @@
                                             <a href="{{ route('doctors.profile', $doctor->id) }}">{{ $doctor->user->name }}</a>
                                             <i class="fas fa-check-circle verified-badge" title="Verified"></i>
                                         </h4>
-                                        <div class="doctor-rating">
+                                        @if($doctor->short_designation)
+                                            <div class="doctor-desig">{{ $doctor->short_designation }}</div>
+                                        @endif
+                                        @if($doctor->clinic_name)
+                                            <div class="doctor-place"><i class="fas fa-clinic-medical"></i><span>{{ $doctor->clinic_name }}</span></div>
+                                        @endif
+                                        <div class="doctor-place"><i class="fas fa-map-marker-alt"></i><span>{{ $doctor->short_location }}</span></div>
+                                        <div class="doctor-rating doctor-card-rating">
                                             @if($doctor->review_count > 0)
                                                 <i class="fas fa-star"></i>
                                                 <span>{{ number_format($doctor->average_rating, 1) }}</span>
                                                 <span class="rating-count">({{ $doctor->review_count }} reviews)</span>
                                             @else
-                                                <i class="fas fa-star" style="color: #cbd5e1;"></i>
-                                                <span class="rating-count text-muted">New Doctor</span>
+                                                <i class="fas fa-star empty"></i>
+                                                <span class="rating-count">(0 reviews)</span>
                                             @endif
-                                        </div>
-                                        <div class="doctor-location">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                            <span>{{ $doctor->clinic_name ?? ($doctor->area->name ?? 'Dhaka') }}</span>
                                         </div>
                                         <div class="doctor-buttons">
                                             <a href="{{ route('doctors.profile', $doctor->id) }}" class="btn-view-details">
@@ -1837,7 +1855,10 @@
                     var doctorName = doctor.name.startsWith('Dr.') ? doctor.name : 'Dr. ' + doctor.name;
                     var ratingHtml = doctor.review_count > 0 
                         ? `<i class="fas fa-star"></i> <span>${parseFloat(doctor.average_rating || 0).toFixed(1)}</span> <span class="rating-count">(${doctor.review_count} reviews)</span>`
-                        : `<i class="fas fa-star" style="color: #cbd5e1;"></i> <span class="rating-count text-muted">New Doctor</span>`;
+                        : `<i class="fas fa-star empty"></i> <span class="rating-count">(0 reviews)</span>`;
+                    var esc = function (v) { return $('<div>').text(v || '').html(); };
+                    var desigHtml = doctor.designation ? `<div class="doctor-desig">${esc(doctor.designation)}</div>` : '';
+                    var chamberHtml = doctor.clinic_name ? `<div class="doctor-place"><i class="fas fa-clinic-medical"></i><span>${esc(doctor.clinic_name)}</span></div>` : '';
 
                     var html = `
                         <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3 doctor-grid-item">
@@ -1859,12 +1880,11 @@
                                         <a href="/doctor-profile/${doctor.id}">${doctorName}</a>
                                         <i class="fas fa-check-circle verified-badge" title="Verified"></i>
                                     </h4>
-                                    <div class="doctor-rating">
+                                    ${desigHtml}
+                                    ${chamberHtml}
+                                    <div class="doctor-place"><i class="fas fa-map-marker-alt"></i><span>${esc(doctor.location || 'Dhaka')}</span></div>
+                                    <div class="doctor-rating doctor-card-rating">
                                         ${ratingHtml}
-                                    </div>
-                                    <div class="doctor-location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span>${doctor.clinic_name || doctor.area || 'Dhaka'}</span>
                                     </div>
                                     <div class="doctor-buttons">
                                         <a href="/doctor-profile/${doctor.id}" class="btn-view-details">

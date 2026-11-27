@@ -66,4 +66,19 @@
             display: flex; align-items: center; justify-content: center;
         }
     }
+
+    /* designation / chamber / location lines on the short doctor card */
+    .doctor-card-new .doctor-desig { font-size: 11px; font-weight: 600; color: #1e3a8a; line-height: 1.3; margin-bottom: 4px;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .doctor-card-new .doctor-place { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 11px; color: #475569;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .doctor-card-new .doctor-place span { overflow: hidden; text-overflow: ellipsis; }
+    .doctor-card-new .doctor-place i { color: #1D4ED8; width: 11px; text-align: center; flex-shrink: 0; }
+    .doctor-card-new .doctor-card-rating { margin: 4px 0 8px; }
+    .doctor-card-new .doctor-card-rating i.empty { color: #cbd5e1; }
+    @media (max-width: 767.98px) {
+        .doctor-card-new .doctor-desig { font-size: 10px; margin-bottom: 3px; }
+        .doctor-card-new .doctor-place { font-size: 10px; margin-bottom: 2px; }
+        .doctor-card-new .doctor-card-rating { margin: 3px 0 6px; }
+    }
 </style>

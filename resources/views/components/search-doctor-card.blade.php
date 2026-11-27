@@ -26,7 +26,18 @@
                     <a href="{{ $profileLink }}"
                         style="color: #272b41; font-weight: 700; font-size: 1.25rem; text-decoration: none;">{{ $name }}</a>
                 </h4>
-                <p class="doc-speciality mb-3" style="font-size: 0.9rem; color: #757575;">{{ $qualification }}</p>
+                <p class="doc-speciality mb-1" style="font-size: 0.9rem; color: #757575;">{{ $qualification }}</p>
+                @if(!empty($designation))
+                    <p class="mb-1" style="font-size: 0.9rem; font-weight: 600; color: #1e3a8a;">
+                        <i class="fas fa-briefcase-medical me-1"></i> {{ $designation }}
+                    </p>
+                @endif
+                <div class="mb-3" style="font-size: 0.88rem; color: #475569;">
+                    @if(!empty($chamber))
+                        <span class="me-3"><i class="fas fa-clinic-medical text-primary me-1"></i>{{ $chamber }}</span>
+                    @endif
+                    <span><i class="fas fa-map-marker-alt text-primary me-1"></i>{{ $location }}</span>
+                </div>
 
                 <div class="d-flex flex-wrap gap-2 mb-3" style="gap: 10px;">
                     <span class="badge badge-pill"
@@ -47,10 +58,6 @@
                     <span class="badge badge-pill"
                         style="background: #f0f2f5; color: #6c757d; padding: 8px 12px; font-weight: 500;">
                         <i class="fas fa-briefcase" style="margin-right: 4px;"></i> {{ !empty($experience) ? $experience : ((int)($experienceYears ?? 0) > 0 ? $experienceYears . '+ Years Exp' : '1+ Years Exp') }}
-                    </span>
-                    <span class="badge badge-pill text-capitalize"
-                        style="background: #f0f2f5; color: #6c757d; padding: 8px 12px; font-weight: 500;">
-                        <i class="fas fa-map-marker-alt" style="margin-right: 4px;"></i> {{ $location }}
                     </span>
                 </div>
             </div>
@@ -81,9 +88,10 @@
                         <span class="d-block mt-1"
                             style="font-size: 0.85rem; font-weight: 600; color: #272b41;">{{ $thumbsUp }} Positive</span>
                     @else
-                        <span class="badge badge-light text-muted px-2 py-1" style="font-size: 0.75rem; border: 1px solid #e5e7eb;">
-                            No ratings yet
-                        </span>
+                        @for($i = 1; $i <= 5; $i++)
+                            <i class="fas fa-star" style="color: #dedfe0; font-size: 12px;"></i>
+                        @endfor
+                        <span class="d-block mt-1" style="font-size: 0.8rem; color: #6b7280;">(0 reviews)</span>
                     @endif
                 </div>
 

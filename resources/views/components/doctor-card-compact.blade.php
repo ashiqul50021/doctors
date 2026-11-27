@@ -19,19 +19,22 @@
             <a href="{{ $profileLink }}">{{ $name }}</a>
             <i class="fas fa-check-circle verified-badge" title="Verified"></i>
         </h4>
-        <div class="doctor-rating">
+        @if(!empty($designation))
+            <div class="doctor-desig">{{ $designation }}</div>
+        @endif
+        @if(!empty($chamber))
+            <div class="doctor-place"><i class="fas fa-clinic-medical"></i><span>{{ $chamber }}</span></div>
+        @endif
+        <div class="doctor-place"><i class="fas fa-map-marker-alt"></i><span>{{ $location }}</span></div>
+        <div class="doctor-rating doctor-card-rating">
             @if(($reviews ?? 0) > 0)
                 <i class="fas fa-star"></i>
                 <span>{{ number_format($rawRating ?? 0, 1) }}</span>
-                <span class="rating-count">({{ $reviews }})</span>
+                <span class="rating-count">({{ $reviews }} reviews)</span>
             @else
-                <i class="fas fa-star" style="color: #cbd5e1;"></i>
-                <span class="rating-count text-muted">New Doctor</span>
+                <i class="fas fa-star empty"></i>
+                <span class="rating-count">(0 reviews)</span>
             @endif
-        </div>
-        <div class="doctor-location">
-            <i class="fas fa-map-marker-alt"></i>
-            <span>{{ $location }}</span>
         </div>
         <div class="doctor-buttons">
             <a href="{{ $profileLink }}" class="btn-view-details"><i class="fas fa-user"></i> Details</a>

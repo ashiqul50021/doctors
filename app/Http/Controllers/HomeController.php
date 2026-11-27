@@ -134,6 +134,8 @@ class HomeController extends Controller
                 'review_count' => (int) $doctor->review_count,
                 'clinic_name' => $doctor->clinic_name,
                 'area_name' => $doctor->area->name ?? 'Dhaka',
+                'designation' => $doctor->short_designation,
+                'location' => $doctor->short_location,
             ];
         });
 

@@ -112,6 +112,23 @@ class Doctor extends Model
         return $addresses[0] ?? null;
     }
 
+    /** "Assistant Professor, Combined Military Hospital" for the short doctor cards. */
+    public function getShortDesignationAttribute(): ?string
+    {
+        $parts = array_filter([
+            trim((string) ($this->attributes['designation'] ?? '')),
+            trim((string) ($this->attributes['organization_name'] ?? '')),
+        ]);
+        return $parts ? implode(', ', $parts) : null;
+    }
+
+    /** "Banani, Dhaka" (area, district) for the short doctor cards. */
+    public function getShortLocationAttribute(): string
+    {
+        $parts = array_filter([$this->area->name ?? null, $this->district->name ?? null]);
+        return $parts ? implode(', ', $parts) : 'Dhaka';
+    }
+
     public function getClinicNamesAttribute(): array
     {
         return $this->parseStoredList($this->attributes['clinic_name'] ?? null);
