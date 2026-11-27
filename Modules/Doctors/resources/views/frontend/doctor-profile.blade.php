@@ -186,13 +186,13 @@
     }
 
     .detail-item .label {
-        color: #64748b;
-        font-weight: 600;
+        color: #0f172a;
+        font-weight: 700;
     }
 
     .detail-item .value {
-        color: #0f172a;
-        font-weight: 600;
+        color: #334155;
+        font-weight: 500;
         word-break: break-word;
     }
 
